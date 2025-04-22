@@ -1,6 +1,7 @@
-package edu.cit.swiftthrift.security;
+package cit.edu.capstone.CourtVision.security;
 
-import edu.cit.swiftthrift.entity.User;
+
+import cit.edu.capstone.CourtVision.entity.Player;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -14,10 +15,10 @@ public class JwtTokenProvider {
     private final SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512); // Secure and correct size
     private final long EXPIRATION_TIME = 86400000L; // 24 hours
 
-    public String generateToken(User user) {
+    public String generateToken(Player player) {
         return Jwts.builder()
-                .setSubject(String.valueOf(user.getUserId()))
-                .claim("email", user.getEmail())
+                .setSubject(String.valueOf(player.getPlayerId()))
+                .claim("email", player.getEmail())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(secretKey, SignatureAlgorithm.HS512)

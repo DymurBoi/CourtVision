@@ -1,13 +1,11 @@
 package cit.edu.capstone.CourtVision.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
 
 @Entity
+@Table(name="player")
 public class Player {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -73,19 +71,19 @@ public class Player {
         this.jerseyNum = jerseyNum;
     }
 
-    public boolean isCoach() {
+    public boolean getIsCoach() {
         return isCoach;
     }
     
-    public void setCoach(boolean isCoach) {
+    public void setIsCoach(boolean isCoach) {
         this.isCoach = isCoach;
     }
 
-    public boolean isAdmin() {
+    public boolean getIsAdmin() {
         return isAdmin;
     }
 
-    public void setAdmin(boolean isAdmin) {
+    public void setIsAdmin(boolean isAdmin) {
         this.isAdmin = isAdmin;
     }
     
