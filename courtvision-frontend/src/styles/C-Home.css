@@ -1,0 +1,131 @@
+.teams-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2.5rem;
+    margin: 2rem 0;
+  }
+  
+  .team-card {
+    background-color: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 20px rgba(36, 36, 62, 0.1);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(123, 123, 243, 0.2);
+  }
+  
+  .team-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(36, 36, 62, 0.15);
+    border-color: var(--medium-purple);
+  }
+  
+  .team-banner {
+    height: 180px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+  }
+  
+  .team-banner:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, rgba(36, 36, 62, 0.3), rgba(36, 36, 62, 0.7));
+  }
+  
+  .team-banner.college {
+    background-color: var(--bright-purple);
+  }
+  
+  .team-banner.highschool {
+    background-color: var(--medium-purple);
+  }
+  
+  .team-banner.elementary {
+    background-color: #5d5deb;
+  }
+  
+  .team-content {
+    padding: 1.5rem;
+  }
+  
+  .team-content h2 {
+    color: var(--dark-blue);
+    font-size: 1.5rem;
+    margin-bottom: 0.8rem;
+    position: relative;
+    padding-bottom: 0.8rem;
+  }
+  
+  .team-content h2:after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50px;
+    height: 3px;
+    background: linear-gradient(to right, var(--medium-purple), var(--bright-purple));
+    border-radius: 1.5px;
+  }
+  
+  .team-content p {
+    color: #555;
+    margin-bottom: 1.2rem;
+    line-height: 1.5;
+  }
+  
+  .team-stats {
+    background-color: var(--light-purple);
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1.2rem 0;
+  }
+  
+  .player-count {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+  }
+  
+  .stat-label {
+    font-weight: 600;
+    color: var(--dark-blue);
+  }
+  
+  .stat-value {
+    font-weight: 700;
+    color: var(--bright-purple);
+  }
+  
+  .team-button {
+    background: linear-gradient(to right, var(--medium-purple), var(--bright-purple));
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+    display: block;
+    text-align: center;
+    text-decoration: none;
+  }
+  
+  .team-button:hover {
+    background: linear-gradient(to right, var(--bright-purple), var(--medium-purple));
+    box-shadow: 0 5px 15px rgba(65, 65, 252, 0.3);
+  }
+  
+  @media (max-width: 768px) {
+    .teams-container {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  

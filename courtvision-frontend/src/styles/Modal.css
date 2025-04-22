@@ -1,0 +1,201 @@
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(36, 36, 62, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+  }
+  
+  .modal-container {
+    background-color: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    animation: modalFadeIn 0.3s ease;
+  }
+  
+  @keyframes modalFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .modal-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(123, 123, 243, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .modal-header h2 {
+    color: var(--dark-blue);
+    margin: 0;
+    font-size: 1.5rem;
+  }
+  
+  .close-button {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--dark-blue);
+    transition: color 0.2s ease;
+  }
+  
+  .close-button:hover {
+    color: var(--bright-purple);
+  }
+  
+  .modal-content {
+    padding: 1.5rem;
+  }
+  
+  .player-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+  
+  .player-info h3 {
+    color: var(--dark-blue);
+    margin: 0;
+    font-size: 1.2rem;
+  }
+  
+  .player-info .date {
+    color: var(--medium-purple);
+    font-weight: 500;
+  }
+  
+  .records-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+  
+  .record-column {
+    background-color: var(--light-purple);
+    padding: 1rem;
+    border-radius: 8px;
+  }
+  
+  .record-column h4 {
+    color: var(--dark-blue);
+    margin: 0 0 1rem 0;
+    text-align: center;
+    font-size: 1.1rem;
+  }
+  
+  .record-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px dashed rgba(123, 123, 243, 0.3);
+  }
+  
+  .record-item:last-child {
+    border-bottom: none;
+  }
+  
+  .record-label {
+    font-weight: 500;
+    color: var(--dark-blue);
+  }
+  
+  .record-value {
+    font-weight: 600;
+    color: var(--bright-purple);
+  }
+  
+  .team-invite-content {
+    text-align: center;
+    padding: 2rem 1rem;
+    background-color: var(--light-purple);
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+  }
+  
+  .team-invite-content p {
+    font-size: 1.2rem;
+    color: var(--dark-blue);
+    margin: 0;
+  }
+  
+  .team-name {
+    font-weight: 700;
+    color: var(--bright-purple);
+  }
+  
+  .modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-top: 1px solid rgba(123, 123, 243, 0.2);
+  }
+  
+  .confirm-button,
+  .reject-button {
+    padding: 0.8rem 2rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .confirm-button {
+    background: linear-gradient(to right, var(--medium-purple), var(--bright-purple));
+    color: white;
+    border: none;
+  }
+  
+  .confirm-button:hover {
+    background: linear-gradient(to right, var(--bright-purple), var(--medium-purple));
+    box-shadow: 0 4px 8px rgba(65, 65, 252, 0.3);
+  }
+  
+  .reject-button {
+    background: white;
+    color: var(--dark-blue);
+    border: 1px solid var(--dark-blue);
+  }
+  
+  .reject-button:hover {
+    background-color: #f8f8f8;
+    color: #ff3b3b;
+    border-color: #ff3b3b;
+  }
+  
+  @media (max-width: 768px) {
+    .records-container {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+  
+    .modal-actions {
+      flex-direction: column;
+    }
+  
+    .confirm-button,
+    .reject-button {
+      width: 100%;
+    }
+  }
+  
+  
