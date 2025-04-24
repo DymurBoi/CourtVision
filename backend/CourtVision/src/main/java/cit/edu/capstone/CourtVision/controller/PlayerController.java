@@ -51,5 +51,6 @@ public class PlayerController {
     public List<Player> getPlayersByTeamId(@PathVariable Long teamId) {
         return playerService.getPlayersByTeamId(teamId);
     }
+    
 }
 

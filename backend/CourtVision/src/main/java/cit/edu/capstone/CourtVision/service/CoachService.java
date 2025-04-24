@@ -24,6 +24,8 @@ public class CoachService {
     }
 
     public Coach createCoach(Coach coach) {
+        coach.setIsCoach(true);
+        coach.setIsAdmin(false);
         return coachRepository.save(coach);
     }
 
