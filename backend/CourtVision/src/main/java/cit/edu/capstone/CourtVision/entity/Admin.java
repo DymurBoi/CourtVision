@@ -8,7 +8,7 @@ import java.util.List;
 public class Admin {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int adminId;
+    private Long adminId;
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -24,11 +24,11 @@ public class Admin {
 
     // Getters and Setters
 
-    public int getAdminId() {
+    public Long getAdminId() {
         return adminId;
     }
 
-    public void setAdminId(int adminId) {
+    public void setAdminId(Long adminId) {
         this.adminId = adminId;
     }
 

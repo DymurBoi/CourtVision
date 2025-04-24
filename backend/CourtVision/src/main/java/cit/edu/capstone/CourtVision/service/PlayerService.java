@@ -21,7 +21,7 @@ public class PlayerService {
         return playerRepository.findAll();
     }
 
-    public Player getPlayerById(Integer id) {
+    public Player getPlayerById(Long id) {
         return playerRepository.findById(id).orElse(null);
     }
 
@@ -29,7 +29,7 @@ public class PlayerService {
         return playerRepository.save(player);
     }
 
-    public Player updatePlayer(Integer id, Player updatedPlayer) {
+    public Player updatePlayer(Long id, Player updatedPlayer) {
         Player player = getPlayerById(id);
         if (player != null) {
             player.setFname(updatedPlayer.getFname());
@@ -46,7 +46,7 @@ public class PlayerService {
         return null;
     }
 
-    public void deletePlayer(Integer id) {
+    public void deletePlayer(Long id) {
         playerRepository.deleteById(id);
     }
 

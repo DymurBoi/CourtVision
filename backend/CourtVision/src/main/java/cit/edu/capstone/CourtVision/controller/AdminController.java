@@ -18,7 +18,7 @@ public class AdminController {
     }
 
     @GetMapping("/get/{id}")
-    public Admin getById(@PathVariable int id) {
+    public Admin getById(@PathVariable Long id) {
         return service.getById(id);
     }
 
@@ -28,11 +28,11 @@ public class AdminController {
     }
 
     @PutMapping("/put/{id}")
-    public Admin update(@PathVariable int id, @RequestBody Admin a) {
+    public Admin update(@PathVariable Long id, @RequestBody Admin a) {
         return service.update(id, a);
     }
     @DeleteMapping("/delete/{id}")
-    public void delete(@PathVariable int id) {
+    public void delete(@PathVariable Long id) {
         service.delete(id);
     }
 }

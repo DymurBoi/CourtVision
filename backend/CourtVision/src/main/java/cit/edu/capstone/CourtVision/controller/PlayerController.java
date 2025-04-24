@@ -28,7 +28,7 @@ public class PlayerController {
     }
 
     @GetMapping("/get/{id}")
-    public Player getPlayerById(@PathVariable Integer id) {
+    public Player getPlayerById(@PathVariable Long id) {
         return playerService.getPlayerById(id);
     }
 
@@ -38,12 +38,12 @@ public class PlayerController {
     }
 
     @PutMapping("/put/{id}")
-    public Player updatePlayer(@PathVariable Integer id, @RequestBody Player player) {
+    public Player updatePlayer(@PathVariable Long id, @RequestBody Player player) {
         return playerService.updatePlayer(id, player);
     }
 
     @DeleteMapping("/delete/{id}")
-    public void deletePlayer(@PathVariable Integer id) {
+    public void deletePlayer(@PathVariable Long id) {
         playerService.deletePlayer(id);
     }
 

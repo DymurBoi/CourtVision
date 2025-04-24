@@ -13,9 +13,9 @@ public class AdminService {
     @Autowired private AdminRepository adminRepo;
 
     public List<Admin> getAll() { return adminRepo.findAll(); }
-    public Admin getById(int id) { return adminRepo.findById(id).orElse(null); }
+    public Admin getById(Long id) { return adminRepo.findById(id).orElse(null); }
     public Admin create(Admin admin) { return adminRepo.save(admin); }
-    public Admin update(int id, Admin admin) {
+    public Admin update(Long id, Admin admin) {
         Admin existing = getById(id);
         if (existing != null) {
             existing.setEmail(admin.getEmail());
@@ -26,6 +26,6 @@ public class AdminService {
         }
         return null;
     }
-    public void delete(int id) { adminRepo.deleteById(id); }
+    public void delete(Long id) { adminRepo.deleteById(id); }
 }
 

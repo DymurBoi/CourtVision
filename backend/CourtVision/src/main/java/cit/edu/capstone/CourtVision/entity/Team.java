@@ -23,7 +23,7 @@ public class Team {
     )
     private List<Coach> coaches;
 
-    @OneToMany(mappedBy = "team_id")
+    @OneToMany(mappedBy = "team")
     private List<Player> players;
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
