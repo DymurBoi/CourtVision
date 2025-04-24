@@ -62,14 +62,13 @@ public class SecurityConfig {
     public AuthenticationSuccessHandler oAuth2SuccessHandler() {
         return (request, response, authentication) -> {
             String email = authentication.getName();
+            Player existingPlayer = playerRepo.findByEmail(email);
 
-            Optional<Player> existingPlayer = playerRepo.findByEmail(email);
-
-            if (existingPlayer.isEmpty()) {
+            if (existingPlayer == null) {
                 Player newPlayer = new Player();
                 newPlayer.setEmail(email);
                 newPlayer.setIsCoach(false);
-                newPlayer.setIsAdmin(false);// Default role
+                newPlayer.setIsAdmin(true); // Default role
                 playerRepo.save(newPlayer);
             }
 

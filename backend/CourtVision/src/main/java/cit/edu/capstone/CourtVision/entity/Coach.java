@@ -1,11 +1,9 @@
 package cit.edu.capstone.CourtVision.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 
 @Entity
@@ -22,53 +20,82 @@ public class Coach {
     private boolean isCoach;
     private boolean isAdmin;
 
-    //Getters and Setters
+    @ManyToMany(mappedBy = "coaches")
+    private List<Team> teams;
+
+    // Getters and Setters
+
     public Integer getCoachId() {
         return coachId;
     }
+
+    public void setCoachId(Integer coachId) {
+        this.coachId = coachId;
+    }
+
     public String getFname() {
         return fname;
     }
+
     public void setFname(String fname) {
         this.fname = fname;
     }
+
     public String getLname() {
         return lname;
     }
+
     public void setLname(String lname) {
         this.lname = lname;
     }
+
     public String getEmail() {
         return email;
     }
+
     public void setEmail(String email) {
         this.email = email;
     }
+
+    public boolean getIsCoach() {
+        return isCoach;
+    }
+
+    public void setIsCoach(boolean coach) {
+        isCoach = coach;
+    }
+
     public String getPassword() {
         return password;
     }
+
     public void setPassword(String password) {
         this.password = password;
     }
+
     public LocalDate getBirthDate() {
         return birthDate;
     }
+
     public void setBirthDate(LocalDate birthDate) {
         this.birthDate = birthDate;
     }
-    public boolean isCoach() {
-        return isCoach;
-    }
-    public void setCoach(boolean isCoach) {
-        this.isCoach = isCoach;
-    }
-    public boolean isAdmin() {
+
+    public boolean getIsAdmin() {
         return isAdmin;
     }
-    public void setAdmin(boolean isAdmin) {
-        this.isAdmin = isAdmin;
+
+    public void setIsAdmin(boolean admin) {
+        isAdmin = admin;
     }
 
-    
+    public List<Team> getTeams() {
+        return teams;
+    }
+
+    public void setTeams(List<Team> teams) {
+        this.teams = teams;
+    }
 }
+
 

@@ -14,47 +14,41 @@ public class CoachService {
 
     @Autowired
     private CoachRepository coachRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     public List<Coach> getAllCoaches() {
         return coachRepository.findAll();
     }
 
-    public Optional<Coach> getCoachById(Integer id) {
-        return coachRepository.findById(id);
+    public Coach getCoachById(Integer id) {
+        return coachRepository.findById(id).orElse(null);
     }
 
     public Coach createCoach(Coach coach) {
-        coach.setPassword(passwordEncoder.encode(coach.getPassword()));
         return coachRepository.save(coach);
     }
 
     public Coach updateCoach(Integer id, Coach updatedCoach) {
-        return coachRepository.findById(id).map(coach -> {
+        Coach coach = getCoachById(id);
+        if (coach != null) {
             coach.setFname(updatedCoach.getFname());
             coach.setLname(updatedCoach.getLname());
             coach.setEmail(updatedCoach.getEmail());
-
-            // Only re-encode if password has changed
-            if (!updatedCoach.getPassword().equals(coach.getPassword())) {
-                coach.setPassword(passwordEncoder.encode(updatedCoach.getPassword()));
-            }
-
+            coach.setPassword(updatedCoach.getPassword());
             coach.setBirthDate(updatedCoach.getBirthDate());
-            coach.setCoach(updatedCoach.isCoach());
-            coach.setAdmin(updatedCoach.isAdmin());
+            coach.setIsCoach(updatedCoach.getIsCoach());
+            coach.setIsAdmin(updatedCoach.getIsAdmin());
+            coach.setTeams(updatedCoach.getTeams());
             return coachRepository.save(coach);
-        }).orElse(null);
+        }
+        return null;
     }
 
     public void deleteCoach(Integer id) {
         coachRepository.deleteById(id);
     }
 
-    public Coach login(String email, String password) {
-        return coachRepository.findByEmail(email)
-                .filter(coach -> passwordEncoder.matches(password, coach.getPassword()))
-                .orElse(null);
+    public List<Coach> getCoachesByTeamId(Long teamId) {
+        return coachRepository.findByTeams_TeamId(teamId);
     }
 }
+

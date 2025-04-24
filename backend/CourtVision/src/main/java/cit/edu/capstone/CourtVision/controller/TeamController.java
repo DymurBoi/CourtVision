@@ -10,31 +10,43 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/teams")
 public class TeamController {
+
     @Autowired
-    private TeamService service;
+    private TeamService teamService;
 
-    @GetMapping
+    @GetMapping("/get/all")
     public List<Team> getAll() {
-        return service.getAll();
+        return teamService.getAllTeams();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/get/{id}")
     public Team getById(@PathVariable Long id) {
-        return service.getById(id);
+        return teamService.getTeamById(id);
     }
 
-    @PostMapping
+    @PostMapping("/post")
     public Team create(@RequestBody Team team) {
-        return service.save(team);
+        return teamService.createTeam(team);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/put/{id}")
     public Team update(@PathVariable Long id, @RequestBody Team team) {
-        return service.update(id, team);
+        return teamService.updateTeam(id, team);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public void delete(@PathVariable Long id) {
-        service.delete(id);
+        teamService.deleteTeam(id);
+    }
+
+    @GetMapping("/get/by-admin/{adminId}")
+    public List<Team> getByAdmin(@PathVariable int adminId) {
+        return teamService.getTeamsByAdminId(adminId);
+    }
+
+    @GetMapping("/get/by-coach/{coachId}")
+    public List<Team> getByCoach(@PathVariable int coachId) {
+        return teamService.getTeamsByCoachId(coachId);
     }
 }
+

@@ -1,35 +1,38 @@
 package cit.edu.capstone.CourtVision.controller;
 
-import cit.edu.capstone.CourtVision.entity.AdminEntity;
+import cit.edu.capstone.CourtVision.entity.Admin;
 import cit.edu.capstone.CourtVision.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
 @RestController
 @RequestMapping("/api/admins")
 public class AdminController {
+    @Autowired private AdminService service;
 
-    @Autowired
-    private AdminService adminService;
-
-    @PostMapping("/register")
-    public ResponseEntity<AdminEntity> register(@RequestBody AdminEntity admin) {
-        AdminEntity createdAdmin = adminService.registerAdmin(admin);
-        return ResponseEntity.ok(createdAdmin);
+    @GetMapping("/get/all")
+    public List<Admin> getAll() {
+        return service.getAll();
     }
 
-    @GetMapping("/{email}")
-    public ResponseEntity<AdminEntity> getAdminByEmail(@PathVariable String email) {
-        return adminService.getAdminByEmail(email)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    @GetMapping("/get/{id}")
+    public Admin getById(@PathVariable int id) {
+        return service.getById(id);
     }
 
-    @GetMapping
-    public List<AdminEntity> getAllAdmins() {
-        return adminService.getAllAdmins();
+    @PostMapping ("/post")
+    public Admin create(@RequestBody Admin admin) {
+        return service.create(admin);
+    }
+
+    @PutMapping("/put/{id}")
+    public Admin update(@PathVariable int id, @RequestBody Admin a) {
+        return service.update(id, a);
+    }
+    @DeleteMapping("/delete/{id}")
+    public void delete(@PathVariable int id) {
+        service.delete(id);
     }
 }

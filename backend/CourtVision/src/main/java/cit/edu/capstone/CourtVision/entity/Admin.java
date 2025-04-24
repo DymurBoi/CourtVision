@@ -2,10 +2,10 @@ package cit.edu.capstone.CourtVision.entity;
 
 import jakarta.persistence.*;
 
-@Entity
-@Table(name = "Admin")
-public class AdminEntity {
+import java.util.List;
 
+@Entity
+public class Admin {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int adminId;
@@ -19,18 +19,11 @@ public class AdminEntity {
     private boolean isCoach;
     private boolean isAdmin;
 
-    // Constructors
-    public AdminEntity() {}
-
-    public AdminEntity(int adminId, String email, String password, boolean isCoach, boolean isAdmin) {
-        this.adminId = adminId;
-        this.email = email;
-        this.password = password;
-        this.isCoach = isCoach;
-        this.isAdmin = isAdmin;
-    }
+    @OneToMany(mappedBy = "admin")
+    private List<Team> teams;
 
     // Getters and Setters
+
     public int getAdminId() {
         return adminId;
     }
@@ -55,19 +48,28 @@ public class AdminEntity {
         this.password = password;
     }
 
-    public boolean isCoach() {
-        return isCoach;
-    }
-
-    public void setCoach(boolean coach) {
-        isCoach = coach;
-    }
-
     public boolean isAdmin() {
         return isAdmin;
     }
 
-    public void setAdmin(boolean admin) {
+    public void setIsAdmin(boolean admin) {
         isAdmin = admin;
     }
+
+    public boolean isCoach() {
+        return isCoach;
+    }
+
+    public void setIsCoach(boolean coach) {
+        isCoach = coach;
+    }
+
+    public List<Team> getTeams() {
+        return teams;
+    }
+
+    public void setTeams(List<Team> teams) {
+        this.teams = teams;
+    }
 }
+

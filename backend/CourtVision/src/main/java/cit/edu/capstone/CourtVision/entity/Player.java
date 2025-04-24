@@ -5,11 +5,12 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Entity
-@Table(name="player")
+@Table(name = "player")
 public class Player {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer playerId;
+
     private String fname;
     private String lname;
     private String email;
@@ -19,8 +20,18 @@ public class Player {
     private boolean isCoach;
     private boolean isAdmin;
 
+    @ManyToOne
+    @JoinColumn(name = "team_id")
+    private Team team;
+
+    // Getters and Setters
+
     public Integer getPlayerId() {
         return playerId;
+    }
+
+    public void setPlayerId(Integer playerId) {
+        this.playerId = playerId;
     }
 
     public String getFname() {
@@ -30,7 +41,7 @@ public class Player {
     public void setFname(String fname) {
         this.fname = fname;
     }
-    
+
     public String getLname() {
         return lname;
     }
@@ -55,14 +66,6 @@ public class Player {
         this.password = password;
     }
 
-    public LocalDate getBirthDate() {
-        return birthDate;
-    }
-
-    public void setBirthDate(LocalDate birthDate) {
-        this.birthDate = birthDate;
-    }
-
     public int getJerseyNum() {
         return jerseyNum;
     }
@@ -71,20 +74,35 @@ public class Player {
         this.jerseyNum = jerseyNum;
     }
 
+    public LocalDate getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
+    }
+
     public boolean getIsCoach() {
         return isCoach;
     }
-    
-    public void setIsCoach(boolean isCoach) {
-        this.isCoach = isCoach;
+
+    public void setIsCoach(boolean coach) {
+        isCoach = coach;
     }
 
     public boolean getIsAdmin() {
         return isAdmin;
     }
 
-    public void setIsAdmin(boolean isAdmin) {
-        this.isAdmin = isAdmin;
+    public void setIsAdmin(boolean admin) {
+        isAdmin = admin;
     }
-    
+
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
+    }
 }

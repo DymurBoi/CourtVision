@@ -15,27 +15,27 @@ public class BasicStatsController {
     @Autowired
     private BasicStatsService service;
 
-    @GetMapping
+    @GetMapping("/get/all")
     public List<BasicStats> getAll() {
         return service.getAll();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/get/{id}")
     public BasicStats getById(@PathVariable Long id) {
         return service.getById(id);
     }
 
-    @PostMapping
+    @PostMapping("/post")
     public BasicStats create(@RequestBody BasicStats stat) {
         return service.save(stat);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/put/{id}")
     public BasicStats update(@PathVariable Long id, @RequestBody BasicStats stat) {
         return service.update(id, stat);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public void delete(@PathVariable Long id) {
         service.delete(id);
     }

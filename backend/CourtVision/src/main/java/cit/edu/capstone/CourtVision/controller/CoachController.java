@@ -14,34 +14,35 @@ public class CoachController {
     @Autowired
     private CoachService coachService;
 
-    @GetMapping
+    @GetMapping("/get/all")
     public List<Coach> getAllCoaches() {
         return coachService.getAllCoaches();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/get/{id}")
     public Coach getCoachById(@PathVariable Integer id) {
-        return coachService.getCoachById(id).orElse(null);
+        return coachService.getCoachById(id);
     }
 
-    @PostMapping
+    @PostMapping("/post")
     public Coach createCoach(@RequestBody Coach coach) {
         return coachService.createCoach(coach);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/put/{id}")
     public Coach updateCoach(@PathVariable Integer id, @RequestBody Coach coach) {
         return coachService.updateCoach(id, coach);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public void deleteCoach(@PathVariable Integer id) {
         coachService.deleteCoach(id);
     }
 
-    @PostMapping("/login")
-    public Coach login(@RequestBody Coach loginRequest) {
-        return coachService.login(loginRequest.getEmail(), loginRequest.getPassword());
+    @GetMapping("/get/by-team/{teamId}")
+    public List<Coach> getByTeam(@PathVariable Long teamId) {
+        return coachService.getCoachesByTeamId(teamId);
     }
 }
+
 

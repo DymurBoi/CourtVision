@@ -1,9 +1,7 @@
 package cit.edu.capstone.CourtVision.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
 public class Team {
@@ -11,12 +9,24 @@ public class Team {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long teamId;
 
-    private Long adminId;
-    private Long coachId;
-    private Long playerId;
-    private Long gameId;
-
     private String teamName;
+
+    @ManyToOne
+    @JoinColumn(name = "admin_id")
+    private Admin admin;
+
+    @ManyToMany
+    @JoinTable(
+            name = "team_coach",
+            joinColumns = @JoinColumn(name = "team_id"),
+            inverseJoinColumns = @JoinColumn(name = "coach_id")
+    )
+    private List<Coach> coaches;
+
+    @OneToMany(mappedBy = "team")
+    private List<Player> players;
+
+    private Long gameId;
 
     // Getters and Setters
 
@@ -28,36 +38,36 @@ public class Team {
         this.teamId = teamId;
     }
 
-    public Long getAdminId() {
-        return adminId;
-    }
-
-    public void setAdminId(Long adminId) {
-        this.adminId = adminId;
-    }
-
-    public Long getCoachId() {
-        return coachId;
-    }
-
-    public void setCoachId(Long coachId) {
-        this.coachId = coachId;
-    }
-
-    public Long getPlayerId() {
-        return playerId;
-    }
-
-    public void setPlayerId(Long playerId) {
-        this.playerId = playerId;
-    }
-
     public String getTeamName() {
         return teamName;
     }
 
     public void setTeamName(String teamName) {
         this.teamName = teamName;
+    }
+
+    public Admin getAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(Admin admin) {
+        this.admin = admin;
+    }
+
+    public List<Coach> getCoaches() {
+        return coaches;
+    }
+
+    public void setCoaches(List<Coach> coaches) {
+        this.coaches = coaches;
+    }
+
+    public List<Player> getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(List<Player> players) {
+        this.players = players;
     }
 
     public Long getGameId() {

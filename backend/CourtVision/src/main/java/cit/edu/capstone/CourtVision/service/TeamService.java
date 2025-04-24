@@ -9,27 +9,43 @@ import java.util.List;
 
 @Service
 public class TeamService {
+
     @Autowired
-    private TeamRepository repo;
+    private TeamRepository teamRepository;
 
-    public List<Team> getAll() {
-        return repo.findAll();
+    public List<Team> getAllTeams() {
+        return teamRepository.findAll();
     }
 
-    public Team getById(Long id) {
-        return repo.findById(id).orElse(null);
+    public Team getTeamById(Long id) {
+        return teamRepository.findById(id).orElse(null);
     }
 
-    public Team save(Team team) {
-        return repo.save(team);
+    public Team createTeam(Team team) {
+        return teamRepository.save(team);
     }
 
-    public Team update(Long id, Team team) {
-        team.setTeamId(id);
-        return repo.save(team);
+    public Team updateTeam(Long id, Team updatedTeam) {
+        Team existing = getTeamById(id);
+        if (existing != null) {
+            existing.setTeamName(updatedTeam.getTeamName());
+            existing.setAdmin(updatedTeam.getAdmin());
+            existing.setCoaches(updatedTeam.getCoaches());
+            return teamRepository.save(existing);
+        }
+        return null;
     }
 
-    public void delete(Long id) {
-        repo.deleteById(id);
+    public void deleteTeam(Long id) {
+        teamRepository.deleteById(id);
+    }
+
+    public List<Team> getTeamsByAdminId(int adminId) {
+        return teamRepository.findByAdmin_AdminId(adminId);
+    }
+
+    public List<Team> getTeamsByCoachId(int coachId) {
+        return teamRepository.findByCoaches_CoachId(coachId);
     }
 }
+
