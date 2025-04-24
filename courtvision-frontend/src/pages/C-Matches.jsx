@@ -1,5 +1,9 @@
+"use client"
+
+import { useState } from "react"
 import { Link } from "react-router-dom"
 import "../styles/C-Matches.css"
+import CreateMatchModal from "../components/CreateMatchModal"
 
 // Sample match data
 const matchesData = [
@@ -70,11 +74,44 @@ const matchesData = [
 ]
 
 function CMatches() {
+  const [showCreateModal, setShowCreateModal] = useState(false)
+  const [matches, setMatches] = useState(matchesData)
+
+  const handleCreateMatch = (newMatch) => {
+    // Generate a new ID (in a real app, this would come from the backend)
+    const newId = matches.length > 0 ? Math.max(...matches.map((match) => match.id)) + 1 : 1
+    const matchWithId = { ...newMatch, id: newId }
+
+    // Add the new match to the list
+    setMatches([...matches, matchWithId])
+    setShowCreateModal(false)
+  }
+
   return (
     <main className="main-content">
       <div className="page-header">
         <h1>Basketball Matches</h1>
         <p>View all matches and game results</p>
+      </div>
+
+      <div className="matches-actions">
+        <button className="create-match-button" onClick={() => setShowCreateModal(true)}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="action-icon"
+          >
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="16"></line>
+            <line x1="8" y1="12" x2="16" y2="12"></line>
+          </svg>
+          Create New Match
+        </button>
       </div>
 
       <div className="matches-container">
@@ -87,7 +124,7 @@ function CMatches() {
             <div className="action-header">Action</div>
           </div>
 
-          {matchesData.map((match) => (
+          {matches.map((match) => (
             <div className="match-item" key={match.id}>
               <div className="teams">
                 {match.homeTeam} VS {match.awayTeam}
@@ -104,9 +141,10 @@ function CMatches() {
           ))}
         </div>
       </div>
+
+      {showCreateModal && <CreateMatchModal onClose={() => setShowCreateModal(false)} onSave={handleCreateMatch} />}
     </main>
   )
 }
 
 export default CMatches
-

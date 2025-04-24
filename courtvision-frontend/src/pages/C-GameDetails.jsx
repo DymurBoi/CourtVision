@@ -1,8 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useParams } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom"
 import "../styles/C-GameDetails.css"
+import CreateMatchModal from "../components/CreateMatchModal"
 
 // Sample match data
 const matchesData = [
@@ -156,9 +157,11 @@ const matchesData = [
 
 function CGameDetails() {
   const { id } = useParams()
+  const navigate = useNavigate()
   const [match, setMatch] = useState(null)
   const [activeTab, setActiveTab] = useState("basic")
   const [comments, setComments] = useState("")
+  const [isEditing, setIsEditing] = useState(false)
 
   useEffect(() => {
     // Find the match with the given ID
@@ -167,6 +170,35 @@ function CGameDetails() {
       setMatch(foundMatch)
     }
   }, [id])
+
+  const handleSaveComments = () => {
+    // In a real app, this would save to a database
+    alert("Comments saved successfully!")
+  }
+
+  const handleEditMatch = () => {
+    setIsEditing(true)
+  }
+
+  const handleSaveEdit = (updatedMatch) => {
+    // Update the match data
+    setMatch({
+      ...match,
+      ...updatedMatch,
+    })
+    setIsEditing(false)
+
+    // In a real app, this would save to a database
+    alert("Match updated successfully!")
+  }
+
+  const handleDeleteMatch = () => {
+    if (window.confirm("Are you sure you want to delete this match? This action cannot be undone.")) {
+      // In a real app, this would delete from a database
+      alert("Match deleted successfully!")
+      navigate("/matches")
+    }
+  }
 
   if (!match) {
     return <div className="loading">Loading game details...</div>
@@ -187,6 +219,43 @@ function CGameDetails() {
           </span>
           <span className="score-display">{match.score}</span>
         </div>
+      </div>
+
+      <div className="game-actions">
+        <button className="edit-game-button" onClick={handleEditMatch}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="action-icon"
+          >
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+          </svg>
+          Edit Game
+        </button>
+        <button className="delete-game-button" onClick={handleDeleteMatch}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="action-icon"
+          >
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            <line x1="10" y1="11" x2="10" y2="17"></line>
+            <line x1="14" y1="11" x2="14" y2="17"></line>
+          </svg>
+          Delete Game
+        </button>
       </div>
 
       <div className="stats-tabs">
@@ -273,16 +342,16 @@ function CGameDetails() {
                   <tr key={player.id}>
                     <td>{player.name}</td>
                     <td>{player.minutes}</td>
-                    <td>{player.advanced.ts}</td>
-                    <td>{player.advanced.offRating}</td>
-                    <td>{player.advanced.defRating}</td>
-                    <td>{player.advanced.astToRatio}</td>
-                    <td>{player.advanced.astRatio}</td>
-                    <td>{player.advanced.toRatio}</td>
-                    <td>{player.advanced.pie}</td>
-                    <td>{player.advanced.per}</td>
-                    <td>{player.advanced.efg}</td>
-                    <td>{player.advanced.usage}</td>
+                    <td>{player.advanced?.ts || "N/A"}</td>
+                    <td>{player.advanced?.offRating || "N/A"}</td>
+                    <td>{player.advanced?.defRating || "N/A"}</td>
+                    <td>{player.advanced?.astToRatio || "N/A"}</td>
+                    <td>{player.advanced?.astRatio || "N/A"}</td>
+                    <td>{player.advanced?.toRatio || "N/A"}</td>
+                    <td>{player.advanced?.pie || "N/A"}</td>
+                    <td>{player.advanced?.per || "N/A"}</td>
+                    <td>{player.advanced?.efg || "N/A"}</td>
+                    <td>{player.advanced?.usage || "N/A"}</td>
                   </tr>
                 ))}
               </tbody>
@@ -320,11 +389,16 @@ function CGameDetails() {
           placeholder="Add your comments about this game..."
           rows={5}
         ></textarea>
-        <button className="save-comments-button">Save Comments</button>
+        <button className="save-comments-button" onClick={handleSaveComments}>
+          Save Comments
+        </button>
       </div>
+
+      {isEditing && (
+        <CreateMatchModal onClose={() => setIsEditing(false)} onSave={handleSaveEdit} initialData={match} />
+      )}
     </main>
   )
 }
 
 export default CGameDetails
-
