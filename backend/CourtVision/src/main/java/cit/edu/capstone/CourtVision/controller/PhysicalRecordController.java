@@ -25,7 +25,7 @@ public class PhysicalRecordController {
     }
 
     @GetMapping("/get/by-player/{playerId}")
-    public PhysicalRecords getByPlayerId(@PathVariable int playerId) {
+    public PhysicalRecords getByPlayerId(@PathVariable Long playerId) {
         return service.getByPlayerId(playerId);
     }
 
