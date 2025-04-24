@@ -27,7 +27,7 @@ public class PhysicalRecordService {
         return recordRepo.findById(id).orElse(null);
     }
 
-    public PhysicalRecords getByPlayerId(int playerId) {
+    public PhysicalRecords getByPlayerId(Long playerId) {
         Player player = playerRepo.findById(playerId).orElse(null);
         return player != null ? recordRepo.findByPlayer(player) : null;
     }

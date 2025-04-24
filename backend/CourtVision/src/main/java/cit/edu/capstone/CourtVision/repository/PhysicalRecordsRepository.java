@@ -7,4 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PhysicalRecordsRepository extends JpaRepository<PhysicalRecords, Long> {
     PhysicalRecords findByPlayer(Player player);
+    PhysicalRecords findByPlayerId(Long playerId);
 }
