@@ -24,7 +24,20 @@ public class Player {
     @JoinColumn(name = "team_id")
     private Team team;
 
+    @OneToOne
+    @JoinColumn(name = "player_id", referencedColumnName = "playerId")
+    private PhysicalRecords physicalRecords;
+
     // Getters and Setters
+
+
+    public PhysicalRecords getPhysicalRecords() {
+        return physicalRecords;
+    }
+
+    public void setPhysicalRecords(PhysicalRecords physicalRecords) {
+        this.physicalRecords = physicalRecords;
+    }
 
     public boolean isAdmin() {
         return isAdmin;
