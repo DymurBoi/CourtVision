@@ -24,8 +24,7 @@ public class Player {
     @JoinColumn(name = "team_id")
     private Team team;
 
-    @OneToOne
-    @JoinColumn(name = "player_id", referencedColumnName = "playerId")
+    @OneToOne(mappedBy = "player", cascade = CascadeType.ALL)
     private PhysicalRecords physicalRecords;
 
     // Getters and Setters
