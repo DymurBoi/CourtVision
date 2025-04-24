@@ -122,6 +122,16 @@
     box-shadow: 0 5px 15px rgba(65, 65, 252, 0.3);
   }
   
+  .create-team-button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #004aad;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+  }
   @media (max-width: 768px) {
     .teams-container {
       grid-template-columns: 1fr;

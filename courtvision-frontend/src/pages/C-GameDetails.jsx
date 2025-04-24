@@ -52,6 +52,7 @@ const matchesData = [
         steals: 1,
         turnovers: 3,
         assists: 2,
+        
         blocks: 0,
         ofRebounds: 0,
         dfRebounds: 3,
