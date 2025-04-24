@@ -1,5 +1,6 @@
 package cit.edu.capstone.CourtVision.service;
 
+import cit.edu.capstone.CourtVision.entity.PhysicalRecords;
 import cit.edu.capstone.CourtVision.entity.Player;
 import cit.edu.capstone.CourtVision.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,10 @@ public class PlayerService {
 
     @Autowired
     private PlayerRepository playerRepository;
+
+    @Autowired
+    private PhysicalRecordService physicalRecordService;
+
 
     public List<Player> getAllPlayers() {
         return playerRepository.findAll();
@@ -41,6 +46,18 @@ public class PlayerService {
             player.setIsCoach(updatedPlayer.getIsCoach());
             player.setIsAdmin(updatedPlayer.getIsAdmin());
             player.setTeam(updatedPlayer.getTeam());
+
+            PhysicalRecords emptyRecord = PhysicalRecords.builder()
+                    .player(player)
+                    .weight(null)
+                    .height(null)
+                    .wingspan(null)
+                    .vertical(null)
+                    .bmi(null)
+                    .dateRecorded(null)
+                    .build();
+
+            physicalRecordService.save(emptyRecord);
             return playerRepository.save(player);
         }
         return null;
