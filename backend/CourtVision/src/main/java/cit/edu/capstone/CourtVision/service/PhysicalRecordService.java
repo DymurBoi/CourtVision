@@ -33,13 +33,22 @@ public class PhysicalRecordService {
     }
 
     public PhysicalRecords save(PhysicalRecords record) {
+        if (record.getPlayer() != null && record.getPlayer().getPlayerId() != null) {
+            Player player = playerRepo.findById(record.getPlayer().getPlayerId()).orElse(null);
+            record.setPlayer(player);  // Attach fully fetched Player
+        }
         return recordRepo.save(record);
     }
 
-    public PhysicalRecords update(Long id, PhysicalRecords updatedRecord) {
-        updatedRecord.setRecordId(id);
-        return recordRepo.save(updatedRecord);
+    public PhysicalRecords update(Long id, PhysicalRecords updated) {
+        updated.setRecordId(id);
+        if (updated.getPlayer() != null && updated.getPlayer().getPlayerId() != null) {
+            Player player = playerRepo.findById(updated.getPlayer().getPlayerId()).orElse(null);
+            updated.setPlayer(player);
+        }
+        return recordRepo.save(updated);
     }
+
 
     public void delete(Long id) {
         recordRepo.deleteById(id);
