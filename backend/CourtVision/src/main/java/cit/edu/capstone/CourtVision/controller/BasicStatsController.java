@@ -1,10 +1,9 @@
 package cit.edu.capstone.CourtVision.controller;
 
 import cit.edu.capstone.CourtVision.entity.BasicStats;
+import cit.edu.capstone.CourtVision.service.BasicStatsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import cit.edu.capstone.CourtVision.service.BasicStatsService;
 
 import java.util.List;
 

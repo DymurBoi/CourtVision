@@ -21,15 +21,24 @@ public class BasicStatsService {
     }
 
     public BasicStats save(BasicStats stat) {
+        stat.setPlusMinus(calculatePlusMinus(stat));
         return repo.save(stat);
     }
 
     public BasicStats update(Long id, BasicStats updatedStat) {
         updatedStat.setBasicStatId(id);
+        updatedStat.setPlusMinus(calculatePlusMinus(updatedStat));
         return repo.save(updatedStat);
     }
 
     public void delete(Long id) {
         repo.deleteById(id);
+    }
+
+    private int calculatePlusMinus(BasicStats stat) {
+        int score = (stat.getTwoPtMade() * 2) + (stat.getThreePtMade() * 3) + stat.getFtMade();
+        int impact = stat.getAssists() + stat.getBlocks() + stat.getSteals() + stat.getoFRebounds() + stat.getdFRebounds();
+        int penalties = stat.getTurnovers() + stat.getpFouls() + stat.getdFouls();
+        return score + impact - penalties;
     }
 }

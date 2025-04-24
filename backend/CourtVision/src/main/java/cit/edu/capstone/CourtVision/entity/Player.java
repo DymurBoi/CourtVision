@@ -9,7 +9,7 @@ import java.time.LocalDate;
 public class Player {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer playerId;
+    private Long playerId;
 
     private String fname;
     private String lname;
@@ -26,11 +26,27 @@ public class Player {
 
     // Getters and Setters
 
-    public Integer getPlayerId() {
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
+    }
+
+    public boolean isCoach() {
+        return isCoach;
+    }
+
+    public void setCoach(boolean coach) {
+        isCoach = coach;
+    }
+
+    public Long getPlayerId() {
         return playerId;
     }
 
-    public void setPlayerId(Integer playerId) {
+    public void setPlayerId(Long playerId) {
         this.playerId = playerId;
     }
 

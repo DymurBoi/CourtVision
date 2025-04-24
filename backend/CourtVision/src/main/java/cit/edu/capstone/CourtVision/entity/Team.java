@@ -26,9 +26,21 @@ public class Team {
     @OneToMany(mappedBy = "team")
     private List<Player> players;
 
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
+    private List<Game> games;
+
     private Long gameId;
 
+
     // Getters and Setters
+
+    public List<Game> getGames() {
+        return games;
+    }
+
+    public void setGames(List<Game> games) {
+        this.games = games;
+    }
 
     public Long getTeamId() {
         return teamId;

@@ -34,6 +34,18 @@ public class BasicStats {
     private int plusMinus;
     private Time minutes;
 
+    @OneToOne(mappedBy = "basicStats", cascade = CascadeType.ALL)
+    private Game game;
+
+    //Getters and Setters
+    public Game getGame() {
+        return game;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
+    }
+
     public Long getBasicStatId() {
         return basicStatId;
     }
@@ -41,8 +53,6 @@ public class BasicStats {
     public void setBasicStatId(Long basicStatId) {
         this.basicStatId = basicStatId;
     }
-
-
 
     public int getTwoPtMade() {
         return twoPtMade;
