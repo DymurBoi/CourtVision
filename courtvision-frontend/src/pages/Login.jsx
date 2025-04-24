@@ -1,42 +1,78 @@
 "use client"
-
+ 
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
+import { jwtDecode } from "jwt-decode"
 import "../styles/Login.css"
 import basketballCourt from "../assets/BasketballCourt.jpg"
-
-function Login() {
+import axios from "axios"
+ 
+function Login({ onLogin }) {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [role, setRole] = useState("player") // default to player
   const navigate = useNavigate()
-
-  const handleSubmit = (e) => {
+ 
+  const handleLogin = async (e) => {
     e.preventDefault()
-    // In a real app, this would authenticate the user
-    console.log("Login attempt with:", email, password)
-    // Redirect to home page after "login"
-    navigate("/")
+ 
+    try {
+      const response = await axios.post(
+        `http://localhost:8080/api/auth/login/${role}`,
+        { email, password }
+      )
+ 
+      const { token } = response.data
+      localStorage.setItem("authToken", token)
+ 
+      const decoded = jwtDecode(token)
+      console.log("Decoded token:", decoded)
+ 
+      localStorage.setItem("userId", decoded.sub)
+      localStorage.setItem("userRole", role)
+ 
+      alert("Login successful!")
+      onLogin && onLogin(decoded.sub)
+ 
+      navigate("/") // Change if you have role-based redirects
+    } catch (error) {
+      console.error("Login failed:", error)
+      alert("Invalid email or password. Please try again.")
+    }
   }
-
+ 
   return (
-    <div className="auth-container">
-      <div className="auth-image">
-        <img src={basketballCourt || "/placeholder.svg"} alt="Basketball Court" />
-      </div>
-
+<div className="auth-container">
+<div className="auth-image">
+<img src={basketballCourt || "/placeholder.svg"} alt="Basketball Court" />
+</div>
+ 
       <div className="auth-form-container">
-        <div className="auth-form-wrapper">
-          <div className="auth-logo">
-            <h1>CourtVision</h1>
-          </div>
-
+<div className="auth-form-wrapper">
+<div className="auth-logo">
+<h1>CourtVision</h1>
+</div>
+ 
           <h2 className="auth-title">Sign In</h2>
-          <p className="auth-subtitle">Welcome back! Please enter your details.</p>
-
-          <form className="auth-form" onSubmit={handleSubmit}>
+<p className="auth-subtitle">Welcome back! Please enter your details.</p>
+ 
+          <form className="auth-form" onSubmit={handleLogin}>
+            {/* 🔘 Role selector */}
+<div className="form-group">
+<label>Login as:</label>
+<select
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                className="auth-select"
+>
+<option value="player">Player</option>
+<option value="coach">Coach</option>
+</select>
+</div>
+ 
             <div className="form-group">
-              <label htmlFor="email">Email</label>
-              <input
+<label htmlFor="email">Email</label>
+<input
                 type="email"
                 id="email"
                 value={email}
@@ -44,11 +80,11 @@ function Login() {
                 required
                 placeholder="Enter your email"
               />
-            </div>
-
+</div>
+ 
             <div className="form-group">
-              <label htmlFor="password">Password</label>
-              <input
+<label htmlFor="password">Password</label>
+<input
                 type="password"
                 id="password"
                 value={password}
@@ -56,23 +92,22 @@ function Login() {
                 required
                 placeholder="Enter your password"
               />
-            </div>
-
+</div>
+ 
             <button type="submit" className="auth-button">
               Login
-            </button>
-          </form>
-
+</button>
+</form>
+ 
           <div className="auth-footer">
-            <p>
-              Are you a player? <Link to="/register">Register here</Link>
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
+<p>
+              Don’t have an account? <Link to="/register">Register here</Link>
+</p>
+</div>
+</div>
+</div>
+</div>
   )
 }
-
+ 
 export default Login
-

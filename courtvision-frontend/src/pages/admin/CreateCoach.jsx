@@ -1,88 +1,96 @@
 "use client"
-
+ 
 import { useState } from "react"
 import { useNavigate, Link } from "react-router-dom"
 import AdminNavbar from "../../components/AdminNavbar"
 import "../../styles/admin/UserForm.css"
-
+import axios from "axios"
+ 
 function CreateCoach() {
   const navigate = useNavigate()
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    fname: "",
+    lname: "",
     email: "",
     password: "",
-    team: "",
-    status: "active",
-    experience: "",
-    specialization: "",
+    birthDate: ""
   })
-
-  // Teams data
-  const teams = ["CIT-U College Team", "CIT-U High School Team", "CIT-U Elementary Team"]
-
+ 
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormData({
       ...formData,
-      [name]: value,
+      [name]: value
     })
   }
-
-  const handleSubmit = (e) => {
+ 
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    // In a real app, this would make an API call to create the coach
-    console.log("Creating coach:", formData)
-    // Redirect to user management page
-    navigate("/admin/users?type=coach")
+ 
+    try {
+      const response = await axios.post("http://localhost:8080/api/coaches/post", formData)
+      console.log("Coach created:", response.data)
+      alert("Coach created successfully!")
+      navigate("/admin/users?type=coach")
+    } catch (error) {
+      console.error("Error creating coach:", error)
+      alert("Failed to create coach. Please check your input.")
+    }
   }
-
+ 
   return (
-    <div className="admin-layout">
-      <AdminNavbar />
-      <main className="admin-content">
-        <div className="admin-header">
-          <h1>Create Coach Account</h1>
-          <p>Add a new coach to the system</p>
-        </div>
-
+<div className="admin-layout">
+<AdminNavbar />
+<main className="admin-content">
+<div className="admin-header">
+<h1>Create Coach Account</h1>
+<p>Add a new coach to the system</p>
+</div>
+ 
         <div className="user-form-container">
-          <form onSubmit={handleSubmit} className="user-form">
-            <div className="form-section">
-              <h2>Basic Information</h2>
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="firstName">First Name</label>
-                  <input
+<form onSubmit={handleSubmit} className="user-form">
+<div className="form-section">
+<h2>Basic Information</h2>
+<div className="form-row">
+<div className="form-group">
+<label htmlFor="fname">First Name</label>
+<input
                     type="text"
-                    id="firstName"
-                    name="firstName"
-                    value={formData.firstName}
+                    id="fname"
+                    name="fname"
+                    value={formData.fname}
                     onChange={handleChange}
                     required
                   />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="lastName">Last Name</label>
-                  <input
+</div>
+<div className="form-group">
+<label htmlFor="lname">Last Name</label>
+<input
                     type="text"
-                    id="lastName"
-                    name="lastName"
-                    value={formData.lastName}
+                    id="lname"
+                    name="lname"
+                    value={formData.lname}
                     onChange={handleChange}
                     required
                   />
-                </div>
-              </div>
-
+</div>
+</div>
+ 
               <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="email">Email</label>
-                  <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} required />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="password">Password</label>
-                  <input
+<div className="form-group">
+<label htmlFor="email">Email</label>
+<input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                  />
+</div>
+<div className="form-group">
+<label htmlFor="password">Password</label>
+<input
                     type="password"
                     id="password"
                     name="password"
@@ -90,73 +98,37 @@ function CreateCoach() {
                     onChange={handleChange}
                     required
                   />
-                </div>
-              </div>
-
+</div>
+</div>
+ 
               <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="team">Team</label>
-                  <select id="team" name="team" value={formData.team} onChange={handleChange} required>
-                    <option value="">Select Team</option>
-                    {teams.map((team, index) => (
-                      <option key={index} value={team}>
-                        {team}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label htmlFor="status">Status</label>
-                  <select id="status" name="status" value={formData.status} onChange={handleChange} required>
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                    <option value="pending">Pending</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            <div className="form-section">
-              <h2>Coach Details</h2>
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="experience">Experience</label>
-                  <input
-                    type="text"
-                    id="experience"
-                    name="experience"
-                    value={formData.experience}
+<div className="form-group">
+<label htmlFor="birthDate">Birth Date</label>
+<input
+                    type="date"
+                    id="birthDate"
+                    name="birthDate"
+                    value={formData.birthDate}
                     onChange={handleChange}
-                    placeholder="e.g. 10 years"
+                    required
                   />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="specialization">Specialization</label>
-                  <input
-                    type="text"
-                    id="specialization"
-                    name="specialization"
-                    value={formData.specialization}
-                    onChange={handleChange}
-                    placeholder="e.g. Defensive strategies"
-                  />
-                </div>
-              </div>
-            </div>
-
+</div>
+</div>
+</div>
+ 
             <div className="form-actions">
-              <button type="submit" className="save-button">
+<button type="submit" className="save-button">
                 Create Coach
-              </button>
-              <Link to="/admin/users" className="cancel-button">
+</button>
+<Link to="/admin/users" className="cancel-button">
                 Cancel
-              </Link>
-            </div>
-          </form>
-        </div>
-      </main>
-    </div>
+</Link>
+</div>
+</form>
+</div>
+</main>
+</div>
   )
 }
-
+ 
 export default CreateCoach
