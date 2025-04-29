@@ -2,8 +2,8 @@
 
 import { useState } from "react"
 import { Link } from "react-router-dom"
-import "../styles/C-Matches.css"
-import CreateMatchModal from "../components/CreateMatchModal"
+import '../../styles/coach/C-Matches.css';
+import CreateMatchModal from '../../components/CreateMatchModal';
 
 // Sample match data
 const matchesData = [
@@ -133,7 +133,7 @@ function CMatches() {
               <div className="points">{match.score}</div>
               <div className="date">{match.date}</div>
               <div className="match-action">
-                <Link to={`/game-details/${match.id}`} className="view-game-button">
+                <Link to={`/coach/game-details/${match.id}`} className="view-game-button">
                   View Game
                 </Link>
               </div>

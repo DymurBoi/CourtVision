@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
-import "../styles/C-GameDetails.css"
-import CreateMatchModal from "../components/CreateMatchModal"
+import '../../styles/coach/C-GameDetails.css';
+import CreateMatchModal from '../../components/CreateMatchModal';
 
 // Sample match data
 const matchesData = [
@@ -196,8 +196,8 @@ function CGameDetails() {
   const handleDeleteMatch = () => {
     if (window.confirm("Are you sure you want to delete this match? This action cannot be undone.")) {
       // In a real app, this would delete from a database
-      alert("Match deleted successfully!")
-      navigate("/matches")
+      alert("Match deleted successfully!");
+      navigate("/coach/matches"); // Redirect to matches page
     }
   }
 

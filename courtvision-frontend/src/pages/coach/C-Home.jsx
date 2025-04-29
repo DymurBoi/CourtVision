@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import '../styles/C-Home.css';
+import '../../styles/coach/C-Home.css';
 
 function CHome() {
   return (

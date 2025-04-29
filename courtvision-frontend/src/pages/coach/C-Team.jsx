@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useLocation } from "react-router-dom"
-import "../styles/C-Team.css"
+import '../../styles/coach/C-Team.css';
 
 function CTeam() {
   const location = useLocation()

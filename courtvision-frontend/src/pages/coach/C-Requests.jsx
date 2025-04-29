@@ -1,7 +1,7 @@
 import { useState } from "react"
-import PhysicalRecordModal from "../components/PhysicalRecordModal"
-import TeamInviteModal from "../components/TeamInviteModal"
-import "../styles/Requests.css"
+import PhysicalRecordModal from "../../components/PhysicalRecordModal"
+import TeamInviteModal from "../../components/TeamInviteModal"
+import "../../styles/coach/C-Requests.css"
 
 // Sample request data
 const requestsData = [
