@@ -1,5 +1,6 @@
 package cit.edu.capstone.CourtVision.service;
 
+import cit.edu.capstone.CourtVision.dto.CoachDTO;
 import cit.edu.capstone.CourtVision.entity.Coach;
 import cit.edu.capstone.CourtVision.repository.CoachRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,21 +30,20 @@ public class CoachService {
         return coachRepository.save(coach);
     }
 
-    public Coach updateCoach(Integer id, Coach updatedCoach) {
-        Coach coach = getCoachById(id);
-        if (coach != null) {
-            coach.setFname(updatedCoach.getFname());
-            coach.setLname(updatedCoach.getLname());
-            coach.setEmail(updatedCoach.getEmail());
-            coach.setPassword(updatedCoach.getPassword());
-            coach.setBirthDate(updatedCoach.getBirthDate());
-            coach.setIsCoach(updatedCoach.getIsCoach());
-            coach.setIsAdmin(updatedCoach.getIsAdmin());
-            coach.setTeams(updatedCoach.getTeams());
-            return coachRepository.save(coach);
-        }
-        return null;
+    public Coach updateCoach(Integer id, CoachDTO dto) {
+    Coach coach = getCoachById(id);
+    if (coach != null) {
+        if (dto.getFname() != null) coach.setFname(dto.getFname());
+        if (dto.getLname() != null) coach.setLname(dto.getLname());
+        if (dto.getEmail() != null) coach.setEmail(dto.getEmail());
+        if (dto.getPassword() != null) coach.setPassword(dto.getPassword());
+        if (dto.getBirthDate() != null) coach.setBirthDate(dto.getBirthDate());
+
+        return coachRepository.save(coach);
     }
+    return null;
+}
+
 
     public void deleteCoach(Integer id) {
         coachRepository.deleteById(id);

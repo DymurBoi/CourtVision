@@ -1,9 +1,11 @@
 package cit.edu.capstone.CourtVision.controller;
 import org.springframework.security.access.prepost.PreAuthorize;
 
+import cit.edu.capstone.CourtVision.dto.CoachDTO;
 import cit.edu.capstone.CourtVision.entity.Coach;
 import cit.edu.capstone.CourtVision.service.CoachService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,12 +32,19 @@ public class CoachController {
     public Coach createCoach(@RequestBody Coach coach) {
         return coachService.createCoach(coach);
     }
-
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PutMapping("/put/{id}")
-    public Coach updateCoach(@PathVariable Integer id, @RequestBody Coach coach) {
-        return coachService.updateCoach(id, coach);
+    public ResponseEntity<Coach> updateCoach(@PathVariable Integer id, @RequestBody CoachDTO coachDTO) {
+    Coach updatedCoach = coachService.updateCoach(id, coachDTO);
+    if (updatedCoach != null) {
+        return ResponseEntity.ok(updatedCoach);
+    } else {
+        return ResponseEntity.notFound().build();
     }
+}
 
+
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/delete/{id}")
     public void deleteCoach(@PathVariable Integer id) {
         coachService.deleteCoach(id);

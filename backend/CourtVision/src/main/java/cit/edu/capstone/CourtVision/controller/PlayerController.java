@@ -36,13 +36,12 @@ public class PlayerController {
     public Player createPlayer(@RequestBody Player player) {
         return playerService.createPlayer(player);
     }
-
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PutMapping("/put/{id}")
     public Player updatePlayer(@PathVariable Long id, @RequestBody Player player) {
         return playerService.updatePlayer(id, player);
     }
-
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @DeleteMapping("/delete/{id}")
     public void deletePlayer(@PathVariable Long id) {
         playerService.deletePlayer(id);
