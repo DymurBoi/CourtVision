@@ -1,11 +1,9 @@
 package cit.edu.capstone.CourtVision.security;
 
-
 import cit.edu.capstone.CourtVision.entity.Admin;
 import cit.edu.capstone.CourtVision.entity.Coach;
 import cit.edu.capstone.CourtVision.entity.Player;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 
@@ -16,38 +14,42 @@ import java.util.Date;
 public class JwtTokenProvider {
 
     private final SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512);
-    private final long EXPIRATION_TIME = 86400000L; // 24 hours
+    private final long EXPIRATION_TIME = 86400000L;
 
-    public String generateToken(Player player) {
+    public String generateToken(Object user) {
+        String subject = "";
+        String role = "";
+        String email = "";
+
+        if (user instanceof Player player) {
+            subject = "PLAYER_" + player.getPlayerId();
+            email = player.getEmail();
+            role = "PLAYER";
+        } else if (user instanceof Coach coach) {
+            subject = "COACH_" + coach.getCoachId();
+            email = coach.getEmail();
+            role = "COACH";
+        } else if (user instanceof Admin admin) {
+            subject = "ADMIN_" + admin.getAdminId();
+            email = admin.getEmail();
+            role = "ADMIN";
+        }
+
         return Jwts.builder()
-                .setSubject("PLAYER_" + player.getPlayerId())
-                .claim("email", player.getEmail())
-                .claim("role", "PLAYER")
+                .setSubject(subject)
+                .claim("email", email)
+                .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(secretKey, SignatureAlgorithm.HS512)
+                .signWith(secretKey)
                 .compact();
     }
 
-    public String generateToken(Coach coach) {
-        return Jwts.builder()
-                .setSubject("COACH_" + coach.getCoachId())
-                .claim("email", coach.getEmail())
-                .claim("role", "COACH")
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(secretKey, SignatureAlgorithm.HS512)
-                .compact();
-    }
-
-    public String generateToken(Admin admin) {
-        return Jwts.builder()
-                .setSubject("ADMIN_" + admin.getAdminId())
-                .claim("email", admin.getEmail())
-                .claim("role", "ADMIN")
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(secretKey, SignatureAlgorithm.HS512)
-                .compact();
+    public Claims validateToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 }

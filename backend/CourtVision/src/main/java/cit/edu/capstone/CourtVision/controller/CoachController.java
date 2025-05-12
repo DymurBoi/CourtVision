@@ -1,4 +1,5 @@
 package cit.edu.capstone.CourtVision.controller;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import cit.edu.capstone.CourtVision.entity.Coach;
 import cit.edu.capstone.CourtVision.service.CoachService;
@@ -24,6 +25,7 @@ public class CoachController {
         return coachService.getCoachById(id);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/post")
     public Coach createCoach(@RequestBody Coach coach) {
         return coachService.createCoach(coach);
