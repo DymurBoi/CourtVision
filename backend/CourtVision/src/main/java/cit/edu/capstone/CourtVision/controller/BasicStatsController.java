@@ -10,7 +10,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/basic-stats")
 public class BasicStatsController {
-
     @Autowired
     private BasicStatsService service;
 
@@ -22,6 +21,11 @@ public class BasicStatsController {
     @GetMapping("/get/{id}")
     public BasicStats getById(@PathVariable Long id) {
         return service.getById(id);
+    }
+
+    @GetMapping("/get/by-game/{gameId}")
+    public BasicStats getByGame(@PathVariable Long gameId) {
+        return service.getByGameId(gameId);
     }
 
     @PostMapping("/post")
