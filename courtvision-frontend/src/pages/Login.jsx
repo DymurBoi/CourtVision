@@ -17,10 +17,19 @@ function Login({ onLogin }) {
     e.preventDefault()
  
     try {
-      const response = await axios.post(
-        `http://localhost:8080/api/auth/login/${role}`,
+      let response = null
+      if (role==="player"){
+        response = await axios.post(
+        `http://localhost:8080/api/auth/login/player`,
         { email, password }
       )
+      }
+      else{
+         response = await axios.post(
+        `http://localhost:8080/api/auth/login/coach`,
+        { email, password }
+      )
+      }
  
       const { token } = response.data
       localStorage.setItem("authToken", token)
