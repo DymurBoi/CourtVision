@@ -1,30 +1,151 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../components/AuthContext";
+import { api } from "../../utils/axiosConfig";
 import "../../styles/coach/C-Profile.css";
 
 function CProfile() {
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
+  const [loading, setLoading] = useState(true);
 
-  // Sample coach data
+  // Coach data state
   const [coachData, setCoachData] = useState({
-    firstName: "John",
-    lastName: "Doe",
-    email: "john.doe@example.com",
+    firstName: "",
+    lastName: "",
+    email: "",
     password: "••••••••",
-    birthDate: "1990-01-01",
+    birthDate: "",
   });
 
   const [isEditing, setIsEditing] = useState(false);
   const [editedData, setEditedData] = useState({ ...coachData });
 
-  const handleEditToggle = () => {
+  // Fetch coach data when component mounts
+  useEffect(() => {
+    const fetchCoachData = async () => {
+      if (!user || !user.id) {
+        console.log("No user data available, redirecting to login");
+        navigate("/login", { replace: true });
+        return;
+      }
+
+      console.log("Raw user data from AuthContext:", user);
+      
+      try {
+        // Extract the numeric ID from the format "COACH_123"
+        let coachId = user.id;
+        let originalId = coachId; // Save for debugging
+        
+        if (typeof coachId === 'string' && coachId.startsWith("COACH_")) {
+          coachId = coachId.substring(6); // Remove "COACH_" prefix
+          console.log("Extracted numeric coach ID:", coachId, "from original:", originalId);
+        } else {
+          console.log("Using ID as-is (no prefix detected):", coachId);
+        }
+        
+        // Make sure ID is a number if the backend expects it
+        if (coachId && !isNaN(Number(coachId))) {
+          coachId = Number(coachId);
+        }
+        
+        console.log("Attempting to fetch coach profile with ID:", coachId, "Type:", typeof coachId);
+        
+        // Check authToken before making the request
+        const authToken = localStorage.getItem('authToken');
+        console.log("Auth token present:", authToken ? "YES" : "NO");
+        if (authToken) {
+          console.log("Token preview:", authToken.substring(0, 20) + "...");
+        }
+        
+        // Get coach data using the api client (which adds auth headers)
+        const response = await api.get(`/coaches/get/${coachId}`);
+        console.log("API response status:", response.status);
+        const data = response.data;
+        
+        console.log("Coach profile data received (raw):", data);
+        
+        if (!data) {
+          console.error("Received empty data from API");
+          setLoading(false);
+          return;
+        }
+        
+        // Check if essential fields exist
+        if (!data.fname || !data.lname) {
+          console.warn("Missing name data in API response:", data);
+        }
+
+        // Map the backend field names to frontend field names
+        setCoachData({
+          firstName: data.fname || "",
+          lastName: data.lname || "",
+          email: data.email || "",
+          password: "••••••••", // Always mask password
+          birthDate: data.birthDate || "",
+        });
+        
+        setEditedData({
+          firstName: data.fname || "",
+          lastName: data.lname || "",
+          email: data.email || "",
+          password: "••••••••",
+          birthDate: data.birthDate || "",
+        });
+        
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching coach data:", error);
+        if (error.response) {
+          console.error("Response error status:", error.response.status);
+          console.error("Response error data:", error.response.data);
+        } else if (error.request) {
+          console.error("Network error - no response received");
+        } else {
+          console.error("Error setting up request:", error.message);
+        }
+        setLoading(false);
+      }
+    };
+
+    fetchCoachData();
+  }, [user, navigate]);
+
+  const handleEditToggle = async () => {
     if (isEditing) {
-      // Save changes
-      setCoachData({ ...editedData });
+      // Save changes to backend
+      try {
+        // Extract the numeric ID from the format "COACH_123"
+        const coachId = user.id.startsWith("COACH_") 
+          ? user.id.substring(6) // Remove "COACH_" prefix
+          : user.id;
+      
+        const updateData = {
+          fname: editedData.firstName,
+          lname: editedData.lastName,
+          email: editedData.email,
+          birthDate: editedData.birthDate,
+        };
+        
+        // Only include password if it was changed
+        if (editedData.password !== "••••••••") {
+          updateData.password = editedData.password;
+        }
+        
+        await api.put(`/coaches/put/${coachId}`, updateData);
+        
+        // Update local state after successful save
+        setCoachData({ ...editedData });
+      } catch (error) {
+        console.error("Error updating coach data:", error);
+        alert("Failed to update profile. Please try again.");
+        // Reset edited data to current coach data
+        setEditedData({ ...coachData });
+        setIsEditing(false);
+        return;
+      }
     }
     setIsEditing(!isEditing);
   };
@@ -46,6 +167,10 @@ function CProfile() {
     logout();
     navigate("/login", { replace: true });
   };
+
+  if (loading) {
+    return <div className="loading">Loading profile data...</div>;
+  }
 
   return (
     <main className="main-content">

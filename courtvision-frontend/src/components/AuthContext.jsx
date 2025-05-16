@@ -125,8 +125,11 @@ export function AuthProvider({ children }) {
       const role = localStorage.getItem("userRole");
       const userId = localStorage.getItem("userId");
 
+      console.log("Initializing auth from localStorage:", { userId, role });
+
       if (token && checkTokenValidity()) {
         setUser({ id: userId, role });
+        console.log("Auth initialized with user:", { id: userId, role });
         
         // Schedule token refresh if needed
         if (tokenExpiryTime) {
@@ -134,6 +137,7 @@ export function AuthProvider({ children }) {
         }
       } else {
         clearAuthData();
+        console.log("Auth cleared during initialization");
       }
       setLoading(false);
     };
@@ -158,6 +162,15 @@ export function AuthProvider({ children }) {
   }, [checkTokenValidity, clearAuthData, scheduleTokenRefresh, tokenExpiryTime, tokenRefreshTimeout]);
 
   const login = useCallback((token, role, userId) => {
+    console.log("LOGIN called with:", { role, userId });
+    // For debugging - display the full token payload
+    try {
+      const decoded = jwtDecode(token);
+      console.log("Full decoded token:", JSON.stringify(decoded, null, 2));
+    } catch (err) {
+      console.error("Error decoding token in login:", err);
+    }
+
     localStorage.setItem("authToken", token);
     localStorage.setItem("userRole", role);
     localStorage.setItem("userId", userId);
@@ -167,6 +180,7 @@ export function AuthProvider({ children }) {
     scheduleTokenRefresh(decoded.exp);
     
     setUser({ id: userId, role });
+    console.log("User state after login:", { id: userId, role });
   }, [scheduleTokenRefresh]);
 
   // Check if route is accessible based on user role

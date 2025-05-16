@@ -1,33 +1,132 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../../components/AuthContext"
+import { api } from "../../utils/axiosConfig"
 import "../../styles/player/P-Profile.css"
+import axios from "axios"
 
 function PProfile() {
   const navigate = useNavigate()
-  const { logout } = useAuth()
+  const { user, logout } = useAuth()
+  const [loading, setLoading] = useState(true)
 
-  // Sample player data
+  // Player data state
   const [playerData, setPlayerData] = useState({
-    firstName: "John",
-    lastName: "Doe",
-    email: "john.doe@example.com",
+    firstName: "",
+    lastName: "",
+    email: "",
     password: "••••••••",
-    birthDate: "1998-05-20",
-    jerseyNumber: 23,
-    position: "Point Guard",
-    team: "CIT-U College Team",
+    birthDate: "",
+    jerseyNumber: "",
+    position: "",
+    team: "",
   })
 
   const [isEditing, setIsEditing] = useState(false)
   const [editedData, setEditedData] = useState({ ...playerData })
 
-  const handleEditToggle = () => {
+  // Fetch player data when component mounts
+  useEffect(() => {
+    const fetchPlayerData = async () => {
+      if (!user || !user.id) {
+        console.log("No user data available, redirecting to login");
+        navigate("/login", { replace: true });
+        return;
+      }
+      
+      try {
+        // Extract the numeric ID from the format "PLAYER_123"
+        let playerId = user.id;
+        
+        if (typeof playerId === 'string' && playerId.startsWith("PLAYER_")) {
+          playerId = playerId.substring(7); // Remove "PLAYER_" prefix
+        }
+        
+        // Make sure ID is a number if the backend expects it
+        if (playerId && !isNaN(Number(playerId))) {
+          playerId = Number(playerId);
+        }
+        
+        // Get player data using the API client
+        const response = await api.get(`/players/get/${playerId}`);
+        const data = response.data;
+        
+        if (!data) {
+          console.error("Received empty data from API");
+          setLoading(false);
+          return;
+        }
+
+        // Map the backend field names to frontend field names
+        setPlayerData({
+          firstName: data.fname || "",
+          lastName: data.lname || "",
+          email: data.email || "",
+          password: "••••••••", // Always mask password
+          birthDate: data.birthDate || "",
+          jerseyNumber: data.jerseyNum || "", // Using jerseyNum from backend
+          position: data.position || "",
+          team: data.team ? data.team.teamName : "Not assigned",
+        });
+        
+        setEditedData({
+          firstName: data.fname || "",
+          lastName: data.lname || "",
+          email: data.email || "",
+          password: "••••••••",
+          birthDate: data.birthDate || "",
+          jerseyNumber: data.jerseyNum || "", // Using jerseyNum from backend
+          position: data.position || "",
+          team: data.team ? data.team.teamName : "Not assigned",
+        });
+        
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching player data:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchPlayerData();
+  }, [user, navigate]);
+
+  const handleEditToggle = async () => {
     if (isEditing) {
-      // Save changes
-      setPlayerData({ ...editedData })
+      // Save changes to backend
+      try {
+        // Extract the numeric ID from the format "PLAYER_123"
+        const playerId = user.id.startsWith("PLAYER_") 
+          ? user.id.substring(7) // Remove "PLAYER_" prefix
+          : user.id;
+      
+        const updateData = {
+          fname: editedData.firstName,
+          lname: editedData.lastName,
+          email: editedData.email,
+          birthDate: editedData.birthDate,
+          jerseyNum: editedData.jerseyNumber, // Using jerseyNum for backend
+          position: editedData.position,
+        }
+        
+        // Only include password if it was changed
+        if (editedData.password !== "••••••••") {
+          updateData.password = editedData.password
+        }
+        
+        await api.put(`/players/put/${playerId}`, updateData)
+        
+        // Update local state after successful save
+        setPlayerData({ ...editedData })
+      } catch (error) {
+        console.error("Error updating player data:", error)
+        alert("Failed to update profile. Please try again.")
+        // Reset edited data to current player data
+        setEditedData({ ...playerData })
+        setIsEditing(false)
+        return
+      }
     }
     setIsEditing(!isEditing)
   }
@@ -48,6 +147,10 @@ function PProfile() {
   const handleLogout = () => {
     logout()
     navigate("/login", { replace: true })
+  }
+
+  if (loading) {
+    return <div className="loading">Loading profile data...</div>
   }
 
   return (
@@ -122,7 +225,7 @@ function PProfile() {
                 {isEditing ? (
                   <input type="number" name="jerseyNumber" value={editedData.jerseyNumber} onChange={handleInputChange} />
                 ) : (
-                  <p>#{playerData.jerseyNumber}</p>
+                  <p>#{playerData.jerseyNumber || "Not assigned"}</p>
                 )}
               </div>
 
@@ -131,7 +234,7 @@ function PProfile() {
                 {isEditing ? (
                   <input type="text" name="position" value={editedData.position} onChange={handleInputChange} />
                 ) : (
-                  <p>{playerData.position}</p>
+                  <p>{playerData.position || "Not assigned"}</p>
                 )}
               </div>
 

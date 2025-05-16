@@ -37,14 +37,55 @@ function Login() {
     setError("")
 
     try {
+      console.log(`Attempting login as ${role} with email: ${email}`);
       const response = await api.post(`/auth/login/${role}`, { email, password })
 
+      console.log("Login API response status:", response.status);
+      console.log("Login API response data:", response.data);
+      
       const { token } = response.data
       const decoded = jwtDecode(token)
-      console.log("Decoded token:", decoded)
+      console.log("Raw token received:", token);
+      console.log("Token decoded successfully:", decoded);
+      console.log("Token subject:", decoded.sub);
+      console.log("Token role:", decoded.role);
+      console.log("Token expiry:", new Date(decoded.exp * 1000).toLocaleString());
+      
+      // Extract the correct ID based on the JWT format
+      let userId = decoded.sub;
+      const originalId = userId; // Save original for comparison
+      
+      // Extract numeric ID if JWT subject is in format "PLAYER_123" or "COACH_123"
+      if (typeof userId === 'string') {
+        if (userId.startsWith("PLAYER_") && role === "player") {
+          const numericId = userId.substring(7);
+          console.log(`Extracted player numeric ID: ${numericId} from ${userId}`);
+          userId = userId; // KEEP THE ORIGINAL FORMAT - don't extract numeric part
+        } else if (userId.startsWith("COACH_") && role === "coach") {
+          const numericId = userId.substring(6);
+          console.log(`Extracted coach numeric ID: ${numericId} from ${userId}`);
+          userId = userId; // KEEP THE ORIGINAL FORMAT - don't extract numeric part
+        } else {
+          console.warn(`JWT subject format unexpected: ${userId}, role: ${role}`);
+        }
+      }
+      
+      console.log(`Login successful as ${role}`);
+      console.log(`Original user ID from token: ${originalId}`);
+      console.log(`User ID being stored: ${userId}`);
+      
+      // Explicitly store values in localStorage for debugging
+      localStorage.setItem("authToken", token);
+      localStorage.setItem("userId", userId);
+      localStorage.setItem("userRole", role);
+      
+      console.log("Stored in localStorage:");
+      console.log("- authToken:", localStorage.getItem("authToken") ? "Present" : "Missing");
+      console.log("- userId:", localStorage.getItem("userId"));
+      console.log("- userRole:", localStorage.getItem("userRole"));
 
-      // Use the auth context to log in
-      login(token, role, decoded.sub)
+      // Use the auth context to log in with the original format ID
+      login(token, role, userId)
 
       // Get redirect path from location state or use default
       const from = location.state?.from?.pathname || 
@@ -55,6 +96,14 @@ function Login() {
       navigate(from, { replace: true })
     } catch (error) {
       console.error("Login failed:", error)
+      if (error.response) {
+        console.error("Error response status:", error.response.status);
+        console.error("Error response data:", error.response.data);
+      } else if (error.request) {
+        console.error("No response received:", error.request);
+      } else {
+        console.error("Error setting up request:", error.message);
+      }
       setError("Invalid email or password. Please try again.")
     } finally {
       setIsLoading(false)

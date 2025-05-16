@@ -1,22 +1,84 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect } from "react"
+import { useAuth } from "../../components/AuthContext"
+import { api } from "../../utils/axiosConfig"
 import "../../styles/player/P-Home.css"
 
 function PHome() {
+  const { user } = useAuth()
+  const [loading, setLoading] = useState(true)
+  
   // State to track if this is the first login
   const [isFirstLogin, setIsFirstLogin] = useState(true)
   const [hasApplied, setHasApplied] = useState(false)
   const [showApplyModal, setShowApplyModal] = useState(false)
   const [selectedTeam, setSelectedTeam] = useState(null)
 
-  // Static player data wrapped in useMemo to avoid recreation on every render
-  const playerData = useMemo(() => ({
-    name: "John Doe",
-    jerseyNumber: 23,
-    position: "Point Guard",
-    team: null, // No team initially
-  }), [])
+
+    
+  // Player data state
+  const [playerData, setPlayerData] = useState({
+    fname: "",
+    lname: "",
+    email: "",
+    jerseyNum: "",
+    position: "",
+    team: null
+  })
+
+  // Fetch player data when component mounts
+  useEffect(() => {
+    const fetchPlayerData = async () => {
+      if (!user || !user.id) {
+        return;
+      }
+      
+      try {
+        // Extract the numeric ID from the format "PLAYER_123"
+        let playerId = user.id;
+        
+        if (typeof playerId === 'string' && playerId.startsWith("PLAYER_")) {
+          playerId = playerId.substring(7); // Remove "PLAYER_" prefix
+        }
+        
+        // Make sure ID is a number if the backend expects it
+        if (playerId && !isNaN(Number(playerId))) {
+          playerId = Number(playerId);
+        }
+        
+        // Get player data using the API client
+        const response = await api.get(`/players/get/${playerId}`);
+        const data = response.data;
+        
+        if (!data) {
+          setLoading(false);
+          return;
+        }
+        
+        setPlayerData({
+          fname: data.fname || "",
+          lname: data.lname || "",
+          email: data.email || "",
+          jerseyNum: data.jerseyNum,
+          position: data.position || "Not assigned",
+          team: data.team
+        });
+        
+        // Check if player has a team
+        if (data.team) {
+          setIsFirstLogin(false);
+        }
+        
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+      }
+    };
+
+    fetchPlayerData();
+  }, [user]);
+
 
   // Available teams data
   const availableTeams = [
@@ -40,7 +102,7 @@ function PHome() {
     },
   ]
 
-  // Static team members data (shown after joining a team)
+  // Static team members data
   const teamMembers = [
     { id: 101, firstName: "James", lastName: "Wilson", jerseyNumber: 23, position: "Point Guard", avatar: "J" },
     { id: 102, firstName: "Robert", lastName: "Garcia", jerseyNumber: 10, position: "Shooting Guard", avatar: "R" },
@@ -60,23 +122,25 @@ function PHome() {
     // In a real app, you would send an API request here
   }
 
+  // Handle approval simulation with useEffect
   useEffect(() => {
-    if (hasApplied) {
-      // For demo purposes, let's simulate a player who has been approved
-      // In a real app, this would come from your backend
-      const simulateApproval = () => {
-        // Simulate approval after 5 seconds for demo purposes
-        setTimeout(() => {
-          if (hasApplied) {
-            setIsFirstLogin(false)
-            playerData.team = selectedTeam
-          }
-        }, 5000)
-      }
-      
-      simulateApproval()
-    }
-  }, [hasApplied, selectedTeam, playerData])
+    if (!hasApplied) return;
+    
+    const timer = setTimeout(() => {
+      setIsFirstLogin(false)
+      setPlayerData(prev => ({
+        ...prev,
+        team: selectedTeam
+      }))
+    }, 5000)
+    
+    return () => clearTimeout(timer)
+  }, [hasApplied, selectedTeam])
+
+  // Show loading indicator while fetching data
+  if (loading) {
+    return <div className="loading">Loading player data...</div>
+  }
 
   // First login view - show available teams
   if (isFirstLogin) {
@@ -84,10 +148,10 @@ function PHome() {
       <main className="main-content">
         <div className="player-welcome first-login">
           <div className="player-avatar">
-            <span>{playerData.name.charAt(0)}</span>
+            <span>{playerData.fname ? playerData.fname.charAt(0) : "P"}</span>
           </div>
           <div className="player-welcome-text">
-            <h1>Welcome, {playerData.name}</h1>
+            <h1>Welcome, {playerData.fname}</h1>
             <p>Please select a team to join</p>
           </div>
         </div>
@@ -133,7 +197,7 @@ function PHome() {
 
               <div className="modal-content">
                 <p>
-                  Are you sure you want to apply for <strong>{selectedTeam.name}</strong>?
+                  Are you sure you want to apply for <strong>{selectedTeam?.name}</strong>?
                 </p>
                 <p>Your application will be sent to the coach for approval.</p>
               </div>
@@ -159,12 +223,12 @@ function PHome() {
       <div className="player-dashboard">
         <div className="player-welcome">
           <div className="player-avatar">
-            <span>{playerData.name.charAt(0)}</span>
+            <span>{playerData.fname ? playerData.fname.charAt(0) : "P"}</span>
           </div>
           <div className="player-welcome-text">
-            <h1>Welcome, {playerData.name}</h1>
+            <h1>Welcome, {playerData.fname} {playerData.lname}</h1>
             <p>
-              #{playerData.jerseyNumber} | {playerData.position}
+              #{playerData.jerseyNum} | {playerData.position}
             </p>
           </div>
         </div>
@@ -172,12 +236,12 @@ function PHome() {
         <div className="player-team-card">
           <div className="team-banner college"></div>
           <div className="team-content">
-            <h2>{selectedTeam?.name}</h2>
-            <p>{selectedTeam?.description}</p>
+            <h2>{selectedTeam?.name || playerData.team?.name}</h2>
+            <p>{selectedTeam?.description || playerData.team?.description}</p>
             <div className="team-meta">
               <div className="meta-item">
                 <span className="meta-label">Coach:</span>
-                <span className="meta-value">{selectedTeam?.coach}</span>
+                <span className="meta-value">{selectedTeam?.coach || playerData.team?.coach}</span>
               </div>
             </div>
           </div>
