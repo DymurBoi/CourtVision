@@ -79,9 +79,9 @@
   }
   
   .admin-user-actions {
+    margin-left: auto;
     display: flex;
     align-items: center;
-    gap: 1rem;
   }
   
   .view-site-link {
@@ -162,6 +162,22 @@
   .menu-icon.open span:nth-child(3) {
     transform: rotate(-45deg);
     top: 8px;
+  }
+  
+  .admin-logout-btn {
+    background-color: transparent;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 4px;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+  }
+  
+  .admin-logout-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: white;
   }
   
   @media (max-width: 768px) {
