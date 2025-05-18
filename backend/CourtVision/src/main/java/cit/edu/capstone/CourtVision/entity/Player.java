@@ -28,18 +28,18 @@ public class Player {
     @OneToOne(mappedBy = "player", cascade = CascadeType.ALL)
     private PhysicalRecords physicalRecords;
 
-    @OneToMany(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PlayerAverages> averages;
+    @OneToMany(mappedBy = "player") // One Player → Many PlayerAverages
+    private List<PlayerAverages> playerAverages;
 
     // Getters and Setters
 
 
-    public List<PlayerAverages> getAverages() {
-        return averages;
+    public List<PlayerAverages> getPlayerAverages() {
+        return playerAverages;
     }
 
-    public void setAverages(List<PlayerAverages> averages) {
-        this.averages = averages;
+    public void setPlayerAverages(List<PlayerAverages> playerAverages) {
+        this.playerAverages = playerAverages;
     }
 
     public PhysicalRecords getPhysicalRecords() {

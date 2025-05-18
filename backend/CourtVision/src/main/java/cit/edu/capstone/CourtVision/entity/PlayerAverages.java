@@ -14,9 +14,14 @@ public class PlayerAverages {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long playerAvgId;
 
+
     @ManyToOne
-    @JoinColumn(name = "player_id")
+    @JoinColumn(name = "player_id") // Many PlayerAverages → One Player
     private Player player;
+
+    @ManyToOne
+    @JoinColumn(name = "game_id") // Many PlayerAverages → One Game
+    private Game game;
 
     private double pointsPerGame;
     private double assistsPerGame;
@@ -31,6 +36,15 @@ public class PlayerAverages {
     private double defensiveRating;
 
     //Getters and Setters
+
+
+    public Game getGame() {
+        return game;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
+    }
 
     public Long getPlayerAvgId() {
         return playerAvgId;
