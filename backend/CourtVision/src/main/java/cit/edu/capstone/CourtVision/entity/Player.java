@@ -3,6 +3,7 @@ package cit.edu.capstone.CourtVision.entity;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "player")
@@ -27,8 +28,19 @@ public class Player {
     @OneToOne(mappedBy = "player", cascade = CascadeType.ALL)
     private PhysicalRecords physicalRecords;
 
+    @OneToMany(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PlayerAverages> averages;
+
     // Getters and Setters
 
+
+    public List<PlayerAverages> getAverages() {
+        return averages;
+    }
+
+    public void setAverages(List<PlayerAverages> averages) {
+        this.averages = averages;
+    }
 
     public PhysicalRecords getPhysicalRecords() {
         return physicalRecords;

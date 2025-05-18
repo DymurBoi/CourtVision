@@ -23,6 +23,7 @@ public class Game {
     @OneToOne
     @JoinColumn(name = "advanced_stat_id")
     private AdvancedStats advancedStats;
+
     // Getters and Setters
     public Long getGameId() { return gameId; }
     public void setGameId(Long gameId) { this.gameId = gameId; }
