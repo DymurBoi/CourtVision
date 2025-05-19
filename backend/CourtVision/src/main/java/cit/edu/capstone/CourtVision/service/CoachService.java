@@ -1,13 +1,13 @@
 package cit.edu.capstone.CourtVision.service;
 
-import cit.edu.capstone.CourtVision.entity.Coach;
-import cit.edu.capstone.CourtVision.repository.CoachRepository;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import cit.edu.capstone.CourtVision.dto.CoachDTO;
+import cit.edu.capstone.CourtVision.entity.Coach;
+import cit.edu.capstone.CourtVision.repository.CoachRepository;
 
 @Service
 public class CoachService {
@@ -29,21 +29,20 @@ public class CoachService {
         return coachRepository.save(coach);
     }
 
-    public Coach updateCoach(Integer id, Coach updatedCoach) {
-        Coach coach = getCoachById(id);
-        if (coach != null) {
-            coach.setFname(updatedCoach.getFname());
-            coach.setLname(updatedCoach.getLname());
-            coach.setEmail(updatedCoach.getEmail());
-            coach.setPassword(updatedCoach.getPassword());
-            coach.setBirthDate(updatedCoach.getBirthDate());
-            coach.setIsCoach(updatedCoach.getIsCoach());
-            coach.setIsAdmin(updatedCoach.getIsAdmin());
-            coach.setTeams(updatedCoach.getTeams());
-            return coachRepository.save(coach);
-        }
-        return null;
+    public Coach updateCoach(Integer id, CoachDTO coachDTO) {
+    Coach coach = getCoachById(id);
+    if (coach != null) {
+        if (coachDTO.getFname() != null) coach.setFname(coachDTO.getFname());
+        if (coachDTO.getLname() != null) coach.setLname(coachDTO.getLname());
+        if (coachDTO.getEmail() != null) coach.setEmail(coachDTO.getEmail());
+        if (coachDTO.getPassword() != null) coach.setPassword(coachDTO.getPassword());
+        if (coachDTO.getBirthDate() != null) coach.setBirthDate(coachDTO.getBirthDate());
+
+        return coachRepository.save(coach);
     }
+    return null;
+}
+
 
     public void deleteCoach(Integer id) {
         coachRepository.deleteById(id);

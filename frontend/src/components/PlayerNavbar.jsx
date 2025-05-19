@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom"
 import "../styles/navbar.css"
 import { useAuth } from "./AuthContext"
-
+import PersonIcon from '@mui/icons-material/Person';
 function PlayerNavbar() {
   const { logout } = useAuth()
   const navigate = useNavigate()
@@ -27,7 +27,7 @@ function PlayerNavbar() {
         </div>
         <div className="user-profile">
           <Link to="/player/profile" className="profile-icon">
-            Profile
+            <PersonIcon/>
           </Link>
           <button onClick={handleLogout} className="logout-btn">
             Logout
