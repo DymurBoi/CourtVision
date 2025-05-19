@@ -5,34 +5,41 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a29aee95-f4b1-4cdc-8e7e-d50e576a9f35" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/controller/PhysicalBasedMetricsStatsController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/entity/PhysicalBasedMetricsStats.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/repository/PhysicalBasedMetricsStatsRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/service/PhysicalBasedMetricsStatsService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/controller/CoachController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/controller/CoachController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/controller/PlayerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/controller/PlayerController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/controller/TeamController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/controller/TeamController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/dto/PlayerDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/dto/PlayerDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/service/TeamService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/service/TeamService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/CoachNavbar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/CoachNavbar.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Interface" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory">{
-  &quot;lastFilter&quot;: {
-    &quot;state&quot;: &quot;OPEN&quot;,
-    &quot;assignee&quot;: &quot;DymurBoi&quot;
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "DymurBoi"
   }
-}</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/DymurBoi/CourtVision.git&quot;,
-    &quot;accountId&quot;: &quot;ae01f04b-6d9d-42ab-8905-12b9f1921335&quot;
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/DymurBoi/CourtVision.git",
+    "accountId": "ae01f04b-6d9d-42ab-8905-12b9f1921335"
   }
-}</component>
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
   &quot;associatedIndex&quot;: 6
@@ -42,17 +49,17 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Maven.CourtVision [org.springframework.boot:spring-boot-maven-plugin:3.4.4:run].executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;module-2&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/guest_sqp4brj/Documents/Clones/CourtVision-2&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Maven.CourtVision [org.springframework.boot:spring-boot-maven-plugin:3.4.4:run].executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "module-2",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/guest_sqp4brj/Documents/Clones/CourtVision-2"
   }
-}</component>
+}]]></component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
