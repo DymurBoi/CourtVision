@@ -1,11 +1,13 @@
-package cit.edu.capstone.CourtVision.dto;
+package cit.edu.capstone.CourtVision.mapper;
 
+import cit.edu.capstone.CourtVision.dto.PhysicalRecordDTO;
+import cit.edu.capstone.CourtVision.dto.PlayerDTO;
 import cit.edu.capstone.CourtVision.entity.PhysicalRecords;
 import cit.edu.capstone.CourtVision.entity.Player;
 
 public class PlayerMapper {
 
-    public static PlayerDTO toDto(Player player) {
+    public static PlayerDTO toDTO(Player player) {
         if (player == null) return null;
 
         PlayerDTO dto = new PlayerDTO();

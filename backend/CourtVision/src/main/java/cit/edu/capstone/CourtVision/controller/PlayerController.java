@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import cit.edu.capstone.CourtVision.dto.PlayerDTO;
-import cit.edu.capstone.CourtVision.dto.PlayerMapper;
+import cit.edu.capstone.CourtVision.mapper.PlayerMapper;
 import cit.edu.capstone.CourtVision.entity.Player;
 import cit.edu.capstone.CourtVision.service.PlayerService;
 
@@ -31,7 +31,7 @@ public class PlayerController {
     public ResponseEntity<List<PlayerDTO>> getAllPlayers() {
     List<Player> players = playerService.getAllPlayers();
     List<PlayerDTO> dtos = players.stream()
-                                  .map(PlayerMapper::toDto)
+                                  .map(PlayerMapper::toDTO)
                                   .toList();
     return ResponseEntity.ok(dtos);
     }
@@ -40,7 +40,7 @@ public class PlayerController {
     public ResponseEntity<PlayerDTO> getPlayerById(@PathVariable Long id) {
         Player player = playerService.getPlayerById(id);
         if (player == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(PlayerMapper.toDto(player));
+        return ResponseEntity.ok(PlayerMapper.toDTO(player));
     }
 
 
@@ -55,7 +55,7 @@ public class PlayerController {
     public ResponseEntity<PlayerDTO> updatePlayer(@PathVariable Long id, @RequestBody Player updatedPlayer) {
         Player savedPlayer = playerService.updatePlayer(id, updatedPlayer);
         if (savedPlayer == null) return ResponseEntity.notFound().build();
-        PlayerDTO dto = PlayerMapper.toDto(savedPlayer);
+        PlayerDTO dto = PlayerMapper.toDTO(savedPlayer);
         return ResponseEntity.ok(dto);
     }
 

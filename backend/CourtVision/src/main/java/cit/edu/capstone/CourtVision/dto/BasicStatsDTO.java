@@ -1,22 +1,9 @@
-package cit.edu.capstone.CourtVision.entity;
-
-import jakarta.persistence.*;
-import lombok.*;
+package cit.edu.capstone.CourtVision.dto;
 
 import java.sql.Time;
 
-@Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class BasicStats {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class BasicStatsDTO {
     private Long basicStatId;
-
-
     private int twoPtAttempts;
     private int twoPtMade;
     private int threePtAttempts;
@@ -34,39 +21,36 @@ public class BasicStats {
     private int plusMinus;
     private Time minutes;
 
-    @OneToOne(mappedBy = "basicStats", cascade = CascadeType.ALL)
-    private Game game;
+    private AdvancedStatsDTO advancedStatsDTO;
+    private PhysicalBasedMetricsStatsDTO physicalBasedMetricsStatsDTO;
+    private GameDTO gameDTO;
 
-    @OneToOne(mappedBy = "basicStats", cascade = CascadeType.ALL)
-    private AdvancedStats advancedStats;
 
-    @OneToOne(mappedBy = "basicStats", cascade = CascadeType.ALL)
-    private PhysicalBasedMetricsStats physicalBasedMetricsStats;
+    // Getters and Setters
 
-    //Getters and Setters
 
-    public PhysicalBasedMetricsStats getPhysicalBasedMetricsStats() {
-        return physicalBasedMetricsStats;
+    public AdvancedStatsDTO getAdvancedStatsDTO() {
+        return advancedStatsDTO;
     }
 
-    public void setPhysicalBasedMetricsStats(PhysicalBasedMetricsStats physicalBasedMetricsStats) {
-        this.physicalBasedMetricsStats = physicalBasedMetricsStats;
+    public void setAdvancedStatsDTO(AdvancedStatsDTO advancedStatsDTO) {
+        this.advancedStatsDTO = advancedStatsDTO;
     }
 
-    public AdvancedStats getAdvancedStats() {
-        return advancedStats;
+    public PhysicalBasedMetricsStatsDTO getPhysicalBasedMetricsStatsDTO() {
+        return physicalBasedMetricsStatsDTO;
     }
 
-    public void setAdvancedStats(AdvancedStats advancedStats) {
-        this.advancedStats = advancedStats;
+    public void setPhysicalBasedMetricsStatsDTO(PhysicalBasedMetricsStatsDTO physicalBasedMetricsStatsDTO) {
+        this.physicalBasedMetricsStatsDTO = physicalBasedMetricsStatsDTO;
     }
 
-    public Game getGame() {
-        return game;
+    public GameDTO getGameDTO() {
+        return gameDTO;
     }
 
-    public void setGame(Game game) {
-        this.game = game;
+    public void setGameDTO(GameDTO gameDTO) {
+        this.gameDTO = gameDTO;
     }
 
     public Long getBasicStatId() {
@@ -77,20 +61,20 @@ public class BasicStats {
         this.basicStatId = basicStatId;
     }
 
-    public int getTwoPtMade() {
-        return twoPtMade;
-    }
-
-    public void setTwoPtMade(int twoPtMade) {
-        this.twoPtMade = twoPtMade;
-    }
-
     public int getTwoPtAttempts() {
         return twoPtAttempts;
     }
 
     public void setTwoPtAttempts(int twoPtAttempts) {
         this.twoPtAttempts = twoPtAttempts;
+    }
+
+    public int getTwoPtMade() {
+        return twoPtMade;
+    }
+
+    public void setTwoPtMade(int twoPtMade) {
+        this.twoPtMade = twoPtMade;
     }
 
     public int getThreePtAttempts() {
@@ -117,20 +101,20 @@ public class BasicStats {
         this.ftAttempts = ftAttempts;
     }
 
-    public int getAssists() {
-        return assists;
-    }
-
-    public void setAssists(int assists) {
-        this.assists = assists;
-    }
-
     public int getFtMade() {
         return ftMade;
     }
 
     public void setFtMade(int ftMade) {
         this.ftMade = ftMade;
+    }
+
+    public int getAssists() {
+        return assists;
+    }
+
+    public void setAssists(int assists) {
+        this.assists = assists;
     }
 
     public int getoFRebounds() {
@@ -173,20 +157,20 @@ public class BasicStats {
         this.turnovers = turnovers;
     }
 
-    public int getdFouls() {
-        return dFouls;
-    }
-
-    public void setdFouls(int dFouls) {
-        this.dFouls = dFouls;
-    }
-
     public int getpFouls() {
         return pFouls;
     }
 
     public void setpFouls(int pFouls) {
         this.pFouls = pFouls;
+    }
+
+    public int getdFouls() {
+        return dFouls;
+    }
+
+    public void setdFouls(int dFouls) {
+        this.dFouls = dFouls;
     }
 
     public int getPlusMinus() {
@@ -204,8 +188,5 @@ public class BasicStats {
     public void setMinutes(Time minutes) {
         this.minutes = minutes;
     }
-
-
-    //Relationship
-
 }
+

@@ -1,15 +1,42 @@
 package cit.edu.capstone.CourtVision.dto;
 
-import cit.edu.capstone.CourtVision.entity.BasicStats;
-import cit.edu.capstone.CourtVision.entity.Game;
-import cit.edu.capstone.CourtVision.entity.PhysicalRecords;
-
-public class PhysicalBasedMetricsDTO {
+public class PhysicalBasedMetricsStatsDTO {
+    private Long id;
     private double athleticPerformanceIndex;
     private double defensiveDisruptionRating;
     private double reboundPotentialIndex;
     private double mobilityAdjustedBuildScore;
     private double positionSuitabilityIndex;
+
+    private BasicStatsDTO basicStatsDTO;
+    private GameDTO gameDTO;
+
+    //Getters and Setters
+
+
+    public BasicStatsDTO getBasicStatsDTO() {
+        return basicStatsDTO;
+    }
+
+    public void setBasicStatsDTO(BasicStatsDTO basicStatsDTO) {
+        this.basicStatsDTO = basicStatsDTO;
+    }
+
+    public GameDTO getGameDTO() {
+        return gameDTO;
+    }
+
+    public void setGameDTO(GameDTO gameDTO) {
+        this.gameDTO = gameDTO;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public double getAthleticPerformanceIndex() {
         return athleticPerformanceIndex;

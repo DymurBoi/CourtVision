@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import cit.edu.capstone.CourtVision.dto.PhysicalRecordDTO;
-import cit.edu.capstone.CourtVision.dto.PlayerMapper;
+import cit.edu.capstone.CourtVision.mapper.PlayerMapper;
 import cit.edu.capstone.CourtVision.entity.PhysicalRecords;
 import cit.edu.capstone.CourtVision.service.PhysicalRecordService;
 

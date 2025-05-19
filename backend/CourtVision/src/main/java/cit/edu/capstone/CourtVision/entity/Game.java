@@ -1,5 +1,6 @@
 package cit.edu.capstone.CourtVision.entity;
 
+import cit.edu.capstone.CourtVision.dto.PhysicalBasedMetricsStatsDTO;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
@@ -19,16 +20,28 @@ public class Game {
     private Team team;
 
     @OneToOne
-    @JoinColumn(name = "basic_stat_id")
+    @JoinColumn(name = "basic_stats_id")
     private BasicStats basicStats;
     @OneToOne
-    @JoinColumn(name = "advanced_stat_id")
+    @JoinColumn(name = "advanced_stats_id")
     private AdvancedStats advancedStats;
+    @OneToOne
+    @JoinColumn(name = "physical_based_metric_stats_id")
+    private PhysicalBasedMetricsStats physicalBasedMetricsStats;
 
     @OneToMany(mappedBy = "game") // One Game → Many PlayerAverages
     private List<PlayerAverages> playerAverages;
 
     // Getters and Setters
+
+
+    public PhysicalBasedMetricsStats getPhysicalBasedMetricsStats() {
+        return physicalBasedMetricsStats;
+    }
+
+    public void setPhysicalBasedMetricsStats(PhysicalBasedMetricsStats physicalBasedMetricsStats) {
+        this.physicalBasedMetricsStats = physicalBasedMetricsStats;
+    }
 
     public AdvancedStats getAdvancedStats() {
         return advancedStats;

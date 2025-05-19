@@ -11,11 +11,15 @@ import java.util.List;
 
 @Service
 public class BasicStatsService {
+
     @Autowired
     private BasicStatsRepository basicRepo;
 
     @Autowired
     private AdvancedStatsService advancedStatsService;
+
+    @Autowired
+    private PhysicalBasedMetricsStatsService physicalStatsService;
 
     @Autowired
     private GameRepository gameRepo;
@@ -37,6 +41,7 @@ public class BasicStatsService {
         stat.setPlusMinus(calculatePlusMinus(stat));
         BasicStats saved = basicRepo.save(stat);
         advancedStatsService.generateFromBasic(saved);
+        physicalStatsService.createFrom(saved);
         return saved;
     }
 
@@ -45,13 +50,16 @@ public class BasicStatsService {
         updatedStat.setPlusMinus(calculatePlusMinus(updatedStat));
         BasicStats saved = basicRepo.save(updatedStat);
         advancedStatsService.updateFromBasic(saved);
+        physicalStatsService.createFrom(saved); // Re-create or update physical stats
         return saved;
     }
 
     public void delete(Long id) {
         BasicStats existing = basicRepo.findById(id).orElse(null);
         if (existing != null) {
-            advancedStatsService.deleteByGame(existing.getGame());
+            Game game = existing.getGame();
+            advancedStatsService.deleteByGame(game);
+            physicalStatsService.deleteByGame(game);
             basicRepo.deleteById(id);
         }
     }
