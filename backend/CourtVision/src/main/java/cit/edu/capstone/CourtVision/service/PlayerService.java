@@ -39,7 +39,7 @@ public class PlayerService {
         if (existingPlayer != null) {
             if (updatedPlayer.getFname() != null) {
                 existingPlayer.setFname(updatedPlayer.getFname());
-            }   
+            }
             if (updatedPlayer.getLname() != null) {
                 existingPlayer.setLname(updatedPlayer.getLname());
             }
