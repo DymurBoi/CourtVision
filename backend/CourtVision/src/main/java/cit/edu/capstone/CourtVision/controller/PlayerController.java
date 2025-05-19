@@ -48,11 +48,17 @@ public class PlayerController {
         return playerService.createPlayer(player);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PutMapping("/put/{id}")
-    public Player updatePlayer(@PathVariable Long id, @RequestBody Player player) {
-        return playerService.updatePlayer(id, player);
+    public ResponseEntity<PlayerDTO> updatePlayer(@PathVariable Long id, @RequestBody Player updatedPlayer) {
+        Player savedPlayer = playerService.updatePlayer(id, updatedPlayer);
+        if (savedPlayer == null) return ResponseEntity.notFound().build();
+
+        PlayerDTO dto = PlayerMapper.toDto(savedPlayer);
+        return ResponseEntity.ok(dto);
     }
+
 
     @DeleteMapping("/delete/{id}")
     public void deletePlayer(@PathVariable Long id) {

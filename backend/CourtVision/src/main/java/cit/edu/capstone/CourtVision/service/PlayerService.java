@@ -35,33 +35,36 @@ public class PlayerService {
     }
 
     public Player updatePlayer(Long id, Player updatedPlayer) {
-        Player player = getPlayerById(id);
-        if (player != null) {
-            player.setFname(updatedPlayer.getFname());
-            player.setLname(updatedPlayer.getLname());
-            player.setEmail(updatedPlayer.getEmail());
-            player.setPassword(updatedPlayer.getPassword());
-            player.setBirthDate(updatedPlayer.getBirthDate());
-            player.setJerseyNum(updatedPlayer.getJerseyNum());
-            player.setIsCoach(updatedPlayer.getIsCoach());
-            player.setIsAdmin(updatedPlayer.getIsAdmin());
-            player.setTeam(updatedPlayer.getTeam());
+        Player existingPlayer = getPlayerById(id);
+        if (existingPlayer != null) {
+            if (updatedPlayer.getFname() != null) {
+                existingPlayer.setFname(updatedPlayer.getFname());
+            }
+            if (updatedPlayer.getLname() != null) {
+                existingPlayer.setLname(updatedPlayer.getLname());
+            }
+            if (updatedPlayer.getEmail() != null) {
+                existingPlayer.setEmail(updatedPlayer.getEmail());
+            }
+            if (updatedPlayer.getPassword() != null) {
+                existingPlayer.setPassword(updatedPlayer.getPassword());
+            }
+            if (updatedPlayer.getBirthDate() != null) {
+                existingPlayer.setBirthDate(updatedPlayer.getBirthDate());
+            }
+            if (updatedPlayer.getJerseyNum() != 0) { // You may need to decide a safe default here
+                existingPlayer.setJerseyNum(updatedPlayer.getJerseyNum());
+            }
+            // Use Boolean.TRUE/FALSE check to allow partial update
+            if (updatedPlayer.getTeam() != null) {
+                existingPlayer.setTeam(updatedPlayer.getTeam());
+            }
 
-            PhysicalRecords emptyRecord = PhysicalRecords.builder()
-                    .player(player)
-                    .weight(null)
-                    .height(null)
-                    .wingspan(null)
-                    .vertical(null)
-                    .bmi(null)
-                    .dateRecorded(null)
-                    .build();
-
-            physicalRecordService.save(emptyRecord);
-            return playerRepository.save(player);
+            return playerRepository.save(existingPlayer);
         }
         return null;
     }
+
 
     public void deletePlayer(Long id) {
         playerRepository.deleteById(id);
