@@ -2,6 +2,7 @@ package cit.edu.capstone.CourtVision.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 public class Game {
@@ -24,7 +25,27 @@ public class Game {
     @JoinColumn(name = "advanced_stat_id")
     private AdvancedStats advancedStats;
 
+    @OneToMany(mappedBy = "game") // One Game → Many PlayerAverages
+    private List<PlayerAverages> playerAverages;
+
     // Getters and Setters
+
+    public AdvancedStats getAdvancedStats() {
+        return advancedStats;
+    }
+
+    public void setAdvancedStats(AdvancedStats advancedStats) {
+        this.advancedStats = advancedStats;
+    }
+
+    public List<PlayerAverages> getPlayerAverages() {
+        return playerAverages;
+    }
+
+    public void setPlayerAverages(List<PlayerAverages> playerAverages) {
+        this.playerAverages = playerAverages;
+    }
+
     public Long getGameId() { return gameId; }
     public void setGameId(Long gameId) { this.gameId = gameId; }
 

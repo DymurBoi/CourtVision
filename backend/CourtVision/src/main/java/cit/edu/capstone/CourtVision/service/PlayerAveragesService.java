@@ -23,7 +23,7 @@ public class PlayerAveragesService {
         Player player = playerRepo.findById(playerId).orElse(null);
         if (player == null) return null;
 
-        List<Game> games = gameRepo.findByPlayer(player);
+        List<Game> games = gameRepo.findByPlayerAveragesPlayer(player);
         if (games.isEmpty()) return null;
 
         int totalGames = games.size();
