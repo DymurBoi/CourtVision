@@ -55,7 +55,6 @@ public class PlayerController {
     public ResponseEntity<PlayerDTO> updatePlayer(@PathVariable Long id, @RequestBody Player updatedPlayer) {
         Player savedPlayer = playerService.updatePlayer(id, updatedPlayer);
         if (savedPlayer == null) return ResponseEntity.notFound().build();
-
         PlayerDTO dto = PlayerMapper.toDto(savedPlayer);
         return ResponseEntity.ok(dto);
     }

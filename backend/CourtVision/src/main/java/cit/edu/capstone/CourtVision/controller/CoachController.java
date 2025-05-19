@@ -39,7 +39,7 @@ public class CoachController {
     public Coach createCoach(@RequestBody Coach coach) {
         return coachService.createCoach(coach);
     }
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
     @PutMapping("/put/{id}")
     public ResponseEntity<Coach> updateCoach(@PathVariable Integer id, @RequestBody CoachDTO coachDTO) {
     Coach updatedCoach = coachService.updateCoach(id, coachDTO);

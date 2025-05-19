@@ -1,8 +1,11 @@
 package cit.edu.capstone.CourtVision.controller;
 
+import cit.edu.capstone.CourtVision.entity.Player;
 import cit.edu.capstone.CourtVision.entity.Team;
 import cit.edu.capstone.CourtVision.service.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +27,7 @@ public class TeamController {
         return teamService.getTeamById(id);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
     @PostMapping("/post")
     public Team create(@RequestBody Team team) {
         return teamService.createTeam(team);
@@ -37,6 +41,26 @@ public class TeamController {
     @DeleteMapping("/delete/{id}")
     public void delete(@PathVariable Long id) {
         teamService.deleteTeam(id);
+    }
+
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
+    @PostMapping("/{teamId}/add-player")
+    public ResponseEntity<Player> addPlayerToTeam(@PathVariable Long teamId, @RequestBody Player player) {
+        Player createdPlayer = teamService.addPlayerToTeam(teamId, player);
+        return ResponseEntity.ok(createdPlayer);
+    }
+
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
+    @PutMapping("/{teamId}/add-existing-player/{playerId}")
+    public ResponseEntity<Player> addExistingPlayerToTeam(
+            @PathVariable Long teamId,
+            @PathVariable Long playerId) {
+
+        Player updatedPlayer = teamService.assignPlayerToTeam(teamId, playerId);
+        if (updatedPlayer == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(updatedPlayer);
     }
 
     @GetMapping("/get/by-admin/{adminId}")
