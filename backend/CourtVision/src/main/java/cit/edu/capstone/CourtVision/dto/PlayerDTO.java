@@ -12,6 +12,7 @@ public class PlayerDTO {
     private boolean isCoach;
     private boolean isAdmin;
     private PhysicalRecordDTO physicalRecords;
+
     public Long getPlayerId() {
         return playerId;
     }
