@@ -21,6 +21,9 @@ public class PlayerService {
     @Autowired
     private PhysicalRecordService physicalRecordService;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
 
     public List<Player> getAllPlayers() {
         return playerRepository.findAll();
@@ -30,7 +33,9 @@ public class PlayerService {
         return playerRepository.findById(id).orElse(null);
     }
 
+
     public Player createPlayer(Player player) {
+        player.setPassword(passwordEncoder.encode(player.getPassword()));
         return playerRepository.save(player);
     }
 
@@ -46,16 +51,16 @@ public class PlayerService {
             if (updatedPlayer.getEmail() != null) {
                 existingPlayer.setEmail(updatedPlayer.getEmail());
             }
-            if (updatedPlayer.getPassword() != null) {
-                existingPlayer.setPassword(updatedPlayer.getPassword());
+            // Only encode if password is being updated
+            if (updatedPlayer.getPassword() != null && !updatedPlayer.getPassword().isEmpty()) {
+                existingPlayer.setPassword(passwordEncoder.encode(updatedPlayer.getPassword()));
             }
             if (updatedPlayer.getBirthDate() != null) {
                 existingPlayer.setBirthDate(updatedPlayer.getBirthDate());
             }
-            if (updatedPlayer.getJerseyNum() != 0) { // You may need to decide a safe default here
+            if (updatedPlayer.getJerseyNum() != 0) {
                 existingPlayer.setJerseyNum(updatedPlayer.getJerseyNum());
             }
-            // Use Boolean.TRUE/FALSE check to allow partial update
             if (updatedPlayer.getTeam() != null) {
                 existingPlayer.setTeam(updatedPlayer.getTeam());
             }
