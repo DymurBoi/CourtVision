@@ -16,9 +16,7 @@ export const setupAxiosInterceptors = (logout) => {
       }
       return config;
     },
-    (error) => {
-      return Promise.reject(error);
-    }
+    (error) => Promise.reject(error)
   );
 
   // Response interceptor
@@ -28,23 +26,22 @@ export const setupAxiosInterceptors = (logout) => {
       return response;
     },
     (error) => {
-      // Handle 401 Unauthorized or 403 Forbidden responses
-      if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-        console.error('Authentication error:', error.response.status, error.response.data);
-        console.error('Request URL was:', error.config.url);
-        console.error('Request method was:', error.config.method);
-        console.error('Request headers were:', JSON.stringify(error.config.headers));
-        
-        // Logout user and redirect to login
+      const status = error?.response?.status;
+      const message = error?.response?.data?.message || '';
+
+      console.error('Axios response error:', status, message);
+
+      if (
+        (status === 401 || status === 403) &&
+        (message.toLowerCase().includes('token') || message.toLowerCase().includes('unauthorized'))
+      ) {
+        console.error('Token is likely expired or invalid. Logging out...');
         if (logout) {
           logout();
         } else {
-          // If logout function is not available, clear localStorage manually
           localStorage.removeItem('authToken');
           localStorage.removeItem('userId');
           localStorage.removeItem('userRole');
-          
-          // Redirect to login based on user role
           const role = localStorage.getItem('userRole');
           if (role === 'admin') {
             window.location.href = '/admin/login';
@@ -53,6 +50,7 @@ export const setupAxiosInterceptors = (logout) => {
           }
         }
       }
+
       return Promise.reject(error);
     }
   );
@@ -73,8 +71,6 @@ export const setupApiInterceptors = (logout) => {
         console.log('API request to:', config.url);
         console.log('With auth token:', token.substring(0, 25) + '...');
         config.headers['Authorization'] = `Bearer ${token}`;
-        
-        // Log the full headers for debugging
         const headersCopy = { ...config.headers };
         if (headersCopy.Authorization) {
           headersCopy.Authorization = headersCopy.Authorization.substring(0, 20) + '...';
@@ -84,12 +80,9 @@ export const setupApiInterceptors = (logout) => {
         console.warn('⚠️ No auth token found for API request to:', config.url);
         console.warn('This request will likely fail if authentication is required');
       }
-      
       return config;
     },
-    (error) => {
-      return Promise.reject(error);
-    }
+    (error) => Promise.reject(error)
   );
 
   // Response interceptor
@@ -99,38 +92,33 @@ export const setupApiInterceptors = (logout) => {
       return response;
     },
     (error) => {
-      console.error('API Error response:', error.message);
-      
-      if (error.response) {
-        console.error('Status:', error.response.status);
-        console.error('Data:', error.response.data);
-        console.error('URL:', error.config.url);
-        
-        // Handle 401 Unauthorized or 403 Forbidden responses
-        if (error.response.status === 401 || error.response.status === 403) {
-          console.error('Auth failure - token may be invalid or expired');
-          console.error('Request headers were:', JSON.stringify(error.config.headers));
-          
-          // Logout user
-          if (logout) {
-            logout();
+      const status = error?.response?.status;
+      const message = error?.response?.data?.message || '';
+
+      console.error('API Error response:', status, message);
+      console.error('URL:', error.config?.url);
+
+      if (
+        (status === 401 || status === 403) &&
+        (message.toLowerCase().includes('token') || message.toLowerCase().includes('unauthorized'))
+      ) {
+        console.error('Token is likely expired or invalid. Logging out...');
+        if (logout) {
+          logout();
+        } else {
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('userId');
+          localStorage.removeItem('userRole');
+          const role = localStorage.getItem('userRole');
+          if (role === 'admin') {
+            window.location.href = '/admin/login';
           } else {
-            // If logout function is not available, clear localStorage manually
-            localStorage.removeItem('authToken');
-            localStorage.removeItem('userId');
-            localStorage.removeItem('userRole');
-            
-            // Redirect to login
-            const role = localStorage.getItem('userRole');
-            if (role === 'admin') {
-              window.location.href = '/admin/login';
-            } else {
-              window.location.href = '/login';
-            }
+            window.location.href = '/login';
           }
         }
       }
+
       return Promise.reject(error);
     }
   );
-}; 
+};
