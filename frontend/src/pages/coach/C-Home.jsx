@@ -162,7 +162,6 @@ function CHome() {
           console.log("Team players API response status:", response.status);
           const playersData = response.data;
           console.log("Team players received:", playersData);
-          
           setPlayers(playersData || []);
         } catch (error) {
           console.error("Error fetching team players:", error);
@@ -338,7 +337,7 @@ function CHome() {
               <div className="player-name">
                 {player.fname} {player.lname}
               </div>
-              <div className="player-position">{player.position}</div>
+              <div className="player-position">N/A</div>
               <div className="player-action">
                 <button className="remove-player-button" onClick={() => handleRemovePlayer(player.id)}>
                   Remove Player

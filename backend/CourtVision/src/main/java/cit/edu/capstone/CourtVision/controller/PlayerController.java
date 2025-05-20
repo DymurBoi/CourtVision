@@ -65,10 +65,14 @@ public class PlayerController {
         playerService.deletePlayer(id);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
     @GetMapping("/get/by-team/{teamId}")
-    public List<Player> getPlayersByTeamId(@PathVariable Long teamId) {
-        return playerService.getPlayersByTeamId(teamId);
+    public ResponseEntity<List<PlayerDTO>> getPlayersByTeamId(@PathVariable Long teamId) {
+        List<Player> players = playerService.getPlayersByTeamId(teamId);
+        List<PlayerDTO> dtos = players.stream()
+                                  .map(PlayerMapper::toDTO)
+                                  .toList();
+        return ResponseEntity.ok(dtos); 
     }
-    
 }
 
