@@ -13,6 +13,8 @@ public class PlayerDTO {
     private boolean isAdmin;
     private PhysicalRecordDTO physicalRecords;
 
+    // Getters and Setters
+    
     public Long getPlayerId() {
         return playerId;
     }
@@ -67,7 +69,4 @@ public class PlayerDTO {
     public void setPhysicalRecords(PhysicalRecordDTO physicalRecords) {
         this.physicalRecords = physicalRecords;
     }
-
-    // Getters and Setters
-
 }

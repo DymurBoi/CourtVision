@@ -1,9 +1,9 @@
 package cit.edu.capstone.CourtVision.mapper;
 
+import java.util.stream.Collectors;
+
 import cit.edu.capstone.CourtVision.dto.TeamDTO;
 import cit.edu.capstone.CourtVision.entity.Team;
-
-import java.util.stream.Collectors;
 
 public class TeamMapper {
     public static TeamDTO toDTO(Team team) {

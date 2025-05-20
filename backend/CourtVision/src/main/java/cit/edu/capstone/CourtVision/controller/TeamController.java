@@ -74,4 +74,13 @@ public class TeamController {
         if (updatedPlayer == null) return ResponseEntity.notFound().build();
         return ResponseEntity.ok(updatedPlayer);
     }
+
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
+    @PutMapping("/{teamId}/remove-player/{playerId}")
+    public ResponseEntity<Void> removePlayerFromTeam(@PathVariable Long teamId, @PathVariable Long playerId) {
+    boolean removed = teamService.removePlayerFromTeam(teamId, playerId);
+    if (!removed) return ResponseEntity.notFound().build();
+    return ResponseEntity.noContent().build();
+}
+
 }

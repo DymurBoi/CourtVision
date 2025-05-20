@@ -92,4 +92,18 @@ public class TeamService {
     public List<Team> getTeamsByCoachId(int coachId) {
         return teamRepository.findByCoaches_CoachId(coachId);
     }
+
+    public boolean removePlayerFromTeam(Long teamId, Long playerId) {
+    Team team = getTeamById(teamId);
+    Player player = playerRepository.findById(playerId).orElse(null);
+
+    if (team == null || player == null || player.getTeam() == null || !player.getTeam().getTeamId().equals(teamId)) {
+        return false;
+    }
+
+    player.setTeam(null);
+    playerRepository.save(player);
+    return true;
+}
+
 }
