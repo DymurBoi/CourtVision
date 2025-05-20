@@ -1,12 +1,17 @@
 package cit.edu.capstone.CourtVision.service;
 
+import cit.edu.capstone.CourtVision.entity.Coach;
 import cit.edu.capstone.CourtVision.entity.Player;
 import cit.edu.capstone.CourtVision.entity.Team;
+import cit.edu.capstone.CourtVision.repository.CoachRepository;
 import cit.edu.capstone.CourtVision.repository.PlayerRepository;
 import cit.edu.capstone.CourtVision.repository.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -17,6 +22,8 @@ public class TeamService {
 
     @Autowired
     private PlayerRepository playerRepository;
+    @Autowired
+    private CoachRepository coachRepository;
 
     //Get all teams
     public List<Team> getAllTeams() {
@@ -30,8 +37,23 @@ public class TeamService {
 
     //Create new team
     public Team createTeam(Team team) {
+        // Get currently authenticated user
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName(); // Assuming username is email
+
+        // Find the coach based on authenticated email
+        Coach currentCoach = coachRepository.findByEmail(email);
+
+        if (currentCoach == null) {
+            throw new RuntimeException("Logged-in coach not found.");
+        }
+
+        // Assign coach to the team
+        team.setCoaches(Collections.singletonList(currentCoach));
+
         return teamRepository.save(team);
     }
+
 
     //Update team details
     public Team updateTeam(Long id, Team updatedTeam) {
