@@ -1,14 +1,13 @@
 package cit.edu.capstone.CourtVision.service;
 
-import java.util.List;
-
+import cit.edu.capstone.CourtVision.dto.CoachDTO;
+import cit.edu.capstone.CourtVision.entity.Coach;
+import cit.edu.capstone.CourtVision.repository.CoachRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import cit.edu.capstone.CourtVision.dto.CoachDTO;
-import cit.edu.capstone.CourtVision.entity.Coach;
-import cit.edu.capstone.CourtVision.repository.CoachRepository;
+import java.util.List;
 
 @Service
 public class CoachService {
@@ -34,23 +33,20 @@ public class CoachService {
         return coachRepository.save(coach);
     }
 
-    public Coach updateCoach(Integer id, CoachDTO coachDTO) {
+    public Coach updateCoach(Integer id, CoachDTO dto) {
         Coach coach = getCoachById(id);
         if (coach != null) {
-            if (coachDTO.getFname() != null) coach.setFname(coachDTO.getFname());
-            if (coachDTO.getLname() != null) coach.setLname(coachDTO.getLname());
-            if (coachDTO.getEmail() != null) coach.setEmail(coachDTO.getEmail());
-            // Only encode if password is being updated
-            if (coachDTO.getPassword() != null && !coachDTO.getPassword().isEmpty()) {
-                coach.setPassword(passwordEncoder.encode(coachDTO.getPassword()));
+            if (dto.getFname() != null) coach.setFname(dto.getFname());
+            if (dto.getLname() != null) coach.setLname(dto.getLname());
+            if (dto.getEmail() != null) coach.setEmail(dto.getEmail());
+            if (dto.getPassword() != null && !dto.getPassword().isEmpty()) {
+                coach.setPassword(passwordEncoder.encode(dto.getPassword()));
             }
-            if (coachDTO.getBirthDate() != null) coach.setBirthDate(coachDTO.getBirthDate());
-
+            if (dto.getBirthDate() != null) coach.setBirthDate(dto.getBirthDate());
             return coachRepository.save(coach);
         }
         return null;
     }
-
 
     public void deleteCoach(Integer id) {
         coachRepository.deleteById(id);
@@ -60,4 +56,3 @@ public class CoachService {
         return coachRepository.findByTeams_TeamId(teamId);
     }
 }
-

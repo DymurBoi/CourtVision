@@ -1,6 +1,7 @@
 package cit.edu.capstone.CourtVision.dto;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class CoachDTO {
     private String fname;
@@ -8,8 +9,18 @@ public class CoachDTO {
     private String email;
     private String password;
     private LocalDate birthDate;
+    private List<TeamDTO> teams;
 
     // Getters and Setters
+
+    public List<TeamDTO> getTeams() {
+        return teams;
+    }
+
+    public void setTeams(List<TeamDTO> teams) {
+        this.teams = teams;
+    }
+
     public String getFname() { return fname; }
     public void setFname(String fname) { this.fname = fname; }
 
