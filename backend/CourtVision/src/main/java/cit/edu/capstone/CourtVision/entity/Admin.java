@@ -1,5 +1,7 @@
 package cit.edu.capstone.CourtVision.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -20,6 +22,7 @@ public class Admin {
     private boolean isAdmin;
 
     @OneToMany(mappedBy = "admin")
+    @JsonIgnore
     private List<Team> teams;
 
     // Getters and Setters

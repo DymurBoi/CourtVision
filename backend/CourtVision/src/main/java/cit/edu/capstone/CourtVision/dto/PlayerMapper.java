@@ -2,6 +2,7 @@ package cit.edu.capstone.CourtVision.dto;
 
 import cit.edu.capstone.CourtVision.entity.PhysicalRecords;
 import cit.edu.capstone.CourtVision.entity.Player;
+import cit.edu.capstone.CourtVision.entity.Team;
 
 public class PlayerMapper {
 
@@ -17,6 +18,11 @@ public class PlayerMapper {
         dto.setJerseyNum(player.getJerseyNum());
         dto.setIsCoach(player.getIsCoach());
         dto.setIsAdmin(player.getIsAdmin());
+
+        // Map team information
+        if (player.getTeam() != null) {
+            dto.setTeam(toDto(player.getTeam()));
+        }
 
         if (player.getPhysicalRecords() != null) {
             dto.setPhysicalRecords(toDto(player.getPhysicalRecords()));
@@ -37,6 +43,15 @@ public class PlayerMapper {
         dto.setBmi(record.getBmi());
         dto.setDateRecorded(record.getDateRecorded());
 
+        return dto;
+    }
+
+    public static TeamDTO toDto(Team team) {
+        if (team == null) return null;
+
+        TeamDTO dto = new TeamDTO();
+        dto.setTeamId(team.getTeamId());
+        dto.setTeamName(team.getTeamName());
         return dto;
     }
 }

@@ -1,0 +1,142 @@
+.matches-container {
+    margin: 2rem 0;
+  }
+  
+  .matches-list {
+    background-color: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 16px rgba(36, 36, 62, 0.08);
+    border: 1px solid rgba(123, 123, 243, 0.2);
+  }
+  
+  .match-header {
+    display: grid;
+    grid-template-columns: 2fr 0.5fr 1fr 1fr 1fr;
+    padding: 1rem 1.5rem;
+    background-color: var(--dark-blue);
+    color: var(--light-purple);
+    font-weight: bold;
+  }
+  
+  .match-item {
+    display: grid;
+    grid-template-columns: 2fr 0.5fr 1fr 1fr 1fr;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid rgba(123, 123, 243, 0.2);
+    transition: background-color 0.2s ease;
+    align-items: center;
+  }
+  
+  .match-item:last-child {
+    border-bottom: none;
+  }
+  
+  .match-item:hover {
+    background-color: var(--light-purple);
+  }
+  
+  .teams {
+    font-weight: 600;
+    color: var(--dark-blue);
+  }
+  
+  .result {
+    font-weight: bold;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+  }
+  
+  .result.win {
+    background-color: #2ecc71; /* Green for wins */
+  }
+  
+  .result.loss {
+    background-color: #e74c3c; /* Red for losses */
+  }
+  
+  .points {
+    font-weight: 600;
+    color: var(--dark-blue);
+  }
+  
+  .date {
+    color: var(--medium-purple);
+  }
+  
+  .view-game-button {
+    background: linear-gradient(to right, var(--medium-purple), var(--bright-purple));
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+  
+  .view-game-button:hover {
+    background: linear-gradient(to right, var(--bright-purple), var(--medium-purple));
+    box-shadow: 0 4px 8px rgba(65, 65, 252, 0.3);
+    transform: translateY(-2px);
+  }
+  
+  /* Responsive styles */
+  @media (max-width: 768px) {
+    .match-header,
+    .match-item {
+      grid-template-columns: 2fr 0.5fr 1fr 1fr;
+      font-size: 0.9rem;
+      padding: 1rem;
+    }
+  
+    .action-header {
+      display: none;
+    }
+  
+    .match-action {
+      grid-column: 1 / -1;
+      margin-top: 0.5rem;
+      text-align: center;
+    }
+  
+    .match-item {
+      grid-template-rows: auto auto;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .match-header,
+    .match-item {
+      grid-template-columns: 1.5fr 0.5fr 1fr;
+    }
+  
+    .date-header,
+    .date {
+      display: none;
+    }
+  
+    .match-item {
+      position: relative;
+      padding-bottom: 3rem;
+    }
+  
+    .match-action {
+      position: absolute;
+      bottom: 0.5rem;
+      left: 0;
+      right: 0;
+    }
+  
+    .view-game-button {
+      width: 90%;
+    }
+  }
+  
+  

@@ -1,5 +1,7 @@
 package cit.edu.capstone.CourtVision.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.List;
 
@@ -13,6 +15,7 @@ public class Team {
 
     @ManyToOne
     @JoinColumn(name = "admin_id")
+    @JsonIgnore
     private Admin admin;
 
     @ManyToMany
@@ -24,6 +27,7 @@ public class Team {
     private List<Coach> coaches;
 
     @OneToMany(mappedBy = "team")
+    @JsonIgnore
     private List<Player> players;
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)

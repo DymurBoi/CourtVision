@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom"
 import { useAuth } from "../../components/AuthContext"
 import { api } from "../../utils/axiosConfig"
 import "../../styles/player/P-Profile.css"
-import axios from "axios"
 
 function PProfile() {
   const navigate = useNavigate()

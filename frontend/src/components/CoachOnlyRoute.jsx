@@ -13,11 +13,27 @@ function CoachOnlyRoute() {
     const verifyAuth = async () => {
       // First check if token is valid
       const isTokenValid = checkTokenValidity();
+      console.log("CoachOnlyRoute - Token valid:", isTokenValid);
+      console.log("CoachOnlyRoute - User:", user);
       
-      // Then check if user has coach role
-      if (isTokenValid && user && user.role === "coach") {
+      // Check roles in localStorage directly as a fallback
+      const lsRole = localStorage.getItem("userRole");
+      console.log("Role in localStorage:", lsRole);
+      
+      // Check if user has coach role - case insensitive
+      const hasCoachRole = 
+        (isTokenValid && user && 
+         (user.role?.toLowerCase() === "coach" || lsRole?.toLowerCase() === "coach"));
+      
+      if (hasCoachRole) {
+        console.log("CoachOnlyRoute - User IS authorized as coach");
         setIsAuthorized(true);
       } else {
+        console.log("CoachOnlyRoute - User is NOT authorized as coach:");
+        console.log("- Token valid:", isTokenValid);
+        console.log("- User present:", !!user);
+        console.log("- User role:", user?.role);
+        console.log("- localStorage role:", lsRole);
         setIsAuthorized(false);
       }
     };

@@ -45,52 +45,59 @@ function Login() {
       
       const { token } = response.data
       const decoded = jwtDecode(token)
+      
+      console.log("*** LOGIN DEBUG INFO ***");
       console.log("Raw token received:", token);
-      console.log("Token decoded successfully:", decoded);
+      console.log("Token decoded contents:", decoded);
       console.log("Token subject:", decoded.sub);
       console.log("Token role:", decoded.role);
+      console.log("Role type:", typeof decoded.role);
       console.log("Token expiry:", new Date(decoded.exp * 1000).toLocaleString());
       
       // Extract the correct ID based on the JWT format
-      let userId = decoded.sub;
-      const originalId = userId; // Save original for comparison
+      const userId = decoded.sub;
       
-      // Extract numeric ID if JWT subject is in format "PLAYER_123" or "COACH_123"
-      if (typeof userId === 'string') {
-        if (userId.startsWith("PLAYER_") && role === "player") {
-          const numericId = userId.substring(7);
-          console.log(`Extracted player numeric ID: ${numericId} from ${userId}`);
-          userId = userId; // KEEP THE ORIGINAL FORMAT - don't extract numeric part
-        } else if (userId.startsWith("COACH_") && role === "coach") {
-          const numericId = userId.substring(6);
-          console.log(`Extracted coach numeric ID: ${numericId} from ${userId}`);
-          userId = userId; // KEEP THE ORIGINAL FORMAT - don't extract numeric part
-        } else {
-          console.warn(`JWT subject format unexpected: ${userId}, role: ${role}`);
-        }
+      // Store the normalized role (guarantee lowercase without ROLE_ prefix)
+      let userRole = decoded.role;
+      console.log("Original role from token:", userRole);
+      
+      // Convert to string and lowercase if not already
+      if (typeof userRole === 'string') {
+        userRole = userRole.toLowerCase();
+      } else if (userRole) {
+        userRole = String(userRole).toLowerCase();
+      } else {
+        // Fallback to the selected role if token doesn't have one
+        userRole = role.toLowerCase();
+        console.warn("No role found in token, using selected role:", userRole);
       }
       
-      console.log(`Login successful as ${role}`);
-      console.log(`Original user ID from token: ${originalId}`);
+      // Remove ROLE_ prefix if present
+      if (userRole.startsWith("role_")) {
+        userRole = userRole.substring(5); // "role_player" -> "player"
+      }
+      
+      console.log("Final normalized role:", userRole);
+      console.log(`Login successful as ${userRole}`);
       console.log(`User ID being stored: ${userId}`);
       
       // Explicitly store values in localStorage for debugging
       localStorage.setItem("authToken", token);
       localStorage.setItem("userId", userId);
-      localStorage.setItem("userRole", role);
+      localStorage.setItem("userRole", userRole);
       
       console.log("Stored in localStorage:");
-      console.log("- authToken:", localStorage.getItem("authToken") ? "Present" : "Missing");
+      console.log("- authToken:", localStorage.getItem("authToken") ? "Present (length: " + localStorage.getItem("authToken").length + ")" : "Missing");
       console.log("- userId:", localStorage.getItem("userId"));
       console.log("- userRole:", localStorage.getItem("userRole"));
 
-      // Use the auth context to log in with the original format ID
-      login(token, role, userId)
+      // Use the auth context to log in with the token role
+      login(token, userRole, userId)
 
       // Get redirect path from location state or use default
       const from = location.state?.from?.pathname || 
-                  (role === "player" ? "/player/home" : 
-                   role === "coach" ? "/coach/home" : "/");
+                  (userRole === "player" ? "/player/home" : 
+                   userRole === "coach" ? "/coach/home" : "/");
                    
       // Redirect based on role with replace to prevent back navigation to login
       navigate(from, { replace: true })
@@ -99,12 +106,14 @@ function Login() {
       if (error.response) {
         console.error("Error response status:", error.response.status);
         console.error("Error response data:", error.response.data);
+        setError(error.response.data || "Invalid email or password. Please try again.")
       } else if (error.request) {
         console.error("No response received:", error.request);
+        setError("No response from server. Please try again.")
       } else {
         console.error("Error setting up request:", error.message);
+        setError("An error occurred. Please try again.")
       }
-      setError("Invalid email or password. Please try again.")
     } finally {
       setIsLoading(false)
     }

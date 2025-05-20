@@ -1,5 +1,6 @@
 package cit.edu.capstone.CourtVision.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -21,6 +22,7 @@ public class Coach {
     private boolean isAdmin;
 
     @ManyToMany(mappedBy = "coaches")
+    @JsonIgnore
     private List<Team> teams;
 
     // Getters and Setters

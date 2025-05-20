@@ -1,5 +1,6 @@
 package cit.edu.capstone.CourtVision.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;

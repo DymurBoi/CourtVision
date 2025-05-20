@@ -13,11 +13,27 @@ function PlayerOnlyRoute() {
     const verifyAuth = async () => {
       // First check if token is valid
       const isTokenValid = checkTokenValidity()
+      console.log("PlayerOnlyRoute - Token valid:", isTokenValid);
+      console.log("PlayerOnlyRoute - User:", user);
       
-      // Then check if user has player role
-      if (isTokenValid && user && user.role === "player") {
+      // Check roles in localStorage directly as a fallback
+      const lsRole = localStorage.getItem("userRole");
+      console.log("Role in localStorage:", lsRole);
+      
+      // Check if user has player role - case insensitive
+      const hasPlayerRole = 
+        (isTokenValid && user && 
+         (user.role?.toLowerCase() === "player" || lsRole?.toLowerCase() === "player"));
+      
+      if (hasPlayerRole) {
+        console.log("PlayerOnlyRoute - User IS authorized as player");
         setIsAuthorized(true)
       } else {
+        console.log("PlayerOnlyRoute - User is NOT authorized as player:");
+        console.log("- Token valid:", isTokenValid);
+        console.log("- User present:", !!user);
+        console.log("- User role:", user?.role);
+        console.log("- localStorage role:", lsRole);
         setIsAuthorized(false)
       }
     }

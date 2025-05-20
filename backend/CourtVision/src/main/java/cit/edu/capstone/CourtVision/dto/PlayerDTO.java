@@ -12,6 +12,15 @@ public class PlayerDTO {
     private boolean isCoach;
     private boolean isAdmin;
     private PhysicalRecordDTO physicalRecords;
+    private TeamDTO team;
+
+    public TeamDTO getTeam() {
+        return team;
+    }
+    
+    public void setTeam(TeamDTO team) {
+        this.team = team;
+    }
 
     public Long getPlayerId() {
         return playerId;

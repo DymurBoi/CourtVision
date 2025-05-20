@@ -1,0 +1,282 @@
+.stats-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin: 2rem 0;
+  }
+  
+  .stats-card {
+    background-color: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 16px rgba(36, 36, 62, 0.08);
+    border: 1px solid rgba(123, 123, 243, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .stats-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(36, 36, 62, 0.12);
+  }
+  
+  .stats-card-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(123, 123, 243, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(to right, var(--dark-blue), var(--bright-purple));
+    color: white;
+  }
+  
+  .stats-card-header h2 {
+    color: white;
+    margin: 0;
+    font-size: 1.3rem;
+  }
+  
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .last-updated,
+  .games-played {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+  
+  .edit-button {
+    background-color: white;
+    color: var(--bright-purple);
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .edit-button:hover {
+    background-color: rgba(255, 255, 255, 0.9);
+    transform: translateY(-2px);
+  }
+  
+  .edit-button.cancel {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+  }
+  
+  .edit-button.cancel:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+  
+  /* Physical Records Styles */
+  .physical-records-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+    padding: 1.5rem;
+  }
+  
+  .record-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background-color: var(--light-purple);
+    padding: 1.2rem;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+  }
+  
+  .record-item:hover {
+    transform: translateY(-3px);
+  }
+  
+  .record-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    flex-shrink: 0;
+  }
+  
+  .record-icon svg {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .height-icon {
+    background: linear-gradient(135deg, #4361ee, #7b7bf3);
+  }
+  
+  .weight-icon {
+    background: linear-gradient(135deg, #2ecc71, #1abc9c);
+  }
+  
+  .wingspan-icon {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+  }
+  
+  .vertical-icon {
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+  }
+  
+  .bmi-icon {
+    background: linear-gradient(135deg, #9b59b6, #8e44ad);
+  }
+  
+  .record-details {
+    flex: 1;
+  }
+  
+  .record-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--dark-blue);
+    margin-bottom: 0.2rem;
+  }
+  
+  .record-label {
+    font-size: 0.9rem;
+    color: #555;
+  }
+  
+  .record-edit {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+  }
+  
+  .record-edit label {
+    font-size: 0.9rem;
+    color: var(--dark-blue);
+    font-weight: 600;
+  }
+  
+  .record-edit input {
+    padding: 0.7rem;
+    border: 1px solid rgba(123, 123, 243, 0.3);
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .record-edit input:focus {
+    outline: none;
+    border-color: var(--medium-purple);
+    box-shadow: 0 0 0 3px rgba(123, 123, 243, 0.2);
+  }
+  
+  .edit-actions {
+    padding: 0 1.5rem 1.5rem;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .apply-button {
+    background: linear-gradient(to right, var(--medium-purple), var(--bright-purple));
+    color: white;
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  .apply-button:hover {
+    background: linear-gradient(to right, var(--bright-purple), var(--medium-purple));
+    box-shadow: 0 4px 8px rgba(65, 65, 252, 0.3);
+    transform: translateY(-2px);
+  }
+  
+  .confirmation-message {
+    margin: 0 1.5rem 1.5rem;
+    padding: 1rem;
+    background-color: #e8f5e9;
+    color: #388e3c;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 500;
+    animation: fadeIn 0.5s ease;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Performance Stats Styles */
+  .performance-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1.5rem;
+    padding: 1.5rem;
+  }
+  
+  .stat-box {
+    background-color: var(--light-purple);
+    padding: 1.5rem;
+    border-radius: 10px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .stat-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(36, 36, 62, 0.1);
+  }
+  
+  .stat-box .stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--bright-purple);
+    margin-bottom: 0.5rem;
+  }
+  
+  .stat-box .stat-label {
+    font-size: 0.9rem;
+    color: var(--dark-blue);
+    font-weight: 500;
+  }
+  
+  @media (max-width: 768px) {
+    .physical-records-grid,
+    .performance-stats-grid {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+  
+    .stats-card-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.8rem;
+    }
+  
+    .header-actions {
+      width: 100%;
+      justify-content: space-between;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .physical-records-grid,
+    .performance-stats-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  

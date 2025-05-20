@@ -24,15 +24,15 @@ public class JwtTokenProvider {
         if (user instanceof Player player) {
             subject = "PLAYER_" + player.getPlayerId();
             email = player.getEmail();
-            role = "PLAYER";
+            role = "ROLE_PLAYER";
         } else if (user instanceof Coach coach) {
             subject = "COACH_" + coach.getCoachId();
             email = coach.getEmail();
-            role = "COACH";
+            role = "ROLE_COACH";
         } else if (user instanceof Admin admin) {
             subject = "ADMIN_" + admin.getAdminId();
             email = admin.getEmail();
-            role = "ADMIN";
+            role = "ROLE_ADMIN";
         }
 
         return Jwts.builder()

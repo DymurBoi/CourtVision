@@ -1,0 +1,134 @@
+.profile-container {
+    background-color: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 16px rgba(36, 36, 62, 0.08);
+    border: 1px solid rgba(123, 123, 243, 0.2);
+    margin: 2rem 0;
+  }
+  
+  .profile-header {
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(to right, var(--dark-blue), var(--bright-purple));
+    color: white;
+  }
+  
+  .profile-header h1 {
+    margin: 0;
+    font-size: 2rem;
+  }
+  
+  .profile-content {
+    padding: 2rem;
+  }
+  
+  .profile-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .info-group {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .info-group label {
+    font-weight: 600;
+    color: var(--dark-blue);
+    margin-bottom: 0.5rem;
+  }
+  
+  .info-group p {
+    margin: 0;
+    color: #555;
+    padding: 0.8rem;
+    background-color: var(--light-purple);
+    border-radius: 4px;
+  }
+  
+  .info-group input {
+    padding: 0.8rem;
+    border: 1px solid rgba(123, 123, 243, 0.3);
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+  }
+  
+  .info-group input:focus {
+    outline: none;
+    border-color: var(--medium-purple);
+    box-shadow: 0 0 0 2px rgba(123, 123, 243, 0.2);
+  }
+  
+  .profile-actions {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .edit-button,
+  .save-button,
+  .logout-button,
+  .cancel-button {
+    padding: 0.8rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .edit-button,
+  .save-button {
+    background: linear-gradient(to right, var(--medium-purple), var(--bright-purple));
+    color: white;
+    border: none;
+  }
+  
+  .edit-button:hover,
+  .save-button:hover {
+    background: linear-gradient(to right, var(--bright-purple), var(--medium-purple));
+    box-shadow: 0 4px 8px rgba(65, 65, 252, 0.3);
+  }
+  
+  .logout-button {
+    background: white;
+    color: var(--dark-blue);
+    border: 1px solid var(--dark-blue);
+  }
+  
+  .logout-button:hover {
+    background-color: #f8f8f8;
+    color: #e74c3c;
+    border-color: #e74c3c;
+  }
+  
+  .cancel-button {
+    background: white;
+    color: var(--dark-blue);
+    border: 1px solid var(--dark-blue);
+  }
+  
+  .cancel-button:hover {
+    background-color: #f8f8f8;
+  }
+  
+  @media (max-width: 768px) {
+    .profile-info {
+      grid-template-columns: 1fr;
+    }
+  
+    .profile-actions {
+      flex-direction: column;
+    }
+  
+    .edit-button,
+    .save-button,
+    .logout-button,
+    .cancel-button {
+      width: 100%;
+    }
+  }
+  
