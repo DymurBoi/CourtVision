@@ -1,11 +1,15 @@
 package cit.edu.capstone.CourtVision.controller;
 
+import cit.edu.capstone.CourtVision.dto.GameDTO;
 import cit.edu.capstone.CourtVision.entity.Game;
+import cit.edu.capstone.CourtVision.mapper.GameMapper;
 import cit.edu.capstone.CourtVision.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/game")
@@ -15,32 +19,38 @@ public class GameController {
     private GameService service;
 
     @GetMapping("/get/all")
-    public List<Game> getAll() {
-        return service.getAll();
+    public ResponseEntity<List<GameDTO>> getAll() {
+        List<Game> games = service.getAll();
+        List<GameDTO> dtos = games.stream().map(GameMapper::toDTO).collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
     }
 
     @GetMapping("/get/{id}")
-    public Game getById(@PathVariable Long id) {
-        return service.getById(id);
+    public ResponseEntity<GameDTO> getById(@PathVariable Long id) {
+        Game game = service.getById(id);
+        return game != null ? ResponseEntity.ok(GameMapper.toDTO(game)) : ResponseEntity.notFound().build();
     }
 
     @GetMapping("/get/team/{teamId}")
-    public List<Game> getByTeamId(@PathVariable Long teamId) {
-        return service.getByTeamId(teamId);
+    public ResponseEntity<List<GameDTO>> getByTeamId(@PathVariable Long teamId) {
+        List<Game> games = service.getByTeamId(teamId);
+        List<GameDTO> dtos = games.stream().map(GameMapper::toDTO).collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
     }
 
     @PostMapping("/post")
-    public Game create(@RequestBody Game game) {
-        return service.save(game);
+    public ResponseEntity<GameDTO> create(@RequestBody Game game) {
+        return ResponseEntity.ok(GameMapper.toDTO(service.save(game)));
     }
 
     @PutMapping("/put/{id}")
-    public Game update(@PathVariable Long id, @RequestBody Game game) {
-        return service.update(id, game);
+    public ResponseEntity<GameDTO> update(@PathVariable Long id, @RequestBody Game game) {
+        return ResponseEntity.ok(GameMapper.toDTO(service.update(id, game)));
     }
 
     @DeleteMapping("/delete/{id}")
-    public void delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

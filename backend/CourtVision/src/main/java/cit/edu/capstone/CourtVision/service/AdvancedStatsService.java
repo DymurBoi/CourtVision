@@ -19,31 +19,46 @@ public class AdvancedStatsService {
     @Autowired
     private GameRepository gameRepo;
 
+    //Get all
     public List<AdvancedStats> getAll() {
         return advancedRepo.findAll();
     }
 
+    //Get by Game ID
     public AdvancedStats getByGameId(Long gameId) {
         Game game = gameRepo.findById(gameId).orElse(null);
         return game != null ? advancedRepo.findByGame(game) : null;
     }
 
+    //Generate from BasicStats (create)
     public void generateFromBasic(BasicStats basic) {
+        if (basic == null || basic.getGame() == null) return;
+
         AdvancedStats stats = computeAdvancedStats(basic);
         stats.setGame(basic.getGame());
+        stats.setBasicStats(basic);
+
         advancedRepo.save(stats);
     }
 
+    //Update from BasicStats
     public void updateFromBasic(BasicStats basic) {
+        if (basic == null || basic.getGame() == null) return;
+
         AdvancedStats existing = advancedRepo.findByGame(basic.getGame());
         AdvancedStats updated = computeAdvancedStats(basic);
+
+        updated.setGame(basic.getGame());
+        updated.setBasicStats(basic);
+
         if (existing != null) {
             updated.setId(existing.getId());
         }
-        updated.setGame(basic.getGame());
+
         advancedRepo.save(updated);
     }
 
+    //Delete by Game
     public void deleteByGame(Game game) {
         AdvancedStats stats = advancedRepo.findByGame(game);
         if (stats != null) {
@@ -51,7 +66,7 @@ public class AdvancedStatsService {
         }
     }
 
-    // 🔢 Inline calculator logic here
+    //Calculation logic
     private AdvancedStats computeAdvancedStats(BasicStats basic) {
         double minutes = basic.getMinutes().toLocalTime().toSecondOfDay() / 60.0;
         double FGA = basic.getTwoPtAttempts() + basic.getThreePtAttempts();
@@ -69,7 +84,9 @@ public class AdvancedStatsService {
 
         AdvancedStats stats = new AdvancedStats();
 
-        stats.setuPER(minutes > 0 ? (FGM + 0.5 * basic.getThreePtMade() - FGA + 0.5 * FTM - FTA + ORB + 0.5 * DRB + AST + STL + 0.5 * BLK - PF - TOV) / minutes : 0.0);
+        stats.setuPER(minutes > 0 ?
+                (FGM + 0.5 * basic.getThreePtMade() - FGA + 0.5 * FTM - FTA + ORB + 0.5 * DRB + AST + STL + 0.5 * BLK - PF - TOV) / minutes : 0.0);
+
         stats.seteFG(FGA > 0 ? (FGM + 0.5 * basic.getThreePtMade()) / FGA : 0.0);
         stats.setTs((FGA + 0.44 * FTA) > 0 ? Points / (2 * (FGA + 0.44 * FTA)) : 0.0);
         stats.setUsg(minutes > 0 ? 100 * (FGA + 0.44 * FTA + TOV) / minutes : 0.0);

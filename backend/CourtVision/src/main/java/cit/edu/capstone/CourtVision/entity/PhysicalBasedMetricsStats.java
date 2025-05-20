@@ -21,7 +21,7 @@ public class PhysicalBasedMetricsStats {
     private double positionSuitabilityIndex;
 
     @OneToOne
-    @JoinColumn(name = "basic_stat_id")
+    @JoinColumn(name = "basic_stats_id")
     private BasicStats basicStats;
 
     @OneToOne
@@ -29,7 +29,7 @@ public class PhysicalBasedMetricsStats {
     private Game game;
 
     @OneToOne
-    @JoinColumn(name = "physical_record_id")
+    @JoinColumn(name = "physical_records_id")
     private PhysicalRecords physicalRecord;
 
 

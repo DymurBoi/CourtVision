@@ -20,28 +20,31 @@ public class PhysicalBasedMetricsStatsService {
     @Autowired
     private GameRepository gameRepo;
 
+    // Get All
     public List<PhysicalBasedMetricsStats> getAll() {
         return metricsRepo.findAll();
     }
 
+    // Get by ID
     public PhysicalBasedMetricsStats getById(Long id) {
         return metricsRepo.findById(id).orElse(null);
     }
 
+    //Get by Game ID
     public PhysicalBasedMetricsStats getByGameId(Long gameId) {
         Game game = gameRepo.findById(gameId).orElse(null);
         return game != null ? metricsRepo.findByGame(game) : null;
     }
 
+    //Create from BasicStats
     public PhysicalBasedMetricsStats createFrom(BasicStats basicStats) {
+        if (basicStats == null || basicStats.getGame() == null) return null;
+
         Game game = basicStats.getGame();
-        if (game == null) return null;
+        Team team = game.getTeam();
+        if (team == null || team.getPlayers() == null || team.getPlayers().isEmpty()) return null;
 
-        Player player = game.getTeam() != null && game.getTeam().getPlayers() != null
-                ? game.getTeam().getPlayers().stream().findFirst().orElse(null)
-                : null;
-
-        if (player == null) return null;
+        Player player = team.getPlayers().get(0); // You can improve this by linking the actual player in the future
 
         PhysicalRecords record = physicalRepo.findByPlayer(player);
         if (record == null) return null;
@@ -54,6 +57,7 @@ public class PhysicalBasedMetricsStatsService {
         return metricsRepo.save(stats);
     }
 
+    //Update by ID
     public PhysicalBasedMetricsStats update(Long id, PhysicalBasedMetricsStats updated) {
         PhysicalBasedMetricsStats existing = metricsRepo.findById(id).orElse(null);
         if (existing == null) return null;
@@ -67,10 +71,12 @@ public class PhysicalBasedMetricsStatsService {
         return metricsRepo.save(existing);
     }
 
+    //Delete by ID
     public void delete(Long id) {
         metricsRepo.deleteById(id);
     }
 
+    //Delete by Game
     public void deleteByGame(Game game) {
         PhysicalBasedMetricsStats stats = metricsRepo.findByGame(game);
         if (stats != null) {
@@ -78,6 +84,7 @@ public class PhysicalBasedMetricsStatsService {
         }
     }
 
+    //Metric Computation
     private PhysicalBasedMetricsStats computeMetrics(PhysicalRecords record) {
         BigDecimal height = record.getHeight();
         BigDecimal wingspan = record.getWingspan();
@@ -85,15 +92,15 @@ public class PhysicalBasedMetricsStatsService {
         BigDecimal weight = record.getWeight();
 
         double Z_vert = vertical.doubleValue();
-        double Z_speed = 1.0;
-        double Z_agility = 1.0;
+        double Z_speed = 1.0; // Placeholder
+        double Z_agility = 1.0; // Placeholder
         double Z_wingspan = wingspan.doubleValue();
 
         double api = (Z_vert + Z_speed + Z_agility + Z_wingspan) / 4;
         double ddr = (1 + 1) * (wingspan.doubleValue() / height.doubleValue() + 1.0) / 2;
         double rpi = (height.doubleValue() + 0.5 * wingspan.doubleValue()) / weight.doubleValue();
         double mabs = (height.doubleValue() + wingspan.doubleValue()) / weight.doubleValue();
-        double psi = (wingspan.doubleValue() / height.doubleValue()) + 1 + 1;
+        double psi = (wingspan.doubleValue() / height.doubleValue()) + 2.0; // 1 + 1 as constant part
 
         PhysicalBasedMetricsStats stats = new PhysicalBasedMetricsStats();
         stats.setAthleticPerformanceIndex(api);
