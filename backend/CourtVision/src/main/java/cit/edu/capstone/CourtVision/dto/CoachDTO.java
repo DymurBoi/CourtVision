@@ -10,7 +10,6 @@ public class CoachDTO {
     private String email;
     private String password;
     private LocalDate birthDate;
-    private List<TeamDTO> teams;
 
     // Getters and Setters
 
@@ -23,13 +22,6 @@ public class CoachDTO {
         this.coachId = coachId;
     }
 
-    public List<TeamDTO> getTeams() {
-        return teams;
-    }
-
-    public void setTeams(List<TeamDTO> teams) {
-        this.teams = teams;
-    }
 
     public String getFname() { return fname; }
     public void setFname(String fname) { this.fname = fname; }

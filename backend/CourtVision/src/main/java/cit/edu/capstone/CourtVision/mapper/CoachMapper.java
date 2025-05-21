@@ -16,11 +16,6 @@ public class CoachMapper {
         dto.setPassword(coach.getPassword());
         dto.setBirthDate(coach.getBirthDate());
 
-        if (coach.getTeams() != null) {
-            dto.setTeams(coach.getTeams().stream()
-                    .map(TeamMapper::toDTO)
-                    .collect(Collectors.toList()));
-        }
 
         return dto;
     }
