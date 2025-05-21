@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,8 +38,24 @@ public class PlayerService {
 
     public Player createPlayer(Player player) {
         player.setPassword(passwordEncoder.encode(player.getPassword()));
-        return playerRepository.save(player);
+        Player savedPlayer = playerRepository.save(player);
+
+        // Automatically create PhysicalRecords with initial zero values
+        PhysicalRecords initialRecord = PhysicalRecords.builder()
+                .weight(BigDecimal.ZERO)
+                .height(BigDecimal.ZERO)
+                .wingspan(BigDecimal.ZERO)
+                .vertical(BigDecimal.ZERO)
+                .bmi(BigDecimal.ZERO)
+                .dateRecorded(LocalDate.now())
+                .player(savedPlayer)
+                .build();
+
+        physicalRecordService.save(initialRecord);
+
+        return savedPlayer;
     }
+
 
     public Player updatePlayer(Long id, Player updatedPlayer) {
         Player existingPlayer = getPlayerById(id);
@@ -61,9 +79,13 @@ public class PlayerService {
             if (updatedPlayer.getJerseyNum() != 0) {
                 existingPlayer.setJerseyNum(updatedPlayer.getJerseyNum());
             }
+            if (updatedPlayer.getPosition() != null) {
+                existingPlayer.setPosition(updatedPlayer.getPosition());
+            }
             if (updatedPlayer.getTeam() != null) {
                 existingPlayer.setTeam(updatedPlayer.getTeam());
             }
+
 
             return playerRepository.save(existingPlayer);
         }

@@ -18,6 +18,7 @@ public class Player {
     private String password;
     private LocalDate birthDate;
     private int jerseyNum;
+    private String position;
     private boolean isCoach;
     private boolean isAdmin;
 
@@ -33,6 +34,14 @@ public class Player {
 
     // Getters and Setters
 
+
+    public String getPosition() {
+        return position;
+    }
+
+    public void setPosition(String position) {
+        this.position = position;
+    }
 
     public List<PlayerAverages> getPlayerAverages() {
         return playerAverages;
