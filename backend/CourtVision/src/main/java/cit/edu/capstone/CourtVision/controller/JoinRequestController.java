@@ -32,7 +32,7 @@ public class JoinRequestController {
     private TeamRepository teamRepository;
 
     @PreAuthorize("hasAuthority('ROLE_PLAYER')")
-    @PostMapping
+    @PostMapping("/post")
     public ResponseEntity<JoinRequestDTO> createRequest(@RequestBody JoinRequestDTO dto) {
         Optional<Player> player = playerRepository.findById(dto.getPlayerId());
         Optional<Coach> coach = coachRepository.findById(dto.getCoachId());
@@ -48,7 +48,7 @@ public class JoinRequestController {
         return ResponseEntity.ok(JoinRequestMapper.toDto(saved));
     }
 
-    @GetMapping
+    @GetMapping("/get/all")
     public List<JoinRequestDTO> getAllRequests() {
         return joinRequestService.getAllRequests().stream()
                 .map(JoinRequestMapper::toDto)
