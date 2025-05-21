@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class CoachDTO {
+    private Integer coachId;
     private String fname;
     private String lname;
     private String email;
@@ -12,6 +13,15 @@ public class CoachDTO {
     private List<TeamDTO> teams;
 
     // Getters and Setters
+
+
+    public Integer getCoachId() {
+        return coachId;
+    }
+
+    public void setCoachId(Integer coachId) {
+        this.coachId = coachId;
+    }
 
     public List<TeamDTO> getTeams() {
         return teams;

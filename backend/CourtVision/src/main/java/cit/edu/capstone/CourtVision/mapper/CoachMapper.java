@@ -9,6 +9,7 @@ public class CoachMapper {
 
     public static CoachDTO toDTO(Coach coach) {
         CoachDTO dto = new CoachDTO();
+        dto.setCoachId(coach.getCoachId());
         dto.setFname(coach.getFname());
         dto.setLname(coach.getLname());
         dto.setEmail(coach.getEmail());

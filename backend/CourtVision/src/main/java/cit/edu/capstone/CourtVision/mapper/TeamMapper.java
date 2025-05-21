@@ -23,11 +23,6 @@ public class TeamMapper {
                     .collect(Collectors.toList()));
         }
 
-        if (team.getCoaches() != null) {
-            dto.setCoaches(team.getCoaches().stream()
-                    .map(CoachMapper::toDTO)
-                    .collect(Collectors.toList()));
-        }
 
         return dto;
     }
