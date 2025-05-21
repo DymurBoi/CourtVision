@@ -3,8 +3,11 @@ package cit.edu.capstone.CourtVision.service;
 import cit.edu.capstone.CourtVision.entity.Coach;
 import cit.edu.capstone.CourtVision.entity.PhysicalRecords;
 import cit.edu.capstone.CourtVision.entity.PhysicalUpdateRequest;
+import cit.edu.capstone.CourtVision.entity.PhysicalUpdateRequestCoach;
 import cit.edu.capstone.CourtVision.entity.Player;
+import cit.edu.capstone.CourtVision.entity.Team;
 import cit.edu.capstone.CourtVision.repository.PhysicalRecordsRepository;
+import cit.edu.capstone.CourtVision.repository.PhysicalUpdateRequestCoachRepository;
 import cit.edu.capstone.CourtVision.repository.PhysicalUpdateRequestRepository;
 import cit.edu.capstone.CourtVision.repository.PlayerRepository;
 import org.slf4j.Logger;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -22,22 +26,51 @@ public class PhysicalUpdateRequestService {
 
     @Autowired
     private PhysicalUpdateRequestRepository physicalUpdateRequestRepository;
+    
+    @Autowired
+    private PhysicalUpdateRequestCoachRepository physicalUpdateRequestCoachRepository;
 
     @Autowired
     private PhysicalRecordsRepository physicalRecordsRepository;
 
     @Autowired
     private PlayerRepository playerRepository;
+    
+    @Autowired
+    private TeamService teamService;
 
     /**
      * Create a new physical update request
      * @param physicalUpdateRequest The request details
      * @return The saved request
      */
+    @Transactional
     public PhysicalUpdateRequest createRequest(PhysicalUpdateRequest physicalUpdateRequest) {
         physicalUpdateRequest.setDateRequested(LocalDate.now());
         physicalUpdateRequest.setRequestStatus(0); // Set status as pending
-        return physicalUpdateRequestRepository.save(physicalUpdateRequest);
+        
+        // Save the request first
+        PhysicalUpdateRequest savedRequest = physicalUpdateRequestRepository.save(physicalUpdateRequest);
+        
+        // Get the team and its coaches
+        Team team = physicalUpdateRequest.getTeam();
+        if (team != null && team.getCoaches() != null && !team.getCoaches().isEmpty()) {
+            List<PhysicalUpdateRequestCoach> requestCoaches = new ArrayList<>();
+            
+            // Create an entry for each coach
+            for (Coach coach : team.getCoaches()) {
+                PhysicalUpdateRequestCoach requestCoach = new PhysicalUpdateRequestCoach();
+                requestCoach.setPhysicalUpdateRequest(savedRequest);
+                requestCoach.setCoach(coach);
+                requestCoach.setViewed(0);
+                requestCoaches.add(requestCoach);
+            }
+            
+            physicalUpdateRequestCoachRepository.saveAll(requestCoaches);
+            savedRequest.setRequestCoaches(requestCoaches);
+        }
+        
+        return savedRequest;
     }
 
     /**
@@ -63,7 +96,15 @@ public class PhysicalUpdateRequestService {
      * @return List of requests for this coach
      */
     public List<PhysicalUpdateRequest> getRequestsByCoachId(Long coachId) {
-        return physicalUpdateRequestRepository.findByCoach_CoachId(coachId);
+        // We need to change this to use the physical update request coach table
+        List<PhysicalUpdateRequestCoach> requestCoaches = physicalUpdateRequestCoachRepository.findByCoach_CoachId(coachId.intValue());
+        List<PhysicalUpdateRequest> physicalUpdateRequests = new ArrayList<>();
+        
+        for (PhysicalUpdateRequestCoach requestCoach : requestCoaches) {
+            physicalUpdateRequests.add(requestCoach.getPhysicalUpdateRequest());
+        }
+        
+        return physicalUpdateRequests;
     }
 
     /**
@@ -123,7 +164,12 @@ public class PhysicalUpdateRequestService {
      * Delete a physical update request
      * @param requestId The request ID to delete
      */
+    @Transactional
     public void deleteRequest(Long requestId) {
+        // Delete associated PhysicalUpdateRequestCoach entries first
+        physicalUpdateRequestCoachRepository.deleteByPhysicalUpdateRequest_RequestId(requestId);
+        
+        // Then delete the PhysicalUpdateRequest
         physicalUpdateRequestRepository.deleteById(requestId);
     }
 } 

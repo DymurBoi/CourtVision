@@ -1,8 +1,10 @@
 package cit.edu.capstone.CourtVision.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 public class PhysicalUpdateRequest {
@@ -15,12 +17,16 @@ public class PhysicalUpdateRequest {
     private Player player;
 
     @ManyToOne
-    @JoinColumn(name = "coach_id", nullable = false)
-    private Coach coach;
+    @JoinColumn(name = "coach_id", nullable = true) // Make nullable for backward compatibility
+    private Coach coach; // This will be deprecated but kept for compatibility
 
     @ManyToOne
     @JoinColumn(name = "team_id", nullable = false)
     private Team team;
+    
+    @OneToMany(mappedBy = "physicalUpdateRequest", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<PhysicalUpdateRequestCoach> requestCoaches;
 
     private BigDecimal weight;
     private BigDecimal height;
@@ -41,6 +47,9 @@ public class PhysicalUpdateRequest {
 
     public Team getTeam() { return team; }
     public void setTeam(Team team) { this.team = team; }
+    
+    public List<PhysicalUpdateRequestCoach> getRequestCoaches() { return requestCoaches; }
+    public void setRequestCoaches(List<PhysicalUpdateRequestCoach> requestCoaches) { this.requestCoaches = requestCoaches; }
 
     public BigDecimal getWeight() { return weight; }
     public void setWeight(BigDecimal weight) { this.weight = weight; }

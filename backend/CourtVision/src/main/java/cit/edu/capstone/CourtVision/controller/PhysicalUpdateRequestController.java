@@ -54,10 +54,8 @@ public class PhysicalUpdateRequestController {
                 return ResponseEntity.badRequest().build();
             }
             
-            if (dto.getCoachId() == null) {
-                logger.error("Coach ID is null in the request");
-                return ResponseEntity.badRequest().build();
-            }
+            // Converting from using a single coach to using multiple coaches based on the team
+            // We still need a primary coach for backward compatibility
             
             // Convert DTO to entity
             PhysicalUpdateRequest entity = PhysicalUpdateRequestMapper.toEntity(dto);
@@ -71,13 +69,6 @@ public class PhysicalUpdateRequestController {
                 return ResponseEntity.badRequest().body(null);
             }
             
-            logger.info("Fetching coach with ID: {}", dto.getCoachId());
-            Coach coach = coachService.getCoachById(dto.getCoachId());
-            if (coach == null) {
-                logger.error("Coach not found with ID: {}", dto.getCoachId());
-                return ResponseEntity.badRequest().body(null);
-            }
-            
             logger.info("Getting team from player: {}", player.getPlayerId());
             Team team = player.getTeam(); // Use player's team
             if (team == null) {
@@ -85,8 +76,17 @@ public class PhysicalUpdateRequestController {
                 return ResponseEntity.badRequest().body(null);
             }
             
+            // Check if team has coaches
+            if (team.getCoaches() == null || team.getCoaches().isEmpty()) {
+                logger.error("Team {} has no coaches", team.getTeamId());
+                return ResponseEntity.badRequest().body(null);
+            }
+            
+            // Use the first coach as the primary coach for backward compatibility
+            Coach primaryCoach = team.getCoaches().get(0);
+            
             entity.setPlayer(player);
-            entity.setCoach(coach);
+            entity.setCoach(primaryCoach); // Keep this for backward compatibility
             entity.setTeam(team);
             
             // Save the request
