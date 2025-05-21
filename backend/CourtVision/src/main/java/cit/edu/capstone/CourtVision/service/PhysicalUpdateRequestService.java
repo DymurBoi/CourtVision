@@ -115,6 +115,16 @@ public class PhysicalUpdateRequestService {
     public List<PhysicalUpdateRequest> getRequestsByPlayerId(Long playerId) {
         return physicalUpdateRequestRepository.findByPlayer_PlayerId(playerId);
     }
+    
+    /**
+     * Get all requests for a specific team
+     * @param teamId The team ID
+     * @return List of requests for this team
+     */
+    public List<PhysicalUpdateRequest> getRequestsByTeamId(Long teamId) {
+        logger.info("Service: Fetching physical update requests for team with ID: {}", teamId);
+        return physicalUpdateRequestRepository.findByTeam_TeamId(teamId);
+    }
 
     /**
      * Update a physical update request status and apply changes if approved

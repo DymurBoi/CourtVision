@@ -135,6 +135,20 @@ public class PhysicalUpdateRequestController {
                 .map(PhysicalUpdateRequestMapper::toDto)
                 .collect(Collectors.toList());
     }
+    
+    /**
+     * Get requests for a specific team
+     * @param teamId The team ID
+     * @return List of requests for this team
+     */
+    @GetMapping("/team/{teamId}")
+    public List<PhysicalUpdateRequestDTO> getRequestsByTeam(@PathVariable Long teamId) {
+        logger.info("Fetching physical update requests for team with ID: {}", teamId);
+        
+        return physicalUpdateRequestService.getRequestsByTeamId(teamId).stream()
+                .map(PhysicalUpdateRequestMapper::toDto)
+                .collect(Collectors.toList());
+    }
 
     /**
      * Get a request by ID
