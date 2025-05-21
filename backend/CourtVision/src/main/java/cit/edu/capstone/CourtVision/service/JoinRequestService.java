@@ -1,8 +1,11 @@
 package cit.edu.capstone.CourtVision.service;
 
+import cit.edu.capstone.CourtVision.entity.Coach;
 import cit.edu.capstone.CourtVision.entity.JoinRequest;
+import cit.edu.capstone.CourtVision.entity.JoinRequestCoach;
 import cit.edu.capstone.CourtVision.entity.Player;
 import cit.edu.capstone.CourtVision.entity.Team;
+import cit.edu.capstone.CourtVision.repository.JoinRequestCoachRepository;
 import cit.edu.capstone.CourtVision.repository.JoinRequestRepository;
 import cit.edu.capstone.CourtVision.repository.PlayerRepository;
 import cit.edu.capstone.CourtVision.repository.TeamRepository;
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +29,9 @@ public class JoinRequestService {
     private JoinRequestRepository joinRequestRepository;
     
     @Autowired
+    private JoinRequestCoachRepository joinRequestCoachRepository;
+    
+    @Autowired
     private PlayerRepository playerRepository;
     
     @Autowired
@@ -34,10 +41,34 @@ public class JoinRequestService {
     private PlayerService playerService;
     
     @Autowired
+    private TeamService teamService;
+    
+    @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Transactional
     public JoinRequest createRequest(JoinRequest joinRequest) {
-        return joinRequestRepository.save(joinRequest);
+        // First save the join request
+        JoinRequest savedRequest = joinRequestRepository.save(joinRequest);
+        
+        // Get all coaches for the team and create JoinRequestCoach entries for each
+        Team team = joinRequest.getTeam();
+        if (team != null && team.getCoaches() != null && !team.getCoaches().isEmpty()) {
+            List<JoinRequestCoach> requestCoaches = new ArrayList<>();
+            
+            for (Coach coach : team.getCoaches()) {
+                JoinRequestCoach requestCoach = new JoinRequestCoach();
+                requestCoach.setJoinRequest(savedRequest);
+                requestCoach.setCoach(coach);
+                requestCoach.setViewed(0);
+                requestCoaches.add(requestCoach);
+            }
+            
+            joinRequestCoachRepository.saveAll(requestCoaches);
+            savedRequest.setRequestCoaches(requestCoaches);
+        }
+        
+        return savedRequest;
     }
 
     public List<JoinRequest> getAllRequests() {
@@ -49,7 +80,15 @@ public class JoinRequestService {
     }
 
     public List<JoinRequest> getRequestsByCoachId(Long coachId) {
-        return joinRequestRepository.findByCoach_CoachId(coachId);
+        // We need to change this to use the join request coach table
+        List<JoinRequestCoach> requestCoaches = joinRequestCoachRepository.findByCoach_CoachId(coachId.intValue());
+        List<JoinRequest> joinRequests = new ArrayList<>();
+        
+        for (JoinRequestCoach requestCoach : requestCoaches) {
+            joinRequests.add(requestCoach.getJoinRequest());
+        }
+        
+        return joinRequests;
     }
     
     public List<JoinRequest> getRequestsByPlayerId(Long playerId) {
@@ -142,7 +181,12 @@ public class JoinRequestService {
         return null;
     }
 
+    @Transactional
     public void deleteRequest(Long requestId) {
+        // Delete associated JoinRequestCoach entries first
+        joinRequestCoachRepository.deleteByJoinRequest_RequestId(requestId);
+        
+        // Then delete the JoinRequest
         joinRequestRepository.deleteById(requestId);
     }
 } 

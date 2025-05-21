@@ -10,6 +10,8 @@ import cit.edu.capstone.CourtVision.repository.PlayerRepository;
 import cit.edu.capstone.CourtVision.repository.CoachRepository;
 import cit.edu.capstone.CourtVision.repository.TeamRepository;
 import cit.edu.capstone.CourtVision.service.JoinRequestService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,6 +24,8 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/join-requests")
 public class JoinRequestController {
+    private static final Logger logger = LoggerFactory.getLogger(JoinRequestController.class);
+    
     @Autowired
     private JoinRequestService joinRequestService;
     @Autowired
@@ -34,18 +38,46 @@ public class JoinRequestController {
     @PreAuthorize("hasAuthority('ROLE_PLAYER')")
     @PostMapping("/post")
     public ResponseEntity<JoinRequestDTO> createRequest(@RequestBody JoinRequestDTO dto) {
-        Optional<Player> player = playerRepository.findById(dto.getPlayerId());
-        Optional<Coach> coach = coachRepository.findById(dto.getCoachId());
-        Optional<Team> team = teamRepository.findById(dto.getTeamId());
-        if (player.isEmpty() || coach.isEmpty() || team.isEmpty()) {
-            return ResponseEntity.badRequest().build();
+        try {
+            logger.info("Creating join request from player {} for team {}", dto.getPlayerId(), dto.getTeamId());
+            
+            Optional<Player> player = playerRepository.findById(dto.getPlayerId());
+            if (player.isEmpty()) {
+                logger.error("Player not found with ID: {}", dto.getPlayerId());
+                return ResponseEntity.badRequest().build();
+            }
+            
+            Optional<Team> team = teamRepository.findById(dto.getTeamId());
+            if (team.isEmpty()) {
+                logger.error("Team not found with ID: {}", dto.getTeamId());
+                return ResponseEntity.badRequest().build();
+            }
+            
+            // We still need a primary coach for the legacy field
+            if (team.get().getCoaches() == null || team.get().getCoaches().isEmpty()) {
+                logger.error("Team {} has no coaches", dto.getTeamId());
+                return ResponseEntity.badRequest().build();
+            }
+            
+            // We'll use the first coach as the primary coach for backward compatibility
+            Coach primaryCoach = team.get().getCoaches().get(0);
+            
+            JoinRequest entity = JoinRequestMapper.toEntity(dto);
+            entity.setPlayer(player.get());
+            entity.setCoach(primaryCoach);  // Keep this for backward compatibility
+            entity.setTeam(team.get());
+            
+            logger.info("Saving join request with player {}, coach {} and team {}", 
+                        player.get().getPlayerId(), primaryCoach.getCoachId(), team.get().getTeamId());
+            
+            JoinRequest saved = joinRequestService.createRequest(entity);
+            logger.info("Join request created successfully with ID: {}", saved.getRequestId());
+            
+            return ResponseEntity.ok(JoinRequestMapper.toDto(saved));
+        } catch (Exception e) {
+            logger.error("Error creating join request: {}", e.getMessage(), e);
+            return ResponseEntity.internalServerError().build();
         }
-        JoinRequest entity = JoinRequestMapper.toEntity(dto);
-        entity.setPlayer(player.get());
-        entity.setCoach(coach.get());
-        entity.setTeam(team.get());
-        JoinRequest saved = joinRequestService.createRequest(entity);
-        return ResponseEntity.ok(JoinRequestMapper.toDto(saved));
     }
 
     @GetMapping("/get/all")
@@ -81,8 +113,13 @@ public class JoinRequestController {
     @PreAuthorize("hasAuthority('ROLE_COACH') or hasAuthority('ROLE_ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<JoinRequestDTO> updateRequest(@PathVariable Long id, @RequestBody JoinRequestDTO dto) {
+        logger.info("Updating join request {} with status {}", id, dto.getRequestStatus());
+        
         JoinRequest existing = joinRequestService.getRequestById(id);
-        if (existing == null) return ResponseEntity.notFound().build();
+        if (existing == null) {
+            logger.warn("Join request not found with ID: {}", id);
+            return ResponseEntity.notFound().build();
+        }
         
         // Only update status - keep existing player/coach/team references
         existing.setRequestStatus(dto.getRequestStatus());
@@ -94,7 +131,18 @@ public class JoinRequestController {
 
     @PreAuthorize("hasAuthority('ROLE_COACH') or hasAuthority('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
-    public void deleteRequest(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteRequest(@PathVariable Long id) {
+        logger.info("Deleting join request with ID: {}", id);
+        
+        JoinRequest existing = joinRequestService.getRequestById(id);
+        if (existing == null) {
+            logger.warn("Join request not found with ID: {}", id);
+            return ResponseEntity.notFound().build();
+        }
+        
         joinRequestService.deleteRequest(id);
+        logger.info("Join request {} deleted successfully", id);
+        
+        return ResponseEntity.ok().build();
     }
 } 

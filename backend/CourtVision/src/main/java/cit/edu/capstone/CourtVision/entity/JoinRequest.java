@@ -1,6 +1,8 @@
 package cit.edu.capstone.CourtVision.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
 public class JoinRequest {
@@ -13,12 +15,16 @@ public class JoinRequest {
     private Player player;
 
     @ManyToOne
-    @JoinColumn(name = "coach_id", nullable = false)
-    private Coach coach;
+    @JoinColumn(name = "coach_id", nullable = true) // Make nullable for backward compatibility
+    private Coach coach; // This will be deprecated but kept for compatibility
 
     @ManyToOne
     @JoinColumn(name = "team_id", nullable = false)
     private Team team;
+    
+    @OneToMany(mappedBy = "joinRequest", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<JoinRequestCoach> requestCoaches;
 
     private int requestStatus;
 
@@ -34,6 +40,9 @@ public class JoinRequest {
 
     public Team getTeam() { return team; }
     public void setTeam(Team team) { this.team = team; }
+    
+    public List<JoinRequestCoach> getRequestCoaches() { return requestCoaches; }
+    public void setRequestCoaches(List<JoinRequestCoach> requestCoaches) { this.requestCoaches = requestCoaches; }
 
     public int getRequestStatus() { return requestStatus; }
     public void setRequestStatus(int requestStatus) { this.requestStatus = requestStatus; }
