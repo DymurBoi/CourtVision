@@ -145,4 +145,14 @@ public class JoinRequestController {
         
         return ResponseEntity.ok().build();
     }
+    
+    @PreAuthorize("hasAuthority('ROLE_COACH') or hasAuthority('ROLE_ADMIN')")
+    @GetMapping("/by-team/{teamId}")
+    public List<JoinRequestDTO> getRequestsByTeam(@PathVariable Long teamId) {
+        logger.info("Fetching join requests for team with ID: {}", teamId);
+        
+        return joinRequestService.getRequestsByTeamId(teamId).stream()
+                .map(JoinRequestMapper::toDto)
+                .collect(Collectors.toList());
+    }
 } 

@@ -94,6 +94,11 @@ public class JoinRequestService {
     public List<JoinRequest> getRequestsByPlayerId(Long playerId) {
         return joinRequestRepository.findByPlayer_PlayerId(playerId);
     }
+    
+    public List<JoinRequest> getRequestsByTeamId(Long teamId) {
+        logger.info("Service: Fetching join requests for team with ID: {}", teamId);
+        return joinRequestRepository.findByTeam_TeamId(teamId);
+    }
 
     /**
      * Updates a join request and handles player-team assignment if approved
