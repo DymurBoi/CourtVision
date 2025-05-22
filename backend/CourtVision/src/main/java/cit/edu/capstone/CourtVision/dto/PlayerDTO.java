@@ -12,9 +12,16 @@ public class PlayerDTO {
     private boolean isCoach;
     private boolean isAdmin;
     private Long teamId;
+    private String teamName;
     private PhysicalRecordDTO physicalRecords;
 
     // Getters and Setters
+    public String getTeamName() {
+        return teamName;
+    }
+    public void setTeamName(String teamName) {
+        this.teamName = teamName;
+    }
     public Long getTeamId() {
         return teamId;
     }

@@ -25,6 +25,7 @@ public class PlayerMapper {
             Team temp=new Team();
             temp=player.getTeam();
             dto.setTeamId(temp.getTeamId());
+            dto.setTeamName(temp.getTeamName());
         }
         if (player.getPhysicalRecords() != null) {
             dto.setPhysicalRecords(toDto(player.getPhysicalRecords()));

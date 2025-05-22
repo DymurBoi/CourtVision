@@ -20,7 +20,8 @@ function PProfile() {
     birthDate: "",
     jerseyNumber: "",
     position: "",
-    team: "",
+    teamId: "",
+    teamName: ""
   })
 
   const [isEditing, setIsEditing] = useState(false)
@@ -67,7 +68,8 @@ function PProfile() {
           birthDate: data.birthDate || "",
           jerseyNumber: data.jerseyNum || "", // Using jerseyNum from backend
           position: data.position || "",
-          team: data.team ? data.team.teamName : "Not assigned",
+          teamId: data.teamId ? data.teamId.teamName : "",
+          teamName:data.teamName ? data.teamName: "Not Assigned",
         });
         
         setEditedData({
@@ -239,7 +241,7 @@ function PProfile() {
 
               <div className="info-group">
                 <label>Team</label>
-                <p>{playerData.team}</p>
+                <p>{playerData.teamName}</p>
               </div>
             </div>
           </div>
