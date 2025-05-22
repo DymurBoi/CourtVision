@@ -1,11 +1,16 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useAuth } from "../../components/AuthContext"
+import { api } from "../../utils/axiosConfig"
 import "../../styles/player/P-Stats.css"
 
 function PStats() {
   const [isEditing, setIsEditing] = useState(false)
   const [showConfirmation, setShowConfirmation] = useState(false)
+  const [requestStatus, setRequestStatus] = useState(""); // For displaying request status
+  const { user } = useAuth();
+  const [refreshTrigger, setRefreshTrigger] = useState(0); // Add refresh trigger state
 
   const [physicalRecords, setPhysicalRecords] = useState({
     height: 185, // cm
@@ -17,7 +22,7 @@ function PStats() {
 
   const [editedRecords, setEditedRecords] = useState({ ...physicalRecords })
 
-  const [performanceStats, setPerformanceStats] = useState({
+  const [performanceStats] = useState({
     gamesPlayed: 15,
     pointsPerGame: 12.5,
     reboundsPerGame: 4.2,
@@ -51,26 +56,154 @@ function PStats() {
     })
   }
 
-  const handleApplyChanges = () => {
-    // In a real app, this would send a request to the server
-    setShowConfirmation(true)
-    // Reset after 3 seconds
-    setTimeout(() => {
-      setShowConfirmation(false)
-    }, 3000)
-  }
+  const handleApplyChanges = async () => {
+    try {
+      console.log("Preparing to submit physical update request");
+      
+      // Check authentication token - use the more reliable authToken from localStorage
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        console.error("No authentication token found in localStorage");
+        setRequestStatus("Error: You are not logged in. Please login and try again.");
+        setShowConfirmation(true);
+        return;
+      }
+      
+      // Log limited token info for debugging (don't log the full token for security)
+      console.log("Auth token found, first 10 chars:", token.substring(0, 10) + "...");
+      
+      // Get user ID directly from localStorage for consistency
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        console.error("No user ID found in localStorage");
+        setRequestStatus("Error: User ID not found. Please login again.");
+        setShowConfirmation(true);
+        return;
+      }
+      
+      // Extract numeric ID from PLAYER_X format if needed
+      const playerId = userId.includes('_') ? userId.split('_')[1] : userId;
+      console.log("Using player ID:", playerId);
+      
+      // Hardcode coach ID for now - normally this would come from the player's team
+      const coachId = 1; // Use a known valid coach ID from your database
+      
+      // Prepare request data with minimal required fields
+      const requestData = {
+        playerId: playerId,
+        coachId: coachId,
+        height: editedRecords.height.toString(), // Convert to string for BigDecimal
+        weight: editedRecords.weight.toString(), // Convert to string for BigDecimal
+        wingspan: editedRecords.wingspan.toString(), // Convert to string for BigDecimal
+        vertical: editedRecords.vertical.toString(), // Convert to string for BigDecimal
+        dateRequested: new Date().toISOString().split('T')[0], // Add current date in YYYY-MM-DD format
+        requestStatus: 0 // Pending
+      };
+      
+      console.log("Sending request with data:", requestData);
 
-  // In a real app, you would fetch player stats from API
+      // Use API client for consistency with other requests
+      try {
+        const response = await api.post('/physical-update-requests', requestData);
+        
+        console.log("Response status:", response.status);
+        
+        if (response.status === 200) {
+          const responseData = response.data;
+          console.log("Success response:", responseData);
+          setRequestStatus("Request submitted successfully");
+          setShowConfirmation(true);
+          setIsEditing(false);
+        } else {
+          setRequestStatus(`Error: Request failed with status ${response.status}`);
+          setShowConfirmation(true);
+        }
+      } catch (apiError) {
+        console.error("API error:", apiError);
+        let errorText = "Failed to submit request";
+        if (apiError.response) {
+          console.error("Error response data:", apiError.response.data);
+          errorText = apiError.response.data.message || apiError.response.data.error || `Server returned status ${apiError.response.status}`;
+        } else if (apiError.request) {
+          errorText = "No response from server. Please check your connection.";
+        } else {
+          errorText = apiError.message;
+        }
+        setRequestStatus(`Error: ${errorText}`);
+        setShowConfirmation(true);
+      }
+    } catch (error) {
+      console.error("General error in handleApplyChanges:", error);
+      setRequestStatus("Error connecting to server. Please try again.");
+      setShowConfirmation(true);
+    }
+
+    // Hide confirmation after 5 seconds
+    setTimeout(() => {
+      setShowConfirmation(false);
+      setRequestStatus("");
+    }, 5000);
+  };
+
+  // Add a refresh function
+  const handleRefresh = () => {
+    console.log("Manual refresh triggered");
+    setRefreshTrigger(prev => prev + 1);
+  };
+
+  // Fetch player stats from API - add refreshTrigger dependency
   useEffect(() => {
-    // Simulating API call
-    // const fetchPlayerStats = async () => {
-    //   const response = await fetch('/api/player/stats');
-    //   const data = await response.json();
-    //   setPhysicalRecords(data.physical);
-    //   setPerformanceStats(data.performance);
-    // }
-    // fetchPlayerStats();
-  }, [])
+    if (user && user.id) {
+      const fetchPlayerStats = async () => {
+        try {
+          console.log("Fetching physical records data");
+          // Extract player ID
+          let playerId = user.id;
+          if (typeof playerId === 'string' && playerId.startsWith("PLAYER_")) {
+            playerId = playerId.substring(7); // Remove "PLAYER_" prefix
+          }
+          
+          // Use API client for consistency with other requests
+          try {
+            const recordsResponse = await api.get(`/physical-records/get/by-player/${playerId}`);
+            
+            console.log("Physical records response:", recordsResponse.status);
+            const recordsData = recordsResponse.data;
+            
+            console.log("Received physical records:", recordsData);
+            if (recordsData) {
+              setPhysicalRecords({
+                height: recordsData.height || 185,
+                weight: recordsData.weight || 78,
+                wingspan: recordsData.wingspan || 190,
+                vertical: recordsData.vertical || 76,
+                lastUpdated: recordsData.dateRecorded || "2023-03-15"
+              });
+              setEditedRecords({
+                height: recordsData.height || 185,
+                weight: recordsData.weight || 78,
+                wingspan: recordsData.wingspan || 190,
+                vertical: recordsData.vertical || 76,
+                lastUpdated: recordsData.dateRecorded || "2023-03-15"
+              });
+            }
+          } catch (apiError) {
+            console.error("Error fetching physical records:", apiError);
+            if (apiError.response) {
+              console.error("Error response status:", apiError.response.status);
+            }
+          }
+          
+          // Fetch performance stats (if available)
+          // This would be implemented similarly
+        } catch (error) {
+          console.error("Error fetching player stats:", error);
+        }
+      };
+      
+      fetchPlayerStats();
+    }
+  }, [user, refreshTrigger]); // Add refreshTrigger as dependency
 
   return (
     <main className="main-content">
@@ -86,6 +219,9 @@ function PStats() {
             <h2>Physical Records</h2>
             <div className="header-actions">
               <span className="last-updated">Last updated: {physicalRecords.lastUpdated}</span>
+              <button className="refresh-button" onClick={handleRefresh} title="Refresh stats">
+                ↻
+              </button>
               <button className={`edit-button ${isEditing ? "cancel" : ""}`} onClick={handleEditToggle}>
                 {isEditing ? "Cancel" : "Edit"}
               </button>
@@ -270,8 +406,8 @@ function PStats() {
           )}
 
           {showConfirmation && (
-            <div className="confirmation-message">
-              Your request for physical record changes has been submitted for approval.
+            <div className={`confirmation-message ${requestStatus.includes('Error') ? 'error' : ''}`}>
+              {requestStatus || "Your request for physical record changes has been submitted for approval."}
             </div>
           )}
         </div>

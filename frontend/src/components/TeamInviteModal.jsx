@@ -1,22 +1,36 @@
 import { useState } from "react"
 import "../styles/Modal.css"
 
-function TeamInviteModal({ request, onClose }) {
-  const [isConfirming, setIsConfirming] = useState(false)
+function TeamInviteModal({ request, onClose, onApprove, onReject }) {
+  const [isProcessing, setIsProcessing] = useState(false)
 
-  const handleConfirm = () => {
-    setIsConfirming(true)
-    // Simulate API call
-    setTimeout(() => {
-      onClose()
-    }, 1000)
+  const handleApprove = async () => {
+    setIsProcessing(true)
+    try {
+      await onApprove()
+    } catch (error) {
+      console.error("Error approving request:", error)
+    } finally {
+      setIsProcessing(false)
+    }
+  }
+
+  const handleReject = async () => {
+    setIsProcessing(true)
+    try {
+      await onReject()
+    } catch (error) {
+      console.error("Error rejecting request:", error)
+    } finally {
+      setIsProcessing(false)
+    }
   }
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div className="modal-overlay">
       <div className="modal-container" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>Team Invite</h2>
+          <h2>Team Join Request</h2>
           <button className="close-button" onClick={onClose}>
             &times;
           </button>
@@ -34,14 +48,16 @@ function TeamInviteModal({ request, onClose }) {
           </div>
         </div>
 
-        <div className="modal-actions">
-          <button className="confirm-button" onClick={handleConfirm} disabled={isConfirming}>
-            {isConfirming ? "Processing..." : "Approve Request"}
-          </button>
-          <button className="reject-button" onClick={onClose}>
-            Reject Request
-          </button>
-        </div>
+        {request.requestStatus === 0 && (
+          <div className="modal-actions">
+            <button className="confirm-button" onClick={handleApprove} disabled={isProcessing}>
+              {isProcessing ? "Processing..." : "Approve Request"}
+            </button>
+            <button className="reject-button" onClick={handleReject} disabled={isProcessing}>
+              Reject Request
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )

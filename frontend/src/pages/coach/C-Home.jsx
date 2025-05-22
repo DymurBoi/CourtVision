@@ -30,126 +30,45 @@ function CHome() {
         return
       }
 
-      console.log("Raw user data from AuthContext:", user);
-      
       try {
         // Extract the numeric ID from the format "COACH_123"
         let coachId = user.id;
-        let originalId = coachId; // Save for debugging
-        
         if (typeof coachId === 'string' && coachId.startsWith("COACH_")) {
-          coachId = coachId.substring(6); // Remove "COACH_" prefix
-          console.log("Extracted numeric coach ID:", coachId, "from original:", originalId);
-        } else {
-          console.log("Using ID as-is (no prefix detected):", coachId);
+          coachId = coachId.substring(6);
         }
-        
-        // Make sure ID is a number if the backend expects it
         if (coachId && !isNaN(Number(coachId))) {
           coachId = Number(coachId);
         }
-          
-        console.log("Attempting to fetch coach data with ID:", coachId, "Type:", typeof coachId);
-        
-        // Make direct request to the endpoint without auth token
-        const apiEndpoint = `http://localhost:8080/api/coaches/get/${coachId}`;
-        console.log("Making direct API request to:", apiEndpoint);
-        
-        const response = await fetch(apiEndpoint);
-        if (!response.ok) {
-          throw new Error(`API returned status ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log("Coach data received (raw):", data);
-        
-        if (!data) {
-          console.error("Received empty data from API");
-          setLoading(false);
-          return;
-        }
-        
-        // Check if essential fields exist
-        if (!data.fname || !data.lname) {
-          console.warn("Missing name data in API response:", data);
-        }
-        
-        setCoachData(data)
-        
-        // Get coach's teams using the correct endpoint from TeamController
-        console.log("Fetching teams for coach ID:", coachId);
-        
-        const teamsEndpoint = `http://localhost:8080/api/teams/get/by-coach/${coachId}`;
-        const teamsResponse = await fetch(teamsEndpoint);
-        if (!teamsResponse.ok) {
-          throw new Error(`Teams API returned status ${teamsResponse.status}`);
-        }
-        
-        const teamsData = await teamsResponse.json();
-        
-        console.log("Coach teams received (raw):", teamsData);
-        
-        if (teamsData && teamsData.length > 0) {
-          console.log("Coach has teams, setting up team data");
-          setTeams(teamsData.map(team => ({
+
+        // Fetch coach data
+        const coachRes = await api.get(`/coaches/get/${coachId}`);
+        const data = coachRes.data;
+        setCoachData(data);
+
+        // Fetch teams for this coach
+        const teamsRes = await api.get(`/teams/get/by-coach/${coachId}`);
+        const teamsData = teamsRes.data;
+        setTeams(
+          (teamsData || []).map(team => ({
             id: team.teamId,
             teamId: team.teamId,
             name: team.teamName,
-            description: `Team coached by ${data.fname} ${data.lname}`,
+            description: team.description || `Team coached by ${data.fname} ${data.lname}`,
             players: team.players || []
-          })))
-          
-          setSelectedTeamId(teamsData[0].teamId)
-        } else {
-          console.log("Coach has no teams");
+          }))
+        );
+        if (teamsData && teamsData.length > 0) {
+          setSelectedTeamId(teamsData[0].teamId);
         }
-        
-        setLoading(false)
+        setLoading(false);
       } catch (error) {
-        console.error("Error fetching coach data:", error)
-        if (error.response) {
-          console.error("Response error status:", error.response.status);
-          console.error("Response error data:", error.response.data);
-        } else if (error.request) {
-          console.error("Network error - no response received");
-        } else {
-          console.error("Error setting up request:", error.message);
-        }
-        
-        // Fallback to sample data if API fails
-        console.log("Using fallback sample data for coach");
-        setTeams([
-          {
-            id: 1,
-            teamId: 1,
-            name: "CIT-U College Team",
-            description: "Our collegiate basketball team competing in university leagues and championships.",
-            players: [
-              { id: 101, fname: "James", lname: "Wilson", jerseyNum: 23, position: "Point Guard" },
-              { id: 102, fname: "Robert", lname: "Garcia", jerseyNum: 10, position: "Shooting Guard" },
-              { id: 103, fname: "Michael", lname: "Chen", jerseyNum: 7, position: "Small Forward" },
-              { id: 104, fname: "David", lname: "Smith", jerseyNum: 32, position: "Power Forward" },
-              { id: 105, fname: "Christopher", lname: "Johnson", jerseyNum: 45, position: "Center" },
-            ],
-          },
-          {
-            id: 2,
-            teamId: 2,
-            name: "CIT-U High School Team",
-            description: "Our high school basketball team developing young talents.",
-            players: [
-              { id: 201, fname: "Alex", lname: "Williams", jerseyNum: 4, position: "Point Guard" },
-              { id: 202, fname: "Jake", lname: "Miller", jerseyNum: 11, position: "Shooting Guard" },
-            ],
-          },
-        ])
-        setSelectedTeamId(1)
-        setLoading(false)
+        console.error("Error fetching coach or teams data:", error);
+        setTeams([]);
+        setLoading(false);
       }
     }
-
-    fetchCoachData()
-  }, [user])
+    fetchCoachData();
+  }, [user]);
 
   // Get the selected team's players
   useEffect(() => {
@@ -162,6 +81,7 @@ function CHome() {
           console.log("Team players API response status:", response.status);
           const playersData = response.data;
           console.log("Team players received:", playersData);
+          
           setPlayers(playersData || []);
         } catch (error) {
           console.error("Error fetching team players:", error);
@@ -337,7 +257,7 @@ function CHome() {
               <div className="player-name">
                 {player.fname} {player.lname}
               </div>
-              <div className="player-position">N/A</div>
+              <div className="player-position">{player.position}</div>
               <div className="player-action">
                 <button className="remove-player-button" onClick={() => handleRemovePlayer(player.id)}>
                   Remove Player

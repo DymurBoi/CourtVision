@@ -38,6 +38,12 @@ public class TeamController {
         return ResponseEntity.ok(TeamMapper.toDTO(team));
     }
 
+     @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
+    @GetMapping("/get/by-coach/{coachId}")
+    public List<Team> getTeamsByCoachId(@PathVariable int coachId) {
+        return teamService.getTeamsByCoachId(coachId);
+    }
+
     @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
     @PostMapping("/post")
     public ResponseEntity<TeamDTO> createTeam(@RequestBody Team team) {
