@@ -40,7 +40,6 @@ function CreateCoach() {
  
   return (
 <div className="admin-layout">
-<AdminNavbar />
 <main className="admin-content">
 <div className="admin-header">
 <h1>Create Coach Account</h1>

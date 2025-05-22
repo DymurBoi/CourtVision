@@ -11,10 +11,16 @@ public class PlayerDTO {
     private int jerseyNum;
     private boolean isCoach;
     private boolean isAdmin;
+    private Long teamId;
     private PhysicalRecordDTO physicalRecords;
 
     // Getters and Setters
-    
+    public Long getTeamId() {
+        return teamId;
+    }
+    public void setTeamId(Long teamId) {
+        this.teamId = teamId;
+    }
     public Long getPlayerId() {
         return playerId;
     }

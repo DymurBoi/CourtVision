@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import "../styles/components/PhysicalRecordModal.css"
+import "../styles/PhysicalRecordModal.css"
 
 function PhysicalRecordModal({ request, onClose, onApprove, onReject }) {
   if (!request) return null;

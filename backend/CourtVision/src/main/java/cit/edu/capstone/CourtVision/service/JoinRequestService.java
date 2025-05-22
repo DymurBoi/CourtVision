@@ -194,4 +194,18 @@ public class JoinRequestService {
         // Then delete the JoinRequest
         joinRequestRepository.deleteById(requestId);
     }
+
+    public Player assignPlayerToTeam(Long teamId, Long playerId) {
+        // Fetch the team and player by their IDs
+        Team team = teamRepository.findById(teamId).orElseThrow(() -> new RuntimeException("Team not found"));
+        Player player = playerRepository.findById(playerId).orElseThrow(() -> new RuntimeException("Player not found"));
+
+        // Add the player to the team's player list
+        team.getPlayers().add(player);
+
+        // Save the updated team
+        teamRepository.save(team);
+
+        return player;  // Return the player (you can return whatever is needed, maybe the updated team)
+    }
 } 

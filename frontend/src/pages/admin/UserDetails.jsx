@@ -76,7 +76,6 @@ function UserDetails() {
   if (loading) {
     return (
       <div className="admin-layout">
-        <AdminNavbar />
         <main className="admin-content">
           <div className="loading">Loading user details...</div>
         </main>
@@ -87,7 +86,6 @@ function UserDetails() {
   if (!user) {
     return (
       <div className="admin-layout">
-        <AdminNavbar />
         <main className="admin-content">
           <div className="not-found">
             User not found. The user may have been deleted or you don't have permission to view it.

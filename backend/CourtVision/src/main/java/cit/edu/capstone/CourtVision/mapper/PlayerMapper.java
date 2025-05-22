@@ -4,6 +4,7 @@ import cit.edu.capstone.CourtVision.dto.PhysicalRecordDTO;
 import cit.edu.capstone.CourtVision.dto.PlayerDTO;
 import cit.edu.capstone.CourtVision.entity.PhysicalRecords;
 import cit.edu.capstone.CourtVision.entity.Player;
+import cit.edu.capstone.CourtVision.entity.Team;
 
 public class PlayerMapper {
 
@@ -19,7 +20,12 @@ public class PlayerMapper {
         dto.setJerseyNum(player.getJerseyNum());
         dto.setIsCoach(player.getIsCoach());
         dto.setIsAdmin(player.getIsAdmin());
-
+        
+        if(player.getTeam()!=null){
+            Team temp=new Team();
+            temp=player.getTeam();
+            dto.setTeamId(temp.getTeamId());
+        }
         if (player.getPhysicalRecords() != null) {
             dto.setPhysicalRecords(toDto(player.getPhysicalRecords()));
         }

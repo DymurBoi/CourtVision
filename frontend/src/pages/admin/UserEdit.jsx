@@ -47,7 +47,7 @@ function UserEdit() {
     lastName: "",
     email: "",
     password: "",
-    type: "player",
+    type: "",
     team: "",
     status: "active",
     birthDate: "",
@@ -102,7 +102,6 @@ function UserEdit() {
   if (loading) {
     return (
       <div className="admin-layout">
-        <AdminNavbar />
         <main className="admin-content">
           <div className="loading">Loading user data...</div>
         </main>
@@ -112,7 +111,6 @@ function UserEdit() {
 
   return (
     <div className="admin-layout">
-      <AdminNavbar />
       <main className="admin-content">
         <div className="admin-header">
           <h1>Edit User</h1>

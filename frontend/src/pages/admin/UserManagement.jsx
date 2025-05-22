@@ -32,7 +32,7 @@ function UserManagement() {
           team: player.team?.teamName || "Unassigned",
           status: "active",
           createdAt: player.birthDate,
-          type: !player.isCoach && !player.isAdmin ? "player" : "coach"
+          type: "player"
         }))
 
         const coaches = coachesRes.data
@@ -45,7 +45,7 @@ function UserManagement() {
             team: coach.teams?.[0]?.teamName || "Unassigned",
             status: "active",
             createdAt: coach.birthDate,
-            type: coach.isCoach && !coach.isAdmin ? "coach" : "player"
+            type: "coach"
           }))
 
         setUsers([...players, ...coaches])
