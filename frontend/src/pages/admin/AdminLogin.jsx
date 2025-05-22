@@ -14,13 +14,12 @@ function AdminLogin() {
   const navigate = useNavigate()
   const location = useLocation()
   const { login, user } = useAuth()
-  
-  // Redirect if already logged in as admin
+
   useEffect(() => {
-    if (user && user.role === "admin") {
-      navigate("/admin/dashboard", { replace: true });
+    if (user?.role === "admin") {
+      navigate("/admin/dashboard", { replace: true })
     }
-  }, [user, navigate]);
+  }, [user, navigate])
 
   const handleLogin = async (e) => {
     e.preventDefault()
@@ -32,18 +31,23 @@ function AdminLogin() {
 
       const { token } = response.data
       const decoded = jwtDecode(token)
-      console.log("Decoded token:", decoded)
 
-      // Use the auth context to log in
-      login(token, "admin", decoded.sub)
+      console.log("✅ Admin token decoded:", decoded)
+      console.log("Admin ID from token:", decoded.sub)
 
-      // Get redirect path from location state or use default
-      const from = location.state?.from?.pathname || "/admin/dashboard";
-      
-      // Redirect to admin dashboard with replace to prevent back navigation to login
-      navigate(from, { replace: true })
+      const adminId = decoded.sub
+
+      // Store in context and localStorage
+      login(token, "admin", adminId)
+
+      localStorage.setItem("authToken", token)
+      localStorage.setItem("userRole", "admin")
+      localStorage.setItem("userId", adminId)
+
+      const redirectPath = location.state?.from?.pathname || "/admin/dashboard"
+      navigate(redirectPath, { replace: true })
     } catch (error) {
-      console.error("Admin login failed:", error)
+      console.error("❌ Admin login failed:", error)
       setError("Invalid email or password. Please try again.")
     } finally {
       setIsLoading(false)
@@ -103,6 +107,7 @@ function AdminLogin() {
             </p>
           </div>
         </div>
+
         <style jsx>{`
           .error-message {
             color: #e74c3c;
