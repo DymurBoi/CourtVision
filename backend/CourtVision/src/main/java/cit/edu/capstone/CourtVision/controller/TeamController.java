@@ -82,5 +82,4 @@ public class TeamController {
     if (!removed) return ResponseEntity.notFound().build();
     return ResponseEntity.noContent().build();
 }
-
 }
