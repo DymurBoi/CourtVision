@@ -4,7 +4,27 @@ import AdminNavbar from "../../components/AdminNavbar"
 import "../../styles/admin/AdminDashboard.css"
 
 function AdminDashboard() {
-  // Sample stats for the dashboard
+  const { token, user } = useAuth()
+  const [adminId, setAdminId] = useState(null)
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!token || user?.role !== "admin") {
+      // Redirect if not authenticated or not admin
+      navigate("/admin/login", { replace: true })
+      return
+    }
+
+    try {
+      const decoded = jwtDecode(token)
+      setAdminId(decoded.sub)
+      console.log("Admin ID from token:", decoded.sub)
+    } catch (err) {
+      console.error("Invalid token:", err)
+      navigate("/admin/login", { replace: true })
+    }
+  }, [token, user, navigate])
+
   const stats = {
     totalUsers: 45,
     players: 38,
