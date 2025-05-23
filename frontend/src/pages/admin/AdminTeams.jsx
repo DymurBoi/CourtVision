@@ -65,7 +65,7 @@ function AdminTeams() {
           <div className="team-card" key={team.teamId}>
             <div className="team-banner college"></div>
             <div className="team-content">
-              <h2>{team.name}</h2>
+              <h2>{team.teamName}</h2>
               <p>{team.description}</p>
               <div className="team-stats">
                 <div className="player-count">
@@ -74,7 +74,15 @@ function AdminTeams() {
                 </div>
                 <div className="player-count">
                   <span className="stat-label">Coach:</span>
-                  <span className="stat-value">{team.coach?.fname || "Unassigned"}</span>
+                  <span className="stat-value">
+                    {/* Display coach names */}
+                    {team.coaches.map((coach, index) => (
+                      <span key={coach.coachId}>
+                        {coach.fname} {coach.lname}
+                        {index < team.coaches.length - 1 && ", "}
+                      </span>
+                    ))}
+                  </span>
                 </div>
               </div>
               <button className="team-button" onClick={() => handleDeleteTeam(team.teamId)}>
