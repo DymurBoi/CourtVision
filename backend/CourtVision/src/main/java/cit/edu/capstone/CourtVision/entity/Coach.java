@@ -1,6 +1,7 @@
 package cit.edu.capstone.CourtVision.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -16,6 +17,7 @@ public class Coach {
     private String fname;
     private String lname;
     private String email;
+    @JsonIgnore
     private String password;
     private LocalDate birthDate;
     private boolean isCoach;

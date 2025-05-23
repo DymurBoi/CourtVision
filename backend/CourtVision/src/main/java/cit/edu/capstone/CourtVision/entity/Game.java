@@ -12,6 +12,8 @@ public class Game {
 
     private String gameName;
     private LocalDate gameDate;
+    private String gameResult;
+    private String finalScore;
     private String comments;
 
     @ManyToOne
@@ -21,14 +23,43 @@ public class Game {
     @OneToOne
     @JoinColumn(name = "basic_stat_id")
     private BasicStats basicStats;
+
     @OneToOne
     @JoinColumn(name = "advanced_stat_id")
     private AdvancedStats advancedStats;
 
-    @OneToMany(mappedBy = "game") // One Game → Many PlayerAverages
+    @OneToOne
+    @JoinColumn(name = "adjusted_stat_id")
+    private AdjustedStats adjustedStats;
+
+    @OneToMany(mappedBy = "game")
     private List<PlayerAverages> playerAverages;
 
     // Getters and Setters
+
+    public String getGameResult() {
+        return gameResult;
+    }
+
+    public void setGameResult(String gameResult) {
+        this.gameResult = gameResult;
+    }
+
+    public String getFinalScore() {
+        return finalScore;
+    }
+
+    public void setFinalScore(String finalScore) {
+        this.finalScore = finalScore;
+    }
+
+    public AdjustedStats getAdjustedStats() {
+        return adjustedStats;
+    }
+
+    public void setAdjustedStats(AdjustedStats adjustedStats) {
+        this.adjustedStats = adjustedStats;
+    }
 
     public AdvancedStats getAdvancedStats() {
         return advancedStats;
@@ -63,7 +94,4 @@ public class Game {
 
     public BasicStats getBasicStats() { return basicStats; }
     public void setBasicStats(BasicStats basicStats) { this.basicStats = basicStats; }
-
-    //private Long advancedStatId;
-    //private Long adjustedStatId;
 }

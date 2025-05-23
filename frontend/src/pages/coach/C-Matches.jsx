@@ -1,90 +1,81 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import '../../styles/coach/C-Matches.css';
 import CreateMatchModal from '../../components/CreateMatchModal';
-
-// Sample match data
-const matchesData = [
-  {
-    id: 1,
-    homeTeam: "CIT-U",
-    awayTeam: "USJR",
-    result: "W",
-    score: "78-65",
-    date: "05/15/2023",
-  },
-  {
-    id: 2,
-    homeTeam: "CIT-U",
-    awayTeam: "USC",
-    result: "L",
-    score: "62-70",
-    date: "05/22/2023",
-  },
-  {
-    id: 3,
-    homeTeam: "CIT-U",
-    awayTeam: "UP",
-    result: "W",
-    score: "85-72",
-    date: "06/03/2023",
-  },
-  {
-    id: 4,
-    homeTeam: "CIT-U",
-    awayTeam: "UC",
-    result: "W",
-    score: "90-82",
-    date: "06/10/2023",
-  },
-  {
-    id: 5,
-    homeTeam: "CIT-U",
-    awayTeam: "SWU",
-    result: "L",
-    score: "68-75",
-    date: "06/17/2023",
-  },
-  {
-    id: 6,
-    homeTeam: "CIT-U",
-    awayTeam: "UV",
-    result: "W",
-    score: "82-70",
-    date: "06/24/2023",
-  },
-  {
-    id: 7,
-    homeTeam: "CIT-U",
-    awayTeam: "USJR",
-    result: "L",
-    score: "65-72",
-    date: "07/01/2023",
-  },
-  {
-    id: 8,
-    homeTeam: "CIT-U",
-    awayTeam: "USC",
-    result: "W",
-    score: "88-80",
-    date: "07/08/2023",
-  },
-]
+import gameService from '../../services/gameService';
 
 function CMatches() {
   const [showCreateModal, setShowCreateModal] = useState(false)
-  const [matches, setMatches] = useState(matchesData)
+  const [matches, setMatches] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
-  const handleCreateMatch = (newMatch) => {
-    // Generate a new ID (in a real app, this would come from the backend)
-    const newId = matches.length > 0 ? Math.max(...matches.map((match) => match.id)) + 1 : 1
-    const matchWithId = { ...newMatch, id: newId }
+  useEffect(() => {
+    fetchMatches()
+  }, [])
 
-    // Add the new match to the list
-    setMatches([...matches, matchWithId])
-    setShowCreateModal(false)
+  const fetchMatches = async () => {
+    try {
+      const games = await gameService.getAllGames()
+      const transformedMatches = games.map(game => ({
+        id: game.gameId,
+        homeTeam: game.gameName.split(' vs ')[0],
+        awayTeam: game.gameName.split(' vs ')[1],
+        result: game.gameResult,
+        score: game.finalScore,
+        date: new Date(game.gameDate).toLocaleDateString()
+      }))
+      setMatches(transformedMatches)
+      setLoading(false)
+    } catch (err) {
+      console.error('Error fetching matches:', err)
+      setError('Failed to load matches')
+      setLoading(false)
+    }
+  }
+
+  const handleCreateMatch = async (newMatch) => {
+    try {
+      const savedGame = await gameService.createGame(newMatch)
+      
+      // Transform the saved game data to match format
+      const newMatchData = {
+        id: savedGame.gameId,
+        homeTeam: savedGame.gameName.split(' vs ')[0],
+        awayTeam: savedGame.gameName.split(' vs ')[1],
+        result: savedGame.gameResult,
+        score: savedGame.finalScore,
+        date: new Date(savedGame.gameDate).toLocaleDateString()
+      }
+
+      setMatches([...matches, newMatchData])
+      setShowCreateModal(false)
+    } catch (err) {
+      console.error('Error creating match:', err)
+      setError('Failed to create match')
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>Loading matches...</p>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="error-container">
+        <p className="error-message">{error}</p>
+        <button onClick={fetchMatches} className="retry-button">
+          Retry
+        </button>
+      </div>
+    )
   }
 
   return (
@@ -124,21 +115,27 @@ function CMatches() {
             <div className="action-header">Action</div>
           </div>
 
-          {matches.map((match) => (
-            <div className="match-item" key={match.id}>
-              <div className="teams">
-                {match.homeTeam} VS {match.awayTeam}
-              </div>
-              <div className={`result ${match.result === "W" ? "win" : "loss"}`}>{match.result}</div>
-              <div className="points">{match.score}</div>
-              <div className="date">{match.date}</div>
-              <div className="match-action">
-                <Link to={`/coach/game-details/${match.id}`} className="view-game-button">
-                  View Game
-                </Link>
-              </div>
+          {matches.length === 0 ? (
+            <div className="no-matches">
+              <p>No matches found. Create a new match to get started.</p>
             </div>
-          ))}
+          ) : (
+            matches.map((match) => (
+              <div className="match-item" key={match.id}>
+                <div className="teams">
+                  {match.homeTeam} VS {match.awayTeam}
+                </div>
+                <div className={`result ${match.result === "W" ? "win" : "loss"}`}>{match.result}</div>
+                <div className="points">{match.score}</div>
+                <div className="date">{match.date}</div>
+                <div className="match-action">
+                  <Link to={`/coach/game-details/${match.id}`} className="view-game-button">
+                    View Game
+                  </Link>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
 

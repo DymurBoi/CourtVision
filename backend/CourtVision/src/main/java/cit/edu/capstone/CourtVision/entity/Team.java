@@ -1,7 +1,6 @@
 package cit.edu.capstone.CourtVision.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.List;
 
@@ -31,6 +30,7 @@ public class Team {
     private List<Player> players;
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Game> games;
 
     private Long gameId;
