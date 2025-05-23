@@ -19,13 +19,13 @@ function AdminNavbar() {
         </div>
         <div className="admin-nav-links">
           <Link to="/admin/users" className="admin-nav-item">Users</Link>
+          <Link to="/admin/coaches" className="admin-nav-item">Coach</Link>
           <Link to="/admin/teams" className="admin-nav-item">Teams</Link>
-          <Link to="/admin/matches" className="admin-nav-item">Matches</Link>
-          <Link to="/admin/requests" className="admin-nav-item">Player Requests</Link>
-        </div>
-        <div className="admin-user-actions">
+           <div className="admin-user-actions">
           <button onClick={handleLogout} className="admin-logout-btn">Logout</button>
         </div>
+        </div>
+       
       </div>
     </nav>
   );

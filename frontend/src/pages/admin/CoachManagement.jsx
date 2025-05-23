@@ -15,25 +15,14 @@ function UserManagement() {
   const [filterType, setFilterType] = useState("all")
   const [filterStatus, setFilterStatus] = useState("all")
 
-  // 🟢 Fetch players and coaches on mount
+  // 🟢 Fetch coaches on mount
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const [playersRes, coachesRes] = await Promise.all([
-          axios.get("http://localhost:8080/api/players/get/all"),
+        const [coachesRes] = await Promise.all([
+        
           axios.get("http://localhost:8080/api/coaches/get/all")
         ])
-
-        const players = playersRes.data.map((player) => ({
-          id: player.playerId,
-          firstName: player.fname,
-          lastName: player.lname,
-          email: player.email,
-          team: player.team?.teamName || "Unassigned",
-          status: "active",
-          createdAt: player.birthDate,
-          type: "player"
-        }))
 
         const coaches = coachesRes.data
           .filter(coach => !coach.isAdmin) // skip admins
@@ -48,7 +37,7 @@ function UserManagement() {
             type: "coach"
           }))
 
-        setUsers([...players, ...coaches])
+        setUsers([...coaches])
 
         // Filter from URL params
         const params = new URLSearchParams(location.search)
@@ -94,7 +83,7 @@ function UserManagement() {
 
   // 🧹 Delete user (local state only for now)
   const handleDeleteUser = (userId) => {
-    if (window.confirm("Are you sure you want to delete this user?")) {
+    if (window.confirm("Are you sure you want to delete this coach?")) {
       setUsers(users.filter(user => user.id !== userId))
     }
   }
@@ -102,7 +91,7 @@ function UserManagement() {
   return (
     <main className="admin-content">
       <div className="admin-header">
-        <h1>User Management</h1>
+        <h1>Coach Management</h1>
       </div>
 
       <div className="user-management-controls">
@@ -128,37 +117,6 @@ function UserManagement() {
               <circle cx="11" cy="11" r="8" />
               <line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
-          </div>
-
-          <div className="filter-container">
-            <div className="filter-group">
-              <label htmlFor="type-filter">Type:</label>
-              <select
-                id="type-filter"
-                value={filterType}
-                onChange={(e) => setFilterType(e.target.value)}
-                className="filter-select"
-              >
-                <option value="all">All Users</option>
-                <option value="player">Players</option>
-                <option value="coach">Coaches</option>
-              </select>
-            </div>
-
-            <div className="filter-group">
-              <label htmlFor="status-filter">Status:</label>
-              <select
-                id="status-filter"
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
-                className="filter-select"
-              >
-                <option value="all">All Status</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-                <option value="pending">Pending</option>
-              </select>
-            </div>
           </div>
         </div>
 
