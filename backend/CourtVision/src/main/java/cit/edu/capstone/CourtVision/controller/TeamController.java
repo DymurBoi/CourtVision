@@ -20,7 +20,6 @@ public class TeamController {
     @Autowired
     private TeamService teamService;
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH') or hasAuthority('ROLE_PLAYER')")
     @GetMapping("/get/all")
     public ResponseEntity<List<TeamDTO>> getAllTeams() {
         List<Team> teams = teamService.getAllTeams();
@@ -30,7 +29,6 @@ public class TeamController {
         return ResponseEntity.ok(dtos);
     }
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH') or hasAuthority('ROLE_PLAYER')")
     @GetMapping("/get/{id}")
     public ResponseEntity<TeamDTO> getTeamById(@PathVariable Long id) {
         Team team = teamService.getTeamById(id);
@@ -38,20 +36,17 @@ public class TeamController {
         return ResponseEntity.ok(TeamMapper.toDTO(team));
     }
 
-     @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
     @GetMapping("/get/by-coach/{coachId}")
     public List<Team> getTeamsByCoachId(@PathVariable int coachId) {
         return teamService.getTeamsByCoachId(coachId);
     }
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
     @PostMapping("/post")
     public ResponseEntity<TeamDTO> createTeam(@RequestBody Team team) {
         Team saved = teamService.createTeam(team);
         return ResponseEntity.ok(TeamMapper.toDTO(saved));
     }
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
     @PutMapping("/put/{id}")
     public ResponseEntity<TeamDTO> updateTeam(@PathVariable Long id, @RequestBody Team updated) {
         Team saved = teamService.updateTeam(id, updated);
@@ -59,21 +54,18 @@ public class TeamController {
         return ResponseEntity.ok(TeamMapper.toDTO(saved));
     }
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteTeam(@PathVariable Long id) {
         teamService.deleteTeam(id);
         return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
     @PostMapping("/{teamId}/add-player")
     public ResponseEntity<Player> addPlayerToTeam(@PathVariable Long teamId, @RequestBody Player player) {
         Player createdPlayer = teamService.addPlayerToTeam(teamId, player);
         return ResponseEntity.ok(createdPlayer);
     }
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
     @PutMapping("/{teamId}/add-existing-player/{playerId}")
     public ResponseEntity<Player> assignExistingPlayerToTeam(@PathVariable Long teamId, @PathVariable Long playerId) {
         Player updatedPlayer = teamService.assignPlayerToTeam(teamId, playerId);
@@ -81,7 +73,6 @@ public class TeamController {
         return ResponseEntity.ok(updatedPlayer);
     }
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
     @PutMapping("/{teamId}/remove-player/{playerId}")
     public ResponseEntity<Void> removePlayerFromTeam(@PathVariable Long teamId, @PathVariable Long playerId) {
     boolean removed = teamService.removePlayerFromTeam(teamId, playerId);

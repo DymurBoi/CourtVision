@@ -18,7 +18,7 @@ public class CoachController {
     @Autowired
     private CoachService coachService;
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
+   
     @GetMapping("/get/all")
     public ResponseEntity<List<CoachDTO>> getAllCoaches() {
         List<Coach> coaches = coachService.getAllCoaches();
@@ -28,7 +28,7 @@ public class CoachController {
         return ResponseEntity.ok(dtos);
     }
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
+   
     @GetMapping("/get/{id}")
     public ResponseEntity<CoachDTO> getCoachById(@PathVariable Integer id) {
         Coach coach = coachService.getCoachById(id);
@@ -36,13 +36,12 @@ public class CoachController {
         return ResponseEntity.ok(CoachMapper.toDTO(coach));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/post")
     public Coach createCoach(@RequestBody Coach coach) {
         return coachService.createCoach(coach);
     }
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
+   
     @PutMapping("/put/{id}")
     public ResponseEntity<CoachDTO> updateCoach(@PathVariable Integer id, @RequestBody CoachDTO coachDTO) {
         Coach updated = coachService.updateCoach(id, coachDTO);
@@ -50,13 +49,13 @@ public class CoachController {
         return ResponseEntity.ok(CoachMapper.toDTO(updated));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+  
     @DeleteMapping("/delete/{id}")
     public void deleteCoach(@PathVariable Integer id) {
         coachService.deleteCoach(id);
     }
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
+
     @GetMapping("/get/by-team/{teamId}")
     public ResponseEntity<List<CoachDTO>> getByTeam(@PathVariable Long teamId) {
         List<Coach> coaches = coachService.getCoachesByTeamId(teamId);

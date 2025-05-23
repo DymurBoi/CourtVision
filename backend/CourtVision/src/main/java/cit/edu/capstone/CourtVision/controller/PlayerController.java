@@ -26,7 +26,7 @@ public class PlayerController {
     @Autowired
     private PlayerService playerService;
     
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH') or hasAuthority('ROLE_PLAYER')")
+   
     @GetMapping("/get/all")
     public ResponseEntity<List<PlayerDTO>> getAllPlayers() {
     List<Player> players = playerService.getAllPlayers();
@@ -35,7 +35,6 @@ public class PlayerController {
                                   .toList();
     return ResponseEntity.ok(dtos);
     }
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH') or hasAuthority('ROLE_PLAYER')")
     @GetMapping("/get/{id}")
     public ResponseEntity<PlayerDTO> getPlayerById(@PathVariable Long id) {
         Player player = playerService.getPlayerById(id);
@@ -50,7 +49,6 @@ public class PlayerController {
     }
 
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_PLAYER')")
     @PutMapping("/put/{id}")
     public ResponseEntity<PlayerDTO> updatePlayer(@PathVariable Long id, @RequestBody Player updatedPlayer) {
         Player savedPlayer = playerService.updatePlayer(id, updatedPlayer);
@@ -65,7 +63,6 @@ public class PlayerController {
         playerService.deletePlayer(id);
     }
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
     @GetMapping("/get/by-team/{teamId}")
     public ResponseEntity<List<PlayerDTO>> getPlayersByTeamId(@PathVariable Long teamId) {
         List<Player> players = playerService.getPlayersByTeamId(teamId);
