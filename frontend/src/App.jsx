@@ -20,8 +20,10 @@ import PMatchDetails from "./pages/player/P-MatchDetails"
 import PProfile from "./pages/player/P-Profile"
 import AdminDashboard from "./pages/admin/AdminDashboard"
 import UserManagement from "./pages/admin/PlayerManagement"
-import UserDetails from "./pages/admin/UserDetails"
-import UserEdit from "./pages/admin/UserEdit"
+import PlayerDetails from "./pages/admin/PlayerDetails"
+import PlayerEdit from "./pages/admin/PlayerEdit"
+import CoachDetails from "./pages/admin/CoachDetails"
+import CoachEdit from "./pages/admin/CoachEdit"
 import CreateCoach from "./pages/admin/CreateCoach"
 import AdminTeams from "./pages/admin/AdminTeams"
 import AdminMatches from "./pages/admin/AdminMatches"
@@ -75,7 +77,7 @@ function AppRoutes() {
           element={
             <>
               <AdminNavbar />
-              <UserDetails />
+              <PlayerDetails />
             </>
           }
         />
@@ -84,7 +86,25 @@ function AppRoutes() {
           element={
             <>
               <AdminNavbar />
-              <UserEdit />
+              <PlayerEdit />
+            </>
+          }
+        />
+           <Route
+          path="/admin/coach/:id"
+          element={
+            <>
+              <AdminNavbar />
+              <CoachDetails />
+            </>
+          }
+        />
+        <Route
+          path="/admin/Coach/:id/edit"
+          element={
+            <>
+              <AdminNavbar />
+              <CoachEdit />
             </>
           }
         />

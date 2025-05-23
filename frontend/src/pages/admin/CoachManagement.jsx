@@ -5,7 +5,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom"
 import "../../styles/admin/UserManagement.css"
 import axios from "axios"
 
-function UserManagement() {
+function CoachManagement() {
   const location = useLocation()
   const navigate = useNavigate()
 
@@ -149,8 +149,8 @@ function UserManagement() {
                   <td><span className={`user-status ${user.status}`}>{user.status}</span></td>
                   <td>{user.createdAt}</td>
                   <td className="action-buttons">
-                    <Link to={`/admin/users/${user.id}`} className="view-button">View</Link>
-                    <Link to={`/admin/users/${user.id}/edit`} className="edit-button">Edit</Link>
+                    <Link to={`/admin/coach/${user.id}/edit`} className="view-button">Edit</Link>
+                    <Link to={`/admin/coach/${user.id}`} className="edit-button">View</Link>
                     <button className="delete-button" onClick={() => handleDeleteUser(user.id)}>Delete</button>
                   </td>
                 </tr>
@@ -167,4 +167,4 @@ function UserManagement() {
   )
 }
 
-export default UserManagement;
+export default CoachManagement;

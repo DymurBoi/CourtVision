@@ -5,7 +5,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom"
 import "../../styles/admin/UserManagement.css"
 import axios from "axios"
 
-function UserManagement() {
+function PlayerManagement() {
   const location = useLocation()
   const navigate = useNavigate()
 
@@ -168,4 +168,4 @@ function UserManagement() {
   )
 }
 
-export default UserManagement;
+export default PlayerManagement;
