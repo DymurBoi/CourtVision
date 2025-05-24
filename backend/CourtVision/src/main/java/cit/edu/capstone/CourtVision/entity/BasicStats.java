@@ -5,6 +5,10 @@ import lombok.*;
 
 import java.sql.Time;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import cit.edu.capstone.CourtVision.controller.PlayerAveragesController;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -35,9 +39,22 @@ public class BasicStats {
     private Time minutes;
 
     @OneToOne(mappedBy = "basicStats", cascade = CascadeType.ALL)
+    @JsonIgnore
     private Game game;
 
+    @OneToOne
+    @JoinColumn(name = "player_id", referencedColumnName = "playerId")
+    private Player player;
     //Getters and Setters
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+
     public Game getGame() {
         return game;
     }
