@@ -39,7 +39,7 @@ public class BasicStatsController {
         return stat != null ? ResponseEntity.ok(BasicStatsMapper.toDTO(stat)) : ResponseEntity.notFound().build();
     }
 
-    //@PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
     @PostMapping("/post")
     public ResponseEntity<BasicStatsDTO> create(@RequestBody BasicStats stat) {
         BasicStats created = service.save(stat);
