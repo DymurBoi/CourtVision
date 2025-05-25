@@ -7,6 +7,8 @@ import cit.edu.capstone.CourtVision.entity.PhysicalRecords;
 import cit.edu.capstone.CourtVision.entity.Player;
 import cit.edu.capstone.CourtVision.entity.Team;
 
+import java.util.stream.Collectors;
+
 public class PlayerMapper {
 
     public static PlayerDTO toDTO(Player player) {
@@ -21,25 +23,24 @@ public class PlayerMapper {
         dto.setJerseyNum(player.getJerseyNum());
         dto.setIsCoach(player.getIsCoach());
         dto.setIsAdmin(player.getIsAdmin());
-        
-        if(player.getTeam()!=null){
-            Team temp=new Team();
-            temp=player.getTeam();
-            dto.setTeamId(temp.getTeamId());
-            dto.setTeamName(temp.getTeamName());
+
+        if (player.getTeam() != null) {
+            dto.setTeamId(player.getTeam().getTeamId());
+            dto.setTeamName(player.getTeam().getTeamName());
         }
+
         if (player.getPhysicalRecords() != null) {
             dto.setPhysicalRecords(toDto(player.getPhysicalRecords()));
         }
-        if (player.getBasicStats() != null) {
-            BasicStats temp=new BasicStats();
-            temp=player.getBasicStats();
-            BasicStatsMapper mapper=new BasicStatsMapper();
-            dto.setBasicStats(mapper.toDTO(temp));
+
+        if (player.getBasicStatsList() != null) {
+            dto.setBasicStatsList(player.getBasicStatsList().stream()
+                    .map(BasicStatsMapper::toDTO)
+                    .collect(Collectors.toList()));
         }
+
         return dto;
     }
-
 
     public static PhysicalRecordDTO toDto(PhysicalRecords record) {
         if (record == null) return null;

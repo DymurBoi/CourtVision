@@ -1,128 +1,146 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import { api } from "../utils/axiosConfig"; // use your secured axios instance
 import "../styles/Modal.css";
 import "../styles/MatchModal.css";
 
-function CreateMatchModal({ onClose, onSave, initialData = null, teamId }) {
-  const isEditing = !!initialData;
-
+function CreateMatchModal({ onClose, onSave, teamId }) {
   const [formData, setFormData] = useState({
-    homeTeam: initialData?.homeTeam || "CIT-U",
-    awayTeam: initialData?.awayTeam || "",
-    result: initialData?.result || "W",
-    score: initialData?.score || "",
-    date: initialData?.date || new Date().toISOString().split("T")[0],
-    playerId: initialData?.playerId || "", // Added to store selected player
-    players: initialData?.players || [],  // Fetched players for dropdown
+    homeTeam: "CIT-U",
+    awayTeam: "",
+    gameDate: new Date().toISOString().split("T")[0],
+    gameResult: "W",
+    finalScore: "",
+    players: [],
   });
 
   const [players, setPlayers] = useState([]);
   const [loadingPlayers, setLoadingPlayers] = useState(false);
 
-  // Function to fetch players for the selected team
-  const fetchPlayers = async (teamId) => {
-    setLoadingPlayers(true);
-    try {
-      const response = await axios.get(`http://localhost:8080/api/players/get/by-team/${teamId}`);
-      setPlayers(response.data); // Assuming the API response structure has players under 'players'
-    } catch (error) {
-      console.error("Failed to fetch players:", error);
-    } finally {
-      setLoadingPlayers(false);
-    }
-  };
-
-  // Update players when teamId changes
+  // Fetch players when teamId changes
   useEffect(() => {
     if (teamId) {
       fetchPlayers(teamId);
     }
   }, [teamId]);
 
+  const fetchPlayers = async (teamId) => {
+    setLoadingPlayers(true);
+    try {
+      const response = await api.get(`/players/get/by-team/${teamId}`);
+      setPlayers(response.data);
+    } catch (error) {
+      console.error("❌ Failed to fetch players:", error);
+    } finally {
+      setLoadingPlayers(false);
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [name]: value,
-    });
+    }));
   };
 
   const handlePlayerChange = (index, field, value) => {
-    const updatedPlayers = [...formData.players];
-    updatedPlayers[index][field] = value; // Update the correct field dynamically
-    setFormData({
-      ...formData,
-      players: updatedPlayers,
-    });
+    const updated = [...formData.players];
+    updated[index][field] = value;
+    setFormData((prev) => ({
+      ...prev,
+      players: updated,
+    }));
   };
 
   const addPlayer = () => {
-    const newId = formData.players.length > 0 ? Math.max(...formData.players.map((p) => p.id)) + 1 : 1;
-
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       players: [
-        ...formData.players,
+        ...prev.players,
         {
-          id: newId,
-          playerId: "",  // Empty playerId initially
-          minutes: "",
-          pts2MA: "",
-          pts3MA: "",
-          ftMA: "",
-          steals: "",
-          turnovers: "",
-          assists: "",
-          blocks: "",
-          ofRebounds: "",
-          dfRebounds: "",
-          fouls: "",
+          playerId: "",
+          twoPtAttempts: 0,
+          twoPtMade: 0,
+          threePtAttempts: 0,
+          threePtMade: 0,
+          ftAttempts: 0,
+          ftMade: 0,
+          assists: 0,
+          oFRebounds: 0,
+          dFRebounds: 0,
+          blocks: 0,
+          steals: 0,
+          turnovers: 0,
+          pFouls: 0,
+          dFouls: 0,
+          plusMinus: 0, // will be calculated on the backend
+          minutes: "00:00:00",
         },
       ],
-    });
+    }));
   };
 
   const removePlayer = (index) => {
-    const updatedPlayers = [...formData.players];
-    updatedPlayers.splice(index, 1);
-    setFormData({
-      ...formData,
-      players: updatedPlayers,
-    });
+    const updated = [...formData.players];
+    updated.splice(index, 1);
+    setFormData((prev) => ({
+      ...prev,
+      players: updated,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await axios.post("http://localhost:8080/api/basic-stats/post", {
-        twoPtAttempts: 4,
-        twoPtMade: 2,
-        threePtAttempts: 2,
-        threePtMade: 1,
-        ftAttempts: 0,
-        ftMade: 0,
-        assists: 2,
-        oFRebounds: 3,
-        dFRebounds: 2,
-        blocks: 1,
-        steals: 0,
-        turnovers: 2,
-        pFouls: 0,
-        dFouls: 0,
-        plusMinus: 12,
-        minutes: "00:20:00",
-        player: {
-          playerId: formData.playerId, // Use the selected player's ID
-        },
-        game: {
-          gameId: 1, // Assuming gameId is provided or selected elsewhere
-        },
-      });
-      console.log("Basic stats created:", response.data);
-      onSave(response.data); // Pass the saved data to the parent component (if needed)
+      // 1️⃣ Create the game
+      const gamePayload = {
+        gameName: `${formData.homeTeam} vs ${formData.awayTeam}`,
+        gameResult: formData.gameResult,
+        finalScore: formData.finalScore,
+        gameDate: formData.gameDate,
+        team: { teamId: teamId },
+      };
+
+      const gameRes = await api.post("/games/post", gamePayload);
+      const savedGame = gameRes.data;
+      console.log("✅ Game created:", savedGame);
+
+      const gameId = savedGame.gameId;
+
+      // 2️⃣ Create basic stats for each player
+      for (const player of formData.players) {
+        const basicStatsPayload = {
+          twoPtAttempts: Number(player.twoPtAttempts),
+          twoPtMade: Number(player.twoPtMade),
+          threePtAttempts: Number(player.threePtAttempts),
+          threePtMade: Number(player.threePtMade),
+          ftAttempts: Number(player.ftAttempts),
+          ftMade: Number(player.ftMade),
+          assists: Number(player.assists),
+          oFRebounds: Number(player.oFRebounds),
+          dFRebounds: Number(player.dFRebounds),
+          blocks: Number(player.blocks),
+          steals: Number(player.steals),
+          turnovers: Number(player.turnovers),
+          pFouls: Number(player.pFouls),
+          dFouls: Number(player.dFouls),
+          plusMinus: 0, // will be recalculated by backend
+          minutes: player.minutes,
+          player: { playerId: player.playerId },
+          game: { gameId: gameId },
+        };
+
+        const statsRes = await api.post("/basic-stats/post", basicStatsPayload);
+        console.log(`✅ Basic stats saved for player ${player.playerId}:`, statsRes.data);
+      }
+
+      alert("✅ Match and player stats saved successfully!");
+      onSave(); // trigger parent refresh
+      onClose();
     } catch (error) {
-      console.error("Failed to create basic stats:", error);
+      console.error("❌ Failed to save match or stats:", error);
+      alert("Failed to save match. Check console for details.");
     }
   };
 
@@ -130,7 +148,7 @@ function CreateMatchModal({ onClose, onSave, initialData = null, teamId }) {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-container match-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>{isEditing ? "Edit Match" : "Create New Match"}</h2>
+          <h2>Create New Match</h2>
           <button className="close-button" onClick={onClose}>
             &times;
           </button>
@@ -141,69 +159,60 @@ function CreateMatchModal({ onClose, onSave, initialData = null, teamId }) {
             <div className="match-form-section">
               <h3>Match Details</h3>
               <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="homeTeam">Home Team</label>
-                  <input
-                    type="text"
-                    id="homeTeam"
-                    name="homeTeam"
-                    value={formData.homeTeam}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="awayTeam">Away Team</label>
-                  <input
-                    type="text"
-                    id="awayTeam"
-                    name="awayTeam"
-                    value={formData.awayTeam}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
+                <input
+                  type="text"
+                  name="homeTeam"
+                  value={formData.homeTeam}
+                  onChange={handleChange}
+                  placeholder="Home Team"
+                  required
+                  style={{ width: "150px" }}
+                />
+                <input
+                  type="text"
+                  name="awayTeam"
+                  value={formData.awayTeam}
+                  onChange={handleChange}
+                  placeholder="Away Team"
+                  required
+                  style={{ width: "150px" }}
+                />
+                <input
+                  type="text"
+                  name="finalScore"
+                  value={formData.finalScore}
+                  onChange={handleChange}
+                  placeholder="Score (e.g. 78-65)"
+                  required
+                  style={{ width: "100px" }}
+                />
               </div>
-
               <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="result">Result</label>
-                  <select id="result" name="result" value={formData.result} onChange={handleChange} required>
-                    <option value="W">Win</option>
-                    <option value="L">Loss</option>
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label htmlFor="score">Score</label>
-                  <input
-                    type="text"
-                    id="score"
-                    name="score"
-                    value={formData.score}
-                    onChange={handleChange}
-                    placeholder="e.g. 78-65"
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="date">Date</label>
-                  <input
-                    type="date"
-                    id="date"
-                    name="date"
-                    value={formData.date}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
+                <select
+                  name="gameResult"
+                  value={formData.gameResult}
+                  onChange={handleChange}
+                  style={{ width: "100px" }}
+                >
+                  <option value="W">Win</option>
+                  <option value="L">Loss</option>
+                </select>
+                <input
+                  type="date"
+                  name="gameDate"
+                  value={formData.gameDate}
+                  onChange={handleChange}
+                  required
+                  style={{ width: "150px" }}
+                />
               </div>
             </div>
 
             <div className="match-form-section">
               <div className="section-header">
                 <h3>Player Statistics</h3>
-                <button type="button" className="add-player-button" onClick={addPlayer}>
-                  Add Player
+                <button type="button" onClick={addPlayer}>
+                  + Add Player
                 </button>
               </div>
 
@@ -211,135 +220,63 @@ function CreateMatchModal({ onClose, onSave, initialData = null, teamId }) {
                 <table className="players-table">
                   <thead>
                     <tr>
-                      <th>Select Player</th> {/* Changed this column to "Select Player" */}
+                      <th>Player</th>
                       <th>MIN</th>
-                      <th>2 PTS M/A</th>
-                      <th>3 PTS M/A</th>
-                      <th>FT M/A</th>
-                      <th>STL</th>
-                      <th>TO</th>
+                      <th>2PTA</th>
+                      <th>2PTM</th>
+                      <th>3PTA</th>
+                      <th>3PTM</th>
+                      <th>FTA</th>
+                      <th>FTM</th>
                       <th>AST</th>
-                      <th>BLK</th>
                       <th>OREB</th>
                       <th>DREB</th>
-                      <th>FOULS</th>
-                      <th>Action</th>
+                      <th>BLK</th>
+                      <th>STL</th>
+                      <th>TO</th>
+                      <th>PF</th>
+                      <th>DF</th>
                     </tr>
                   </thead>
                   <tbody>
                     {formData.players.map((player, index) => (
-                      <tr key={player.id}>
+                      <tr key={index}>
                         <td>
-                          <div className="form-group">
-                            <select
-                              value={player.playerId}
-                              onChange={(e) => handlePlayerChange(index, "playerId", e.target.value)} 
-                              required
-                            >
-                              <option value="">Select Player</option>
-                              {players.map((p) => (
-                                <option key={p.playerId} value={p.playerId}>
-                                  {p.fname} {p.lname}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
+                          <select
+                            value={player.playerId}
+                            onChange={(e) => handlePlayerChange(index, "playerId", e.target.value)}
+                            required
+                            style={{ width: "120px" }}
+                          >
+                            <option value="">Select Player</option>
+                            {players.map((p) => (
+                              <option key={p.playerId} value={p.playerId}>
+                                {p.fname} {p.lname}
+                              </option>
+                            ))}
+                          </select>
                         </td>
                         <td>
                           <input
                             type="text"
                             value={player.minutes}
                             onChange={(e) => handlePlayerChange(index, "minutes", e.target.value)}
-                            placeholder="MIN"
+                            placeholder="00:20:00"
+                            style={{ width: "90px" }}
                           />
                         </td>
+                        {["twoPtAttempts", "twoPtMade", "threePtAttempts", "threePtMade", "ftAttempts", "ftMade", "assists", "oFRebounds", "dFRebounds", "blocks", "steals", "turnovers", "pFouls", "dFouls"].map((field) => (
+                          <td key={field}>
+                            <input
+                              type="number"
+                              value={player[field]}
+                              onChange={(e) => handlePlayerChange(index, field, e.target.value)}
+                              style={{ width: "60px" }}
+                            />
+                          </td>
+                        ))}
                         <td>
-                          <input
-                            type="text"
-                            value={player.pts2MA}
-                            onChange={(e) => handlePlayerChange(index, "pts2MA", e.target.value)}
-                            placeholder="M/A"
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="text"
-                            value={player.pts3MA}
-                            onChange={(e) => handlePlayerChange(index, "pts3MA", e.target.value)}
-                            placeholder="M/A"
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="text"
-                            value={player.ftMA}
-                            onChange={(e) => handlePlayerChange(index, "ftMA", e.target.value)}
-                            placeholder="M/A"
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="text"
-                            value={player.steals}
-                            onChange={(e) => handlePlayerChange(index, "steals", e.target.value)}
-                            placeholder="STL"
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="text"
-                            value={player.turnovers}
-                            onChange={(e) => handlePlayerChange(index, "turnovers", e.target.value)}
-                            placeholder="TO"
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="text"
-                            value={player.assists}
-                            onChange={(e) => handlePlayerChange(index, "assists", e.target.value)}
-                            placeholder="AST"
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="text"
-                            value={player.blocks}
-                            onChange={(e) => handlePlayerChange(index, "blocks", e.target.value)}
-                            placeholder="BLK"
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="text"
-                            value={player.ofRebounds}
-                            onChange={(e) => handlePlayerChange(index, "ofRebounds", e.target.value)}
-                            placeholder="OREB"
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="text"
-                            value={player.dfRebounds}
-                            onChange={(e) => handlePlayerChange(index, "dfRebounds", e.target.value)}
-                            placeholder="DREB"
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="text"
-                            value={player.fouls}
-                            onChange={(e) => handlePlayerChange(index, "fouls", e.target.value)}
-                            placeholder="PF/FD"
-                          />
-                        </td>
-                        <td>
-                          <button
-                            type="button"
-                            className="remove-player-button"
-                            onClick={() => removePlayer(index)}
-                            disabled={formData.players.length <= 1}
-                          >
+                          <button type="button" onClick={() => removePlayer(index)}>
                             Remove
                           </button>
                         </td>
@@ -356,7 +293,7 @@ function CreateMatchModal({ onClose, onSave, initialData = null, teamId }) {
               Cancel
             </button>
             <button type="submit" className="save-button">
-              {isEditing ? "Save Changes" : "Save Match"}
+              Save Match
             </button>
           </div>
         </form>

@@ -1,8 +1,10 @@
 package cit.edu.capstone.CourtVision.controller;
 
+import cit.edu.capstone.CourtVision.dto.PlayerDTO;
 import cit.edu.capstone.CourtVision.dto.TeamDTO;
 import cit.edu.capstone.CourtVision.entity.Player;
 import cit.edu.capstone.CourtVision.entity.Team;
+import cit.edu.capstone.CourtVision.mapper.PlayerMapper;
 import cit.edu.capstone.CourtVision.mapper.TeamMapper;
 import cit.edu.capstone.CourtVision.service.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,17 +81,18 @@ public ResponseEntity<List<TeamDTO>> getTeamsByCoachId(@PathVariable int coachId
 
     //@PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
     @PutMapping("/{teamId}/add-existing-player/{playerId}")
-    public ResponseEntity<Player> assignExistingPlayerToTeam(@PathVariable Long teamId, @PathVariable Long playerId) {
+    public ResponseEntity<PlayerDTO> assignExistingPlayerToTeam(@PathVariable Long teamId, @PathVariable Long playerId) {
         Player updatedPlayer = teamService.assignPlayerToTeam(teamId, playerId);
         if (updatedPlayer == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(updatedPlayer);
+        return ResponseEntity.ok(PlayerMapper.toDTO(updatedPlayer));
     }
 
    // @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
+ 
     @PutMapping("/{teamId}/remove-player/{playerId}")
     public ResponseEntity<Void> removePlayerFromTeam(@PathVariable Long teamId, @PathVariable Long playerId) {
-    boolean removed = teamService.removePlayerFromTeam(teamId, playerId);
-    if (!removed) return ResponseEntity.notFound().build();
-    return ResponseEntity.noContent().build();
-}
+        boolean removed = teamService.removePlayerFromTeam(teamId, playerId);
+        if (!removed) return ResponseEntity.notFound().build();
+        return ResponseEntity.noContent().build();
+    }
 }

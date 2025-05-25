@@ -43,8 +43,8 @@ public class BasicStats {
     @OneToOne(mappedBy = "basicStats", cascade = CascadeType.ALL)
     private PhysicalBasedMetricsStats physicalBasedMetricsStats;
 
-    @OneToOne
-    @JoinColumn(name = "player_id", referencedColumnName = "playerId")
+    @ManyToOne
+    @JoinColumn(name = "player_id")
     private Player player;
 
 
