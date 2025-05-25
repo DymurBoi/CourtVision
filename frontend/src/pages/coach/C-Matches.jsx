@@ -70,16 +70,26 @@ function CMatches() {
   return (
     <main className="main-content">
       <div className="page-header">
-        <h1>Matches for Team {teamId}</h1>
+        <h1>BasketBall Matches</h1>
       </div>
 
+
+        
       <div className="matches-container">
+        
         {matches.length === 0 ? (
           <div className="no-matches">
             <p>No matches found for this team.</p>
           </div>
         ) : (
           <div className="matches-list">
+            <div className="match-header">
+            <div className="teams-header">Teams</div>
+            <div className="result-header">W/L</div>
+            <div className="points-header">Points</div>
+            <div className="date-header">Date</div>
+            <div className="action-header">Action</div>
+          </div>
             {matches.map((match) => (
               <div className="match-item" key={match.id}>
                 <div className="teams">

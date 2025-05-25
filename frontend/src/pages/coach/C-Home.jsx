@@ -108,7 +108,7 @@ function CHome() {
       </div>
 
       <div className="team-actions">
-        <button className="view-matches-button" onClick={handleViewMatches}>
+        <button className="create-team-button" onClick={handleViewMatches}>
           View Matches
         </button>
       </div>
