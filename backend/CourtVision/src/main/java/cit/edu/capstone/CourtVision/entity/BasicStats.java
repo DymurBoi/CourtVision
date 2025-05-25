@@ -43,8 +43,21 @@ public class BasicStats {
     @OneToOne(mappedBy = "basicStats", cascade = CascadeType.ALL)
     private PhysicalBasedMetricsStats physicalBasedMetricsStats;
 
+    @OneToOne
+    @JoinColumn(name = "player_id", referencedColumnName = "playerId")
+    private Player player;
+
+
     //Getters and Setters
 
+    public Player getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+    
     public PhysicalBasedMetricsStats getPhysicalBasedMetricsStats() {
         return physicalBasedMetricsStats;
     }

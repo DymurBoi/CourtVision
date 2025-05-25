@@ -6,18 +6,20 @@ import cit.edu.capstone.CourtVision.mapper.GameMapper;
 import cit.edu.capstone.CourtVision.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/game")
+@RequestMapping("/api/games")
 public class GameController {
 
     @Autowired
     private GameService service;
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH') or hasAuthority('ROLE_PLAYER')")
     @GetMapping("/get/all")
     public ResponseEntity<List<GameDTO>> getAll() {
         List<Game> games = service.getAll();
@@ -31,6 +33,7 @@ public class GameController {
         return game != null ? ResponseEntity.ok(GameMapper.toDTO(game)) : ResponseEntity.notFound().build();
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH') or hasAuthority('ROLE_PLAYER')")
     @GetMapping("/get/team/{teamId}")
     public ResponseEntity<List<GameDTO>> getByTeamId(@PathVariable Long teamId) {
         List<Game> games = service.getByTeamId(teamId);
@@ -42,7 +45,7 @@ public class GameController {
     public ResponseEntity<GameDTO> create(@RequestBody Game game) {
         return ResponseEntity.ok(GameMapper.toDTO(service.save(game)));
     }
-
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
     @PutMapping("/put/{id}")
     public ResponseEntity<GameDTO> update(@PathVariable Long id, @RequestBody Game game) {
         return ResponseEntity.ok(GameMapper.toDTO(service.update(id, game)));

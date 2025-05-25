@@ -298,7 +298,9 @@ function CGameDetails() {
                 </tr>
               </thead>
               <tbody>
-                {match.players.map((player) => (
+                {match.players.length===0?(<div className="no-matches">
+              <p>No players found. Update match details to show stats.</p>
+            </div>):(match.players.map((player) => (
                   <tr key={player.id}>
                     <td>{player.name}</td>
                     <td>{player.minutes}</td>
@@ -313,7 +315,7 @@ function CGameDetails() {
                     <td>{player.dfRebounds}</td>
                     <td>{player.fouls}</td>
                   </tr>
-                ))}
+                )))}
               </tbody>
             </table>
           </div>

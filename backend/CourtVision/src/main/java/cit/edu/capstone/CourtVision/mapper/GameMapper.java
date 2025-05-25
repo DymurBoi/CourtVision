@@ -1,7 +1,10 @@
 package cit.edu.capstone.CourtVision.mapper;
 
 import cit.edu.capstone.CourtVision.dto.GameDTO;
+import cit.edu.capstone.CourtVision.entity.AdvancedStats;
+import cit.edu.capstone.CourtVision.entity.BasicStats;
 import cit.edu.capstone.CourtVision.entity.Game;
+import cit.edu.capstone.CourtVision.entity.Team;
 
 public class GameMapper {
 
@@ -10,18 +13,27 @@ public class GameMapper {
         dto.setGameId(game.getGameId());
         dto.setGameName(game.getGameName());
         dto.setGameDate(game.getGameDate());
+        dto.setGameResult(game.getGameResult());
+        dto.setFinalScore(game.getFinalScore());
         dto.setComments(game.getComments());
+        
 
         if (game.getTeam() != null) {
-            dto.setTeam(TeamMapper.toDTO(game.getTeam()));
+            Team temp=new Team();
+            temp=game.getTeam();
+            dto.setTeamId(temp.getTeamId());
         }
 
         if (game.getBasicStats() != null) {
-            dto.setBasicStats(BasicStatsMapper.toDTO(game.getBasicStats()));
+            BasicStats temp=new BasicStats();
+            temp=game.getBasicStats();
+            dto.setBasicStatId(temp.getBasicStatId());
         }
 
         if (game.getAdvancedStats() != null) {
-            dto.setAdvancedStats(AdvancedStatsMapper.toDTO(game.getAdvancedStats()));
+            AdvancedStats temp=new AdvancedStats();
+            temp=game.getAdvancedStats();
+            dto.setAdvancedStatId(temp.getId());
         }
 
         // Skipping playerAverages for now to avoid infinite recursion (you can optionally include it)

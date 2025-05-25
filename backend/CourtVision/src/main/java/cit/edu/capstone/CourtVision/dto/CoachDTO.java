@@ -8,11 +8,18 @@ public class CoachDTO {
     private String fname;
     private String lname;
     private String email;
-    private String password;
     private LocalDate birthDate;
+    private List<Long> teamIds; // List to hold multiple team IDs
 
     // Getters and Setters
 
+    public List<Long> getTeamIds() {
+        return teamIds;
+    }
+
+    public void setTeamId(List<Long> teamIds) {
+        this.teamIds = teamIds;
+    }
 
     public Integer getCoachId() {
         return coachId;
@@ -22,19 +29,35 @@ public class CoachDTO {
         this.coachId = coachId;
     }
 
+    public String getFname() {
+        return fname;
+    }
 
-    public String getFname() { return fname; }
-    public void setFname(String fname) { this.fname = fname; }
+    public void setFname(String fname) {
+        this.fname = fname;
+    }
 
-    public String getLname() { return lname; }
-    public void setLname(String lname) { this.lname = lname; }
+    public String getLname() {
+        return lname;
+    }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public void setLname(String lname) {
+        this.lname = lname;
+    }
 
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
+    public String getEmail() {
+        return email;
+    }
 
-    public LocalDate getBirthDate() { return birthDate; }
-    public void setBirthDate(LocalDate birthDate) { this.birthDate = birthDate; }
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public LocalDate getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
+    }
 }

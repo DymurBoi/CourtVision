@@ -1,20 +1,24 @@
 package cit.edu.capstone.CourtVision.dto;
 
 import java.time.LocalDate;
-import java.util.List;
 
 public class GameDTO {
     private Long gameId;
     private String gameName;
     private LocalDate gameDate;
+    private String gameResult;
+    private String finalScore;
     private String comments;
-    private TeamDTO team;
-    private BasicStatsDTO basicStats;
-    private AdvancedStatsDTO advancedStats;
-    private List<PlayerAveragesDTO> playerAverages;
+    private Long teamId;
+    private Long basicStatId;
+    private Long advancedStatId;
+    private Long adjustedStatId;
+
+    // Constructors
+    public GameDTO() {
+    }
 
     // Getters and Setters
-
     public Long getGameId() {
         return gameId;
     }
@@ -39,6 +43,22 @@ public class GameDTO {
         this.gameDate = gameDate;
     }
 
+    public String getGameResult() {
+        return gameResult;
+    }
+
+    public void setGameResult(String gameResult) {
+        this.gameResult = gameResult;
+    }
+
+    public String getFinalScore() {
+        return finalScore;
+    }
+
+    public void setFinalScore(String finalScore) {
+        this.finalScore = finalScore;
+    }
+
     public String getComments() {
         return comments;
     }
@@ -47,36 +67,35 @@ public class GameDTO {
         this.comments = comments;
     }
 
-    public TeamDTO getTeam() {
-        return team;
+    public Long getTeamId() {
+        return teamId;
     }
 
-    public void setTeam(TeamDTO team) {
-        this.team = team;
+    public void setTeamId(Long teamId) {
+        this.teamId = teamId;
     }
 
-    public BasicStatsDTO getBasicStats() {
-        return basicStats;
+    public Long getBasicStatId() {
+        return basicStatId;
     }
 
-    public void setBasicStats(BasicStatsDTO basicStats) {
-        this.basicStats = basicStats;
+    public void setBasicStatId(Long basicStatId) {
+        this.basicStatId = basicStatId;
     }
 
-    public AdvancedStatsDTO getAdvancedStats() {
-        return advancedStats;
+    public Long getAdvancedStatId() {
+        return advancedStatId;
     }
 
-    public void setAdvancedStats(AdvancedStatsDTO advancedStats) {
-        this.advancedStats = advancedStats;
+    public void setAdvancedStatId(Long advancedStatId) {
+        this.advancedStatId = advancedStatId;
     }
 
-    public List<PlayerAveragesDTO> getPlayerAverages() {
-        return playerAverages;
+    public Long getAdjustedStatId() {
+        return adjustedStatId;
     }
 
-    public void setPlayerAverages(List<PlayerAveragesDTO> playerAverages) {
-        this.playerAverages = playerAverages;
+    public void setAdjustedStatId(Long adjustedStatId) {
+        this.adjustedStatId = adjustedStatId;
     }
-}
-
+} 

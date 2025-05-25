@@ -49,6 +49,15 @@ public class GameService {
             if (updatedGame.getGameDate() != null) {
                 existingGame.setGameDate(updatedGame.getGameDate());
             }
+            if (updatedGame.getGameResult() != null) {
+                existingGame.setGameResult(updatedGame.getGameResult());
+            }
+            if (updatedGame.getFinalScore() != null) {
+                existingGame.setFinalScore(updatedGame.getFinalScore());
+            }
+            if (updatedGame.getComments() != null) {
+                existingGame.setComments(updatedGame.getComments());
+            }
             if (updatedGame.getComments() != null) {
                 existingGame.setComments(updatedGame.getComments());
             }

@@ -13,6 +13,9 @@ public class Game {
 
     private String gameName;
     private LocalDate gameDate;
+    private String gameResult;
+    private String finalScore;
+    
     private String comments;
 
     @ManyToOne
@@ -34,7 +37,21 @@ public class Game {
 
     // Getters and Setters
 
+    public String getGameResult() {
+        return gameResult;
+    }
 
+    public void setGameResult(String gameResult) {
+        this.gameResult = gameResult;
+    }
+
+    public String getFinalScore() {
+        return finalScore;
+    }
+
+    public void setFinalScore(String finalScore) {
+        this.finalScore = finalScore;
+    }
     public PhysicalBasedMetricsStats getPhysicalBasedMetricsStats() {
         return physicalBasedMetricsStats;
     }

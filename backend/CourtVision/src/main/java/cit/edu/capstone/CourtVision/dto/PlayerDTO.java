@@ -14,8 +14,16 @@ public class PlayerDTO {
     private Long teamId;
     private String teamName;
     private PhysicalRecordDTO physicalRecords;
-
+    private BasicStatsDTO basicStats;
+    
+    
     // Getters and Setters
+    public BasicStatsDTO getBasicStats() {
+        return basicStats;
+    }
+    public void setBasicStats(BasicStatsDTO basicStats) {
+        this.basicStats = basicStats;
+    }
     public String getTeamName() {
         return teamName;
     }

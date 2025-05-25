@@ -32,8 +32,19 @@ public class Player {
     @OneToMany(mappedBy = "player") // One Player → Many PlayerAverages
     private List<PlayerAverages> playerAverages;
 
+    @OneToOne(mappedBy = "player", cascade = CascadeType.ALL)
+    private BasicStats basicStats;
+
     // Getters and Setters
 
+
+    public BasicStats getBasicStats() {
+        return basicStats;
+    }
+
+    public void setBasicStats(BasicStats basicStats) {
+        this.basicStats = basicStats;
+    }
 
     public String getPosition() {
         return position;

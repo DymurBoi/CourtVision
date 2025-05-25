@@ -2,6 +2,7 @@ package cit.edu.capstone.CourtVision.mapper;
 
 import cit.edu.capstone.CourtVision.dto.PhysicalRecordDTO;
 import cit.edu.capstone.CourtVision.dto.PlayerDTO;
+import cit.edu.capstone.CourtVision.entity.BasicStats;
 import cit.edu.capstone.CourtVision.entity.PhysicalRecords;
 import cit.edu.capstone.CourtVision.entity.Player;
 import cit.edu.capstone.CourtVision.entity.Team;
@@ -30,7 +31,12 @@ public class PlayerMapper {
         if (player.getPhysicalRecords() != null) {
             dto.setPhysicalRecords(toDto(player.getPhysicalRecords()));
         }
-
+        if (player.getBasicStats() != null) {
+            BasicStats temp=new BasicStats();
+            temp=player.getBasicStats();
+            BasicStatsMapper mapper=new BasicStatsMapper();
+            dto.setBasicStats(mapper.toDTO(temp));
+        }
         return dto;
     }
 
