@@ -118,31 +118,6 @@ function CHome() {
         
         // Fallback to sample data if API fails
         console.log("Using fallback sample data for coach");
-        setTeams([
-          {
-            id: 1,
-            teamId: 1,
-            name: "CIT-U College Team",
-            description: "Our collegiate basketball team competing in university leagues and championships.",
-            players: [
-              { id: 101, fname: "James", lname: "Wilson", jerseyNum: 23, position: "Point Guard" },
-              { id: 102, fname: "Robert", lname: "Garcia", jerseyNum: 10, position: "Shooting Guard" },
-              { id: 103, fname: "Michael", lname: "Chen", jerseyNum: 7, position: "Small Forward" },
-              { id: 104, fname: "David", lname: "Smith", jerseyNum: 32, position: "Power Forward" },
-              { id: 105, fname: "Christopher", lname: "Johnson", jerseyNum: 45, position: "Center" },
-            ],
-          },
-          {
-            id: 2,
-            teamId: 2,
-            name: "CIT-U High School Team",
-            description: "Our high school basketball team developing young talents.",
-            players: [
-              { id: 201, fname: "Alex", lname: "Williams", jerseyNum: 4, position: "Point Guard" },
-              { id: 202, fname: "Jake", lname: "Miller", jerseyNum: 11, position: "Shooting Guard" },
-            ],
-          },
-        ])
         setSelectedTeamId(1)
         setLoading(false)
       }

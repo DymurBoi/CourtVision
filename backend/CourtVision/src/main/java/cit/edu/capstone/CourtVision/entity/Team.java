@@ -8,7 +8,6 @@ public class Team {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long teamId;
-
     private String teamName;
 
     @ManyToOne

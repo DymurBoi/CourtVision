@@ -39,9 +39,6 @@ public class CoachService {
             if (dto.getFname() != null) coach.setFname(dto.getFname());
             if (dto.getLname() != null) coach.setLname(dto.getLname());
             if (dto.getEmail() != null) coach.setEmail(dto.getEmail());
-            if (dto.getPassword() != null && !dto.getPassword().isEmpty()) {
-                coach.setPassword(passwordEncoder.encode(dto.getPassword()));
-            }
             if (dto.getBirthDate() != null) coach.setBirthDate(dto.getBirthDate());
             return coachRepository.save(coach);
         }

@@ -19,14 +19,17 @@ import PMatches from "./pages/player/P-Matches"
 import PMatchDetails from "./pages/player/P-MatchDetails"
 import PProfile from "./pages/player/P-Profile"
 import AdminDashboard from "./pages/admin/AdminDashboard"
-import UserManagement from "./pages/admin/UserManagement"
-import UserDetails from "./pages/admin/UserDetails"
-import UserEdit from "./pages/admin/UserEdit"
+import UserManagement from "./pages/admin/PlayerManagement"
+import PlayerDetails from "./pages/admin/PlayerDetails"
+import PlayerEdit from "./pages/admin/PlayerEdit"
+import CoachDetails from "./pages/admin/CoachDetails"
+import CoachEdit from "./pages/admin/CoachEdit"
 import CreateCoach from "./pages/admin/CreateCoach"
 import AdminTeams from "./pages/admin/AdminTeams"
 import AdminMatches from "./pages/admin/AdminMatches"
 import AdminRequests from "./pages/admin/AdminRequests"
 import AdminLogin from "./pages/admin/AdminLogin"
+import CoachManagement from "./pages/admin/CoachManagement" 
 import { AuthProvider } from "./components/AuthContext"
 import { useEffect } from "react"
 import "./styles/App.css"
@@ -61,11 +64,20 @@ function AppRoutes() {
           }
         />
         <Route
+          path="/admin/coaches"
+          element={
+            <>
+              <AdminNavbar />
+              <CoachManagement />
+            </>
+          }
+        />
+        <Route
           path="/admin/users/:id"
           element={
             <>
               <AdminNavbar />
-              <UserDetails />
+              <PlayerDetails />
             </>
           }
         />
@@ -74,7 +86,25 @@ function AppRoutes() {
           element={
             <>
               <AdminNavbar />
-              <UserEdit />
+              <PlayerEdit />
+            </>
+          }
+        />
+           <Route
+          path="/admin/coach/:id"
+          element={
+            <>
+              <AdminNavbar />
+              <CoachDetails />
+            </>
+          }
+        />
+        <Route
+          path="/admin/Coach/:id/edit"
+          element={
+            <>
+              <AdminNavbar />
+              <CoachEdit />
             </>
           }
         />
