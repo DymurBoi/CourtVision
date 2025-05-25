@@ -146,6 +146,62 @@
     cursor: not-allowed;
   }
   
+/* Adjust the select for Player dropdown */
+.players-table select {
+  padding: 0.8rem; /* Match padding with input fields */
+  border: 1px solid rgba(123, 123, 243, 0.3); /* Same border style as inputs */
+  border-radius: 4px; /* Same rounded corners as inputs */
+  font-size: 0.95rem; /* Same font size as input fields */
+  width: 100%; /* Take full width within the table */
+  background-color: white; /* Make sure it's consistent with input fields */
+  appearance: none; /* Remove native dropdown arrow */
+  cursor: pointer; /* Pointer cursor for better interactivity */
+}
+
+/* Adjust the focus state for Player dropdown */
+.players-table select:focus {
+  outline: none;
+  border-color: var(--medium-purple); /* Same focus color as inputs */
+  box-shadow: 0 0 0 2px rgba(123, 123, 243, 0.2); /* Same shadow on focus */
+}
+
+/* Remove the default dropdown arrow in some browsers */
+.players-table select::-ms-expand {
+  display: none;
+}
+
+/* Style the options to match input fields */
+.players-table select option {
+  padding: 0.8rem; /* Padding for options */
+  font-size: 0.95rem;
+  background-color: white;
+  color: var(--dark-blue);
+}
+
+/* Adjust Result dropdown (to distinguish from Player dropdown) */
+.form-group select {
+  padding: 0.8rem;
+  border: 1px solid rgba(123, 123, 243, 0.3);
+  border-radius: 4px;
+  font-size: 0.95rem;
+  width: 100%;
+  background-color: white;
+  appearance: none;
+  cursor: pointer;
+}
+
+.form-group select:focus {
+  outline: none;
+  border-color: var(--medium-purple);
+  box-shadow: 0 0 0 2px rgba(123, 123, 243, 0.2);
+}
+
+/* Adjust Result dropdown to make it slightly different if needed */
+.form-group select {
+  margin-bottom: 1rem; /* Add space below the Result dropdown if you want a slight distinction */
+}
+
+
   @media (max-width: 768px) {
     .form-row {
       grid-template-columns: 1fr;
@@ -162,4 +218,5 @@
       font-size: 0.8rem;
     }
   }
+  
   

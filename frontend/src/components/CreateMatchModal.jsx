@@ -1,11 +1,10 @@
-"use client"
+import { useState, useEffect } from "react";
+import axios from "axios";
+import "../styles/Modal.css";
+import "../styles/MatchModal.css";
 
-import { useState } from "react"
-import "../styles/Modal.css"
-import "../styles/MatchModal.css"
-
-function CreateMatchModal({ onClose, onSave, initialData = null }) {
-  const isEditing = !!initialData
+function CreateMatchModal({ onClose, onSave, initialData = null, teamId }) {
+  const isEditing = !!initialData;
 
   const [formData, setFormData] = useState({
     homeTeam: initialData?.homeTeam || "CIT-U",
@@ -13,47 +12,52 @@ function CreateMatchModal({ onClose, onSave, initialData = null }) {
     result: initialData?.result || "W",
     score: initialData?.score || "",
     date: initialData?.date || new Date().toISOString().split("T")[0],
-    players: initialData?.players || [
-      {
-        id: 1,
-        name: "",
-        minutes: "",
-        pts2MA: "",
-        pts3MA: "",
-        ftMA: "",
-        steals: "",
-        turnovers: "",
-        assists: "",
-        blocks: "",
-        ofRebounds: "",
-        dfRebounds: "",
-        fouls: "",
-      },
-    ],
-  })
+    playerId: initialData?.playerId || "", // Added to store selected player
+    players: initialData?.players || [],  // Fetched players for dropdown
+  });
+
+  const [players, setPlayers] = useState([]);
+  const [loadingPlayers, setLoadingPlayers] = useState(false);
+
+  // Function to fetch players for the selected team
+  const fetchPlayers = async (teamId) => {
+    setLoadingPlayers(true);
+    try {
+      const response = await axios.get(`http://localhost:8080/api/players/get/by-team/${teamId}`);
+      setPlayers(response.data); // Assuming the API response structure has players under 'players'
+    } catch (error) {
+      console.error("Failed to fetch players:", error);
+    } finally {
+      setLoadingPlayers(false);
+    }
+  };
+
+  // Update players when teamId changes
+  useEffect(() => {
+    if (teamId) {
+      fetchPlayers(teamId);
+    }
+  }, [teamId]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setFormData({
       ...formData,
       [name]: value,
-    })
-  }
+    });
+  };
 
   const handlePlayerChange = (index, field, value) => {
-    const updatedPlayers = [...formData.players]
-    updatedPlayers[index] = {
-      ...updatedPlayers[index],
-      [field]: value,
-    }
+    const updatedPlayers = [...formData.players];
+    updatedPlayers[index][field] = value; // Update the correct field dynamically
     setFormData({
       ...formData,
       players: updatedPlayers,
-    })
-  }
+    });
+  };
 
   const addPlayer = () => {
-    const newId = formData.players.length > 0 ? Math.max(...formData.players.map((p) => p.id)) + 1 : 1
+    const newId = formData.players.length > 0 ? Math.max(...formData.players.map((p) => p.id)) + 1 : 1;
 
     setFormData({
       ...formData,
@@ -61,7 +65,7 @@ function CreateMatchModal({ onClose, onSave, initialData = null }) {
         ...formData.players,
         {
           id: newId,
-          name: "",
+          playerId: "",  // Empty playerId initially
           minutes: "",
           pts2MA: "",
           pts3MA: "",
@@ -75,22 +79,52 @@ function CreateMatchModal({ onClose, onSave, initialData = null }) {
           fouls: "",
         },
       ],
-    })
-  }
+    });
+  };
 
   const removePlayer = (index) => {
-    const updatedPlayers = [...formData.players]
-    updatedPlayers.splice(index, 1)
+    const updatedPlayers = [...formData.players];
+    updatedPlayers.splice(index, 1);
     setFormData({
       ...formData,
       players: updatedPlayers,
-    })
-  }
+    });
+  };
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    onSave(formData)
-  }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post("http://localhost:8080/api/basic-stats/post", {
+        twoPtAttempts: 4,
+        twoPtMade: 2,
+        threePtAttempts: 2,
+        threePtMade: 1,
+        ftAttempts: 0,
+        ftMade: 0,
+        assists: 2,
+        oFRebounds: 3,
+        dFRebounds: 2,
+        blocks: 1,
+        steals: 0,
+        turnovers: 2,
+        pFouls: 0,
+        dFouls: 0,
+        plusMinus: 12,
+        minutes: "00:20:00",
+        player: {
+          playerId: formData.playerId, // Use the selected player's ID
+        },
+        game: {
+          gameId: 1, // Assuming gameId is provided or selected elsewhere
+        },
+      });
+      console.log("Basic stats created:", response.data);
+      onSave(response.data); // Pass the saved data to the parent component (if needed)
+    } catch (error) {
+      console.error("Failed to create basic stats:", error);
+    }
+  };
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -153,7 +187,14 @@ function CreateMatchModal({ onClose, onSave, initialData = null }) {
                 </div>
                 <div className="form-group">
                   <label htmlFor="date">Date</label>
-                  <input type="date" id="date" name="date" value={formData.date} onChange={handleChange} required />
+                  <input
+                    type="date"
+                    id="date"
+                    name="date"
+                    value={formData.date}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
               </div>
             </div>
@@ -170,7 +211,7 @@ function CreateMatchModal({ onClose, onSave, initialData = null }) {
                 <table className="players-table">
                   <thead>
                     <tr>
-                      <th>Player Name</th>
+                      <th>Select Player</th> {/* Changed this column to "Select Player" */}
                       <th>MIN</th>
                       <th>2 PTS M/A</th>
                       <th>3 PTS M/A</th>
@@ -189,13 +230,20 @@ function CreateMatchModal({ onClose, onSave, initialData = null }) {
                     {formData.players.map((player, index) => (
                       <tr key={player.id}>
                         <td>
-                          <input
-                            type="text"
-                            value={player.name}
-                            onChange={(e) => handlePlayerChange(index, "name", e.target.value)}
-                            placeholder="Player Name"
-                            required
-                          />
+                          <div className="form-group">
+                            <select
+                              value={player.playerId}
+                              onChange={(e) => handlePlayerChange(index, "playerId", e.target.value)} 
+                              required
+                            >
+                              <option value="">Select Player</option>
+                              {players.map((p) => (
+                                <option key={p.playerId} value={p.playerId}>
+                                  {p.fname} {p.lname}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
                         </td>
                         <td>
                           <input
@@ -303,18 +351,18 @@ function CreateMatchModal({ onClose, onSave, initialData = null }) {
             </div>
           </div>
 
-          <div className="modal-actions">
-            <button type="submit" className="save-button">
-              {isEditing ? "Save Changes" : "Create Match"}
-            </button>
-            <button type="button" className="cancel-button" onClick={onClose}>
+          <div className="modal-footer">
+            <button type="button" onClick={onClose} className="cancel-button">
               Cancel
+            </button>
+            <button type="submit" className="save-button">
+              {isEditing ? "Save Changes" : "Save Match"}
             </button>
           </div>
         </form>
       </div>
     </div>
-  )
+  );
 }
 
-export default CreateMatchModal
+export default CreateMatchModal;
