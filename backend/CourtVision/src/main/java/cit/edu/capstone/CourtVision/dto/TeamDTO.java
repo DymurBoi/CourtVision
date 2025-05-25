@@ -5,6 +5,7 @@ import java.util.List;
 public class TeamDTO {
     private Long teamId;
     private String teamName;
+    private String description;
     private List<PlayerDTO> players;
     private List<GameDTO> games;
     private List<CoachDTO> coaches;
@@ -49,6 +50,14 @@ public class TeamDTO {
 
     public void setGames(List<GameDTO> games) {
         this.games = games;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
 

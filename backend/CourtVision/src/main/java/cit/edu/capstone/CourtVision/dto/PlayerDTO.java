@@ -12,11 +12,14 @@ public class PlayerDTO {
     private int jerseyNum;
     private boolean isCoach;
     private boolean isAdmin;
+
+    // Team data
+    private TeamDTO team;
     private Long teamId;
     private String teamName;
+
     private PhysicalRecordDTO physicalRecords;
     private List<BasicStatsDTO> basicStatsList;
-
 
     // Getters and Setters
 
@@ -68,20 +71,28 @@ public class PlayerDTO {
         this.jerseyNum = jerseyNum;
     }
 
-    public boolean getIsCoach() {
+    public boolean isCoach() {
         return isCoach;
     }
 
-    public void setIsCoach(boolean coach) {
-        isCoach = coach;
+    public void setIsCoach(boolean isCoach) {
+        this.isCoach = isCoach;
     }
 
-    public boolean getIsAdmin() {
+    public boolean isAdmin() {
         return isAdmin;
     }
 
-    public void setIsAdmin(boolean admin) {
-        isAdmin = admin;
+    public void setIsAdmin(boolean isAdmin) {
+        this.isAdmin = isAdmin;
+    }
+
+    public TeamDTO getTeam() {
+        return team;
+    }
+
+    public void setTeam(TeamDTO team) {
+        this.team = team;
     }
 
     public Long getTeamId() {

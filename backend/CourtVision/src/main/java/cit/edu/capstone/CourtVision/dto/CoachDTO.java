@@ -8,10 +8,19 @@ public class CoachDTO {
     private String fname;
     private String lname;
     private String email;
+    private String password;
     private LocalDate birthDate;
-    private List<Long> teamIds; // List to hold multiple team IDs
+    private List<Long> teamIds;
 
-    // Getters and Setters
+    public CoachDTO() {
+    }
+
+    public CoachDTO(Integer coachId, String fname, String lname, String email) {
+        this.coachId = coachId;
+        this.fname = fname;
+        this.lname = lname;
+        this.email = email;
+    }
 
     public List<Long> getTeamIds() {
         return teamIds;
@@ -21,6 +30,7 @@ public class CoachDTO {
         this.teamIds = teamIds;
     }
 
+    // Getters and Setters
     public Integer getCoachId() {
         return coachId;
     }
@@ -51,6 +61,14 @@ public class CoachDTO {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public LocalDate getBirthDate() {
