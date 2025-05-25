@@ -34,8 +34,10 @@ public class BasicStats {
     private int plusMinus;
     private Time minutes;
 
-    @OneToOne(mappedBy = "basicStats", cascade = CascadeType.ALL)
-    private Game game;
+    @ManyToOne
+@JoinColumn(name = "game_id")
+private Game game;
+
 
     @OneToOne(mappedBy = "basicStats", cascade = CascadeType.ALL)
     private AdvancedStats advancedStats;

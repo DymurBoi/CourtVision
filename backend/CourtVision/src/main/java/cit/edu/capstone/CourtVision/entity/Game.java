@@ -22,9 +22,9 @@ public class Game {
     @JoinColumn(name = "team_id")
     private Team team;
 
-    @OneToOne
-    @JoinColumn(name = "basic_stats_id")
-    private BasicStats basicStats;
+@OneToOne
+@JoinColumn(name = "basic_stats_id")
+private BasicStats basicStats;
     @OneToOne
     @JoinColumn(name = "advanced_stats_id")
     private AdvancedStats advancedStats;
