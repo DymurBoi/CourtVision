@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../components/AuthContext"
 import { api } from "../../utils/axiosConfig"
 import "../../styles/coach/C-Team.css"
@@ -8,6 +9,7 @@ import "../../styles/coach/C-Home.css"
 
 function CHome() {
   const { user } = useAuth()
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true)
   const [coachData, setCoachData] = useState({
     fname: "",
@@ -175,6 +177,10 @@ function CHome() {
     }
   }
 
+  const handleViewMatches = () => {
+  navigate(`/coach/matches?teamId=${selectedTeamId}`);
+  };
+
   // Find the selected team
   const selectedTeam = teams.find((team) => team.id === selectedTeamId || team.teamId === selectedTeamId) || teams[0]
   
@@ -212,6 +218,10 @@ function CHome() {
           </svg>
           Create New Team
         </button>
+        <button className="create-team-button" onClick={handleViewMatches}>
+          View Matches
+        </button>
+
       </div>
 
       <div className="team-selector">

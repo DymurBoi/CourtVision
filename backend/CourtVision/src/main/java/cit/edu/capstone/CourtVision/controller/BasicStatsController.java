@@ -27,12 +27,14 @@ public class BasicStatsController {
         return ResponseEntity.ok(dtos);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
     @GetMapping("/get/{id}")
     public ResponseEntity<BasicStatsDTO> getById(@PathVariable Long id) {
         BasicStats stat = service.getById(id);
         return stat != null ? ResponseEntity.ok(BasicStatsMapper.toDTO(stat)) : ResponseEntity.notFound().build();
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
     @GetMapping("/get/by-game/{gameId}")
     public ResponseEntity<BasicStatsDTO> getByGame(@PathVariable Long gameId) {
         BasicStats stat = service.getByGameId(gameId);

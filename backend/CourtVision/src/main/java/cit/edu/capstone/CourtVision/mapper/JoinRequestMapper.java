@@ -1,5 +1,5 @@
-package cit.edu.capstone.CourtVision.dto;
-
+package cit.edu.capstone.CourtVision.mapper;
+import cit.edu.capstone.CourtVision.dto.*;
 import cit.edu.capstone.CourtVision.entity.JoinRequest;
 
 public class JoinRequestMapper {

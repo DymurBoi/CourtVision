@@ -1,7 +1,7 @@
 package cit.edu.capstone.CourtVision.controller;
 
 import cit.edu.capstone.CourtVision.dto.JoinRequestDTO;
-import cit.edu.capstone.CourtVision.dto.JoinRequestMapper;
+import cit.edu.capstone.CourtVision.mapper.JoinRequestMapper;
 import cit.edu.capstone.CourtVision.entity.JoinRequest;
 import cit.edu.capstone.CourtVision.entity.Player;
 import cit.edu.capstone.CourtVision.entity.Coach;
