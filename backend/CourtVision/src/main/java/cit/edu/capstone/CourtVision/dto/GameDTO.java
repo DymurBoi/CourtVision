@@ -10,10 +10,6 @@ public class GameDTO {
     private String finalScore;
     private String comments;
     private Long teamId;
-    private Long basicStatId;
-    private Long advancedStatId;
-    private Long adjustedStatId;
-
     // Constructors
     public GameDTO() {
     }
@@ -75,27 +71,5 @@ public class GameDTO {
         this.teamId = teamId;
     }
 
-    public Long getBasicStatId() {
-        return basicStatId;
-    }
 
-    public void setBasicStatId(Long basicStatId) {
-        this.basicStatId = basicStatId;
-    }
-
-    public Long getAdvancedStatId() {
-        return advancedStatId;
-    }
-
-    public void setAdvancedStatId(Long advancedStatId) {
-        this.advancedStatId = advancedStatId;
-    }
-
-    public Long getAdjustedStatId() {
-        return adjustedStatId;
-    }
-
-    public void setAdjustedStatId(Long adjustedStatId) {
-        this.adjustedStatId = adjustedStatId;
-    }
 } 
