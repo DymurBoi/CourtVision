@@ -22,6 +22,7 @@ public class AdminService {
     public Admin getById(Long id) { return adminRepo.findById(id).orElse(null); }
 
     public Admin create(Admin admin) {
+        admin.setRole("ADMIN");
         admin.setPassword(passwordEncoder.encode(admin.getPassword()));
         return adminRepo.save(admin);
     }
@@ -34,8 +35,6 @@ public class AdminService {
             if (admin.getPassword() != null && !admin.getPassword().isEmpty()) {
                 existing.setPassword(passwordEncoder.encode(admin.getPassword()));
             }
-            existing.setIsCoach(admin.isCoach());
-            existing.setIsAdmin(admin.isAdmin());
             return adminRepo.save(existing);
         }
         return null;

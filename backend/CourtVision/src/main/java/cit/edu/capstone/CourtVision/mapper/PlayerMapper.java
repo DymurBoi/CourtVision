@@ -20,8 +20,7 @@ public class PlayerMapper {
         dto.setEmail(player.getEmail());
         dto.setBirthDate(player.getBirthDate());
         dto.setJerseyNum(player.getJerseyNum());
-        dto.setIsCoach(player.getIsCoach());
-        dto.setIsAdmin(player.getIsAdmin());
+
 
         // Map team using TeamMapper
         if (player.getTeam() != null) {
@@ -69,9 +68,6 @@ public class PlayerMapper {
         player.setEmail(dto.getEmail());
         player.setBirthDate(dto.getBirthDate());
         player.setJerseyNum(dto.getJerseyNum());
-        player.setIsCoach(dto.isCoach());
-        player.setIsAdmin(dto.isAdmin());
-
         return player;
     }
 }

@@ -20,8 +20,8 @@ public class Player {
     private LocalDate birthDate;
     private int jerseyNum;
     private String position;
-    private boolean isCoach;
-    private boolean isAdmin;
+
+    private String role ;
 
     @ManyToOne
     @JoinColumn(name = "team_id")
@@ -74,21 +74,6 @@ public class Player {
         this.physicalRecords = physicalRecords;
     }
 
-    public boolean isAdmin() {
-        return isAdmin;
-    }
-
-    public void setAdmin(boolean admin) {
-        isAdmin = admin;
-    }
-
-    public boolean isCoach() {
-        return isCoach;
-    }
-
-    public void setCoach(boolean coach) {
-        isCoach = coach;
-    }
 
     public Long getPlayerId() {
         return playerId;
@@ -146,21 +131,7 @@ public class Player {
         this.birthDate = birthDate;
     }
 
-    public boolean getIsCoach() {
-        return isCoach;
-    }
-
-    public void setIsCoach(boolean coach) {
-        isCoach = coach;
-    }
-
-    public boolean getIsAdmin() {
-        return isAdmin;
-    }
-
-    public void setIsAdmin(boolean admin) {
-        isAdmin = admin;
-    }
+  
 
     public Team getTeam() {
         return team;
@@ -168,5 +139,13 @@ public class Player {
 
     public void setTeam(Team team) {
         this.team = team;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

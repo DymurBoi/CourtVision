@@ -17,14 +17,14 @@ public class Admin {
     @Column(nullable = false)
     private String password;
 
-    private boolean isCoach;
-    private boolean isAdmin;
+    private String role ;
 
     @OneToMany(mappedBy = "admin")
     @JsonIgnore
     private List<Team> teams;
 
     // Getters and Setters
+
 
     public Long getAdminId() {
         return adminId;
@@ -50,28 +50,20 @@ public class Admin {
         this.password = password;
     }
 
-    public boolean isAdmin() {
-        return isAdmin;
-    }
-
-    public void setIsAdmin(boolean admin) {
-        isAdmin = admin;
-    }
-
-    public boolean isCoach() {
-        return isCoach;
-    }
-
-    public void setIsCoach(boolean coach) {
-        isCoach = coach;
-    }
-
     public List<Team> getTeams() {
         return teams;
     }
 
     public void setTeams(List<Team> teams) {
         this.teams = teams;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }
 

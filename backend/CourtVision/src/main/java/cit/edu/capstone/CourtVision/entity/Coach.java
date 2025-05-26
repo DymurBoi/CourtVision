@@ -19,14 +19,13 @@ public class Coach {
     @JsonIgnore
     private String password;
     private LocalDate birthDate;
-    private boolean isCoach;
-    private boolean isAdmin;
-
+    private String role ;
     @ManyToMany(mappedBy = "coaches")
     @JsonIgnore
     private List<Team> teams;
 
     // Getters and Setters
+    
 
     public Integer getCoachId() {
         return coachId;
@@ -60,13 +59,6 @@ public class Coach {
         this.email = email;
     }
 
-    public boolean getIsCoach() {
-        return isCoach;
-    }
-
-    public void setIsCoach(boolean coach) {
-        isCoach = coach;
-    }
 
     public String getPassword() {
         return password;
@@ -84,20 +76,21 @@ public class Coach {
         this.birthDate = birthDate;
     }
 
-    public boolean getIsAdmin() {
-        return isAdmin;
-    }
-
-    public void setIsAdmin(boolean admin) {
-        isAdmin = admin;
-    }
-
+   
     public List<Team> getTeams() {
         return teams;
     }
 
     public void setTeams(List<Team> teams) {
         this.teams = teams;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }
 
