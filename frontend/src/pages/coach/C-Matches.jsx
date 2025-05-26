@@ -70,9 +70,8 @@ function CMatches() {
 
   const handleCreateMatch = async (newMatch) => {
     try {
-      const savedGame = await gameService.createGame(newMatch)
-      
-      // Transform the saved game data to match format
+      const savedGame = await gameService.createGame(newMatch);
+
       const newMatchData = {
         id: savedGame.gameId,
         homeTeam: savedGame.gameName.split(' vs ')[0],
@@ -80,7 +79,7 @@ function CMatches() {
         result: savedGame.gameResult,
         score: savedGame.finalScore,
         date: new Date(savedGame.gameDate).toLocaleDateString()
-      }
+      };
 
       setMatches([...matches, newMatchData]);
       setShowCreateModal(false);
@@ -93,7 +92,7 @@ function CMatches() {
   return (
     <main className="main-content">
       <div className="page-header">
-        <h1>BasketBall Matches</h1>
+        <h1>Basketball Matches</h1>
       </div>
       <div className="matches-actions">
         <button className="create-match-button" onClick={() => setShowCreateModal(true)}>
@@ -139,7 +138,7 @@ function CMatches() {
                 <div className="score">{match.score}</div>
                 <div className="date">{match.date}</div>
                 <div className="actions">
-                  <Link to={`/coach/game-details/${match.id}`} className="view-button">
+                  <Link to={`/coach/game-details/${match.id}?teamId=${teamId}`} className="view-button">
                     View Game
                   </Link>
                 </div>
@@ -155,12 +154,11 @@ function CMatches() {
         </Link>
       </div>
 
-      {/* Pass teamId to CreateMatchModal */}
       {showCreateModal && (
         <CreateMatchModal
           onClose={() => setShowCreateModal(false)}
           onSave={handleCreateMatch}
-          teamId={teamId} // Pass teamId here
+          teamId={teamId}
         />
       )}
     </main>
