@@ -189,7 +189,7 @@ function PHome() {
       });
       
       // Revert back to axios API client which was working before
-      const response = await api.post('/join-requests', {
+      const response = await api.post('/join-requests/post', {
         playerId: Number(playerData.id),
         teamId: selectedTeam.id,
         coachId: selectedTeam.coachId

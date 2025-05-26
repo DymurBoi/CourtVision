@@ -19,7 +19,7 @@ public class BasicStatsController {
     @Autowired
     private BasicStatsService service;
 
-   // @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
     @GetMapping("/get/all")
     public ResponseEntity<List<BasicStatsDTO>> getAll() {
         List<BasicStats> stats = service.getAll();

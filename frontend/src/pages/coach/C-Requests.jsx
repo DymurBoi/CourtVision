@@ -102,7 +102,6 @@ function Requests() {
     
     try {
       console.log("Approving join request:", selectedRequest);
-      
       // Validate that we have all the required data
       if (!selectedRequest.playerId || !selectedRequest.teamId) {
         console.error("Missing required data for team assignment:", 
@@ -120,18 +119,11 @@ function Requests() {
       
       // Step 1: Update the request status to approved (1)
       console.log("Step 1: Updating request status to approved");
-      const approvalResponse = await api.put(`/join-requests/${requestId}`, {
-        ...selectedRequest,
-        requestStatus: 1 // 1 for approved
+      const approvalResponse = await api.put(`/join-requests/accept/${requestId}`, {
+        ...selectedRequest
       });
       
       console.log("Step 1 response:", approvalResponse);
-      
-      // Step 2: Directly use player-to-team assignment endpoint as a backup
-      console.log("Step 2: Directly assigning player to team");
-      const directAssignmentResponse = await api.put(`/players/${playerId}/team/${teamId}`);
-      
-      console.log("Step 2 response:", directAssignmentResponse);
       
       // Update the request in the local state
       setJoinRequests(prevRequests => 

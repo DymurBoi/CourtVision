@@ -21,7 +21,7 @@ public class AdminController {
     public Admin getById(@PathVariable Long id) {
         return service.getById(id);
     }
-
+    
     @PostMapping ("/post")
     public Admin create(@RequestBody Admin admin) {
         return service.create(admin);
