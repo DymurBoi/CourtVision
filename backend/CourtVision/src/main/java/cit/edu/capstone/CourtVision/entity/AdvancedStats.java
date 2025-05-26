@@ -32,17 +32,17 @@ public class AdvancedStats {
     private double tovPercentage;
     private double ftr;
 
-
     @OneToOne
-    @JoinColumn(name = "game_id")
-    private Game game;
+    @JoinColumn(name = "basic_stats_id")
+    private BasicStats basicStats;
 
-    public Game getGame() {
-        return game;
+
+    public BasicStats getBasicStats() {
+        return basicStats;
     }
 
-    public void setGame(Game game) {
-        this.game = game;
+    public void setBasicStats(BasicStats basicStats) {
+        this.basicStats = basicStats;
     }
 
     public Long getId() {

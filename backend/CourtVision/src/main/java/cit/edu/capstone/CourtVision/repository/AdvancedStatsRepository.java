@@ -5,6 +5,5 @@ import cit.edu.capstone.CourtVision.entity.Game;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AdvancedStatsRepository extends JpaRepository<AdvancedStats, Long> {
-    AdvancedStats findByGame(Game game);
 
 }

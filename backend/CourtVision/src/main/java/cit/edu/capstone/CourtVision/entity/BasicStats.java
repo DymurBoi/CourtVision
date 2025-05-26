@@ -42,9 +42,19 @@ public class BasicStats {
     @JoinColumn(name = "game_id")
     private Game game;
 
+    @OneToOne(mappedBy = "basicStats", cascade = CascadeType.ALL)
+    private AdvancedStats advancedStats;
 
     //Getters and Setters
 
+
+    public AdvancedStats getAdvancedStats() {
+        return advancedStats;
+    }
+
+    public void setAdvancedStats(AdvancedStats advancedStats) {
+        this.advancedStats = advancedStats;
+    }
 
     public Game getGame() {
         return game;
