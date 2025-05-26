@@ -141,10 +141,10 @@ function CHome() {
 
     try {
       // Call API to create new team
-      const response = await api.post('/teams', {
-        name: newTeamName,
+      const response = await api.post('/teams/post', {
+        teamName: newTeamName,
         description: `Team created on ${new Date().toLocaleDateString()}`,
-        coachId: user.id
+        adminId: 1
       })
       
       const newTeam = response.data
