@@ -49,7 +49,6 @@ public class BasicStatsService {
         advancedStats.setBlkPercentage(0);
         advancedStats.setTovPercentage(0);
         advancedStats.setFtr(0);
-
         // Link to the saved BasicStats
         advancedStats.setBasicStats(savedBasicStats);
 
@@ -57,7 +56,6 @@ public class BasicStatsService {
         advancedStatsRepository.save(advancedStats);
 
         // Update BasicStats to point back to AdvancedStats if needed (optional)
-        savedBasicStats.setAdvancedStats(advancedStats);
         return basicStatsRepository.save(savedBasicStats);
     }
 

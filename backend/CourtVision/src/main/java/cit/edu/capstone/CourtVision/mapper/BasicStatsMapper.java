@@ -26,9 +26,6 @@ public class BasicStatsMapper {
         dto.setMinutes(stat.getMinutes());
 
 
-        if (stat.getAdvancedStats() != null) {
-            dto.setAdvancedStatsDTO(AdvancedStatsMapper.toDTO(stat.getAdvancedStats()));
-        }
 
         if (stat.getGame() != null) {
             dto.setGameDTO(GameMapper.toDTO(stat.getGame()));
