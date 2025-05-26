@@ -5,7 +5,8 @@ import cit.edu.capstone.CourtVision.entity.BasicStats;
 
 public class BasicStatsMapper {
 
-    public static BasicStatsDTO toDTO(BasicStats stat) {
+   /* 
+   public static BasicStatsDTO toDTO(BasicStats stat) {
         BasicStatsDTO dto = new BasicStatsDTO();
         dto.setBasicStatId(stat.getBasicStatId());
         dto.setTwoPtAttempts(stat.getTwoPtAttempts());
@@ -42,4 +43,5 @@ public class BasicStatsMapper {
 
         return dto;
     }
+   */ 
 }

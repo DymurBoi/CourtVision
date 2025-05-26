@@ -4,8 +4,9 @@ import cit.edu.capstone.CourtVision.dto.AdvancedStatsDTO;
 import cit.edu.capstone.CourtVision.entity.AdvancedStats;
 
 public class AdvancedStatsMapper {
-    
-    public static AdvancedStatsDTO toDTO(AdvancedStats stats) {
+    /*
+     * 
+     * public static AdvancedStatsDTO toDTO(AdvancedStats stats) {
         AdvancedStatsDTO dto = new AdvancedStatsDTO();
         dto.setId(stats.getId());
         dto.setuPER(stats.getuPER());
@@ -34,5 +35,7 @@ public class AdvancedStatsMapper {
         }
         return dto;
     }
+     */
+    
 }
 
