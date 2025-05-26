@@ -10,6 +10,8 @@ import cit.edu.capstone.CourtVision.repository.PlayerRepository;
 import cit.edu.capstone.CourtVision.repository.CoachRepository;
 import cit.edu.capstone.CourtVision.repository.TeamRepository;
 import cit.edu.capstone.CourtVision.service.JoinRequestService;
+import cit.edu.capstone.CourtVision.service.TeamService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +36,11 @@ public class JoinRequestController {
     private CoachRepository coachRepository;
     @Autowired
     private TeamRepository teamRepository;
+    @Autowired
+    private TeamService teamService;
 
     @PreAuthorize("hasAuthority('ROLE_PLAYER')")
-    @PostMapping
+    @PostMapping("/post")
     public ResponseEntity<JoinRequestDTO> createRequest(@RequestBody JoinRequestDTO dto) {
         try {
             logger.info("Creating join request from player {} for team {}", dto.getPlayerId(), dto.getTeamId());
@@ -154,5 +158,40 @@ public class JoinRequestController {
         return joinRequestService.getRequestsByTeamId(teamId).stream()
                 .map(JoinRequestMapper::toDto)
                 .collect(Collectors.toList());
+    }
+    @PreAuthorize("hasAuthority('ROLE_COACH') or hasAuthority('ROLE_ADMIN')")
+    @PutMapping("/accept/{id}")
+    public ResponseEntity<JoinRequestDTO> acceptJoinRequest(@PathVariable Long id) {
+        try {
+            // Fetch the join request by ID
+            JoinRequest joinRequest = joinRequestService.getRequestById(id);
+            if (joinRequest == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            // Check if the request status is already accepted
+            if (joinRequest.getRequestStatus() == 1) {
+                return ResponseEntity.status(400).body(null); // Bad Request if already accepted
+            }
+
+            // Update the status of the join request to "accepted" (1)
+            joinRequest.setRequestStatus(1);
+
+            // Get the player and the team from the join request
+            Player player = joinRequest.getPlayer();
+            Team team = joinRequest.getTeam();
+
+            // Now use the existing method to add the player to the team
+            teamService.assignPlayerToTeam(team.getTeamId(), player.getPlayerId());
+
+            // Save the updated join request
+            joinRequestService.updateRequest(id, joinRequest); // Update the request status in DB
+
+            // Return a response with the updated request DTO
+            return ResponseEntity.ok(JoinRequestMapper.toDto(joinRequest));
+        } catch (Exception e) {
+            logger.error("Error accepting join request: {}", e.getMessage(), e);
+            return ResponseEntity.internalServerError().build();
+        }
     }
 } 

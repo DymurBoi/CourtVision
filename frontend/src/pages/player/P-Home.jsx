@@ -173,8 +173,7 @@ function PHome() {
     if (!playerData.id || !selectedTeam.id || !selectedTeam.coachId) {
       console.error('Missing required data:', { 
         playerId: playerData.id, 
-        teamId: selectedTeam.id, 
-        coachId: selectedTeam.coachId 
+        teamId: selectedTeam.id
       });
       alert('Missing required data. Please try again.');
       return;
@@ -184,15 +183,13 @@ function PHome() {
       // Log the exact data we're sending
       console.log("Sending join request with data:", {
         playerId: Number(playerData.id),
-        teamId: selectedTeam.id,
-        coachId: selectedTeam.coachId
+        teamId: selectedTeam.id
       });
       
       // Revert back to axios API client which was working before
       const response = await api.post('/join-requests/post', {
         playerId: Number(playerData.id),
-        teamId: selectedTeam.id,
-        coachId: selectedTeam.coachId
+        teamId: selectedTeam.id
       });
       
       if (response.status === 200) {

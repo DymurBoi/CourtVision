@@ -23,7 +23,7 @@ public class JoinRequest {
     private Team team;
     
     @OneToMany(mappedBy = "joinRequest", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
+    
     private List<JoinRequestCoach> requestCoaches;
 
     private int requestStatus;
