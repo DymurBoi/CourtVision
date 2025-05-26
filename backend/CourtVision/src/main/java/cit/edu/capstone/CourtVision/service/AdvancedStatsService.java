@@ -28,7 +28,7 @@ public class AdvancedStatsService {
     public AdvancedStats update(Long id, AdvancedStats advancedStats) {
         AdvancedStats existing = getById(id);
         if (existing != null) {
-            advancedStats.setId(id);
+            advancedStats.setAdvancedStatsId(id);
             return repository.save(advancedStats);
         }
         return null;

@@ -12,7 +12,7 @@ public class AdvancedStats {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long advancedStatsId;
 
     private double uPER;
     private double eFG;
@@ -45,12 +45,12 @@ public class AdvancedStats {
         this.basicStats = basicStats;
     }
 
-    public Long getId() {
-        return id;
+    public Long getAdvancedStatsId() {
+        return advancedStatsId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setAdvancedStatsId(Long id) {
+        this.advancedStatsId = id;
     }
 
     public double getuPER() {
