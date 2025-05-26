@@ -36,7 +36,7 @@ public class CoachController {
         return ResponseEntity.ok(CoachMapper.toDTO(coach));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PostMapping("/post")
     public Coach createCoach(@RequestBody Coach coach) {
         return coachService.createCoach(coach);

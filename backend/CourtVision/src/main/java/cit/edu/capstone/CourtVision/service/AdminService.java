@@ -23,6 +23,8 @@ public class AdminService {
 
     public Admin create(Admin admin) {
         admin.setPassword(passwordEncoder.encode(admin.getPassword()));
+        admin.setIsAdmin(true);
+        admin.setIsCoach(false);
         return adminRepo.save(admin);
     }
 

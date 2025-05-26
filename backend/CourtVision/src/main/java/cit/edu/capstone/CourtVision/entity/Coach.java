@@ -1,10 +1,13 @@
 package cit.edu.capstone.CourtVision.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
-
 import java.time.LocalDate;
 import java.util.List;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 
 
 @Entity
@@ -16,14 +19,12 @@ public class Coach {
     private String fname;
     private String lname;
     private String email;
-    @JsonIgnore
     private String password;
     private LocalDate birthDate;
     private boolean isCoach;
     private boolean isAdmin;
 
     @ManyToMany(mappedBy = "coaches")
-    @JsonIgnore
     private List<Team> teams;
 
     // Getters and Setters
