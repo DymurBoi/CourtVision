@@ -35,29 +35,46 @@ const gameService = {
 
     createGame: async (matchData) => {
         try {
+            // Ensure we handle invalid date values gracefully
+            let gameDate = new Date(matchData.date);
+            if (isNaN(gameDate)) {
+                console.warn('Invalid game date, defaulting to current date.');
+                gameDate = new Date();  // Set to current date if invalid
+            }
+
             const gameData = {
                 gameName: `${matchData.homeTeam} vs ${matchData.awayTeam}`,
-                gameDate: new Date(matchData.date).toISOString(),
+                gameDate: gameDate.toISOString(),  // Always convert to ISO format
                 gameResult: matchData.result,
                 finalScore: matchData.score,
                 comments: ''
             };
+
             const response = await axios.post(`${API_URL}/post`, gameData);
             return response.data;
         } catch (error) {
             console.error('Error creating game:', error);
             throw error;
         }
+        
     },
 
     updateGame: async (id, matchData) => {
         try {
+            // Ensure we handle invalid date values gracefully
+            let gameDate = new Date(matchData.date);
+            if (isNaN(gameDate)) {
+                console.warn('Invalid game date, defaulting to current date.');
+                gameDate = new Date();  // Set to current date if invalid
+            }
+
             const gameData = {
                 gameName: `${matchData.homeTeam} vs ${matchData.awayTeam}`,
-                gameDate: new Date(matchData.date).toISOString(),
+                gameDate: gameDate.toISOString(),  // Always convert to ISO format
                 gameResult: matchData.result,
                 finalScore: matchData.score
             };
+
             const response = await axios.put(`${API_URL}/put/${id}`, gameData);
             return response.data;
         } catch (error) {

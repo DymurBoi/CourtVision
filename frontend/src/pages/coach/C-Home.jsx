@@ -175,6 +175,7 @@ function CHome() {
       setNewTeamName("")
       setShowCreateModal(false)
     }
+    window.location.reload();
   }
 
   const handleViewMatches = () => {

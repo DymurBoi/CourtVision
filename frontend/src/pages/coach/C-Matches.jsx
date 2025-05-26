@@ -83,6 +83,7 @@ function CMatches() {
 
       setMatches([...matches, newMatchData]);
       setShowCreateModal(false);
+      window.location.reload();
     } catch (err) {
       console.error('Error creating match:', err);
       setError('Failed to create match');

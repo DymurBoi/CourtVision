@@ -204,6 +204,7 @@ function CGameDetails() {
     <main className="main-content">
       <h1>Game Details — Game ID: {gameId}</h1>
       <h2>Team ID: {teamId}</h2>
+      
 
       <div className="players-table-container">
         <table className="players-table">

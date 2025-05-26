@@ -15,8 +15,8 @@ function CoachOnlyRoute() {
       const isTokenValid = checkTokenValidity();
       console.log("CoachOnlyRoute - Token valid:", isTokenValid);
       console.log("CoachOnlyRoute - User:", user);
-      
-      // Check roles in localStorage directly as a fallback
+
+      // Fallback check: Role in localStorage directly
       const lsRole = localStorage.getItem("userRole");
       console.log("Role in localStorage:", lsRole);
       
@@ -37,15 +37,19 @@ function CoachOnlyRoute() {
         setIsAuthorized(false);
       }
     };
-    
-    verifyAuth();
-  }, [checkTokenValidity, user, location.pathname]);
+
+    // If user or token is not valid, redirect immediately
+    if (!loading) {
+      verifyAuth();
+    }
+  }, [checkTokenValidity, user, location.pathname, loading]);
 
   // Show loading while checking auth
   if (loading || isAuthorized === null) {
     return <LoadingSpinner />;
   }
   
+  // If authorized, render the outlet (children routes)
   return isAuthorized ? <Outlet /> : <Navigate to="/login" replace state={{ from: location }} />;
 }
 
