@@ -1,9 +1,7 @@
 package cit.edu.capstone.CourtVision.service;
 
-import cit.edu.capstone.CourtVision.entity.AdvancedStats;
-import cit.edu.capstone.CourtVision.entity.BasicStats;
-import cit.edu.capstone.CourtVision.repository.AdvancedStatsRepository;
-import cit.edu.capstone.CourtVision.repository.BasicStatsRepository;
+import cit.edu.capstone.CourtVision.entity.*;
+import cit.edu.capstone.CourtVision.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +16,12 @@ public class BasicStatsService {
     @Autowired
     private AdvancedStatsRepository advancedStatsRepository;
 
+    @Autowired
+    private PhysicalBasedMetricsStatsRepository physicalMetricsRepository;
+
+    @Autowired
+    private PhysicalRecordsRepository physicalRecordsRepository;
+
     public List<BasicStats> getAll() {
         return basicStatsRepository.findAll();
     }
@@ -27,17 +31,21 @@ public class BasicStatsService {
     }
 
     public BasicStats create(BasicStats basicStats) {
-        // Save BasicStats first to get its ID
+        // Save the BasicStats first (so we get its ID)
         BasicStats savedBasic = basicStatsRepository.save(basicStats);
 
-        // Calculate AdvancedStats from BasicStats
+        // 🔹 Calculate and save AdvancedStats (with formulas)
         AdvancedStats advanced = calculateAdvancedStats(savedBasic);
-        advanced.setBasicStats(savedBasic);  // link it using the FK
-
-        // Save AdvancedStats
+        advanced.setBasicStats(savedBasic);
         advancedStatsRepository.save(advanced);
 
-        // Return the saved BasicStats (without trying to embed AdvancedStats inside it)
+        // 🔹 Calculate and save PhysicalBasedMetricsStats (with player physical data)
+        PhysicalBasedMetricsStats physicalMetrics = calculatePhysicalMetrics(savedBasic);
+        if (physicalMetrics != null) {
+            physicalMetrics.setGame(savedBasic.getGame());
+            physicalMetricsRepository.save(physicalMetrics);
+        }
+
         return savedBasic;
     }
 
@@ -45,37 +53,20 @@ public class BasicStatsService {
         BasicStats existing = getById(id);
         if (existing != null) {
             updatedStats.setBasicStatId(id);
-            BasicStats savedBasic = basicStatsRepository.save(updatedStats);
-
-            // Update AdvancedStats if present
-            AdvancedStats existingAdvanced = advancedStatsRepository.findByBasicStats(savedBasic);
-            if (existingAdvanced != null) {
-                AdvancedStats updatedAdvanced = calculateAdvancedStats(savedBasic);
-                updatedAdvanced.setAdvancedStatsId(existingAdvanced.getAdvancedStatsId());
-                updatedAdvanced.setBasicStats(savedBasic);
-                advancedStatsRepository.save(updatedAdvanced);
-            }
-
-            return savedBasic;
+            return basicStatsRepository.save(updatedStats);
         }
         return null;
     }
 
     public void delete(Long id) {
-        // Optionally delete AdvancedStats first to avoid orphan records
-        BasicStats basic = getById(id);
-        if (basic != null) {
-            AdvancedStats advanced = advancedStatsRepository.findByBasicStats(basic);
-            if (advanced != null) {
-                advancedStatsRepository.delete(advanced);
-            }
-        }
         basicStatsRepository.deleteById(id);
     }
 
+    // ───────────────────────────────────────────────
+    // Calculate AdvancedStats from BasicStats
     private AdvancedStats calculateAdvancedStats(BasicStats b) {
-        double minutes = b.getMinutes().toLocalTime().toSecondOfDay() / 60.0; // convert HH:mm:ss to minutes
-        if (minutes == 0) minutes = 1; // avoid divide by zero
+        double minutes = b.getMinutes().toLocalTime().toSecondOfDay() / 60.0;
+        if (minutes == 0) minutes = 1;
 
         int FGM = b.getTwoPtMade() + b.getThreePtMade();
         int FGA = b.getTwoPtAttempts() + b.getThreePtAttempts();
@@ -96,13 +87,9 @@ public class BasicStatsService {
         a.setuPER((FGM + 0.5 * TPM - FGA + 0.5 * FTM - FTA + ORB + 0.5 * DRB + AST + STL + 0.5 * BLK - PF - TOV) / minutes);
         a.seteFG(FGA != 0 ? (FGM + 0.5 * TPM) / (double) FGA : 0);
         a.setTs((FGA + 0.44 * FTA) != 0 ? PTS / (2.0 * (FGA + 0.44 * FTA)) : 0);
+        a.setUsg(0);
         a.setAssistRatio((FGA + 0.44 * FTA + TOV) != 0 ? 100 * AST / (FGA + 0.44 * FTA + TOV) : 0);
         a.setTurnoverRatio((FGA + 0.44 * FTA + AST + TOV) != 0 ? 100 * TOV / (FGA + 0.44 * FTA + AST + TOV) : 0);
-        a.setTovPercentage((FGA + 0.44 * FTA + TOV) != 0 ? 100 * TOV / (FGA + 0.44 * FTA + TOV) : 0);
-        a.setFtr(FGA != 0 ? (double) FTA / FGA : 0);
-
-        // Advanced formulas needing team/opponent data are set to zero for now
-        a.setUsg(0);
         a.setPie(0);
         a.setOrtg(0);
         a.setDrtg(0);
@@ -112,7 +99,39 @@ public class BasicStatsService {
         a.setAstPercentage(0);
         a.setStlPercentage(0);
         a.setBlkPercentage(0);
+        a.setTovPercentage((FGA + 0.44 * FTA + TOV) != 0 ? 100 * TOV / (FGA + 0.44 * FTA + TOV) : 0);
+        a.setFtr(FGA != 0 ? (double) FTA / FGA : 0);
 
         return a;
+    }
+
+    // ───────────────────────────────────────────────
+    // Calculate PhysicalBasedMetricsStats from BasicStats and PhysicalRecords
+    private PhysicalBasedMetricsStats calculatePhysicalMetrics(BasicStats basicStats) {
+        if (basicStats.getPlayer() == null) return null;
+
+        Player player = basicStats.getPlayer();
+        PhysicalRecords record = physicalRecordsRepository.findByPlayer(player);
+        if (record == null) return null;
+
+        double height = record.getHeight().doubleValue();
+        double wingspan = record.getWingspan().doubleValue();
+        double vertical = record.getVertical().doubleValue();
+        double weight = record.getWeight().doubleValue();
+
+        double api = (vertical + 1 + 1 + wingspan) / 4;
+        double ddr = (1 + 1) * (wingspan / height + 1.0) / 2;
+        double rpi = (height + 0.5 * wingspan) / weight;
+        double mabs = (height + wingspan) / weight;
+        double psi = (wingspan / height) + 2.0;
+
+        PhysicalBasedMetricsStats metrics = new PhysicalBasedMetricsStats();
+        metrics.setAthleticPerformanceIndex(api);
+        metrics.setDefensiveDisruptionRating(ddr);
+        metrics.setReboundPotentialIndex(rpi);
+        metrics.setMobilityAdjustedBuildScore(mabs);
+        metrics.setPositionSuitabilityIndex(psi);
+
+        return metrics;
     }
 }

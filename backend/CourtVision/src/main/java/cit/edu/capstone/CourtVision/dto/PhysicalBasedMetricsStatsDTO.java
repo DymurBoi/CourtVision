@@ -1,41 +1,24 @@
 package cit.edu.capstone.CourtVision.dto;
 
 public class PhysicalBasedMetricsStatsDTO {
-    private Long id;
+    private Long physicalBasedMetricsStatsId;
     private double athleticPerformanceIndex;
     private double defensiveDisruptionRating;
     private double reboundPotentialIndex;
     private double mobilityAdjustedBuildScore;
     private double positionSuitabilityIndex;
 
-    private BasicStatsDTO basicStatsDTO;
     private GameDTO gameDTO;
 
-    //Getters and Setters
+    // Getters and Setters
 
 
-    public BasicStatsDTO getBasicStatsDTO() {
-        return basicStatsDTO;
+    public Long getPhysicalBasedMetricsStatsId() {
+        return physicalBasedMetricsStatsId;
     }
 
-    public void setBasicStatsDTO(BasicStatsDTO basicStatsDTO) {
-        this.basicStatsDTO = basicStatsDTO;
-    }
-
-    public GameDTO getGameDTO() {
-        return gameDTO;
-    }
-
-    public void setGameDTO(GameDTO gameDTO) {
-        this.gameDTO = gameDTO;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+    public void setPhysicalBasedMetricsStatsId(Long physicalBasedMetricsStatsId) {
+        this.physicalBasedMetricsStatsId = physicalBasedMetricsStatsId;
     }
 
     public double getAthleticPerformanceIndex() {
@@ -76,5 +59,13 @@ public class PhysicalBasedMetricsStatsDTO {
 
     public void setPositionSuitabilityIndex(double positionSuitabilityIndex) {
         this.positionSuitabilityIndex = positionSuitabilityIndex;
+    }
+
+    public GameDTO getGameDTO() {
+        return gameDTO;
+    }
+
+    public void setGameDTO(GameDTO gameDTO) {
+        this.gameDTO = gameDTO;
     }
 }
