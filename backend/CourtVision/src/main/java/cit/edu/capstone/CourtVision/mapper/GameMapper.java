@@ -24,11 +24,6 @@ public class GameMapper {
             dto.setTeamId(temp.getTeamId());
         }
 
-        if (game.getBasicStats() != null) {
-            BasicStats temp=new BasicStats();
-            temp=game.getBasicStats();
-            dto.setBasicStatId(temp.getBasicStatId());
-        }
 
         if (game.getAdvancedStats() != null) {
             AdvancedStats temp=new AdvancedStats();

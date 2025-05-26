@@ -5,8 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a29aee95-f4b1-4cdc-8e7e-d50e576a9f35" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/entity/BasicStats.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/entity/BasicStats.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/CourtVision/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/CourtVision/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/entity/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/entity/Game.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

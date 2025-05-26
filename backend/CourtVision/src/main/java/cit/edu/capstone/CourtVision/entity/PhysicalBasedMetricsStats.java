@@ -21,10 +21,6 @@ public class PhysicalBasedMetricsStats {
     private double positionSuitabilityIndex;
 
     @OneToOne
-    @JoinColumn(name = "basic_stats_id")
-    private BasicStats basicStats;
-
-    @OneToOne
     @JoinColumn(name = "game_id")
     private Game game;
 
@@ -83,13 +79,6 @@ public class PhysicalBasedMetricsStats {
         this.positionSuitabilityIndex = positionSuitabilityIndex;
     }
 
-    public BasicStats getBasicStats() {
-        return basicStats;
-    }
-
-    public void setBasicStats(BasicStats basicStats) {
-        this.basicStats = basicStats;
-    }
 
     public Game getGame() {
         return game;

@@ -34,18 +34,8 @@ public class PlayerAveragesService {
         int advStatsCount = 0;
 
         for (Game game : games) {
-            BasicStats basic = game.getBasicStats();
-            AdvancedStats adv = game.getAdvancedStats();
 
-            if (basic != null) {
-                totalPoints += (basic.getTwoPtMade() * 2) + (basic.getThreePtMade() * 3) + basic.getFtMade();
-                totalAssists += basic.getAssists();
-                totalRebounds += basic.getoFRebounds() + basic.getdFRebounds();
-                totalSteals += basic.getSteals();
-                totalBlocks += basic.getBlocks();
-                if (basic.getMinutes() != null)
-                    totalMinutes += basic.getMinutes().toLocalTime().toSecondOfDay() / 60.0;
-            }
+            AdvancedStats adv = game.getAdvancedStats();
 
             if (adv != null) {
                 totalTS += adv.getTs();

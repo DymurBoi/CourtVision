@@ -35,20 +35,8 @@ public class Player {
     @JsonIgnore
     private List<PlayerAverages> playerAverages;
 
-    @OneToMany(mappedBy = "player", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<BasicStats> basicStatsList;
 
     // Getters and Setters
-
-
-    public List<BasicStats> getBasicStatsList() {
-        return basicStatsList;
-    }
-
-    public void setBasicStatsList(List<BasicStats> basicStatsList) {
-        this.basicStatsList = basicStatsList;
-    }
 
     public String getPosition() {
         return position;

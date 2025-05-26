@@ -64,9 +64,6 @@ public class GameService {
             if (updatedGame.getTeam() != null) {
                 existingGame.setTeam(updatedGame.getTeam());
             }
-            if (updatedGame.getBasicStats() != null) {
-                existingGame.setBasicStats(updatedGame.getBasicStats());
-            }
             if (updatedGame.getAdvancedStats() != null) {
                 existingGame.setAdvancedStats(updatedGame.getAdvancedStats());
             }
