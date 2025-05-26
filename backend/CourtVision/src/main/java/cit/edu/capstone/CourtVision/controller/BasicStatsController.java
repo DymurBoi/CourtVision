@@ -4,6 +4,8 @@ import cit.edu.capstone.CourtVision.dto.BasicStatsDTO;
 import cit.edu.capstone.CourtVision.entity.BasicStats;
 import cit.edu.capstone.CourtVision.mapper.BasicStatsMapper;
 import cit.edu.capstone.CourtVision.service.BasicStatsService;
+import jakarta.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -35,11 +37,17 @@ public class BasicStatsController {
     }
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
-    @GetMapping("/get/by-game/{gameId}")
-    public ResponseEntity<BasicStatsDTO> getByGame(@PathVariable Long gameId) {
-        BasicStats stat = service.getByGameId(gameId);
-        return stat != null ? ResponseEntity.ok(BasicStatsMapper.toDTO(stat)) : ResponseEntity.notFound().build();
+@GetMapping("/get/by-game/{gameId}")
+public BasicStats getByGame(@PathVariable Long gameId) {
+    BasicStats stat = service.getByGameId(gameId);
+    if (stat != null) {
+        return stat; // Return the actual BasicStats entity
+    } else {
+        // You can throw an exception or return null if not found
+        throw new EntityNotFoundException("BasicStats not found for gameId: " + gameId);
     }
+}
+
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
     @PostMapping("/post")

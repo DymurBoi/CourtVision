@@ -9,6 +9,7 @@ function CGameDetails() {
   const teamId = params.get("teamId");
 
   const [players, setPlayers] = useState([]);
+  const [basicStats,setBasicStats] = useState([]);
   const [basicStatsInputs, setBasicStatsInputs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -34,7 +35,19 @@ function CGameDetails() {
         setLoading(false);
       }
     };
+    const fetchBasicStats = async () => {
+      try {
+        const res = await api.get(`/basic-stats/get/all`);
+        setPlayers(res.data);
+      } catch (err) {
+        console.error("❌ Failed to load basic stats:", err);
+        setError("Failed to load basic stats.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchBasicStats();
     fetchTeamPlayers();
   }, [teamId]);
 
