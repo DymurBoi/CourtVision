@@ -1,5 +1,6 @@
 package cit.edu.capstone.CourtVision.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.List;
 
@@ -9,9 +10,11 @@ public class Team {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long teamId;
     private String teamName;
+    private String description;
 
     @ManyToOne
     @JoinColumn(name = "admin_id")
+    @JsonIgnore
     private Admin admin;
 
     @ManyToMany
@@ -23,9 +26,11 @@ public class Team {
     private List<Coach> coaches;
 
     @OneToMany(mappedBy = "team")
+    @JsonIgnore
     private List<Player> players;
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Game> games;
 
     private Long gameId;
@@ -87,5 +92,13 @@ public class Team {
 
     public void setGameId(Long gameId) {
         this.gameId = gameId;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

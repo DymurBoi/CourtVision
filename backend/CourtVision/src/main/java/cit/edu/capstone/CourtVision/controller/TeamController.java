@@ -27,7 +27,7 @@ public class TeamController {
     public ResponseEntity<List<TeamDTO>> getAllTeams() {
         List<Team> teams = teamService.getAllTeams();
         List<TeamDTO> dtos = teams.stream()
-                .map(TeamMapper::toDTO)
+                .map(TeamMapper::toDto)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(dtos);
     }
@@ -37,7 +37,7 @@ public class TeamController {
     public ResponseEntity<TeamDTO> getTeamById(@PathVariable Long id) {
         Team team = teamService.getTeamById(id);
         if (team == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(TeamMapper.toDTO(team));
+        return ResponseEntity.ok(TeamMapper.toDto(team));
     }
 
     // @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
@@ -45,7 +45,7 @@ public class TeamController {
 public ResponseEntity<List<TeamDTO>> getTeamsByCoachId(@PathVariable int coachId) {
     List<Team> teams = teamService.getTeamsByCoachId(coachId);
     List<TeamDTO> dtos = teams.stream()
-            .map(TeamMapper::toDTO)
+            .map(TeamMapper::toDto)
             .collect(Collectors.toList());
     return ResponseEntity.ok(dtos);
 }
@@ -54,7 +54,7 @@ public ResponseEntity<List<TeamDTO>> getTeamsByCoachId(@PathVariable int coachId
     @PostMapping("/post")
     public ResponseEntity<TeamDTO> createTeam(@RequestBody Team team) {
         Team saved = teamService.createTeam(team);
-        return ResponseEntity.ok(TeamMapper.toDTO(saved));
+        return ResponseEntity.ok(TeamMapper.toDto(saved));
     }
 
    // @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
@@ -62,7 +62,7 @@ public ResponseEntity<List<TeamDTO>> getTeamsByCoachId(@PathVariable int coachId
     public ResponseEntity<TeamDTO> updateTeam(@PathVariable Long id, @RequestBody Team updated) {
         Team saved = teamService.updateTeam(id, updated);
         if (saved == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(TeamMapper.toDTO(saved));
+        return ResponseEntity.ok(TeamMapper.toDto(saved));
     }
 
    // @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
@@ -84,7 +84,7 @@ public ResponseEntity<List<TeamDTO>> getTeamsByCoachId(@PathVariable int coachId
     public ResponseEntity<PlayerDTO> assignExistingPlayerToTeam(@PathVariable Long teamId, @PathVariable Long playerId) {
         Player updatedPlayer = teamService.assignPlayerToTeam(teamId, playerId);
         if (updatedPlayer == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(PlayerMapper.toDTO(updatedPlayer));
+        return ResponseEntity.ok(PlayerMapper.toDto(updatedPlayer));
     }
 
    // @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")

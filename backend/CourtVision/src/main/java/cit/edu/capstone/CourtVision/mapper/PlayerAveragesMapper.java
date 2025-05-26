@@ -9,7 +9,7 @@ public class PlayerAveragesMapper {
         dto.setPlayerAvgId(avg.getPlayerAvgId());
 
         if (avg.getPlayer() != null) {
-            dto.setPlayer(PlayerMapper.toDTO(avg.getPlayer()));
+            dto.setPlayer(PlayerMapper.toDto(avg.getPlayer()));
         }
 
         if (avg.getGame() != null) {

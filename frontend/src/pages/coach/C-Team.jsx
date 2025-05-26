@@ -154,4 +154,3 @@ function CTeam() {
 }
 
 export default CTeam
-

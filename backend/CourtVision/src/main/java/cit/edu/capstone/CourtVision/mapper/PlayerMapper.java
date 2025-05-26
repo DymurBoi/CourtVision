@@ -2,16 +2,15 @@ package cit.edu.capstone.CourtVision.mapper;
 
 import cit.edu.capstone.CourtVision.dto.PhysicalRecordDTO;
 import cit.edu.capstone.CourtVision.dto.PlayerDTO;
-import cit.edu.capstone.CourtVision.entity.BasicStats;
+import cit.edu.capstone.CourtVision.dto.TeamDTO;
 import cit.edu.capstone.CourtVision.entity.PhysicalRecords;
 import cit.edu.capstone.CourtVision.entity.Player;
 import cit.edu.capstone.CourtVision.entity.Team;
-
-import java.util.stream.Collectors;
+import cit.edu.capstone.CourtVision.mapper.TeamMapper;
 
 public class PlayerMapper {
 
-    public static PlayerDTO toDTO(Player player) {
+    public static PlayerDTO toDto(Player player) {
         if (player == null) return null;
 
         PlayerDTO dto = new PlayerDTO();
@@ -24,19 +23,13 @@ public class PlayerMapper {
         dto.setIsCoach(player.getIsCoach());
         dto.setIsAdmin(player.getIsAdmin());
 
+        // Map team using TeamMapper
         if (player.getTeam() != null) {
-            dto.setTeamId(player.getTeam().getTeamId());
-            dto.setTeamName(player.getTeam().getTeamName());
+            dto.setTeam(TeamMapper.toDto(player.getTeam()));
         }
 
         if (player.getPhysicalRecords() != null) {
             dto.setPhysicalRecords(toDto(player.getPhysicalRecords()));
-        }
-
-        if (player.getBasicStatsList() != null) {
-            dto.setBasicStatsList(player.getBasicStatsList().stream()
-                    .map(BasicStatsMapper::toDTO)
-                    .collect(Collectors.toList()));
         }
 
         return dto;
@@ -55,5 +48,30 @@ public class PlayerMapper {
         dto.setDateRecorded(record.getDateRecorded());
 
         return dto;
+    }
+
+    public static TeamDTO toDto(Team team) {
+        if (team == null) return null;
+
+        TeamDTO dto = new TeamDTO();
+        dto.setTeamId(team.getTeamId());
+        dto.setTeamName(team.getTeamName());
+        return dto;
+    }
+
+    public static Player toEntity(PlayerDTO dto) {
+        if (dto == null) return null;
+
+        Player player = new Player();
+        player.setPlayerId(dto.getPlayerId());
+        player.setFname(dto.getFname());
+        player.setLname(dto.getLname());
+        player.setEmail(dto.getEmail());
+        player.setBirthDate(dto.getBirthDate());
+        player.setJerseyNum(dto.getJerseyNum());
+        player.setIsCoach(dto.isCoach());
+        player.setIsAdmin(dto.isAdmin());
+
+        return player;
     }
 }

@@ -1,5 +1,6 @@
 package cit.edu.capstone.CourtVision.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -27,12 +28,15 @@ public class Player {
     private Team team;
 
     @OneToOne(mappedBy = "player", cascade = CascadeType.ALL)
+    @JsonIgnore
     private PhysicalRecords physicalRecords;
 
     @OneToMany(mappedBy = "player") // One Player → Many PlayerAverages
+    @JsonIgnore
     private List<PlayerAverages> playerAverages;
 
     @OneToMany(mappedBy = "player", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<BasicStats> basicStatsList;
 
     // Getters and Setters
