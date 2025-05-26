@@ -20,13 +20,10 @@ public class PhysicalBasedMetricsStats {
     private double mobilityAdjustedBuildScore;
     private double positionSuitabilityIndex;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "game_id")
     private Game game;
 
-    @OneToOne
-    @JoinColumn(name = "physical_records_id")
-    private PhysicalRecords physicalRecord;
 
 
     //Getter and Setter
@@ -88,11 +85,4 @@ public class PhysicalBasedMetricsStats {
         this.game = game;
     }
 
-    public PhysicalRecords getPhysicalRecord() {
-        return physicalRecord;
-    }
-
-    public void setPhysicalRecord(PhysicalRecords physicalRecord) {
-        this.physicalRecord = physicalRecord;
-    }
 }

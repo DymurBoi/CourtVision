@@ -22,10 +22,11 @@ public class Game {
     @JoinColumn(name = "team_id")
     private Team team;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "advanced_stats_id")
     private AdvancedStats advancedStats;
-    @OneToOne
+
+    @ManyToOne
     @JoinColumn(name = "physical_based_metric_stats_id")
     private PhysicalBasedMetricsStats physicalBasedMetricsStats;
 
