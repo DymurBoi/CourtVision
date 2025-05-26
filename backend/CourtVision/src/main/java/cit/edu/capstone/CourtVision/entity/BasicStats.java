@@ -34,9 +34,21 @@ public class BasicStats {
     private int plusMinus;
     private Time minutes;
 
+    @ManyToOne
+    @JoinColumn(name = "player_id") 
+    private Player player;
 
 
     //Getters and Setters
+
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
 
     public Long getBasicStatId() {
         return basicStatId;

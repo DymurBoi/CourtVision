@@ -27,6 +27,9 @@ public class Player {
     @JoinColumn(name = "team_id")
     private Team team;
 
+    @OneToMany(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BasicStats> basicStats;
+
     @OneToOne(mappedBy = "player", cascade = CascadeType.ALL)
     @JsonIgnore
     private PhysicalRecords physicalRecords;
@@ -37,6 +40,15 @@ public class Player {
 
 
     // Getters and Setters
+
+
+    public List<BasicStats> getBasicStats() {
+        return basicStats;
+    }
+
+    public void setBasicStats(List<BasicStats> basicStats) {
+        this.basicStats = basicStats;
+    }
 
     public String getPosition() {
         return position;
