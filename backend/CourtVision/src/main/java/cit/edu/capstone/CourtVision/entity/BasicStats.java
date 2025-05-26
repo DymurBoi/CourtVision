@@ -35,12 +35,24 @@ public class BasicStats {
     private Time minutes;
 
     @ManyToOne
-    @JoinColumn(name = "player_id") 
+    @JoinColumn(name = "player_id")
     private Player player;
+
+    @ManyToOne
+    @JoinColumn(name = "game_id")
+    private Game game;
 
 
     //Getters and Setters
 
+
+    public Game getGame() {
+        return game;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
+    }
 
     public Player getPlayer() {
         return player;

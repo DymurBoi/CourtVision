@@ -32,7 +32,19 @@ public class Game {
     @OneToMany(mappedBy = "game") // One Game → Many PlayerAverages
     private List<PlayerAverages> playerAverages;
 
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BasicStats> basicStatsList;
+
     // Getters and Setters
+
+
+    public List<BasicStats> getBasicStatsList() {
+        return basicStatsList;
+    }
+
+    public void setBasicStatsList(List<BasicStats> basicStatsList) {
+        this.basicStatsList = basicStatsList;
+    }
 
     public String getGameResult() {
         return gameResult;
