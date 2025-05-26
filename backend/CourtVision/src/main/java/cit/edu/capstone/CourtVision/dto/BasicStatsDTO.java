@@ -22,7 +22,6 @@ public class BasicStatsDTO {
     private Time minutes;
 
     private AdvancedStatsDTO advancedStatsDTO;
-    private PhysicalBasedMetricsStatsDTO physicalBasedMetricsStatsDTO;
     private GameDTO gameDTO;
 
 
@@ -35,14 +34,6 @@ public class BasicStatsDTO {
 
     public void setAdvancedStatsDTO(AdvancedStatsDTO advancedStatsDTO) {
         this.advancedStatsDTO = advancedStatsDTO;
-    }
-
-    public PhysicalBasedMetricsStatsDTO getPhysicalBasedMetricsStatsDTO() {
-        return physicalBasedMetricsStatsDTO;
-    }
-
-    public void setPhysicalBasedMetricsStatsDTO(PhysicalBasedMetricsStatsDTO physicalBasedMetricsStatsDTO) {
-        this.physicalBasedMetricsStatsDTO = physicalBasedMetricsStatsDTO;
     }
 
     public GameDTO getGameDTO() {

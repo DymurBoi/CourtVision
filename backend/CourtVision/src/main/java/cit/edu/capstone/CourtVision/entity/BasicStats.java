@@ -35,46 +35,17 @@ public class BasicStats {
     private Time minutes;
 
     @ManyToOne
-@JoinColumn(name = "game_id")
-private Game game;
-
-
-    @OneToOne(mappedBy = "basicStats", cascade = CascadeType.ALL)
-    private AdvancedStats advancedStats;
-
-    @OneToOne(mappedBy = "basicStats", cascade = CascadeType.ALL)
-    private PhysicalBasedMetricsStats physicalBasedMetricsStats;
-
-    @ManyToOne
     @JoinColumn(name = "player_id")
     private Player player;
+
+    @ManyToOne
+    @JoinColumn(name = "game_id")
+    private Game game;
 
 
     //Getters and Setters
 
-    public Player getPlayer() {
-        return player;
-    }
 
-    public void setPlayer(Player player) {
-        this.player = player;
-    }
-    
-    public PhysicalBasedMetricsStats getPhysicalBasedMetricsStats() {
-        return physicalBasedMetricsStats;
-    }
-
-    public void setPhysicalBasedMetricsStats(PhysicalBasedMetricsStats physicalBasedMetricsStats) {
-        this.physicalBasedMetricsStats = physicalBasedMetricsStats;
-    }
-
-    public AdvancedStats getAdvancedStats() {
-        return advancedStats;
-    }
-
-    public void setAdvancedStats(AdvancedStats advancedStats) {
-        this.advancedStats = advancedStats;
-    }
 
     public Game getGame() {
         return game;
@@ -82,6 +53,14 @@ private Game game;
 
     public void setGame(Game game) {
         this.game = game;
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
     }
 
     public Long getBasicStatId() {

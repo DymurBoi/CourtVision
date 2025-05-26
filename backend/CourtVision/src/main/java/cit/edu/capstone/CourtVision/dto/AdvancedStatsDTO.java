@@ -1,7 +1,7 @@
 package cit.edu.capstone.CourtVision.dto;
 
 public class AdvancedStatsDTO {
-    private Long id;
+    private Long advancedStatsId;
     private double uPER;
     private double eFG;
     private double ts;
@@ -26,6 +26,14 @@ public class AdvancedStatsDTO {
     // Getters and Setters
 
 
+    public Long getAdvancedStatsId() {
+        return advancedStatsId;
+    }
+
+    public void setAdvancedStatsId(Long advancedStatsId) {
+        this.advancedStatsId = advancedStatsId;
+    }
+
     public GameDTO getGameDTO() {
         return gameDTO;
     }
@@ -42,13 +50,6 @@ public class AdvancedStatsDTO {
         this.basicStatsDTO = basicStatsDTO;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public double getuPER() {
         return uPER;

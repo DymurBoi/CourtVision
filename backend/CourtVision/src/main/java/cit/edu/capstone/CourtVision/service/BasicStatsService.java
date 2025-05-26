@@ -1,9 +1,9 @@
 package cit.edu.capstone.CourtVision.service;
 
+import cit.edu.capstone.CourtVision.entity.AdvancedStats;
 import cit.edu.capstone.CourtVision.entity.BasicStats;
-import cit.edu.capstone.CourtVision.entity.Game;
+import cit.edu.capstone.CourtVision.repository.AdvancedStatsRepository;
 import cit.edu.capstone.CourtVision.repository.BasicStatsRepository;
-import cit.edu.capstone.CourtVision.repository.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,79 +13,106 @@ import java.util.List;
 public class BasicStatsService {
 
     @Autowired
-    private BasicStatsRepository basicRepo;
+    private BasicStatsRepository basicStatsRepository;
 
     @Autowired
-    private AdvancedStatsService advancedStatsService;
+    private AdvancedStatsRepository advancedStatsRepository;
 
-    @Autowired
-    private PhysicalBasedMetricsStatsService physicalStatsService;
-
-    @Autowired
-    private GameRepository gameRepo;
-
-    //Get all BasicStats
     public List<BasicStats> getAll() {
-        return basicRepo.findAll();
+        return basicStatsRepository.findAll();
     }
 
-    //Get BasicStats by ID
     public BasicStats getById(Long id) {
-        return basicRepo.findById(id).orElse(null);
+        return basicStatsRepository.findById(id).orElse(null);
     }
 
-    //Get BasicStats by Game ID
-    public BasicStats getByGameId(Long gameId) {
-        Game game = gameRepo.findById(gameId).orElse(null);
-        return game != null ? basicRepo.findByGame(game) : null;
+    public BasicStats create(BasicStats basicStats) {
+        // Save BasicStats first to get its ID
+        BasicStats savedBasic = basicStatsRepository.save(basicStats);
+
+        // Calculate AdvancedStats from BasicStats
+        AdvancedStats advanced = calculateAdvancedStats(savedBasic);
+        advanced.setBasicStats(savedBasic);  // link it using the FK
+
+        // Save AdvancedStats
+        advancedStatsRepository.save(advanced);
+
+        // Return the saved BasicStats (without trying to embed AdvancedStats inside it)
+        return savedBasic;
     }
 
-    //Create BasicStats + Generate Advanced & Physical Metrics
-    public BasicStats save(BasicStats stat) {
-        stat.setPlusMinus(calculatePlusMinus(stat));
-        BasicStats saved = basicRepo.save(stat);
-
-        advancedStatsService.generateFromBasic(saved);
-        physicalStatsService.createFrom(saved);
-
-        return saved;
-    }
-
-    //Update BasicStats + Recalculate advanced/physical metrics
-    public BasicStats update(Long id, BasicStats updatedStat) {
+    public BasicStats update(Long id, BasicStats updatedStats) {
         BasicStats existing = getById(id);
-        if (existing == null) return null;
-
-        updatedStat.setBasicStatId(id);
-        updatedStat.setPlusMinus(calculatePlusMinus(updatedStat));
-        BasicStats saved = basicRepo.save(updatedStat);
-
-        advancedStatsService.updateFromBasic(saved);
-        physicalStatsService.createFrom(saved); // Overwrite existing derived stats
-
-        return saved;
-    }
-
-    //Delete BasicStats + Related derived stats
-    public void delete(Long id) {
-        BasicStats existing = basicRepo.findById(id).orElse(null);
         if (existing != null) {
-            Game game = existing.getGame();
+            updatedStats.setBasicStatId(id);
+            BasicStats savedBasic = basicStatsRepository.save(updatedStats);
 
-            advancedStatsService.deleteByGame(game);
-            physicalStatsService.deleteByGame(game);
+            // Update AdvancedStats if present
+            AdvancedStats existingAdvanced = advancedStatsRepository.findByBasicStats(savedBasic);
+            if (existingAdvanced != null) {
+                AdvancedStats updatedAdvanced = calculateAdvancedStats(savedBasic);
+                updatedAdvanced.setAdvancedStatsId(existingAdvanced.getAdvancedStatsId());
+                updatedAdvanced.setBasicStats(savedBasic);
+                advancedStatsRepository.save(updatedAdvanced);
+            }
 
-            basicRepo.deleteById(id);
+            return savedBasic;
         }
+        return null;
     }
 
-    //Utility: Plus-Minus formula
-    private int calculatePlusMinus(BasicStats stat) {
-        int score = (stat.getTwoPtMade() * 2) + (stat.getThreePtMade() * 3) + stat.getFtMade();
-        int impact = stat.getAssists() + stat.getBlocks() + stat.getSteals()
-                + stat.getoFRebounds() + stat.getdFRebounds();
-        int penalties = stat.getTurnovers() + stat.getpFouls() + stat.getdFouls();
+    public void delete(Long id) {
+        // Optionally delete AdvancedStats first to avoid orphan records
+        BasicStats basic = getById(id);
+        if (basic != null) {
+            AdvancedStats advanced = advancedStatsRepository.findByBasicStats(basic);
+            if (advanced != null) {
+                advancedStatsRepository.delete(advanced);
+            }
+        }
+        basicStatsRepository.deleteById(id);
+    }
 
-        return score + impact - penalties;
+    private AdvancedStats calculateAdvancedStats(BasicStats b) {
+        double minutes = b.getMinutes().toLocalTime().toSecondOfDay() / 60.0; // convert HH:mm:ss to minutes
+        if (minutes == 0) minutes = 1; // avoid divide by zero
+
+        int FGM = b.getTwoPtMade() + b.getThreePtMade();
+        int FGA = b.getTwoPtAttempts() + b.getThreePtAttempts();
+        int TPM = b.getThreePtMade();
+        int FTM = b.getFtMade();
+        int FTA = b.getFtAttempts();
+        int ORB = b.getoFRebounds();
+        int DRB = b.getdFRebounds();
+        int AST = b.getAssists();
+        int STL = b.getSteals();
+        int BLK = b.getBlocks();
+        int PF = b.getpFouls();
+        int TOV = b.getTurnovers();
+        int PTS = 2 * b.getTwoPtMade() + 3 * b.getThreePtMade() + b.getFtMade();
+
+        AdvancedStats a = new AdvancedStats();
+
+        a.setuPER((FGM + 0.5 * TPM - FGA + 0.5 * FTM - FTA + ORB + 0.5 * DRB + AST + STL + 0.5 * BLK - PF - TOV) / minutes);
+        a.seteFG(FGA != 0 ? (FGM + 0.5 * TPM) / (double) FGA : 0);
+        a.setTs((FGA + 0.44 * FTA) != 0 ? PTS / (2.0 * (FGA + 0.44 * FTA)) : 0);
+        a.setAssistRatio((FGA + 0.44 * FTA + TOV) != 0 ? 100 * AST / (FGA + 0.44 * FTA + TOV) : 0);
+        a.setTurnoverRatio((FGA + 0.44 * FTA + AST + TOV) != 0 ? 100 * TOV / (FGA + 0.44 * FTA + AST + TOV) : 0);
+        a.setTovPercentage((FGA + 0.44 * FTA + TOV) != 0 ? 100 * TOV / (FGA + 0.44 * FTA + TOV) : 0);
+        a.setFtr(FGA != 0 ? (double) FTA / FGA : 0);
+
+        // Advanced formulas needing team/opponent data are set to zero for now
+        a.setUsg(0);
+        a.setPie(0);
+        a.setOrtg(0);
+        a.setDrtg(0);
+        a.setRebPercentage(0);
+        a.setOrbPercentage(0);
+        a.setDrbPercentage(0);
+        a.setAstPercentage(0);
+        a.setStlPercentage(0);
+        a.setBlkPercentage(0);
+
+        return a;
     }
 }

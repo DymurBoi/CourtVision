@@ -12,7 +12,7 @@ public class AdvancedStats {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long advancedStatsId;
 
     private double uPER;
     private double eFG;
@@ -33,27 +33,24 @@ public class AdvancedStats {
     private double ftr;
 
     @OneToOne
-    @JoinColumn(name = "basic_stat_id")
+    @JoinColumn(name = "basic_stats_id")
     private BasicStats basicStats;
 
-    @OneToOne
-    @JoinColumn(name = "game_id")
-    private Game game;
 
-    public Game getGame() {
-        return game;
+    public BasicStats getBasicStats() {
+        return basicStats;
     }
 
-    public void setGame(Game game) {
-        this.game = game;
+    public void setBasicStats(BasicStats basicStats) {
+        this.basicStats = basicStats;
     }
 
-    public Long getId() {
-        return id;
+    public Long getAdvancedStatsId() {
+        return advancedStatsId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setAdvancedStatsId(Long id) {
+        this.advancedStatsId = id;
     }
 
     public double getuPER() {
@@ -192,11 +189,4 @@ public class AdvancedStats {
         this.ftr = ftr;
     }
 
-    public BasicStats getBasicStats() {
-        return basicStats;
-    }
-
-    public void setBasicStats(BasicStats basicStats) {
-        this.basicStats = basicStats;
-    }
 }

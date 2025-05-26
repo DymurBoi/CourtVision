@@ -4,10 +4,9 @@ import cit.edu.capstone.CourtVision.dto.AdvancedStatsDTO;
 import cit.edu.capstone.CourtVision.entity.AdvancedStats;
 
 public class AdvancedStatsMapper {
-    
-    public static AdvancedStatsDTO toDTO(AdvancedStats stats) {
+     public static AdvancedStatsDTO toDTO(AdvancedStats stats) {
         AdvancedStatsDTO dto = new AdvancedStatsDTO();
-        dto.setId(stats.getId());
+        dto.setAdvancedStatsId(stats.getAdvancedStatsId());
         dto.setuPER(stats.getuPER());
         dto.seteFG(stats.geteFG());
         dto.setTs(stats.getTs());
@@ -25,14 +24,13 @@ public class AdvancedStatsMapper {
         dto.setBlkPercentage(stats.getBlkPercentage());
         dto.setTovPercentage(stats.getTovPercentage());
         dto.setFtr(stats.getFtr());
-        if (stats.getGame() != null) {
-            dto.setGameDTO(GameMapper.toDTO(stats.getGame()));
-        }
 
         if (stats.getBasicStats() != null) {
             dto.setBasicStatsDTO(BasicStatsMapper.toDTO(stats.getBasicStats()));
         }
         return dto;
     }
+
+    
 }
 

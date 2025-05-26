@@ -5,7 +5,7 @@ import cit.edu.capstone.CourtVision.entity.BasicStats;
 
 public class BasicStatsMapper {
 
-    public static BasicStatsDTO toDTO(BasicStats stat) {
+   public static BasicStatsDTO toDTO(BasicStats stat) {
         BasicStatsDTO dto = new BasicStatsDTO();
         dto.setBasicStatId(stat.getBasicStatId());
         dto.setTwoPtAttempts(stat.getTwoPtAttempts());
@@ -26,20 +26,12 @@ public class BasicStatsMapper {
         dto.setMinutes(stat.getMinutes());
 
 
-        if (stat.getAdvancedStats() != null) {
-            dto.setAdvancedStatsDTO(AdvancedStatsMapper.toDTO(stat.getAdvancedStats()));
-        }
 
         if (stat.getGame() != null) {
             dto.setGameDTO(GameMapper.toDTO(stat.getGame()));
         }
 
-        if (stat.getPhysicalBasedMetricsStats() != null) {
-            dto.setPhysicalBasedMetricsStatsDTO(
-                    PhysicalBasedMetricsStatsMapper.toDTO(stat.getPhysicalBasedMetricsStats())
-            );
-        }
-
         return dto;
     }
+
 }
