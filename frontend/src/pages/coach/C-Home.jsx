@@ -23,6 +23,9 @@ function CHome() {
   const [players, setPlayers] = useState([])
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [newTeamName, setNewTeamName] = useState("")
+  const [showAddCoachModal, setShowAddCoachModal] = useState(false);
+  const [availableCoaches, setAvailableCoaches] = useState([]);
+  const [selectedCoachId, setSelectedCoachId] = useState("");
 
   // Fetch coach data when component mounts
   useEffect(() => {
@@ -111,7 +114,7 @@ function CHome() {
     if (selectedTeamId) {
       try {
         // Call API to remove player from team
-        await api.delete(`/teams/${selectedTeamId}/players/${playerId}`)
+        await api.put(`/teams/${selectedTeamId}/remove-player/${playerId}`)
         
         // Update local state
         setPlayers(players.filter((player) => player.playerId !== playerId))
@@ -182,6 +185,46 @@ function CHome() {
   navigate(`/coach/matches?teamId=${selectedTeamId}`);
   };
 
+  // Add new function to fetch available coaches
+  const fetchAvailableCoaches = async (teamId) => {
+    try {
+      // First get all coaches
+      const allCoachesResponse = await api.get('/coaches/get/all');
+      const allCoaches = allCoachesResponse.data;
+
+      // Then get the current team's coaches
+      const teamResponse = await api.get(`/teams/get/${teamId}`);
+      const teamCoaches = teamResponse.data.coaches || [];
+
+      // Filter out coaches that are already in the team
+      const availableCoaches = allCoaches.filter(coach => 
+        !teamCoaches.some(teamCoach => teamCoach.coachId === coach.coachId)
+      );
+
+      setAvailableCoaches(availableCoaches);
+    } catch (error) {
+      console.error("Error fetching available coaches:", error);
+      setAvailableCoaches([]);
+    }
+  };
+
+  // Add new function to handle adding a coach
+  const handleAddCoach = async (e) => {
+    e.preventDefault();
+    if (!selectedCoachId || !selectedTeamId) return;
+
+    try {
+      await api.put(`/teams/${selectedTeamId}/add-coach/${selectedCoachId}`);
+      alert("Coach added successfully!");
+      setShowAddCoachModal(false);
+      // Refresh team data
+      window.location.reload();
+    } catch (error) {
+      console.error("Error adding coach:", error);
+      alert("Failed to add coach. Please try again.");
+    }
+  };
+
   // Find the selected team
   const selectedTeam = teams.find((team) => team.id === selectedTeamId || team.teamId === selectedTeamId) || teams[0]
   
@@ -219,9 +262,7 @@ function CHome() {
           </svg>
           Create New Team
         </button>
-        <button className="create-team-button" onClick={handleViewMatches}>
-          View Matches
-        </button>
+       
 
       </div>
 
@@ -240,6 +281,26 @@ function CHome() {
         <div className="team-details-header">
           <div className="team-header-flex">
             <h1>{selectedTeam.name}</h1>
+            <div className="team-header-actions">
+              <button className="team-action-button" onClick={handleViewMatches}>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="action-icon">
+                  <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                </svg>
+                View Matches
+              </button>
+              <button className="team-action-button" onClick={() => {
+                fetchAvailableCoaches(selectedTeamId);
+                setShowAddCoachModal(true);
+              }}>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="action-icon">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <line x1="19" y1="8" x2="19" y2="14"></line>
+                  <line x1="16" y1="11" x2="22" y2="11"></line>
+                </svg>
+                Add Coach
+              </button>
+            </div>
           </div>
           <p>{selectedTeam.description}</p>
           <div className="team-meta">
@@ -310,6 +371,59 @@ function CHome() {
                   Create Team
                 </button>
                 <button type="button" className="cancel-button" onClick={() => setShowCreateModal(false)}>
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Add Coach Modal */}
+      {showAddCoachModal && (
+        <div className="modal-overlay" onClick={() => setShowAddCoachModal(false)}>
+          <div className="modal-container" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Add Coach to Team</h2>
+              <button className="close-button" onClick={() => setShowAddCoachModal(false)}>
+                &times;
+              </button>
+            </div>
+
+            <form onSubmit={handleAddCoach}>
+              <div className="modal-content">
+                <div className="form-group">
+                  <label htmlFor="coach-select">Select Coach</label>
+                  {availableCoaches.length > 0 ? (
+                    <select
+                      id="coach-select"
+                      value={selectedCoachId}
+                      onChange={(e) => setSelectedCoachId(e.target.value)}
+                      required
+                      className="team-select"
+                    >
+                      <option value="">Select a coach</option>
+                      {availableCoaches.map((coach) => (
+                        <option key={coach.coachId} value={coach.coachId}>
+                          {coach.fname} {coach.lname} ({coach.email})
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <p className="no-coaches-message">No available coaches found.</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="modal-actions">
+                <button 
+                  type="submit" 
+                  className="confirm-button"
+                  disabled={!selectedCoachId || availableCoaches.length === 0}
+                >
+                  Add Coach
+                </button>
+                <button type="button" className="cancel-button" onClick={() => setShowAddCoachModal(false)}>
                   Cancel
                 </button>
               </div>

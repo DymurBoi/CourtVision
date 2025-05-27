@@ -41,9 +41,6 @@ public class JoinRequestService {
     private PlayerService playerService;
     
     @Autowired
-    private TeamService teamService;
-    
-    @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @Transactional
@@ -112,17 +109,14 @@ public class JoinRequestService {
         JoinRequest existing = getRequestById(requestId);
         
         if (existing != null) {
-            // Store the old status to check if we're changing from pending to approved
             int oldStatus = existing.getRequestStatus();
             int newStatus = newRequest.getRequestStatus();
             
             logger.info("Request {}: Old status = {}, New status = {}", requestId, oldStatus, newStatus);
             
-            // Update the status
             existing.setRequestStatus(newStatus);
             JoinRequest updated = joinRequestRepository.saveAndFlush(existing);
             
-            // If status is changing to approved (status code 1), update the player's team
             if (oldStatus != 1 && newStatus == 1) {
                 Player player = existing.getPlayer();
                 Team team = existing.getTeam();
@@ -134,40 +128,27 @@ public class JoinRequestService {
                     logger.info("Approving request: Assigning Player {} to Team {}", playerId, teamId);
                     
                     try {
-                        // SIMPLE APPROACH: Use direct SQL and avoid any potential ORM issues
-                        String updateSql = "UPDATE player SET team_id = ? WHERE player_id = ?";
-                        logger.info("Executing SQL: {} with params [teamId={}, playerId={}]", 
-                                    updateSql, teamId, playerId);
+                        // Update player's team
+                        player.setTeam(team);
+                        playerRepository.save(player);
                         
-                        int rowsAffected = jdbcTemplate.update(updateSql, teamId, playerId);
-                        logger.info("SQL UPDATE RESULT: {} rows affected", rowsAffected);
-                        
-                        if (rowsAffected != 1) {
-                            logger.error("Expected to update 1 row but updated {} rows", rowsAffected);
-                            throw new RuntimeException("Failed to update player team_id: unexpected row count");
+                        // Verify the update
+                        Player verifiedPlayer = playerRepository.findById(playerId)
+                            .orElseThrow(() -> new RuntimeException("Player not found after update"));
+                            
+                        if (verifiedPlayer.getTeam() == null || !verifiedPlayer.getTeam().getTeamId().equals(teamId)) {
+                            throw new RuntimeException("Team assignment verification failed");
                         }
                         
-                        // Verify with a separate query that bypasses any caching
-                        String verifySql = "SELECT team_id FROM player WHERE player_id = ?";
-                        logger.info("Verifying update with SQL: {}", verifySql);
-                        
-                        try {
-                            Long verifiedTeamId = jdbcTemplate.queryForObject(
-                                verifySql, Long.class, playerId);
-                            
-                            logger.info("VERIFICATION RESULT: Player {} now has team_id = {}", 
-                                      playerId, verifiedTeamId);
-                            
-                            if (!teamId.equals(verifiedTeamId)) {
-                                logger.error("Verification failed: Expected team_id={} but found team_id={}", 
-                                           teamId, verifiedTeamId);
-                                throw new RuntimeException("Team assignment verification failed");
+                        logger.info("TEAM ASSIGNMENT SUCCESSFUL AND VERIFIED");
+
+                        // Reject all other pending requests for this player
+                        List<JoinRequest> otherRequests = joinRequestRepository.findByPlayer_PlayerId(playerId);
+                        for (JoinRequest request : otherRequests) {
+                            if (!request.getRequestId().equals(requestId) && request.getRequestStatus() == 0) {
+                                request.setRequestStatus(2); // Set to rejected
+                                joinRequestRepository.save(request);
                             }
-                            
-                            logger.info("TEAM ASSIGNMENT SUCCESSFUL AND VERIFIED");
-                        } catch (DataAccessException e) {
-                            logger.error("Error during verification query: {}", e.getMessage());
-                            throw new RuntimeException("Failed to verify team assignment", e);
                         }
                     } catch (Exception e) {
                         logger.error("Error updating player-team relationship: ", e);
@@ -188,25 +169,15 @@ public class JoinRequestService {
 
     @Transactional
     public void deleteRequest(Long requestId) {
-        // Delete associated JoinRequestCoach entries first
         joinRequestCoachRepository.deleteByJoinRequest_RequestId(requestId);
-        
-        // Then delete the JoinRequest
         joinRequestRepository.deleteById(requestId);
     }
 
-    public Player assignPlayerToTeam(Long teamId, Long playerId) {
-        // Fetch the team and player by their IDs
-        Team team = teamRepository.findById(teamId).orElseThrow(() -> new RuntimeException("Team not found"));
-        Player player = playerRepository.findById(playerId).orElseThrow(() -> new RuntimeException("Player not found"));
-
-        // Add the player to the team's player list
-        team.getPlayers().add(player);
-
-        // Save the updated team
-        teamRepository.save(team);
-
-        return player;  // Return the player (you can return whatever is needed, maybe the updated team)
+    @Transactional
+    public void deleteAllPlayerRequests(Long playerId) {
+        List<JoinRequest> requests = joinRequestRepository.findByPlayer_PlayerId(playerId);
+        for (JoinRequest request : requests) {
+            deleteRequest(request.getRequestId());
+        }
     }
-    
 } 
