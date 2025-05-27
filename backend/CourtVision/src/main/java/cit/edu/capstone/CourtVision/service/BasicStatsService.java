@@ -34,29 +34,21 @@ public class BasicStatsService {
     }
 
     public BasicStats create(BasicStats basicStats) {
-    // Save BasicStats first
-    BasicStats savedBasic = basicStatsRepository.save(basicStats);
+        // Save BasicStats first
+        BasicStats savedBasic = basicStatsRepository.save(basicStats);
 
-    // Update the associated Game
-    if (savedBasic.getGame() != null) {
-        Game game = savedBasic.getGame();
-        // Add the saved BasicStats to the Game's basicStatsList
-        game.getBasicStats().add(savedBasic); // Assuming you changed the Game entity to have a List
-        gameRepository.save(game); // Save the updated Game
+        // Auto-create AdvancedStats
+        AdvancedStats advanced = calculateAdvancedStats(savedBasic);
+        advanced.setBasicStats(savedBasic);
+        advancedStatsRepository.save(advanced);
+
+        // Auto-create PhysicalBasedMetricsStats
+        PhysicalBasedMetricsStats metrics = calculatePhysicalMetrics(savedBasic);
+        metrics.setBasicStats(savedBasic);
+        physicalMetricsRepo.save(metrics);
+
+        return savedBasic;
     }
-
-    // Auto-create AdvancedStats
-    AdvancedStats advanced = calculateAdvancedStats(savedBasic);
-    advanced.setBasicStats(savedBasic);
-    advancedStatsRepository.save(advanced);
-
-    // Auto-create PhysicalBasedMetricsStats
-    PhysicalBasedMetricsStats metrics = calculatePhysicalMetrics(savedBasic);
-    metrics.setBasicStats(savedBasic);
-    physicalMetricsRepo.save(metrics);
-
-    return savedBasic;
-}
 
 
     public BasicStats update(Long id, BasicStats updatedStats) {

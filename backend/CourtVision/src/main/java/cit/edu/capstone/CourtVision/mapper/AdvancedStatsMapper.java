@@ -28,6 +28,9 @@ public class AdvancedStatsMapper {
         if (stats.getBasicStats() != null) {
             dto.setBasicStatsDTO(BasicStatsMapper.toDTO(stats.getBasicStats()));
         }
+        if (stats.getGame() != null) {
+           dto.setGameDTO(GameMapper.toDTO(stats.getGame()));
+        }
         return dto;
     }
 
