@@ -1,11 +1,14 @@
 package cit.edu.capstone.CourtVision.service;
 
+import cit.edu.capstone.CourtVision.dto.BasicStatsDTO;
 import cit.edu.capstone.CourtVision.entity.*;
+import cit.edu.capstone.CourtVision.mapper.BasicStatsMapper;
 import cit.edu.capstone.CourtVision.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BasicStatsService {
@@ -155,5 +158,12 @@ public class BasicStatsService {
         p.setPositionSuitabilityIndex(0);
 
         return p;
+    }
+
+    public List<BasicStatsDTO> getBasicStatsByGameId(Long gameId) {
+        List<BasicStats> stats = basicStatsRepository.findByGame_GameId(gameId);
+        return stats.stream()
+                    .map(BasicStatsMapper::toDTO)
+                    .collect(Collectors.toList());
     }
 }

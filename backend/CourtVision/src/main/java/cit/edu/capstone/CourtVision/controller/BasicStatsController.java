@@ -35,6 +35,11 @@ public class BasicStatsController {
                 : ResponseEntity.notFound().build();
     }
 
+    @GetMapping("/get/by-game/{gameId}")
+    public List<BasicStatsDTO> getBasicStatsByGameId(@PathVariable Long gameId) {
+        return service.getBasicStatsByGameId(gameId);
+    }
+
     @PostMapping("/post")
     public ResponseEntity<BasicStatsDTO> create(@RequestBody BasicStats stats) {
         BasicStats created = service.create(stats);
