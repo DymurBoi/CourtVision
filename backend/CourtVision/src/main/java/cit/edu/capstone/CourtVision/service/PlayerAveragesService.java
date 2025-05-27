@@ -11,7 +11,7 @@ import java.util.List;
 public class PlayerAveragesService {
 
     @Autowired
-    private GameRepository gameRepo;
+    private BasicStatsRepository basicStatsRepo;
 
     @Autowired
     private PlayerRepository playerRepo;
@@ -19,71 +19,57 @@ public class PlayerAveragesService {
     @Autowired
     private PlayerAveragesRepository averagesRepo;
 
-    //Calculate and save average stats for a player based on games played
-   /*  public PlayerAverages calculateAverages(Long playerId) {
+    // Calculate averages directly from BasicStats by playerId
+    public PlayerAverages calculateAverages(Long playerId) {
         Player player = playerRepo.findById(playerId).orElse(null);
         if (player == null) return null;
 
-        List<Game> games = gameRepo.findByPlayerAveragesPlayer(player);
-        if (games == null || games.isEmpty()) return null;
+        // Fetch all BasicStats linked to this player
+        List<BasicStats> statsList = basicStatsRepo.findByPlayerPlayerId(playerId);
+        if (statsList == null || statsList.isEmpty()) return null;
 
-        int totalGames = games.size();
+        int totalGames = statsList.size();
         double totalPoints = 0, totalAssists = 0, totalRebounds = 0;
         double totalSteals = 0, totalBlocks = 0, totalMinutes = 0;
-        double totalTS = 0, totalUSG = 0, totalORTG = 0, totalDRTG = 0;
-        int advStatsCount = 0;
 
-        for (Game game : games) {
-            BasicStats basic = game.getBasicStats();
-            AdvancedStats adv = game.getAdvancedStats();
-
-            if (basic != null) {
-                totalPoints += (basic.getTwoPtMade() * 2) + (basic.getThreePtMade() * 3) + basic.getFtMade();
-                totalAssists += basic.getAssists();
-                totalRebounds += basic.getoFRebounds() + basic.getdFRebounds();
-                totalSteals += basic.getSteals();
-                totalBlocks += basic.getBlocks();
-                if (basic.getMinutes() != null)
-                    totalMinutes += basic.getMinutes().toLocalTime().toSecondOfDay() / 60.0;
-            }
-
-            if (adv != null) {
-                totalTS += adv.getTs();
-                totalUSG += adv.getUsg();
-                totalORTG += adv.getOrtg();
-                totalDRTG += adv.getDrtg();
-                advStatsCount++;
-            }
+        for (BasicStats basic : statsList) {
+            totalPoints += (basic.getTwoPtMade() * 2) + (basic.getThreePtMade() * 3) + basic.getFtMade();
+            totalAssists += basic.getAssists();
+            totalRebounds += basic.getoFRebounds() + basic.getdFRebounds();
+            totalSteals += basic.getSteals();
+            totalBlocks += basic.getBlocks();
+            if (basic.getMinutes() != null)
+                totalMinutes += basic.getMinutes().toLocalTime().toSecondOfDay() / 60.0;
         }
 
         PlayerAverages avg = new PlayerAverages();
         avg.setPlayer(player);
+        avg.setBasicStats(statsList);
         avg.setPointsPerGame(totalPoints / totalGames);
         avg.setAssistsPerGame(totalAssists / totalGames);
         avg.setReboundsPerGame(totalRebounds / totalGames);
         avg.setStealsPerGame(totalSteals / totalGames);
         avg.setBlocksPerGame(totalBlocks / totalGames);
         avg.setMinutesPerGame(totalMinutes / totalGames);
-        avg.setTrueShootingPercentage(advStatsCount > 0 ? totalTS / advStatsCount : 0.0);
-        avg.setUsagePercentage(advStatsCount > 0 ? totalUSG / advStatsCount : 0.0);
-        avg.setOffensiveRating(advStatsCount > 0 ? totalORTG / advStatsCount : 0.0);
-        avg.setDefensiveRating(advStatsCount > 0 ? totalDRTG / advStatsCount : 0.0);
+
+        // Optional: set these as placeholders (can extend later)
+        avg.setTrueShootingPercentage(0.0);
+        avg.setUsagePercentage(0.0);
+        avg.setOffensiveRating(0.0);
+        avg.setDefensiveRating(0.0);
 
         return averagesRepo.save(avg);
     }
-*/
-    //Get all averages
+
     public List<PlayerAverages> getAll() {
         return averagesRepo.findAll();
     }
 
-    //Get averages by player
     public PlayerAverages getByPlayerId(Long playerId) {
         Player player = playerRepo.findById(playerId).orElse(null);
         return player != null ? averagesRepo.findByPlayer(player) : null;
     }
 
-    //Update averages manually (optional enhancement)
     public PlayerAverages update(Long id, PlayerAverages updated) {
         PlayerAverages existing = averagesRepo.findById(id).orElse(null);
         if (existing == null) return null;
@@ -102,7 +88,6 @@ public class PlayerAveragesService {
         return averagesRepo.save(existing);
     }
 
-    //Delete averages by ID
     public void delete(Long id) {
         averagesRepo.deleteById(id);
     }

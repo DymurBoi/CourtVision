@@ -8,4 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BasicStatsRepository extends JpaRepository<BasicStats, Long> {
     List<BasicStats> findByGame_GameId(Long gameId);
+    List<BasicStats> findByPlayerPlayerId(Long playerId);
 }

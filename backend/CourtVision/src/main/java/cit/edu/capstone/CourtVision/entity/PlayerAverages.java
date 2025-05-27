@@ -1,5 +1,7 @@
 package cit.edu.capstone.CourtVision.entity;
 
+import java.util.List;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,6 +25,10 @@ public class PlayerAverages {
     @JoinColumn(name = "game_id") // Many PlayerAverages → One Game
     private Game game;
 
+    @OneToMany(mappedBy = "playerAverages", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<BasicStats> basicStats;
+
+
     private double pointsPerGame;
     private double assistsPerGame;
     private double reboundsPerGame;
@@ -36,7 +42,13 @@ public class PlayerAverages {
     private double defensiveRating;
 
     //Getters and Setters
+    public List<BasicStats> getBasicStats() {
+        return basicStats;
+    }
 
+    public void setBasicStats(List<BasicStats> basicStats) {
+        this.basicStats = basicStats;
+    }
 
     public Game getGame() {
         return game;

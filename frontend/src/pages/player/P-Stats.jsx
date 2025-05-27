@@ -8,33 +8,33 @@ import "../../styles/player/P-Stats.css"
 function PStats() {
   const [isEditing, setIsEditing] = useState(false)
   const [showConfirmation, setShowConfirmation] = useState(false)
-  const [requestStatus, setRequestStatus] = useState(""); // For displaying request status
-  const { user } = useAuth();
-  const [refreshTrigger, setRefreshTrigger] = useState(0); // Add refresh trigger state
+  const [requestStatus, setRequestStatus] = useState("")
+  const { user } = useAuth()
+  const [refreshTrigger, setRefreshTrigger] = useState(0)
 
   const [physicalRecords, setPhysicalRecords] = useState({
-    height: 185, // cm
-    weight: 78, // kg
-    wingspan: 190, // cm
-    vertical: 76, // cm
+    height: 185,
+    weight: 78,
+    wingspan: 190,
+    vertical: 76,
     lastUpdated: "2023-03-15",
   })
 
   const [editedRecords, setEditedRecords] = useState({ ...physicalRecords })
 
-  const [performanceStats] = useState({
-    gamesPlayed: 15,
-    pointsPerGame: 12.5,
-    reboundsPerGame: 4.2,
-    assistsPerGame: 3.8,
-    stealsPerGame: 1.2,
-    blocksPerGame: 0.5,
-    fieldGoalPercentage: 45.2,
-    threePointPercentage: 36.8,
-    freeThrowPercentage: 82.5,
+  const [playerAverages, setPlayerAverages] = useState({
+    pointsPerGame: 0,
+    reboundsPerGame: 0,
+    assistsPerGame: 0,
+    stealsPerGame: 0,
+    blocksPerGame: 0,
+    minutesPerGame: 0,
+    trueShootingPercentage: 0,
+    usagePercentage: 0,
+    offensiveRating: 0,
+    defensiveRating: 0,
   })
 
-  // Calculate BMI
   const calculateBMI = (height, weight) => {
     const heightInMeters = height / 100
     return (weight / (heightInMeters * heightInMeters)).toFixed(1)
@@ -42,7 +42,6 @@ function PStats() {
 
   const handleEditToggle = () => {
     if (isEditing) {
-      // Cancel editing
       setEditedRecords({ ...physicalRecords })
     }
     setIsEditing(!isEditing)
@@ -58,28 +57,21 @@ function PStats() {
 
   const handleApplyChanges = async () => {
     try {
-      console.log("Preparing to submit physical update request");
-      
-      // Check authentication token
-      const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem("authToken")
       if (!token) {
-        alert("Error: You are not logged in. Please login and try again.");
-        return;
+        alert("Error: You are not logged in. Please login and try again.")
+        return
       }
-      
-      console.log("Auth token found, first 10 chars:", token.substring(0, 10) + "...");
-      
-      const userId = localStorage.getItem('userId');
+
+      const userId = localStorage.getItem("userId")
       if (!userId) {
-        alert("Error: User ID not found. Please login again.");
-        return;
+        alert("Error: User ID not found. Please login again.")
+        return
       }
-      
-      const playerId = userId.includes('_') ? userId.split('_')[1] : userId;
-      console.log("Using player ID:", playerId);
-      
-      const coachId = 1;
-      
+
+      const playerId = userId.includes("_") ? userId.split("_")[1] : userId
+      const coachId = 1
+
       const requestData = {
         playerId: playerId,
         coachId: coachId,
@@ -87,118 +79,98 @@ function PStats() {
         weight: editedRecords.weight.toString(),
         wingspan: editedRecords.wingspan.toString(),
         vertical: editedRecords.vertical.toString(),
-        dateRequested: new Date().toISOString().split('T')[0],
-        requestStatus: 0
-      };
-      
-      console.log("Sending request with data:", requestData);
+        dateRequested: new Date().toISOString().split("T")[0],
+        requestStatus: 0,
+      }
 
-      try {
-        const response = await api.post('/physical-update-requests', requestData);
-        
-        if (response.status === 200) {
-          alert("Your physical record update request has been submitted successfully. Your coach will review and approve the changes.");
-          setRequestStatus("Request submitted successfully. Awaiting coach approval.");
-          setShowConfirmation(true);
-          setIsEditing(false);
-        } else {
-          alert(`Error: Request failed with status ${response.status}`);
-          setRequestStatus(`Error: Request failed with status ${response.status}`);
-          setShowConfirmation(true);
-        }
-      } catch (apiError) {
-        console.error("API error:", apiError);
-        let errorText = "Failed to submit request";
-        if (apiError.response) {
-          errorText = apiError.response.data.message || apiError.response.data.error || `Server returned status ${apiError.response.status}`;
-        } else if (apiError.request) {
-          errorText = "No response from server. Please check your connection.";
-        } else {
-          errorText = apiError.message;
-        }
-        alert(`Error: ${errorText}`);
-        setRequestStatus(`Error: ${errorText}`);
-        setShowConfirmation(true);
+      const response = await api.post("/physical-update-requests", requestData)
+
+      if (response.status === 200) {
+        alert("Your physical record update request has been submitted successfully. Your coach will review it.")
+        setRequestStatus("Request submitted successfully. Awaiting coach approval.")
+        setShowConfirmation(true)
+        setIsEditing(false)
+      } else {
+        alert(`Error: Request failed with status ${response.status}`)
+        setRequestStatus(`Error: Request failed with status ${response.status}`)
+        setShowConfirmation(true)
       }
     } catch (error) {
-      console.error("General error in handleApplyChanges:", error);
-      alert("Error connecting to server. Please try again.");
-      setRequestStatus("Error connecting to server. Please try again.");
-      setShowConfirmation(true);
+      console.error("Error submitting request:", error)
+      setRequestStatus("Error submitting request. Please try again.")
+      setShowConfirmation(true)
     }
 
-    // Hide confirmation after 5 seconds
     setTimeout(() => {
-      setShowConfirmation(false);
-      setRequestStatus("");
-    }, 5000);
-  };
+      setShowConfirmation(false)
+      setRequestStatus("")
+    }, 5000)
+  }
 
-  // Add a refresh function
   const handleRefresh = () => {
-    console.log("Manual refresh triggered");
-    setRefreshTrigger(prev => prev + 1);
-  };
+    setRefreshTrigger((prev) => prev + 1)
+  }
 
-  // Fetch player stats from API - add refreshTrigger dependency
   useEffect(() => {
     if (user && user.id) {
-      const fetchPlayerStats = async () => {
+      const fetchPlayerData = async () => {
         try {
-          console.log("Fetching physical records data");
-          // Extract player ID
-          let playerId = user.id;
-          if (typeof playerId === 'string' && playerId.startsWith("PLAYER_")) {
-            playerId = playerId.substring(7); // Remove "PLAYER_" prefix
+          let playerId = user.id
+          if (typeof playerId === "string" && playerId.startsWith("PLAYER_")) {
+            playerId = playerId.substring(7)
           }
-          
-          // Use API client for consistency with other requests
-          try {
-            const recordsResponse = await api.get(`/physical-records/get/by-player/${playerId}`);
-            
-            console.log("Physical records response:", recordsResponse.status);
-            const recordsData = recordsResponse.data;
-            
-            console.log("Received physical records:", recordsData);
-            if (recordsData) {
-              setPhysicalRecords({
-                height: recordsData.height || 185,
-                weight: recordsData.weight || 78,
-                wingspan: recordsData.wingspan || 190,
-                vertical: recordsData.vertical || 76,
-                lastUpdated: recordsData.dateRecorded || "2023-03-15"
-              });
-              setEditedRecords({
-                height: recordsData.height || 185,
-                weight: recordsData.weight || 78,
-                wingspan: recordsData.wingspan || 190,
-                vertical: recordsData.vertical || 76,
-                lastUpdated: recordsData.dateRecorded || "2023-03-15"
-              });
-            }
-          } catch (apiError) {
-            console.error("Error fetching physical records:", apiError);
-            if (apiError.response) {
-              console.error("Error response status:", apiError.response.status);
-            }
+
+          const recordsResponse = await api.get(`/physical-records/get/by-player/${playerId}`)
+          const recordsData = recordsResponse.data
+
+          if (recordsData) {
+            setPhysicalRecords({
+              height: recordsData.height || 185,
+              weight: recordsData.weight || 78,
+              wingspan: recordsData.wingspan || 190,
+              vertical: recordsData.vertical || 76,
+              lastUpdated: recordsData.dateRecorded || "2023-03-15",
+            })
+            setEditedRecords({
+              height: recordsData.height || 185,
+              weight: recordsData.weight || 78,
+              wingspan: recordsData.wingspan || 190,
+              vertical: recordsData.vertical || 76,
+            })
           }
-          
-          // Fetch performance stats (if available)
-          // This would be implemented similarly
+
+          const averagesResponse = await api.get(`/api/averages/get/by-player/${playerId}`)
+          const avg = averagesResponse.data
+
+          if (avg) {
+            setPlayerAverages({
+              pointsPerGame: avg.pointsPerGame || 0,
+              reboundsPerGame: avg.reboundsPerGame || 0,
+              assistsPerGame: avg.assistsPerGame || 0,
+              stealsPerGame: avg.stealsPerGame || 0,
+              blocksPerGame: avg.blocksPerGame || 0,
+              minutesPerGame: avg.minutesPerGame || 0,
+              trueShootingPercentage: avg.trueShootingPercentage || 0,
+              usagePercentage: avg.usagePercentage || 0,
+              offensiveRating: avg.offensiveRating || 0,
+              defensiveRating: avg.defensiveRating || 0,
+            })
+          }
         } catch (error) {
-          console.error("Error fetching player stats:", error);
+          console.error("Error fetching player data:", error)
         }
-      };
-      
-      fetchPlayerStats();
+      }
+
+      fetchPlayerData()
     }
-  }, [user, refreshTrigger]); // Add refreshTrigger as dependency
+  }, [user, refreshTrigger])
 
   return (
     <div className="stats-container">
       <h1 className="page-title">My Statistics</h1>
       <p className="page-subtitle">View your physical records and performance statistics</p>
 
+    
       <div className="stats-card">
         <div className="stats-card-header">
           <h2>Physical Records</h2>
@@ -351,48 +323,52 @@ function PStats() {
         <div className="stats-card-header">
           <h2>Performance Statistics</h2>
           <div className="header-actions">
-            <span className="games-played">Games Played: {performanceStats.gamesPlayed}</span>
+            <span className="games-played">Minutes Per Game: {playerAverages.minutesPerGame}</span>
           </div>
         </div>
 
         <div className="performance-stats-grid">
           <div className="stat-box">
-            <div className="stat-value">{performanceStats.pointsPerGame}</div>
+            <div className="stat-value">{playerAverages.pointsPerGame.toFixed(1)}</div>
             <div className="stat-label">Points Per Game</div>
           </div>
           <div className="stat-box">
-            <div className="stat-value">{performanceStats.reboundsPerGame}</div>
+            <div className="stat-value">{playerAverages.reboundsPerGame.toFixed(1)}</div>
             <div className="stat-label">Rebounds Per Game</div>
           </div>
           <div className="stat-box">
-            <div className="stat-value">{performanceStats.assistsPerGame}</div>
+            <div className="stat-value">{playerAverages.assistsPerGame.toFixed(1)}</div>
             <div className="stat-label">Assists Per Game</div>
           </div>
           <div className="stat-box">
-            <div className="stat-value">{performanceStats.stealsPerGame}</div>
+            <div className="stat-value">{playerAverages.stealsPerGame.toFixed(1)}</div>
             <div className="stat-label">Steals Per Game</div>
           </div>
           <div className="stat-box">
-            <div className="stat-value">{performanceStats.blocksPerGame}</div>
+            <div className="stat-value">{playerAverages.blocksPerGame.toFixed(1)}</div>
             <div className="stat-label">Blocks Per Game</div>
           </div>
           <div className="stat-box">
-            <div className="stat-value">{performanceStats.fieldGoalPercentage}%</div>
-            <div className="stat-label">Field Goal %</div>
+            <div className="stat-value">{playerAverages.trueShootingPercentage.toFixed(1)}%</div>
+            <div className="stat-label">True Shooting %</div>
           </div>
           <div className="stat-box">
-            <div className="stat-value">{performanceStats.threePointPercentage}%</div>
-            <div className="stat-label">3-Point %</div>
+            <div className="stat-value">{playerAverages.usagePercentage.toFixed(1)}%</div>
+            <div className="stat-label">Usage %</div>
           </div>
           <div className="stat-box">
-            <div className="stat-value">{performanceStats.freeThrowPercentage}%</div>
-            <div className="stat-label">Free Throw %</div>
+            <div className="stat-value">{playerAverages.offensiveRating.toFixed(1)}</div>
+            <div className="stat-label">Offensive Rating</div>
+          </div>
+          <div className="stat-box">
+            <div className="stat-value">{playerAverages.defensiveRating.toFixed(1)}</div>
+            <div className="stat-label">Defensive Rating</div>
           </div>
         </div>
       </div>
 
       {showConfirmation && (
-        <div className={`confirmation-message ${requestStatus.includes('Error') ? 'error' : ''}`}>
+        <div className={`confirmation-message ${requestStatus.includes("Error") ? "error" : ""}`}>
           {requestStatus || "Your request for physical record changes has been submitted for approval."}
         </div>
       )}

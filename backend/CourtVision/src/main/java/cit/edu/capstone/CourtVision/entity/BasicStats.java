@@ -42,9 +42,20 @@ public class BasicStats {
     @JoinColumn(name = "game_id")
     private Game game;
 
+    @ManyToOne
+    @JoinColumn(name = "player_avg_id")
+    private PlayerAverages playerAverages;
+
 
     //Getters and Setters
 
+    public PlayerAverages getPlayerAverages() {
+        return playerAverages;
+    }
+    
+    public void setPlayerAverages(PlayerAverages playerAverages) {
+        this.playerAverages = playerAverages;
+    }
 
 
     public Game getGame() {

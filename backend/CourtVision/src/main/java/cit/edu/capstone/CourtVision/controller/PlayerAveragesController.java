@@ -21,6 +21,14 @@ public class PlayerAveragesController {
         return avgService.calculateAverages(playerId);
     }
 */
+
+
+     // Calculate and save player averages (trigger recalculation)
+   @PostMapping("/calculate/{playerId}")
+    public PlayerAverages calculateAndSave(@PathVariable Long playerId) {
+        return avgService.calculateAverages(playerId);
+    }
+    
     @GetMapping("/get/all")
     public List<PlayerAverages> getAll() {
         return avgService.getAll();
