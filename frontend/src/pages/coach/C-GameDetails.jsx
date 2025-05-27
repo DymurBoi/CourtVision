@@ -16,7 +16,7 @@ function CGameDetails() {
   const [error, setError] = useState(null);
   const [showAddRow, setShowAddRow] = useState(false);
   const [selectedPlayerId, setSelectedPlayerId] = useState("");
-
+  const [activeTab, setActiveTab] = useState("basic")
   useEffect(() => {
     const fetchTeamPlayers = async () => {
       if (!teamId) {
@@ -217,7 +217,23 @@ function CGameDetails() {
     <main className="main-content">
       <h1>Game Details — Game ID: {gameId}</h1>
       <h2>Team ID: {teamId}</h2>
-      
+      <div className="stats-tabs">
+        <button className={`tab-button ${activeTab === "basic" ? "active" : ""}`} onClick={() => setActiveTab("basic")}>
+          Basic Stats
+        </button>
+        <button
+          className={`tab-button ${activeTab === "advanced" ? "active" : ""}`}
+          onClick={() => setActiveTab("advanced")}
+        >
+          Advanced Stats
+        </button>
+        <button
+          className={`tab-button ${activeTab === "adjusted" ? "active" : ""}`}
+          onClick={() => setActiveTab("adjusted")}
+        >
+          Adjusted Stats
+        </button>
+      </div>
 
       <div className="players-table-container">
         <table className="players-table">
@@ -396,6 +412,7 @@ function CGameDetails() {
             ))}
           </tbody>
         </table>
+         {activeTab === "basic" && (
         <div className="stats-table-container">
             <table className="stats-table">
               <thead>
@@ -434,6 +451,7 @@ function CGameDetails() {
               </tbody>
             </table>
           </div>
+        )}
       </div>
     </main>
   );
