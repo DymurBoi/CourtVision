@@ -6,7 +6,7 @@ import cit.edu.capstone.CourtVision.dto.PhysicalBasedMetricsStatsDTO;
 public class PhysicalBasedMetricsStatsMapper {
     public static PhysicalBasedMetricsStatsDTO toDTO(PhysicalBasedMetricsStats stats) {
         PhysicalBasedMetricsStatsDTO dto = new PhysicalBasedMetricsStatsDTO();
-        dto.setId(stats.getId());
+        dto.setPhysicalBasedMetricsStatsId(stats.getPhysicalBasedMetricsStatsId());
         dto.setAthleticPerformanceIndex(stats.getAthleticPerformanceIndex());
         dto.setDefensiveDisruptionRating(stats.getDefensiveDisruptionRating());
         dto.setReboundPotentialIndex(stats.getReboundPotentialIndex());

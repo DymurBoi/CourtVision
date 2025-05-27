@@ -1,7 +1,7 @@
 package cit.edu.capstone.CourtVision.dto;
 
 public class PhysicalBasedMetricsStatsDTO {
-    private Long id;
+    private Long physicalBasedMetricsStatsId;
     private double athleticPerformanceIndex;
     private double defensiveDisruptionRating;
     private double reboundPotentialIndex;
@@ -30,12 +30,12 @@ public class PhysicalBasedMetricsStatsDTO {
         this.gameDTO = gameDTO;
     }
 
-    public Long getId() {
-        return id;
+    public Long getPhysicalBasedMetricsStatsId() {
+        return physicalBasedMetricsStatsId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setPhysicalBasedMetricsStatsId(Long physicalBasedMetricsStatsId) {
+        this.physicalBasedMetricsStatsId = physicalBasedMetricsStatsId;
     }
 
     public double getAthleticPerformanceIndex() {
