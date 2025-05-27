@@ -23,10 +23,16 @@ public class BasicStatsDTO {
 
     private AdvancedStatsDTO advancedStatsDTO;
     private GameDTO gameDTO;
+    private PlayerDTO playerDTO;
 
 
     // Getters and Setters
-
+    public PlayerDTO getPlayerDTO() {
+        return playerDTO;
+    }
+    public void setPlayerDTO(PlayerDTO playerDTO) {
+        this.playerDTO = playerDTO;
+    }
 
     public AdvancedStatsDTO getAdvancedStatsDTO() {
         return advancedStatsDTO;

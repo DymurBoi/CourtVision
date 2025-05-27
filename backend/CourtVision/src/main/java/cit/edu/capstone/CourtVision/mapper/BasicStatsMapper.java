@@ -25,7 +25,9 @@ public class BasicStatsMapper {
         dto.setPlusMinus(stat.getPlusMinus());
         dto.setMinutes(stat.getMinutes());
 
-
+        if (stat.getPlayer() != null) {
+            dto.setPlayerDTO(PlayerMapper.toDto(stat.getPlayer()));
+        }
 
         if (stat.getGame() != null) {
             dto.setGameDTO(GameMapper.toDTO(stat.getGame()));
