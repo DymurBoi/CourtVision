@@ -14,13 +14,13 @@ public class PlayerAveragesController {
 
     @Autowired
     private PlayerAveragesService avgService;
-
+/* 
     @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
     @PostMapping("/calculate/{playerId}")
     public PlayerAverages calculateAndSave(@PathVariable Long playerId) {
         return avgService.calculateAverages(playerId);
     }
-
+*/
     @GetMapping("/get/all")
     public List<PlayerAverages> getAll() {
         return avgService.getAll();

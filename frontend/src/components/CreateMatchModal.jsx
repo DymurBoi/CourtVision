@@ -7,10 +7,12 @@ function CreateMatchModal({ onClose, onSave, teamId }) {
   const [formData, setFormData] = useState({
     homeTeam: "CIT-U",
     awayTeam: "",
-    gameDate: new Date().toISOString().split("T")[0],
+    gameDate: new Date().toISOString().split("T")[0], // ISO 8601 format
     gameResult: "W",
     finalScore: "",
   });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,25 +25,41 @@ function CreateMatchModal({ onClose, onSave, teamId }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (isSubmitting) return; // Prevent multiple submissions
+    setIsSubmitting(true); // Set the submitting flag
+
+    // Validate form data before submission
+    if (!formData.awayTeam || !formData.finalScore || !formData.gameDate) {
+      alert("Please fill all the required fields.");
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
+      // Ensure the game date is formatted correctly
+      const formattedDate = new Date(formData.gameDate).toISOString(); // ISO format
+
       const gamePayload = {
         gameName: `${formData.homeTeam} vs ${formData.awayTeam}`,
         gameResult: formData.gameResult,
         finalScore: formData.finalScore,
-        gameDate: formData.gameDate,
+        gameDate: formattedDate,
         team: { teamId: teamId },
       };
 
       const gameRes = await api.post("/games/post", gamePayload);
       const savedGame = gameRes.data;
+
       console.log("✅ Game created:", savedGame);
 
       alert("✅ Match created successfully!");
-      onSave(savedGame); // pass back the new game object
+      onSave(savedGame); // Pass back the new game object
       onClose();
     } catch (error) {
       console.error("❌ Failed to save match:", error);
-      alert("Failed to save match. Check console for details.");
+      alert("Failed to save match.");
+    } finally {
+      setIsSubmitting(false); // Reset after the request is done
     }
   };
 
@@ -85,37 +103,37 @@ function CreateMatchModal({ onClose, onSave, teamId }) {
                   onChange={handleChange}
                   placeholder="Score (e.g. 78-65)"
                   required
-                  style={{ width: "100px" }}
                 />
               </div>
+
               <div className="form-row">
-                <select
-                  name="gameResult"
-                  value={formData.gameResult}
-                  onChange={handleChange}
-                  style={{ width: "100px" }}
-                >
-                  <option value="W">Win</option>
-                  <option value="L">Loss</option>
-                </select>
+                <label>Game Date</label>
                 <input
                   type="date"
                   name="gameDate"
                   value={formData.gameDate}
                   onChange={handleChange}
                   required
-                  style={{ width: "150px" }}
                 />
+              </div>
+
+              <div className="form-row">
+                <label>Game Result</label>
+                <select
+                  name="gameResult"
+                  value={formData.gameResult}
+                  onChange={handleChange}
+                >
+                  <option value="W">Win</option>
+                  <option value="L">Loss</option>
+                </select>
               </div>
             </div>
           </div>
 
           <div className="modal-footer">
-            <button type="button" onClick={onClose} className="cancel-button">
-              Cancel
-            </button>
-            <button type="submit" className="save-button">
-              Save Match
+            <button type="submit" className="save-button" disabled={isSubmitting}>
+              {isSubmitting ? "Saving..." : "Save Match"}
             </button>
           </div>
         </form>

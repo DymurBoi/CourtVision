@@ -22,9 +22,9 @@ public class Game {
     @JoinColumn(name = "team_id")
     private Team team;
 
-@OneToOne
-@JoinColumn(name = "basic_stats_id")
-private BasicStats basicStats;
+    @OneToMany(mappedBy = "game")
+    private List<BasicStats> basicStatsList;
+
     @OneToOne
     @JoinColumn(name = "advanced_stats_id")
     private AdvancedStats advancedStats;
@@ -91,8 +91,8 @@ private BasicStats basicStats;
     public Team getTeam() { return team; }
     public void setTeam(Team team) { this.team = team; }
 
-    public BasicStats getBasicStats() { return basicStats; }
-    public void setBasicStats(BasicStats basicStats) { this.basicStats = basicStats; }
+    public List<BasicStats> getBasicStats() { return basicStatsList; }
+    public void setBasicStats(List<BasicStats> basicStatsList) { this.basicStatsList = basicStatsList; }
 
     //private Long advancedStatId;
     //private Long adjustedStatId;

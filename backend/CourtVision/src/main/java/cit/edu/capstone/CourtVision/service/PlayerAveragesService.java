@@ -20,7 +20,7 @@ public class PlayerAveragesService {
     private PlayerAveragesRepository averagesRepo;
 
     //Calculate and save average stats for a player based on games played
-    public PlayerAverages calculateAverages(Long playerId) {
+   /*  public PlayerAverages calculateAverages(Long playerId) {
         Player player = playerRepo.findById(playerId).orElse(null);
         if (player == null) return null;
 
@@ -71,7 +71,7 @@ public class PlayerAveragesService {
 
         return averagesRepo.save(avg);
     }
-
+*/
     //Get all averages
     public List<PlayerAverages> getAll() {
         return averagesRepo.findAll();

@@ -1,6 +1,7 @@
 package cit.edu.capstone.CourtVision.dto;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class GameDTO {
     private Long gameId;
@@ -10,13 +11,12 @@ public class GameDTO {
     private String finalScore;
     private String comments;
     private Long teamId;
-    private Long basicStatId;
+    private List<Long> basicStatIds; // List of BasicStats IDs
     private Long advancedStatId;
     private Long adjustedStatId;
 
     // Constructors
-    public GameDTO() {
-    }
+    public GameDTO() {}
 
     // Getters and Setters
     public Long getGameId() {
@@ -75,12 +75,12 @@ public class GameDTO {
         this.teamId = teamId;
     }
 
-    public Long getBasicStatId() {
-        return basicStatId;
+    public List<Long> getBasicStatIds() {
+        return basicStatIds;
     }
 
-    public void setBasicStatId(Long basicStatId) {
-        this.basicStatId = basicStatId;
+    public void setBasicStatIds(List<Long> basicStatIds) {
+        this.basicStatIds = basicStatIds;
     }
 
     public Long getAdvancedStatId() {
@@ -98,4 +98,4 @@ public class GameDTO {
     public void setAdjustedStatId(Long adjustedStatId) {
         this.adjustedStatId = adjustedStatId;
     }
-} 
+}

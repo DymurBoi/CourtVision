@@ -1,10 +1,10 @@
 package cit.edu.capstone.CourtVision.mapper;
 
 import cit.edu.capstone.CourtVision.dto.GameDTO;
-import cit.edu.capstone.CourtVision.entity.AdvancedStats;
-import cit.edu.capstone.CourtVision.entity.BasicStats;
 import cit.edu.capstone.CourtVision.entity.Game;
-import cit.edu.capstone.CourtVision.entity.Team;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class GameMapper {
 
@@ -16,17 +16,19 @@ public class GameMapper {
         dto.setGameResult(game.getGameResult());
         dto.setFinalScore(game.getFinalScore());
         dto.setComments(game.getComments());
-        
 
         if (game.getTeam() != null) {
-            Team temp=new Team();
-            temp=game.getTeam();
-            dto.setTeamId(temp.getTeamId());
+            dto.setTeamId(game.getTeam().getTeamId());
         }
-        
-        // Skipping playerAverages for now to avoid infinite recursion (you can optionally include it)
+
+        // Populate the list of BasicStats IDs
+        if (game.getBasicStats() != null) {
+            List<Long> basicStatIds = game.getBasicStats().stream()
+                                          .map(basicStats -> basicStats.getBasicStatId())
+                                          .collect(Collectors.toList());
+            dto.setBasicStatIds(basicStatIds);
+        }
 
         return dto;
     }
 }
-

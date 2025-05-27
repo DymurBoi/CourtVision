@@ -36,7 +36,7 @@ const gameService = {
     createGame: async (matchData) => {
         try {
             // Ensure we handle invalid date values gracefully
-            let gameDate = new Date(matchData.date);
+            let gameDate = new Date(matchData.gameDate);
             if (isNaN(gameDate)) {
                 console.warn('Invalid game date, defaulting to current date.');
                 gameDate = new Date();  // Set to current date if invalid
@@ -45,10 +45,24 @@ const gameService = {
             const gameData = {
                 gameName: `${matchData.homeTeam} vs ${matchData.awayTeam}`,
                 gameDate: gameDate.toISOString(),  // Always convert to ISO format
-                gameResult: matchData.result,
-                finalScore: matchData.score,
-                comments: ''
+                gameResult: matchData.gameResult,
+                finalScore: matchData.finalScore,
+                comments: matchData.comments || '',
             };
+
+            // Check for duplicate game (same teams, same date)
+            const existingGames = await axios.get(`${API_URL}/get/all`);
+            const duplicateGame = existingGames.data.find((game) => {
+                return (
+                    game.gameName === gameData.gameName &&
+                    new Date(game.gameDate).toISOString().split("T")[0] === gameData.gameDate.split("T")[0] // Match only the date part
+                );
+            });
+
+            if (duplicateGame) {
+                console.warn('Duplicate game found for this date. Skipping creation.');
+                return null;  // Return null if duplicate found
+            }
 
             const response = await axios.post(`${API_URL}/post`, gameData);
             return response.data;
@@ -56,13 +70,12 @@ const gameService = {
             console.error('Error creating game:', error);
             throw error;
         }
-        
     },
 
     updateGame: async (id, matchData) => {
         try {
             // Ensure we handle invalid date values gracefully
-            let gameDate = new Date(matchData.date);
+            let gameDate = new Date(matchData.gameDate);
             if (isNaN(gameDate)) {
                 console.warn('Invalid game date, defaulting to current date.');
                 gameDate = new Date();  // Set to current date if invalid
@@ -71,8 +84,8 @@ const gameService = {
             const gameData = {
                 gameName: `${matchData.homeTeam} vs ${matchData.awayTeam}`,
                 gameDate: gameDate.toISOString(),  // Always convert to ISO format
-                gameResult: matchData.result,
-                finalScore: matchData.score
+                gameResult: matchData.gameResult,
+                finalScore: matchData.finalScore,
             };
 
             const response = await axios.put(`${API_URL}/put/${id}`, gameData);
@@ -93,4 +106,4 @@ const gameService = {
     }
 };
 
-export default gameService; 
+export default gameService;
