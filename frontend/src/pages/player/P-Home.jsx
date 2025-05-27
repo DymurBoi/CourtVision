@@ -158,7 +158,6 @@ function PHome() {
     }
   }, [playerData.team]);
 
-  // Add a manual refresh button for the user
   const handleManualRefresh = () => {
     console.log("Manual refresh triggered");
     setRefreshTrigger(prev => prev + 1);
@@ -227,13 +226,6 @@ function PHome() {
             <h1>Welcome, {playerData.fname}</h1>
             <p>Please select a team to join</p>
           </div>
-          <button 
-            className="refresh-button" 
-            onClick={handleManualRefresh}
-            title="Refresh to check if your request is approved"
-          >
-            Refresh
-          </button>
         </div>
 
         <div className="available-teams-section">
@@ -325,12 +317,6 @@ function PHome() {
               #{playerData.jerseyNum} | {playerData.position}
             </p>
           </div>
-          <button 
-            className="refresh-button" 
-            onClick={handleManualRefresh}
-          >
-            Refresh
-          </button>
         </div>
 
         <div className="player-team-card">

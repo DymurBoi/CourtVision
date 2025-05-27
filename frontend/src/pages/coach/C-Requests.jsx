@@ -288,10 +288,10 @@ function Requests() {
         {activeTab === 'join' && (
           <div className="requests-list">
             <div className="request-header">
-              <div className="player-name-header">Player Name</div>
-              <div className="description-header">Description</div>
-              <div className="status-header">Status</div>
-              <div className="action-header">Action</div>
+              <div>Player Name</div>
+              <div>Description</div>
+              <div>Status</div>
+              <div>Action</div>
             </div>
 
             {joinRequests.length > 0 ? (
@@ -324,10 +324,10 @@ function Requests() {
         {activeTab === 'physical' && (
           <div className="requests-list">
             <div className="request-header">
-              <div className="player-name-header">Player Name</div>
-              <div className="description-header">Description</div>
-              <div className="status-header">Status</div>
-              <div className="action-header">Action</div>
+              <div>Player Name</div>
+              <div>Description</div>
+              <div>Status</div>
+              <div>Action</div>
             </div>
 
             {physicalRequests.length > 0 ? (
@@ -371,7 +371,7 @@ function Requests() {
         <TeamInviteModal 
           request={{
             ...selectedRequest,
-            team: selectedRequest.teamName // Format for the modal
+            team: selectedRequest.teamName
           }}
           onClose={handleCloseModal}
           onApprove={handleApproveJoinRequest}
