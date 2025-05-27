@@ -75,7 +75,8 @@
   color: var(--dark-blue);
 }
 
-.modal-content .form-group input {
+.modal-content .form-group input,
+.modal-content .form-group select {
   width: 100%;
   padding: 0.8rem;
   border: 1px solid rgba(123, 123, 243, 0.3);
@@ -83,10 +84,73 @@
   font-size: 1rem;
 }
 
-.modal-content .form-group input:focus {
+.modal-content .form-group input:focus,
+.modal-content .form-group select:focus {
   outline: none;
   border-color: var(--medium-purple);
   box-shadow: 0 0 0 2px rgba(123, 123, 243, 0.2);
+}
+
+.no-coaches-message {
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 4px;
+  color: #6c757d;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.confirm-button:disabled {
+  background: linear-gradient(to right, #a8a8a8, #c0c0c0);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.confirm-button:disabled:hover {
+  background: linear-gradient(to right, #a8a8a8, #c0c0c0);
+  transform: none;
+  box-shadow: none;
+}
+
+/* Team header actions styles */
+.team-header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.team-header-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.team-action-button {
+  background: linear-gradient(to right, var(--medium-purple), var(--bright-purple));
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.team-action-button:hover {
+  background: linear-gradient(to right, var(--bright-purple), var(--medium-purple));
+  box-shadow: 0 4px 8px rgba(65, 65, 252, 0.3);
+  transform: translateY(-2px);
+}
+
+.team-action-button .action-icon {
+  width: 16px;
+  height: 16px;
 }
 
 /* Responsive styles */
@@ -106,6 +170,22 @@
 
   .create-team-button {
     width: 100%;
+    justify-content: center;
+  }
+
+  .team-header-flex {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .team-header-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .team-action-button {
+    flex: 1;
     justify-content: center;
   }
 }

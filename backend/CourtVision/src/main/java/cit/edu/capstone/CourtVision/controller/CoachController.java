@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/coaches")
-public class CoachController {
+public class    CoachController {
 
     @Autowired
     private CoachService coachService;

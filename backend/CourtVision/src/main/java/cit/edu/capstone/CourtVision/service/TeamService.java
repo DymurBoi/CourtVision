@@ -1,6 +1,7 @@
 package cit.edu.capstone.CourtVision.service;
 
 import cit.edu.capstone.CourtVision.entity.Coach;
+import cit.edu.capstone.CourtVision.entity.JoinRequest;
 import cit.edu.capstone.CourtVision.entity.Player;
 import cit.edu.capstone.CourtVision.entity.Team;
 import cit.edu.capstone.CourtVision.repository.CoachRepository;
@@ -10,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -24,6 +27,9 @@ public class TeamService {
     private PlayerRepository playerRepository;
     @Autowired
     private CoachRepository coachRepository;
+
+    @Autowired
+    private JoinRequestService joinRequestService;
 
     //Get all teams
     public List<Team> getAllTeams() {
@@ -115,17 +121,50 @@ public class TeamService {
         return teamRepository.findByCoaches_CoachId(coachId);
     }
 
-    public boolean removePlayerFromTeam(Long teamId, Long playerId) {
-    Team team = getTeamById(teamId);
-    Player player = playerRepository.findById(playerId).orElse(null);
 
-    if (team == null || player == null || player.getTeam() == null || !player.getTeam().getTeamId().equals(teamId)) {
-        return false;
+
+    @Transactional
+    public boolean removePlayerFromTeam(Long teamId, Long playerId) {
+        Team team = getTeamById(teamId);
+        Player player = playerRepository.findById(playerId).orElse(null);
+
+        if (team == null || player == null || player.getTeam() == null || !player.getTeam().getTeamId().equals(teamId)) {
+            return false;
+        }
+
+        // Remove player from team
+        player.setTeam(null);
+        playerRepository.save(player);
+
+        // Delete all join requests for this player
+        joinRequestService.deleteAllPlayerRequests(playerId);
+
+        return true;
     }
 
-    player.setTeam(null);
-    playerRepository.save(player);
-    return true;
-}
+    public Team addCoachToTeam(Long teamId, Integer coachId) {
+        Team team = teamRepository.findById(teamId).orElse(null);
+        if (team == null) {
+            throw new RuntimeException("Team not found");
+        }
+
+        // We need to inject CoachRepository for this
+        Coach coach = coachRepository.findById(coachId).orElse(null);
+        if (coach == null) {
+            throw new RuntimeException("Coach not found");
+        }
+
+        // Add coach to team if not already in the list
+        if (team.getCoaches() == null) {
+            team.setCoaches(new ArrayList<>());
+        }
+
+        if (!team.getCoaches().contains(coach)) {
+            team.getCoaches().add(coach);
+            return teamRepository.save(team);
+        }
+
+        return team;
+    }
 
 }

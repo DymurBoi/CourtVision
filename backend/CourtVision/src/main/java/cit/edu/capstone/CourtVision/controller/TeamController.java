@@ -95,4 +95,14 @@ public ResponseEntity<List<TeamDTO>> getTeamsByCoachId(@PathVariable int coachId
         if (!removed) return ResponseEntity.notFound().build();
         return ResponseEntity.noContent().build();
     }
+
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
+    @PutMapping("/{teamId}/add-coach/{coachId}")
+    public ResponseEntity<Team> addCoachToTeam(
+            @PathVariable Long teamId,
+            @PathVariable Integer coachId) {
+
+        Team updatedTeam = teamService.addCoachToTeam(teamId, coachId);
+        return ResponseEntity.ok(updatedTeam);
+    }
 }
