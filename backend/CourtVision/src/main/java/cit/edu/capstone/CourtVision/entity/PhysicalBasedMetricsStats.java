@@ -12,7 +12,7 @@ public class PhysicalBasedMetricsStats {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long physicalBasedMetricsStatsId;
 
     private double athleticPerformanceIndex;
     private double defensiveDisruptionRating;
@@ -28,19 +28,20 @@ public class PhysicalBasedMetricsStats {
     @JoinColumn(name = "game_id")
     private Game game;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "physical_records_id")
     private PhysicalRecords physicalRecord;
 
 
     //Getter and Setter
 
-    public Long getId() {
-        return id;
+
+    public Long getPhysicalBasedMetricsStatsId() {
+        return physicalBasedMetricsStatsId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setPhysicalBasedMetricsStatsId(Long physicalBasedMetricsStatsId) {
+        this.physicalBasedMetricsStatsId = physicalBasedMetricsStatsId;
     }
 
     public double getAthleticPerformanceIndex() {

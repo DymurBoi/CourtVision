@@ -22,14 +22,11 @@ public class Game {
     @JoinColumn(name = "team_id")
     private Team team;
 
-@OneToOne
-@JoinColumn(name = "basic_stats_id")
-private BasicStats basicStats;
-    @OneToOne
-    @JoinColumn(name = "advanced_stats_id")
+    @OneToMany(mappedBy = "game")
+    private BasicStats basicStats;
+    @OneToMany(mappedBy = "game")
     private AdvancedStats advancedStats;
-    @OneToOne
-    @JoinColumn(name = "physical_based_metric_stats_id")
+    @OneToMany(mappedBy = "game")
     private PhysicalBasedMetricsStats physicalBasedMetricsStats;
 
     @OneToMany(mappedBy = "game") // One Game → Many PlayerAverages

@@ -3,12 +3,7 @@ package cit.edu.capstone.CourtVision.entity;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -36,7 +31,19 @@ public class PhysicalRecords {
     @JoinColumn(name = "player_id", referencedColumnName = "playerId")
     private Player player;
 
+    @OneToMany(mappedBy = "physicalRecord")
+    private PhysicalBasedMetricsStats physicalBasedMetricsStats;
+
     //Getters and Setters
+
+
+    public PhysicalBasedMetricsStats getPhysicalBasedMetricsStats() {
+        return physicalBasedMetricsStats;
+    }
+
+    public void setPhysicalBasedMetricsStats(PhysicalBasedMetricsStats physicalBasedMetricsStats) {
+        this.physicalBasedMetricsStats = physicalBasedMetricsStats;
+    }
 
     public Long getRecordId() {
         return recordId;

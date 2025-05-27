@@ -36,6 +36,18 @@ public class AdvancedStats {
     @JoinColumn(name = "basic_stats_id")
     private BasicStats basicStats;
 
+    @ManyToOne
+    @JoinColumn(name = "game_id")
+    private Game game;
+
+
+    public Game getGame() {
+        return game;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
+    }
 
     public BasicStats getBasicStats() {
         return basicStats;
