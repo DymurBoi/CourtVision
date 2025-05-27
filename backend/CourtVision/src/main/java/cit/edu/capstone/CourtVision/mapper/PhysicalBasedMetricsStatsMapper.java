@@ -12,6 +12,13 @@ public class PhysicalBasedMetricsStatsMapper {
         dto.setReboundPotentialIndex(stats.getReboundPotentialIndex());
         dto.setMobilityAdjustedBuildScore(stats.getMobilityAdjustedBuildScore());
         dto.setPositionSuitabilityIndex(stats.getPositionSuitabilityIndex());
+
+        if (stats.getBasicStats() != null) {
+            dto.setBasicStatsDTO(BasicStatsMapper.toDTO(stats.getBasicStats()));
+        }
+        if (stats.getGame() != null) {
+            dto.setGameDTO(GameMapper.toDTO(stats.getGame()));
+        }
         return dto;
     }
 }
