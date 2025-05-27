@@ -285,71 +285,7 @@ function CGameDetails() {
               <th>DF</th>
               <th>Action</th>
             </tr>
-            {showAddRow && (
-              <tr>
-                <td colSpan={17}>
-                  <form
-                    onSubmit={e => {
-                      e.preventDefault();
-                      handleAddRow();
-                    }}
-                    style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}
-                  >
-                    <select
-                      value={selectedPlayerId}
-                      onChange={(e) => setSelectedPlayerId(Number(e.target.value))}
-                      required
-                    >
-                      <option value="">Select Player</option>
-                      {availablePlayers.map((player) => (
-                        <option key={player.playerId} value={player.playerId}>
-                          {player.fname} {player.lname}
-                        </option>
-                      ))}
-                    </select>
-                    <input
-                      type="text"
-                      placeholder="MIN"
-                      value={"00:00:00"}
-                      disabled
-                      style={{ width: "80px" }}
-                    />
-                    {[
-                      "twoPtAttempts",
-                      "twoPtMade",
-                      "threePtAttempts",
-                      "threePtMade",
-                      "ftAttempts",
-                      "ftMade",
-                      "assists",
-                      "oFRebounds",
-                      "dFRebounds",
-                      "blocks",
-                      "steals",
-                      "turnovers",
-                      "pFouls",
-                      "dFouls",
-                    ].map((field) => (
-                      <input
-                        key={field}
-                        type="number"
-                        value={0}
-                        disabled
-                        style={{ width: "60px" }}
-                        placeholder={field}
-                      />
-                    ))}
-                    <button
-                      type="submit"
-                      disabled={!selectedPlayerId}
-                      className="save-button"
-                    >
-                      Add
-                    </button>
-                  </form>
-                </td>
-              </tr>
-            )}
+            
             <tr>
               <td colSpan={17}>
                 <button
@@ -459,6 +395,71 @@ function CGameDetails() {
                   <th>DREB</th>
                   <th>FOULS PF/FD</th>
                 </tr>
+                {showAddRow && (
+              <tr>
+                <td colSpan={17}>
+                  <form
+                    onSubmit={e => {
+                      e.preventDefault();
+                      handleAddRow();
+                    }}
+                    style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}
+                  >
+                    <select
+                      value={selectedPlayerId}
+                      onChange={(e) => setSelectedPlayerId(Number(e.target.value))}
+                      required
+                    >
+                      <option value="">Select Player</option>
+                      {availablePlayers.map((player) => (
+                        <option key={player.playerId} value={player.playerId}>
+                          {player.fname} {player.lname}
+                        </option>
+                      ))}
+                    </select>
+                    <input
+                      type="text"
+                      placeholder="MIN"
+                      value={"00:00:00"}
+                      disabled
+                      style={{ width: "80px" }}
+                    />
+                    {[
+                      "twoPtAttempts",
+                      "twoPtMade",
+                      "threePtAttempts",
+                      "threePtMade",
+                      "ftAttempts",
+                      "ftMade",
+                      "assists",
+                      "oFRebounds",
+                      "dFRebounds",
+                      "blocks",
+                      "steals",
+                      "turnovers",
+                      "pFouls",
+                      "dFouls",
+                    ].map((field) => (
+                      <input
+                        key={field}
+                        type="number"
+                        value={0}
+                        disabled
+                        style={{ width: "60px" }}
+                        placeholder={field}
+                      />
+                    ))}
+                    <button
+                      type="submit"
+                      disabled={!selectedPlayerId}
+                      className="save-button"
+                    >
+                      Add
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            )}
               </thead>
               <tbody>
                 {basicStats.map((playerStat) => (
