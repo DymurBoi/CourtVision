@@ -1,10 +1,7 @@
 package cit.edu.capstone.CourtVision.service;
 
-import cit.edu.capstone.CourtVision.entity.AdvancedStats;
-import cit.edu.capstone.CourtVision.entity.BasicStats;
-import cit.edu.capstone.CourtVision.entity.PhysicalBasedMetricsStats;
-import cit.edu.capstone.CourtVision.repository.AdvancedStatsRepository;
-import cit.edu.capstone.CourtVision.repository.BasicStatsRepository;
+import cit.edu.capstone.CourtVision.entity.*;
+import cit.edu.capstone.CourtVision.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +17,7 @@ public class BasicStatsService {
     private AdvancedStatsRepository advancedStatsRepository;
 
     @Autowired
-    private PhysicalBasedMetricsStatsService physicalMetricsService;
+    private PhysicalBasedMetricsStatsRepository physicalMetricsRepo;
 
     public List<BasicStats> getAll() {
         return basicStatsRepository.findAll();
@@ -31,17 +28,18 @@ public class BasicStatsService {
     }
 
     public BasicStats create(BasicStats basicStats) {
-        // Save BasicStats first to get its ID
+        // Save BasicStats first
         BasicStats savedBasic = basicStatsRepository.save(basicStats);
 
-        // Create and save AdvancedStats
+        // Auto-create AdvancedStats
         AdvancedStats advanced = calculateAdvancedStats(savedBasic);
         advanced.setBasicStats(savedBasic);
         advancedStatsRepository.save(advanced);
 
-        // Create and save PhysicalBasedMetricsStats
-        PhysicalBasedMetricsStats metrics = physicalMetricsService.createFrom(savedBasic);
-        // Note: metrics already saved inside createFrom()
+        // Auto-create PhysicalBasedMetricsStats
+        PhysicalBasedMetricsStats metrics = calculatePhysicalMetrics(savedBasic);
+        metrics.setBasicStats(savedBasic);
+        physicalMetricsRepo.save(metrics);
 
         return savedBasic;
     }
@@ -52,7 +50,7 @@ public class BasicStatsService {
             updatedStats.setBasicStatId(id);
             BasicStats savedBasic = basicStatsRepository.save(updatedStats);
 
-            // Update AdvancedStats if present
+            // Update AdvancedStats
             AdvancedStats existingAdvanced = advancedStatsRepository.findByBasicStats(savedBasic);
             if (existingAdvanced != null) {
                 AdvancedStats updatedAdvanced = calculateAdvancedStats(savedBasic);
@@ -61,8 +59,14 @@ public class BasicStatsService {
                 advancedStatsRepository.save(updatedAdvanced);
             }
 
-            // Optionally update PhysicalBasedMetricsStats (if needed)
-            physicalMetricsService.createFrom(savedBasic);  // re-create or update
+            // Update PhysicalBasedMetricsStats
+            PhysicalBasedMetricsStats existingMetrics = physicalMetricsRepo.findByBasicStats(savedBasic);
+            if (existingMetrics != null) {
+                PhysicalBasedMetricsStats updatedMetrics = calculatePhysicalMetrics(savedBasic);
+                updatedMetrics.setPhysicalBasedMetricsStatsId(existingMetrics.getPhysicalBasedMetricsStatsId());
+                updatedMetrics.setBasicStats(savedBasic);
+                physicalMetricsRepo.save(updatedMetrics);
+            }
 
             return savedBasic;
         }
@@ -77,12 +81,14 @@ public class BasicStatsService {
                 advancedStatsRepository.delete(advanced);
             }
 
-            physicalMetricsService.deleteByBasicStats(basic); 
+            PhysicalBasedMetricsStats metrics = physicalMetricsRepo.findByBasicStats(basic);
+            if (metrics != null) {
+                physicalMetricsRepo.delete(metrics);
+            }
 
             basicStatsRepository.deleteById(id);
         }
     }
-
 
     private AdvancedStats calculateAdvancedStats(BasicStats b) {
         double minutes = b.getMinutes().toLocalTime().toSecondOfDay() / 60.0;
@@ -103,6 +109,7 @@ public class BasicStatsService {
         int PTS = 2 * b.getTwoPtMade() + 3 * b.getThreePtMade() + b.getFtMade();
 
         AdvancedStats a = new AdvancedStats();
+
         a.setuPER((FGM + 0.5 * TPM - FGA + 0.5 * FTM - FTA + ORB + 0.5 * DRB + AST + STL + 0.5 * BLK - PF - TOV) / minutes);
         a.seteFG(FGA != 0 ? (FGM + 0.5 * TPM) / (double) FGA : 0);
         a.setTs((FGA + 0.44 * FTA) != 0 ? PTS / (2.0 * (FGA + 0.44 * FTA)) : 0);
@@ -123,5 +130,18 @@ public class BasicStatsService {
         a.setBlkPercentage(0);
 
         return a;
+    }
+
+    private PhysicalBasedMetricsStats calculatePhysicalMetrics(BasicStats b) {
+        PhysicalBasedMetricsStats p = new PhysicalBasedMetricsStats();
+
+        // Fill with actual formulas if you connect to PhysicalRecords later
+        p.setAthleticPerformanceIndex(0);
+        p.setDefensiveDisruptionRating(0);
+        p.setReboundPotentialIndex(0);
+        p.setMobilityAdjustedBuildScore(0);
+        p.setPositionSuitabilityIndex(0);
+
+        return p;
     }
 }
