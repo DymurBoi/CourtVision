@@ -115,10 +115,16 @@
   color: #2c3e50;
 }
 
+/* Updated to include a flex container for side-by-side layout */
+.physical-records-grid-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+/* Ensure that the records appear side by side in the grid */
 .physical-records-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 15px;
+  width: 48%; /* Adjusted width for side-by-side display */
 }
 
 .record-detail {
@@ -172,19 +178,28 @@
 .reject-button {
   background-color: #d9534f;
   color: white;
+
+}
+
+@media (max-width: 768px) {
+  .physical-records-grid-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .physical-records-grid {
+    width: 100%;
+    margin-bottom: 20px;
+  }
 }
 
 @media (max-width: 576px) {
-  .physical-records-grid {
-    grid-template-columns: 1fr;
-  }
-  
   .request-info-row {
     flex-direction: column;
   }
-  
+
   .info-label {
     width: 100%;
     margin-bottom: 3px;
   }
-} 
+}

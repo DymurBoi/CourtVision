@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/physical-update-requests")
-@CrossOrigin(origins = {"http://localhost:3000", "https://court-vision-frontend.vercel.app"})
 public class PhysicalUpdateRequestController {
     private static final Logger logger = LoggerFactory.getLogger(PhysicalUpdateRequestController.class);
     
@@ -105,7 +104,7 @@ public class PhysicalUpdateRequestController {
      * Get all physical update requests
      * @return List of all requests
      */
-    @GetMapping
+    @GetMapping("/get/all")
     public List<PhysicalUpdateRequestDTO> getAllRequests() {
         return physicalUpdateRequestService.getAllRequests().stream()
                 .map(PhysicalUpdateRequestMapper::toDto)

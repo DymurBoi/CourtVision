@@ -11,6 +11,14 @@ public class PhysicalRecordDTO {
     private BigDecimal vertical;
     private BigDecimal bmi;
     private LocalDate dateRecorded;
+    private Long playerId;
+    
+    public Long getPlayerId() {
+        return playerId;
+    }
+    public void setPlayerId(Long playerId) {
+        this.playerId = playerId;
+    }
     public Long getRecordId() {
         return recordId;
     }

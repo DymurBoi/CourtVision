@@ -46,6 +46,11 @@ public class PlayerMapper {
         dto.setVertical(record.getVertical());
         dto.setBmi(record.getBmi());
         dto.setDateRecorded(record.getDateRecorded());
+        if(record.getPlayer()!=null){
+            Player temp=new Player();
+            temp=record.getPlayer();
+            dto.setPlayerId(temp.getPlayerId());
+        }
 
         return dto;
     }

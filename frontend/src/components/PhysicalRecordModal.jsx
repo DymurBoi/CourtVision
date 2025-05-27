@@ -1,12 +1,50 @@
 "use client"
-
-import React from "react"
+import { useState, useEffect } from "react"
 import "../styles/PhysicalRecordModal.css"
+import { api } from "../utils/axiosConfig"
 
 function PhysicalRecordModal({ request, onClose, onApprove, onReject }) {
+  const [playerData, setPlayerData] = useState();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchPhysicalRecord();
+  }, []);
+
+  const fetchPhysicalRecord = async () => {
+    try {
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        setError("User ID not found. Please login again.");
+        setLoading(false);
+        return;
+      }
+
+      const coachId = userId.split('_')[1];
+
+      if (!coachId || isNaN(coachId)) {
+        setError("Invalid coach ID format. Please login again.");
+        setLoading(false);
+        return;
+      }
+
+      console.log("Fetching requests for coach ID:", coachId);
+
+      const playerResponse = await api.get(`/physical-records/get/by-player/${request.playerId}`);
+      console.log("Fetched player physical data:", playerResponse.data);
+
+      setPlayerData(playerResponse.data);  // Directly use the object as it is
+    } catch (err) {
+      console.error("Error fetching player physical data:", err);
+      setError("Failed to fetch physical data");
+    }
+
+    setLoading(false);
+  };
+
   if (!request) return null;
 
-  // Format date to a more readable format
   const formatDate = (dateString) => {
     if (!dateString) return "Unknown";
     const date = new Date(dateString);
@@ -50,23 +88,53 @@ function PhysicalRecordModal({ request, onClose, onApprove, onReject }) {
           </div>
 
           <div className="physical-records-details">
-            <h3>Physical Measurements</h3>
-            <div className="physical-records-grid">
-              <div className="record-detail">
-                <span className="record-label">Height</span>
-                <span className="record-value">{request.height} cm</span>
+            <h3>Physical Records</h3>
+            <div className="physical-records-grid-container">
+              {/* Display both records side by side */}
+              <div className="physical-records-grid">
+                <h4>Updated Record</h4>
+                <div className="record-detail">
+                  <span className="record-label">Height</span>
+                  <span className="record-value">{request?.height || "N/A"} cm</span>
+                </div>
+                <div className="record-detail">
+                  <span className="record-label">Weight</span>
+                  <span className="record-value">{request.weight || "N/A"} kg</span>
+                </div>
+                <div className="record-detail">
+                  <span className="record-label">Wingspan</span>
+                  <span className="record-value">{request.wingspan || "N/A"} cm</span>
+                </div>
+                <div className="record-detail">
+                  <span className="record-label">Vertical</span>
+                  <span className="record-value">{request.vertical || "N/A"} cm</span>
+                </div>
               </div>
-              <div className="record-detail">
-                <span className="record-label">Weight</span>
-                <span className="record-value">{request.weight} kg</span>
-              </div>
-              <div className="record-detail">
-                <span className="record-label">Wingspan</span>
-                <span className="record-value">{request.wingspan} cm</span>
-              </div>
-              <div className="record-detail">
-                <span className="record-label">Vertical</span>
-                <span className="record-value">{request.vertical} cm</span>
+
+              <div className="physical-records-grid">
+                <h4>Old Record</h4>
+                {playerData ? (
+                  <>
+                    <div className="record-detail">
+                      <span className="record-label">Height</span>
+                      <span className="record-value">{playerData.height || "N/A"} cm</span>
+                    </div>
+                    <div className="record-detail">
+                      <span className="record-label">Weight</span>
+                      <span className="record-value">{playerData.weight || "N/A"} kg</span>
+                    </div>
+                    <div className="record-detail">
+                      <span className="record-label">Wingspan</span>
+                      <span className="record-value">{playerData.wingspan || "N/A"} cm</span>
+                    </div>
+                    <div className="record-detail">
+                      <span className="record-label">Vertical</span>
+                      <span className="record-value">{playerData.vertical || "N/A"} cm</span>
+                    </div>
+                  </>
+                ) : (
+                  <div>Loading...</div>
+                )}
               </div>
             </div>
           </div>
@@ -84,8 +152,7 @@ function PhysicalRecordModal({ request, onClose, onApprove, onReject }) {
         )}
       </div>
     </div>
-  )
+  );
 }
 
-export default PhysicalRecordModal
-
+export default PhysicalRecordModal;
