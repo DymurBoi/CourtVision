@@ -33,9 +33,9 @@ public class PhysicalBasedMetricsStatsService {
     }
 
     //Get by Game ID
-    public PhysicalBasedMetricsStats getByGameId(Long gameId) {
+    public List<PhysicalBasedMetricsStats> getByGameId(Long gameId) {
         Game game = gameRepo.findById(gameId).orElse(null);
-        return game != null ? metricsRepo.findByGame(game) : null;
+        return game != null ? metricsRepo.findByGame(game) : List.of();
     }
 
     //Create from BasicStats
@@ -80,7 +80,7 @@ public class PhysicalBasedMetricsStatsService {
 
     //Delete by Game
     public void deleteByGame(Game game) {
-        PhysicalBasedMetricsStats stats = metricsRepo.findByGame(game);
+        PhysicalBasedMetricsStats stats = metricsRepo.findSingleByGame(game);
         if (stats != null) {
             metricsRepo.delete(stats);
         }

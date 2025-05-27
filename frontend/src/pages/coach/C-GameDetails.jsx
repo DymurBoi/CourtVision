@@ -10,6 +10,8 @@ function CGameDetails() {
 
   const [players, setPlayers] = useState([]);
   const [basicStats,setBasicStats] = useState([]);
+  const [advancedStats, setAdvancedStats] = useState([]);
+  const [physicalMetrics, setPhysicalMetrics] = useState([]);
   const [basicStatsInputs, setBasicStatsInputs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -47,7 +49,33 @@ function CGameDetails() {
       }
     };
 
+    const fetchAdvancedStats = async () => {
+      try {
+        const res = await api.get(`/advanced-stats/get/by-game/${gameId}`);
+        setAdvancedStats(res.data);
+      } catch (err) {
+        console.error("❌ Failed to load basic stats:", err);
+        setError("Failed to load advanced stats.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchPhysicalMetrics = async () => {
+      try {
+        const res = await api.get(`/physical-metrics/get/by-game/${gameId}`);
+        setPhysicalMetrics(res.data);
+      } catch (err) {
+        console.error("❌ Failed to load physical metrics stats:", err);
+        setError("Failed to load basic stats.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchBasicStats();
+    fetchAdvancedStats();
+    fetchPhysicalMetrics();
     fetchTeamPlayers();
   }, [teamId]);
 
@@ -231,7 +259,7 @@ function CGameDetails() {
           className={`tab-button ${activeTab === "adjusted" ? "active" : ""}`}
           onClick={() => setActiveTab("adjusted")}
         >
-          Adjusted Stats
+          Physical Based Metrics
         </button>
       </div>
 
@@ -412,6 +440,7 @@ function CGameDetails() {
             ))}
           </tbody>
         </table>
+        <div className="stats-content">
          {activeTab === "basic" && (
         <div className="stats-table-container">
             <table className="stats-table">
@@ -452,6 +481,87 @@ function CGameDetails() {
             </table>
           </div>
         )}
+        {activeTab === "advanced" && (
+          <div className="stats-table-container">
+            <table className="stats-table">
+              <thead>
+                <tr>
+                  <th>Player Name</th>
+                  <th>EFG</th>
+                  <th>TS</th>
+                  <th>USG</th>
+                  <th>AST RATIO</th>
+                  <th>TO RATIO</th>
+                  <th>PIE</th>
+                  <th>ORTG</th>
+                  <th>DRTG</th>
+                  <th>REB %</th>
+                  <th>ORB %</th>
+                  <th>DRB %</th>
+                  <th>AST %</th>
+                  <th>STL %</th>
+                  <th>BLK %</th>
+                  <th>TOV %</th>
+                  <th>FTR</th>
+                  
+                </tr>
+              </thead>
+              <tbody>
+                {advancedStats.map((playerStat) => (
+                  <tr key={playerStat.advancedStatId}>
+                    <td>{playerStat.basicStatsDTO.playerName}</td>
+                    <td>{playerStat.eFG}</td>
+                    <td>{playerStat.ts}</td>
+                    <td>{playerStat.usg}</td>
+                    <td>{playerStat.assistRatio}</td>
+                    <td>{playerStat.turnoverRatio}</td>
+                    <td>{playerStat.pie}</td>
+                    <td>{playerStat.ortg}</td>
+                    <td>{playerStat.drtg}</td>
+                    <td>{playerStat.rebPercentage}</td>
+                    <td>{playerStat.orbPercentage}</td>
+                    <td>{playerStat.drbPercentage}</td>
+                    <td>{playerStat.astPercentage}</td>
+                    <td>{playerStat.stlPercentage}</td>
+                    <td>{playerStat.blkPercentage}</td>
+                    <td>{playerStat.tovPercentage}</td>
+                    <td>{playerStat.ftr}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {activeTab === "adjusted" && (
+          <div className="stats-table-container">
+            <table className="stats-table">
+              <thead>
+                <tr>
+                  <th>Player Name</th>
+                  <th>Athletic Performance Index</th>
+                  <th>Defensive Disruption Rating</th>
+                  <th>Rebound Potential Index</th>
+                  <th>Mobility Adjusted Build Score</th>
+                  <th>Position Suitability Index</th>
+                </tr>
+              </thead>
+              <tbody>
+                {physicalMetrics.map((playerStat) => (
+                  <tr key={playerStat.physicalBasedMetricsStatsId}>
+                    <td>{playerStat.basicStatsDTO.playerName}</td>
+                    <td>{playerStat.athleticPerformanceIndex}</td>
+                    <td>{playerStat.defensiveDisruptionRating}</td>
+                    <td>{playerStat.reboundPotentialIndex}</td>
+                    <td>{playerStat.mobilityAdjustedBuildScore}</td>
+                    <td>{playerStat.positionSuitabilityIndex}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
       </div>
     </main>
   );

@@ -19,7 +19,7 @@ public class AdvancedStatsDTO {
     private double blkPercentage;
     private double tovPercentage;
     private double ftr;
-
+    
     private BasicStatsDTO basicStatsDTO;
     private GameDTO gameDTO;
 

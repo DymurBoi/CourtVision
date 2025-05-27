@@ -7,7 +7,7 @@ public class PhysicalBasedMetricsStatsDTO {
     private double reboundPotentialIndex;
     private double mobilityAdjustedBuildScore;
     private double positionSuitabilityIndex;
-
+    
     private BasicStatsDTO basicStatsDTO;
     private GameDTO gameDTO;
 

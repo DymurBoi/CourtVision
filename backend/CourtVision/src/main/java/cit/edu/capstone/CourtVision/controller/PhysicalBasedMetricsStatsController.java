@@ -1,7 +1,9 @@
 package cit.edu.capstone.CourtVision.controller;
 
+import cit.edu.capstone.CourtVision.dto.AdvancedStatsDTO;
 import cit.edu.capstone.CourtVision.dto.PhysicalBasedMetricsStatsDTO;
 import cit.edu.capstone.CourtVision.entity.PhysicalBasedMetricsStats;
+import cit.edu.capstone.CourtVision.mapper.AdvancedStatsMapper;
 import cit.edu.capstone.CourtVision.mapper.PhysicalBasedMetricsStatsMapper;
 import cit.edu.capstone.CourtVision.service.PhysicalBasedMetricsStatsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,10 +34,17 @@ public class PhysicalBasedMetricsStatsController {
     }
 
     @GetMapping("/get/by-game/{gameId}")
-    public ResponseEntity<PhysicalBasedMetricsStatsDTO> getByGame(@PathVariable Long gameId) {
-        PhysicalBasedMetricsStats stat = service.getByGameId(gameId);
-        return stat != null ? ResponseEntity.ok(PhysicalBasedMetricsStatsMapper.toDTO(stat)) : ResponseEntity.notFound().build();
+    public ResponseEntity<List<PhysicalBasedMetricsStatsDTO>> getByGame(@PathVariable Long gameId) {
+    List<PhysicalBasedMetricsStats> stats = service.getByGameId(gameId);
+    if (stats == null || stats.isEmpty()) {
+        return ResponseEntity.notFound().build();
     }
+    List<PhysicalBasedMetricsStatsDTO> dtos = stats.stream()
+            .map(PhysicalBasedMetricsStatsMapper::toDTO)
+            .collect(Collectors.toList());
+    return ResponseEntity.ok(dtos);
+}
+
 
     @PutMapping("/put/{id}")
     public ResponseEntity<PhysicalBasedMetricsStatsDTO> update(@PathVariable Long id, @RequestBody PhysicalBasedMetricsStats updated) {

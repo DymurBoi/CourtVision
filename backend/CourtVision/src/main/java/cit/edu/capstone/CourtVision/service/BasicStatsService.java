@@ -36,15 +36,18 @@ public class BasicStatsService {
     public BasicStats create(BasicStats basicStats) {
         // Save BasicStats first
         BasicStats savedBasic = basicStatsRepository.save(basicStats);
-
+        Game game=new Game();
+        game=savedBasic.getGame();
         // Auto-create AdvancedStats
         AdvancedStats advanced = calculateAdvancedStats(savedBasic);
         advanced.setBasicStats(savedBasic);
+        advanced.setGame(game);
         advancedStatsRepository.save(advanced);
 
         // Auto-create PhysicalBasedMetricsStats
         PhysicalBasedMetricsStats metrics = calculatePhysicalMetrics(savedBasic);
         metrics.setBasicStats(savedBasic);
+        metrics.setGame(game);
         physicalMetricsRepo.save(metrics);
 
         return savedBasic;
