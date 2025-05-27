@@ -10,7 +10,7 @@ import java.util.List;
 
 @Service
 public class PhysicalBasedMetricsStatsService {
-    /* 
+
     @Autowired
     private PhysicalBasedMetricsStatsRepository metricsRepo;
 
@@ -111,5 +111,12 @@ public class PhysicalBasedMetricsStatsService {
 
         return stats;
     }
-        */
+
+    //delete by basicstats
+    public void deleteByBasicStats(BasicStats basicStats) {
+        PhysicalBasedMetricsStats stats = metricsRepo.findByBasicStats(basicStats);
+        if (stats != null) {
+            metricsRepo.delete(stats);
+        }
+    }
 }

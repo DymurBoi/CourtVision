@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/physical-metrics")
 public class PhysicalBasedMetricsStatsController {
-/* 
+
     @Autowired
     private PhysicalBasedMetricsStatsService service;
 
@@ -48,5 +48,4 @@ public class PhysicalBasedMetricsStatsController {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
-    */
 }

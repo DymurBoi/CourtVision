@@ -8,10 +8,27 @@ public class PhysicalBasedMetricsStatsDTO {
     private double mobilityAdjustedBuildScore;
     private double positionSuitabilityIndex;
 
+    private BasicStatsDTO basicStatsDTO;
     private GameDTO gameDTO;
 
-    // Getters and Setters
+    //Getters and Setters
 
+
+    public BasicStatsDTO getBasicStatsDTO() {
+        return basicStatsDTO;
+    }
+
+    public void setBasicStatsDTO(BasicStatsDTO basicStatsDTO) {
+        this.basicStatsDTO = basicStatsDTO;
+    }
+
+    public GameDTO getGameDTO() {
+        return gameDTO;
+    }
+
+    public void setGameDTO(GameDTO gameDTO) {
+        this.gameDTO = gameDTO;
+    }
 
     public Long getPhysicalBasedMetricsStatsId() {
         return physicalBasedMetricsStatsId;
@@ -59,13 +76,5 @@ public class PhysicalBasedMetricsStatsDTO {
 
     public void setPositionSuitabilityIndex(double positionSuitabilityIndex) {
         this.positionSuitabilityIndex = positionSuitabilityIndex;
-    }
-
-    public GameDTO getGameDTO() {
-        return gameDTO;
-    }
-
-    public void setGameDTO(GameDTO gameDTO) {
-        this.gameDTO = gameDTO;
     }
 }

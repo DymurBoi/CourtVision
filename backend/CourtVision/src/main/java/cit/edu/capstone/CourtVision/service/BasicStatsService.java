@@ -17,10 +17,7 @@ public class BasicStatsService {
     private AdvancedStatsRepository advancedStatsRepository;
 
     @Autowired
-    private PhysicalBasedMetricsStatsRepository physicalMetricsRepository;
-
-    @Autowired
-    private PhysicalRecordsRepository physicalRecordsRepository;
+    private PhysicalBasedMetricsStatsRepository physicalMetricsRepo;
 
     public List<BasicStats> getAll() {
         return basicStatsRepository.findAll();
@@ -31,20 +28,18 @@ public class BasicStatsService {
     }
 
     public BasicStats create(BasicStats basicStats) {
-        // Save the BasicStats first (so we get its ID)
+        // Save BasicStats first
         BasicStats savedBasic = basicStatsRepository.save(basicStats);
 
-        // 🔹 Calculate and save AdvancedStats (with formulas)
+        // Auto-create AdvancedStats
         AdvancedStats advanced = calculateAdvancedStats(savedBasic);
         advanced.setBasicStats(savedBasic);
         advancedStatsRepository.save(advanced);
 
-        // 🔹 Calculate and save PhysicalBasedMetricsStats (with player physical data)
-        PhysicalBasedMetricsStats physicalMetrics = calculatePhysicalMetrics(savedBasic);
-        if (physicalMetrics != null) {
-            physicalMetrics.setGame(savedBasic.getGame());
-            physicalMetricsRepository.save(physicalMetrics);
-        }
+        // Auto-create PhysicalBasedMetricsStats
+        PhysicalBasedMetricsStats metrics = calculatePhysicalMetrics(savedBasic);
+        metrics.setBasicStats(savedBasic);
+        physicalMetricsRepo.save(metrics);
 
         return savedBasic;
     }
@@ -53,17 +48,48 @@ public class BasicStatsService {
         BasicStats existing = getById(id);
         if (existing != null) {
             updatedStats.setBasicStatId(id);
-            return basicStatsRepository.save(updatedStats);
+            BasicStats savedBasic = basicStatsRepository.save(updatedStats);
+
+            // Update AdvancedStats
+            AdvancedStats existingAdvanced = advancedStatsRepository.findByBasicStats(savedBasic);
+            if (existingAdvanced != null) {
+                AdvancedStats updatedAdvanced = calculateAdvancedStats(savedBasic);
+                updatedAdvanced.setAdvancedStatsId(existingAdvanced.getAdvancedStatsId());
+                updatedAdvanced.setBasicStats(savedBasic);
+                advancedStatsRepository.save(updatedAdvanced);
+            }
+
+            // Update PhysicalBasedMetricsStats
+            PhysicalBasedMetricsStats existingMetrics = physicalMetricsRepo.findByBasicStats(savedBasic);
+            if (existingMetrics != null) {
+                PhysicalBasedMetricsStats updatedMetrics = calculatePhysicalMetrics(savedBasic);
+                updatedMetrics.setPhysicalBasedMetricsStatsId(existingMetrics.getPhysicalBasedMetricsStatsId());
+                updatedMetrics.setBasicStats(savedBasic);
+                physicalMetricsRepo.save(updatedMetrics);
+            }
+
+            return savedBasic;
         }
         return null;
     }
 
     public void delete(Long id) {
-        basicStatsRepository.deleteById(id);
+        BasicStats basic = getById(id);
+        if (basic != null) {
+            AdvancedStats advanced = advancedStatsRepository.findByBasicStats(basic);
+            if (advanced != null) {
+                advancedStatsRepository.delete(advanced);
+            }
+
+            PhysicalBasedMetricsStats metrics = physicalMetricsRepo.findByBasicStats(basic);
+            if (metrics != null) {
+                physicalMetricsRepo.delete(metrics);
+            }
+
+            basicStatsRepository.deleteById(id);
+        }
     }
 
-    // ───────────────────────────────────────────────
-    // Calculate AdvancedStats from BasicStats
     private AdvancedStats calculateAdvancedStats(BasicStats b) {
         double minutes = b.getMinutes().toLocalTime().toSecondOfDay() / 60.0;
         if (minutes == 0) minutes = 1;
@@ -87,9 +113,12 @@ public class BasicStatsService {
         a.setuPER((FGM + 0.5 * TPM - FGA + 0.5 * FTM - FTA + ORB + 0.5 * DRB + AST + STL + 0.5 * BLK - PF - TOV) / minutes);
         a.seteFG(FGA != 0 ? (FGM + 0.5 * TPM) / (double) FGA : 0);
         a.setTs((FGA + 0.44 * FTA) != 0 ? PTS / (2.0 * (FGA + 0.44 * FTA)) : 0);
-        a.setUsg(0);
         a.setAssistRatio((FGA + 0.44 * FTA + TOV) != 0 ? 100 * AST / (FGA + 0.44 * FTA + TOV) : 0);
         a.setTurnoverRatio((FGA + 0.44 * FTA + AST + TOV) != 0 ? 100 * TOV / (FGA + 0.44 * FTA + AST + TOV) : 0);
+        a.setTovPercentage((FGA + 0.44 * FTA + TOV) != 0 ? 100 * TOV / (FGA + 0.44 * FTA + TOV) : 0);
+        a.setFtr(FGA != 0 ? (double) FTA / FGA : 0);
+
+        a.setUsg(0);
         a.setPie(0);
         a.setOrtg(0);
         a.setDrtg(0);
@@ -99,39 +128,20 @@ public class BasicStatsService {
         a.setAstPercentage(0);
         a.setStlPercentage(0);
         a.setBlkPercentage(0);
-        a.setTovPercentage((FGA + 0.44 * FTA + TOV) != 0 ? 100 * TOV / (FGA + 0.44 * FTA + TOV) : 0);
-        a.setFtr(FGA != 0 ? (double) FTA / FGA : 0);
 
         return a;
     }
 
-    // ───────────────────────────────────────────────
-    // Calculate PhysicalBasedMetricsStats from BasicStats and PhysicalRecords
-    private PhysicalBasedMetricsStats calculatePhysicalMetrics(BasicStats basicStats) {
-        if (basicStats.getPlayer() == null) return null;
+    private PhysicalBasedMetricsStats calculatePhysicalMetrics(BasicStats b) {
+        PhysicalBasedMetricsStats p = new PhysicalBasedMetricsStats();
 
-        Player player = basicStats.getPlayer();
-        PhysicalRecords record = physicalRecordsRepository.findByPlayer(player);
-        if (record == null) return null;
+        // Fill with actual formulas if you connect to PhysicalRecords later
+        p.setAthleticPerformanceIndex(0);
+        p.setDefensiveDisruptionRating(0);
+        p.setReboundPotentialIndex(0);
+        p.setMobilityAdjustedBuildScore(0);
+        p.setPositionSuitabilityIndex(0);
 
-        double height = record.getHeight().doubleValue();
-        double wingspan = record.getWingspan().doubleValue();
-        double vertical = record.getVertical().doubleValue();
-        double weight = record.getWeight().doubleValue();
-
-        double api = (vertical + 1 + 1 + wingspan) / 4;
-        double ddr = (1 + 1) * (wingspan / height + 1.0) / 2;
-        double rpi = (height + 0.5 * wingspan) / weight;
-        double mabs = (height + wingspan) / weight;
-        double psi = (wingspan / height) + 2.0;
-
-        PhysicalBasedMetricsStats metrics = new PhysicalBasedMetricsStats();
-        metrics.setAthleticPerformanceIndex(api);
-        metrics.setDefensiveDisruptionRating(ddr);
-        metrics.setReboundPotentialIndex(rpi);
-        metrics.setMobilityAdjustedBuildScore(mabs);
-        metrics.setPositionSuitabilityIndex(psi);
-
-        return metrics;
+        return p;
     }
 }
