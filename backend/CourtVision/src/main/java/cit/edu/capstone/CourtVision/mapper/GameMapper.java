@@ -23,19 +23,7 @@ public class GameMapper {
             temp=game.getTeam();
             dto.setTeamId(temp.getTeamId());
         }
-
-        if (game.getBasicStats() != null) {
-            BasicStats temp=new BasicStats();
-            temp=game.getBasicStats();
-            dto.setBasicStatId(temp.getBasicStatId());
-        }
-
-        if (game.getAdvancedStats() != null) {
-            AdvancedStats temp=new AdvancedStats();
-            temp=game.getAdvancedStats();
-            dto.setAdvancedStatId(temp.getId());
-        }
-
+        
         // Skipping playerAverages for now to avoid infinite recursion (you can optionally include it)
 
         return dto;

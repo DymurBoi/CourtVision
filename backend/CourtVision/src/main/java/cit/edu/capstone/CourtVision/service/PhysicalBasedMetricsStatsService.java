@@ -10,7 +10,7 @@ import java.util.List;
 
 @Service
 public class PhysicalBasedMetricsStatsService {
-
+    /* 
     @Autowired
     private PhysicalBasedMetricsStatsRepository metricsRepo;
 
@@ -111,4 +111,5 @@ public class PhysicalBasedMetricsStatsService {
 
         return stats;
     }
+        */
 }

@@ -12,7 +12,7 @@ public class PhysicalBasedMetricsStats {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long physicalBasedMetricsStatsId;
 
     private double athleticPerformanceIndex;
     private double defensiveDisruptionRating;
@@ -20,27 +20,32 @@ public class PhysicalBasedMetricsStats {
     private double mobilityAdjustedBuildScore;
     private double positionSuitabilityIndex;
 
+    @ManyToOne
+    @JoinColumn(name = "game_id")
+    private Game game;
     @OneToOne
     @JoinColumn(name = "basic_stats_id")
     private BasicStats basicStats;
 
-    @OneToOne
-    @JoinColumn(name = "game_id")
-    private Game game;
-
-    @OneToOne
-    @JoinColumn(name = "physical_records_id")
-    private PhysicalRecords physicalRecord;
 
 
     //Getter and Setter
 
-    public Long getId() {
-        return id;
+
+    public BasicStats getBasicStats() {
+        return basicStats;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setBasicStats(BasicStats basicStats) {
+        this.basicStats = basicStats;
+    }
+
+    public Long getPhysicalBasedMetricsStatsId() {
+        return physicalBasedMetricsStatsId;
+    }
+
+    public void setPhysicalBasedMetricsStatsId(Long physicalBasedMetricsStatsId) {
+        this.physicalBasedMetricsStatsId = physicalBasedMetricsStatsId;
     }
 
     public double getAthleticPerformanceIndex() {
@@ -83,13 +88,6 @@ public class PhysicalBasedMetricsStats {
         this.positionSuitabilityIndex = positionSuitabilityIndex;
     }
 
-    public BasicStats getBasicStats() {
-        return basicStats;
-    }
-
-    public void setBasicStats(BasicStats basicStats) {
-        this.basicStats = basicStats;
-    }
 
     public Game getGame() {
         return game;
@@ -99,11 +97,4 @@ public class PhysicalBasedMetricsStats {
         this.game = game;
     }
 
-    public PhysicalRecords getPhysicalRecord() {
-        return physicalRecord;
-    }
-
-    public void setPhysicalRecord(PhysicalRecords physicalRecord) {
-        this.physicalRecord = physicalRecord;
-    }
 }
