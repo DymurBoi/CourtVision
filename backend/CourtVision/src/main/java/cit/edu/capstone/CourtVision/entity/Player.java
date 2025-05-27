@@ -23,6 +23,7 @@ public class Player {
     private boolean isCoach;
     private boolean isAdmin;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "team_id")
     private Team team;
