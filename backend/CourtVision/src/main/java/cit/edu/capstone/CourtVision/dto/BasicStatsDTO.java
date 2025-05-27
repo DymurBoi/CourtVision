@@ -23,15 +23,15 @@ public class BasicStatsDTO {
 
     private AdvancedStatsDTO advancedStatsDTO;
     private GameDTO gameDTO;
-    private PlayerDTO playerDTO;
+    private String playerName;
 
 
     // Getters and Setters
-    public PlayerDTO getPlayerDTO() {
-        return playerDTO;
+    public String getPlayerName() {
+        return playerName;
     }
-    public void setPlayerDTO(PlayerDTO playerDTO) {
-        this.playerDTO = playerDTO;
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
     }
 
     public AdvancedStatsDTO getAdvancedStatsDTO() {

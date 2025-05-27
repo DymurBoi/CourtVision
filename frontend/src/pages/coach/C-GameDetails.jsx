@@ -37,8 +37,8 @@ function CGameDetails() {
     };
     const fetchBasicStats = async () => {
       try {
-        const res = await api.get(`/basic-stats/get/all`);
-        setPlayers(res.data);
+        const res = await api.get(`/basic-stats/get/by-game/${gameId}`);
+        setBasicStats(res.data);
       } catch (err) {
         console.error("❌ Failed to load basic stats:", err);
         setError("Failed to load basic stats.");
@@ -396,6 +396,44 @@ function CGameDetails() {
             ))}
           </tbody>
         </table>
+        <div className="stats-table-container">
+            <table className="stats-table">
+              <thead>
+                <tr>
+                  <th>Player Name</th>
+                  <th>MIN</th>
+                  <th>2 PTS M/A</th>
+                  <th>3 PTS M/A</th>
+                  <th>FT M/A</th>
+                  <th>STL</th>
+                  <th>TO</th>
+                  <th>AST</th>
+                  <th>BLK</th>
+                  <th>OREB</th>
+                  <th>DREB</th>
+                  <th>FOULS PF/FD</th>
+                </tr>
+              </thead>
+              <tbody>
+                {basicStats.map((playerStat) => (
+                  <tr key={playerStat.basicStatId}>
+                    <td>{playerStat.playerName}</td>
+                    <td>{playerStat.minutes}</td>
+                    <td>{playerStat.twoPtMade}/{playerStat.twoPtAttempts}</td>
+                    <td>{playerStat.threePtMade}/{playerStat.threePtAttempts}</td>
+                    <td>{playerStat.ftMade}/{playerStat.ftAttempts}</td>
+                    <td>{playerStat.steals}</td>
+                    <td>{playerStat.turnovers}</td>
+                    <td>{playerStat.assists}</td>
+                    <td>{playerStat.blocks}</td>
+                    <td>{playerStat.oFRebounds}</td>
+                    <td>{playerStat.dFRebounds}</td>
+                    <td>{playerStat.pFouls}/{playerStat.dFouls}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
       </div>
     </main>
   );

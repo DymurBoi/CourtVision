@@ -2,6 +2,7 @@ package cit.edu.capstone.CourtVision.mapper;
 
 import cit.edu.capstone.CourtVision.dto.BasicStatsDTO;
 import cit.edu.capstone.CourtVision.entity.BasicStats;
+import cit.edu.capstone.CourtVision.entity.Player;
 
 public class BasicStatsMapper {
 
@@ -26,7 +27,9 @@ public class BasicStatsMapper {
         dto.setMinutes(stat.getMinutes());
 
         if (stat.getPlayer() != null) {
-            dto.setPlayerDTO(PlayerMapper.toDto(stat.getPlayer()));
+            Player temp=new Player();
+            temp=stat.getPlayer();
+            dto.setPlayerName(temp.getFname()+" "+temp.getLname());
         }
 
         if (stat.getGame() != null) {
