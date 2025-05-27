@@ -24,7 +24,7 @@ public class PhysicalBasedMetricsStats {
     @JoinColumn(name = "basic_stats_id")
     private BasicStats basicStats;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "game_id")
     private Game game;
 
