@@ -21,20 +21,11 @@ public class BasicStatsDTO {
     private int plusMinus;
     private Time minutes;
 
-    private AdvancedStatsDTO advancedStatsDTO;
     private GameDTO gameDTO;
 
 
     // Getters and Setters
 
-
-    public AdvancedStatsDTO getAdvancedStatsDTO() {
-        return advancedStatsDTO;
-    }
-
-    public void setAdvancedStatsDTO(AdvancedStatsDTO advancedStatsDTO) {
-        this.advancedStatsDTO = advancedStatsDTO;
-    }
 
     public GameDTO getGameDTO() {
         return gameDTO;
