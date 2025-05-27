@@ -1,8 +1,11 @@
 package cit.edu.capstone.CourtVision.controller;
 
 import cit.edu.capstone.CourtVision.dto.AdvancedStatsDTO;
+import cit.edu.capstone.CourtVision.dto.PhysicalBasedMetricsStatsDTO;
 import cit.edu.capstone.CourtVision.entity.AdvancedStats;
+import cit.edu.capstone.CourtVision.entity.PhysicalBasedMetricsStats;
 import cit.edu.capstone.CourtVision.mapper.AdvancedStatsMapper;
+import cit.edu.capstone.CourtVision.mapper.PhysicalBasedMetricsStatsMapper;
 import cit.edu.capstone.CourtVision.service.AdvancedStatsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -56,4 +59,24 @@ public class AdvancedStatsController {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    //Aditional Endpoint
+    @GetMapping("/get/by-game/{gameId}")
+    public ResponseEntity<List<AdvancedStatsDTO>> getByGame(@PathVariable Long gameId) {
+        List<AdvancedStatsDTO> dtos = service.getByGame(gameId).stream()
+                .map(AdvancedStatsMapper::toDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
+    }
+
+
+
+    @GetMapping("/get/by-basic-stats/{basicStatsId}")
+    public ResponseEntity<AdvancedStatsDTO> getByBasicStats(@PathVariable Long basicStatsId) {
+        AdvancedStats stat = service.getByBasicStatsId(basicStatsId);
+        return stat != null
+                ? ResponseEntity.ok(AdvancedStatsMapper.toDTO(stat))
+                : ResponseEntity.notFound().build();
+    }
+
 }

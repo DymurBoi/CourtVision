@@ -19,6 +19,8 @@ public class PhysicalBasedMetricsStatsService {
 
     @Autowired
     private GameRepository gameRepo;
+    @Autowired
+    private BasicStatsRepository basicStatsRepo;
 
     // Get All
     public List<PhysicalBasedMetricsStats> getAll() {
@@ -110,6 +112,10 @@ public class PhysicalBasedMetricsStatsService {
         stats.setPositionSuitabilityIndex(psi);
 
         return stats;
+    }
+    public PhysicalBasedMetricsStats getByBasicStatsId(Long basicStatsId) {
+        BasicStats basic = basicStatsRepo.findById(basicStatsId).orElse(null);
+        return basic != null ? metricsRepo.findByBasicStats(basic) : null;
     }
 
     //delete by basicstats

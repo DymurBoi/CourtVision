@@ -48,4 +48,15 @@ public class PhysicalBasedMetricsStatsController {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+
+    // Additional Endpoint
+
+    @GetMapping("/get/by-basic-stats/{basicStatsId}")
+    public ResponseEntity<PhysicalBasedMetricsStatsDTO> getByBasicStats(@PathVariable Long basicStatsId) {
+        PhysicalBasedMetricsStats stat = service.getByBasicStatsId(basicStatsId);
+        return stat != null
+                ? ResponseEntity.ok(PhysicalBasedMetricsStatsMapper.toDTO(stat))
+                : ResponseEntity.notFound().build();
+    }
 }
