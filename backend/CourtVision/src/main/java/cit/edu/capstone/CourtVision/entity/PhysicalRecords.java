@@ -2,6 +2,7 @@ package cit.edu.capstone.CourtVision.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -32,16 +33,16 @@ public class PhysicalRecords {
     private Player player;
 
     @OneToMany(mappedBy = "physicalRecord")
-    private PhysicalBasedMetricsStats physicalBasedMetricsStats;
+    private List<PhysicalBasedMetricsStats> physicalBasedMetricsStats;
 
     //Getters and Setters
 
 
-    public PhysicalBasedMetricsStats getPhysicalBasedMetricsStats() {
+    public List<PhysicalBasedMetricsStats> getPhysicalBasedMetricsStats() {
         return physicalBasedMetricsStats;
     }
 
-    public void setPhysicalBasedMetricsStats(PhysicalBasedMetricsStats physicalBasedMetricsStats) {
+    public void setPhysicalBasedMetricsStats(List<PhysicalBasedMetricsStats> physicalBasedMetricsStats) {
         this.physicalBasedMetricsStats = physicalBasedMetricsStats;
     }
 

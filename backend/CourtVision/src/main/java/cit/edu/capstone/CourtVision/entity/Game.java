@@ -23,16 +23,41 @@ public class Game {
     private Team team;
 
     @OneToMany(mappedBy = "game")
-    private BasicStats basicStats;
+    private List<BasicStats> basicStats;
     @OneToMany(mappedBy = "game")
-    private AdvancedStats advancedStats;
+    private List<AdvancedStats> advancedStats;
     @OneToMany(mappedBy = "game")
-    private PhysicalBasedMetricsStats physicalBasedMetricsStats;
+    private List<PhysicalBasedMetricsStats> physicalBasedMetricsStats;
 
     @OneToMany(mappedBy = "game") // One Game → Many PlayerAverages
     private List<PlayerAverages> playerAverages;
 
     // Getters and Setters
+
+
+    public List<BasicStats> getBasicStats() {
+        return basicStats;
+    }
+
+    public void setBasicStats(List<BasicStats> basicStats) {
+        this.basicStats = basicStats;
+    }
+
+    public List<AdvancedStats> getAdvancedStats() {
+        return advancedStats;
+    }
+
+    public void setAdvancedStats(List<AdvancedStats> advancedStats) {
+        this.advancedStats = advancedStats;
+    }
+
+    public List<PhysicalBasedMetricsStats> getPhysicalBasedMetricsStats() {
+        return physicalBasedMetricsStats;
+    }
+
+    public void setPhysicalBasedMetricsStats(List<PhysicalBasedMetricsStats> physicalBasedMetricsStats) {
+        this.physicalBasedMetricsStats = physicalBasedMetricsStats;
+    }
 
     public String getGameResult() {
         return gameResult;
@@ -49,21 +74,7 @@ public class Game {
     public void setFinalScore(String finalScore) {
         this.finalScore = finalScore;
     }
-    public PhysicalBasedMetricsStats getPhysicalBasedMetricsStats() {
-        return physicalBasedMetricsStats;
-    }
 
-    public void setPhysicalBasedMetricsStats(PhysicalBasedMetricsStats physicalBasedMetricsStats) {
-        this.physicalBasedMetricsStats = physicalBasedMetricsStats;
-    }
-
-    public AdvancedStats getAdvancedStats() {
-        return advancedStats;
-    }
-
-    public void setAdvancedStats(AdvancedStats advancedStats) {
-        this.advancedStats = advancedStats;
-    }
 
     public List<PlayerAverages> getPlayerAverages() {
         return playerAverages;
@@ -88,9 +99,5 @@ public class Game {
     public Team getTeam() { return team; }
     public void setTeam(Team team) { this.team = team; }
 
-    public BasicStats getBasicStats() { return basicStats; }
-    public void setBasicStats(BasicStats basicStats) { this.basicStats = basicStats; }
 
-    //private Long advancedStatId;
-    //private Long adjustedStatId;
 }

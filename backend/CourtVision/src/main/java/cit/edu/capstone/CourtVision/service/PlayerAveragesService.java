@@ -19,7 +19,7 @@ public class PlayerAveragesService {
     @Autowired
     private PlayerAveragesRepository averagesRepo;
 
-    //Calculate and save average stats for a player based on games played
+    // Calculate and save average stats for a player based on games played
     public PlayerAverages calculateAverages(Long playerId) {
         Player player = playerRepo.findById(playerId).orElse(null);
         if (player == null) return null;
@@ -34,25 +34,33 @@ public class PlayerAveragesService {
         int advStatsCount = 0;
 
         for (Game game : games) {
-            BasicStats basic = game.getBasicStats();
-            AdvancedStats adv = game.getAdvancedStats();
+            List<BasicStats> basicsList = game.getBasicStats();  // assumed getter name
+            List<AdvancedStats> advList = game.getAdvancedStats();  // assumed getter name
 
-            if (basic != null) {
-                totalPoints += (basic.getTwoPtMade() * 2) + (basic.getThreePtMade() * 3) + basic.getFtMade();
-                totalAssists += basic.getAssists();
-                totalRebounds += basic.getoFRebounds() + basic.getdFRebounds();
-                totalSteals += basic.getSteals();
-                totalBlocks += basic.getBlocks();
-                if (basic.getMinutes() != null)
-                    totalMinutes += basic.getMinutes().toLocalTime().toSecondOfDay() / 60.0;
+            if (basicsList != null) {
+                for (BasicStats basic : basicsList) {
+                    if (basic != null) {
+                        totalPoints += (basic.getTwoPtMade() * 2) + (basic.getThreePtMade() * 3) + basic.getFtMade();
+                        totalAssists += basic.getAssists();
+                        totalRebounds += basic.getoFRebounds() + basic.getdFRebounds();
+                        totalSteals += basic.getSteals();
+                        totalBlocks += basic.getBlocks();
+                        if (basic.getMinutes() != null)
+                            totalMinutes += basic.getMinutes().toLocalTime().toSecondOfDay() / 60.0;
+                    }
+                }
             }
 
-            if (adv != null) {
-                totalTS += adv.getTs();
-                totalUSG += adv.getUsg();
-                totalORTG += adv.getOrtg();
-                totalDRTG += adv.getDrtg();
-                advStatsCount++;
+            if (advList != null) {
+                for (AdvancedStats adv : advList) {
+                    if (adv != null) {
+                        totalTS += adv.getTs();
+                        totalUSG += adv.getUsg();
+                        totalORTG += adv.getOrtg();
+                        totalDRTG += adv.getDrtg();
+                        advStatsCount++;
+                    }
+                }
             }
         }
 
@@ -72,18 +80,18 @@ public class PlayerAveragesService {
         return averagesRepo.save(avg);
     }
 
-    //Get all averages
+    // Get all averages
     public List<PlayerAverages> getAll() {
         return averagesRepo.findAll();
     }
 
-    //Get averages by player
+    // Get averages by player
     public PlayerAverages getByPlayerId(Long playerId) {
         Player player = playerRepo.findById(playerId).orElse(null);
         return player != null ? averagesRepo.findByPlayer(player) : null;
     }
 
-    //Update averages manually (optional enhancement)
+    // Update averages manually
     public PlayerAverages update(Long id, PlayerAverages updated) {
         PlayerAverages existing = averagesRepo.findById(id).orElse(null);
         if (existing == null) return null;
@@ -102,7 +110,7 @@ public class PlayerAveragesService {
         return averagesRepo.save(existing);
     }
 
-    //Delete averages by ID
+    // Delete averages by ID
     public void delete(Long id) {
         averagesRepo.deleteById(id);
     }
