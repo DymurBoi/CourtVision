@@ -388,22 +388,20 @@ const saveBasicStat = async (stat) => {
               <thead>
                 <tr>
                   <th>Player Name</th>
-                  <th>Athletic Performance Index</th>
-                  <th>Defensive Disruption Rating</th>
-                  <th>Rebound Potential Index</th>
-                  <th>Mobility Adjusted Build Score</th>
-                  <th>Position Suitability Index</th>
+                  <th>Finishing Efficiency</th>
+                  <th>Rebounding Efficiency</th>
+                  <th>Defensive Activity Index</th>
+                  <th>Physical Efficiency Rating</th>
                 </tr>
               </thead>
               <tbody>
                 {physicalMetrics.map((playerStat) => (
                   <tr key={playerStat.physicalBasedMetricsStatsId}>
                     <td>{playerStat.basicStatsDTO.playerName}</td>
-                    <td>{playerStat.athleticPerformanceIndex}</td>
-                    <td>{playerStat.defensiveDisruptionRating}</td>
-                    <td>{playerStat.reboundPotentialIndex}</td>
-                    <td>{playerStat.mobilityAdjustedBuildScore}</td>
-                    <td>{playerStat.positionSuitabilityIndex}</td>
+                    <td>{playerStat.finishingEfficiency}</td>
+                    <td>{playerStat.reboundingEfficiency}</td>
+                    <td>{playerStat.defensiveActivityIndex}</td>
+                    <td>{playerStat.physicalEfficiencyRating}</td>
                   </tr>
                 ))}
               </tbody>

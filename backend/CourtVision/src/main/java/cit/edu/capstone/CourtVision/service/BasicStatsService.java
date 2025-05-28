@@ -56,7 +56,7 @@ public class BasicStatsService {
         metrics.setGame(game);
         physicalMetricsRepo.save(metrics);
 
-         playerAveragesService.updateAverages(savedBasic.getPlayer().getPlayerId());
+        playerAveragesService.updateAverages(savedBasic.getPlayer().getPlayerId());
 
 
         return savedBasic;
