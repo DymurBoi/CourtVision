@@ -216,9 +216,8 @@ useEffect(() => {
   const availablePlayers = players.filter(
     (p) => !basicStatsInputs.some((stat) => stat.playerId === p.playerId)
   );
-  
-  
 
+  
   if (loading) return <div className="loading">Loading players...</div>;
   if (error) return <div className="error">{error}</div>;
 

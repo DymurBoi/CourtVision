@@ -50,7 +50,11 @@
   align-items: center;
   gap: 0.5rem;
   margin-right: 10px;
+
+  /* Push the button to the right */
+  margin-left: auto;
 }
+
 
 .create-team-button:hover {
   background: linear-gradient(to right, var(--bright-purple), var(--medium-purple));

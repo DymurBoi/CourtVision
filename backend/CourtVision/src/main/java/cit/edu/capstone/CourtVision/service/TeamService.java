@@ -3,6 +3,7 @@ package cit.edu.capstone.CourtVision.service;
 import cit.edu.capstone.CourtVision.entity.Coach;
 import cit.edu.capstone.CourtVision.entity.JoinRequest;
 import cit.edu.capstone.CourtVision.entity.Player;
+import cit.edu.capstone.CourtVision.entity.PlayerAverages;
 import cit.edu.capstone.CourtVision.entity.Team;
 import cit.edu.capstone.CourtVision.repository.CoachRepository;
 import cit.edu.capstone.CourtVision.repository.PlayerRepository;
@@ -21,14 +22,14 @@ public class TeamService {
 
     @Autowired
     private TeamRepository teamRepository;
-
     @Autowired
     private PlayerRepository playerRepository;
     @Autowired
     private CoachRepository coachRepository;
-
     @Autowired
     private JoinRequestService joinRequestService;
+    @Autowired
+    private PlayerAveragesService playerAveragesService;
 
     //Get all teams
     public List<Team> getAllTeams() {
@@ -126,9 +127,22 @@ public class TeamService {
     public boolean removePlayerFromTeam(Long teamId, Long playerId) {
         Team team = getTeamById(teamId);
         Player player = playerRepository.findById(playerId).orElse(null);
-
+        PlayerAverages avg=playerAveragesService.getByPlayerId(playerId);
         if (team == null || player == null || player.getTeam() == null || !player.getTeam().getTeamId().equals(teamId)) {
             return false;
+        }
+
+        if(avg!=null){
+            avg.setPointsPerGame(0);
+            avg.setAssistsPerGame(0);
+            avg.setReboundsPerGame(0);
+            avg.setStealsPerGame(0);
+            avg.setBlocksPerGame(0);
+            avg.setMinutesPerGame(0);
+            avg.setTrueShootingPercentage(0);
+            avg.setUsagePercentage(0);
+            avg.setOffensiveRating(0);
+            avg.setDefensiveRating(0);
         }
 
         // Remove player from team

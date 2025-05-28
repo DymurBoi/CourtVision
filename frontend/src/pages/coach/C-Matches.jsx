@@ -5,7 +5,7 @@ import "../../styles/coach/C-Matches.css";
 import CreateMatchModal from '../../components/CreateMatchModal';
 import gameService from '../../services/gameService';
 
-function CMatches() {
+function CMatches({teamId}) {
   const location = useLocation();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [matches, setMatches] = useState([]);
@@ -14,7 +14,6 @@ function CMatches() {
 
   // Get teamId from query string
   const params = new URLSearchParams(location.search);
-  const teamId = params.get("teamId");
 
   useEffect(() => {
     const fetchMatches = async () => {
@@ -148,12 +147,6 @@ function CMatches() {
             ))}
           </div>
         )}
-      </div>
-
-      <div className="back-navigation">
-        <Link to="/coach/home" className="back-link">
-          Back to Home
-        </Link>
       </div>
 
       {showCreateModal && (

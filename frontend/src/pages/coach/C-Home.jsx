@@ -6,11 +6,14 @@ import { useAuth } from "../../components/AuthContext"
 import { api } from "../../utils/axiosConfig"
 import "../../styles/coach/C-Team.css"
 import "../../styles/coach/C-Home.css"
+import CMatches from './C-Matches';
+import CRequests from './C-Requests';
 
 function CHome() {
   const { user } = useAuth()
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true)
+  const [activeTab, setActiveTab] = useState("players")
   const [coachData, setCoachData] = useState({
     fname: "",
     lname: "",
@@ -233,7 +236,10 @@ function CHome() {
   }
 
   return (
-    <main className="main-content">
+  <main className="main-content">
+    {/* Check if teams array is empty */}
+    {teams.length === 0 ? (
+      <div>
       <div className="coach-welcome">
         <div className="coach-avatar">
           <span>{coachData.fname ? coachData.fname.charAt(0) : "C"}</span>
@@ -242,9 +248,7 @@ function CHome() {
           <h1>Welcome, Coach {coachData.fname} {coachData.lname}</h1>
         </div>
       </div>
-      
-      <div className="team-actions">
-        <button className="create-team-button" onClick={() => setShowCreateModal(true)}>
+     <button className="create-team-button" onClick={() => setShowCreateModal(true)}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -262,86 +266,134 @@ function CHome() {
           </svg>
           Create New Team
         </button>
-       
-
-      </div>
-
-      <div className="team-selector">
-        <label htmlFor="team-select">Select Team:</label>
-        <select id="team-select" value={selectedTeamId || ""} onChange={handleTeamChange} className="team-select">
-          {teams.map((team) => (
-            <option key={team.id || team.teamId} value={team.id || team.teamId}>
-              {team.name}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {selectedTeam && (
-        <div className="team-details-header">
-          <div className="team-header-flex">
-            <h1>{selectedTeam.name}</h1>
-            <div className="team-header-actions">
-              <button className="team-action-button" onClick={handleViewMatches}>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="action-icon">
-                  <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
-                </svg>
-                View Matches
-              </button>
-              <button className="team-action-button" onClick={() => {
-                fetchAvailableCoaches(selectedTeamId);
-                setShowAddCoachModal(true);
-              }}>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="action-icon">
-                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="9" cy="7" r="4"></circle>
-                  <line x1="19" y1="8" x2="19" y2="14"></line>
-                  <line x1="16" y1="11" x2="22" y2="11"></line>
-                </svg>
-                Add Coach
-              </button>
-            </div>
-          </div>
-          <p>{selectedTeam.description}</p>
-          <div className="team-meta">
-            <div className="meta-item">
-              <span className="meta-label">Players:</span>
-              <span className="meta-value">{players.length}</span>
-            </div>
-          </div>
+        <h1>Currently No Teams</h1>
         </div>
-      )}
-
-      <div className="players-container">
-        <div className="players-header">
-          <div className="player-number-header">Jersey</div>
-          <div className="player-name-header">Name</div>
-          <div className="player-position-header">Position</div>
-          <div className="player-action-header">Action</div>
+    ) : (
+      <>
+        <div className="team-selector">
+          <label htmlFor="team-select">Select Team:</label>
+          <select
+            id="team-select"
+            value={selectedTeamId || ""}
+            onChange={handleTeamChange}
+            className="team-select"
+          >
+            {teams.map((team) => (
+              <option key={team.id || team.teamId} value={team.id || team.teamId}>
+                {team.name}
+              </option>
+            ))}
+          </select>
+          <button className="create-team-button" onClick={() => setShowCreateModal(true)}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="action-icon"
+            >
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <line x1="23" y1="11" x2="17" y2="11"></line>
+              <line x1="20" y1="8" x2="20" y2="14"></line>
+            </svg>
+            Create New Team
+          </button>
         </div>
 
-        {players.length > 0 ? (
-          players.map((player) => (
-            <div className="player-item" key={player.playerId}>
-              <div className="player-number">#{player.jerseyNum || 'N/A'}</div>
-              <div className="player-name">
-                {player.fname} {player.lname}
-              </div>
-              <div className="player-position">{player.position || 'Unknown'}</div>
-              <div className="player-action">
-                <button className="remove-player-button" onClick={() => handleRemovePlayer(player.playerId)}>
-                  Remove Player
+        {/* Team Details */}
+        {selectedTeam && (
+          <div className="team-details-header">
+            <div className="team-header-flex">
+              <h1>{selectedTeam.name}</h1>
+              <div className="team-header-actions">
+                <button className="team-action-button" onClick={() => {
+                  fetchAvailableCoaches(selectedTeamId);
+                  setShowAddCoachModal(true);
+                }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="action-icon">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <line x1="19" y1="8" x2="19" y2="14"></line>
+                    <line x1="16" y1="11" x2="22" y2="11"></line>
+                  </svg>
+                  Add Coach
                 </button>
               </div>
             </div>
-          ))
-        ) : (
-          <div className="no-players">No players found for this team.</div>
+            <p>{selectedTeam.description}</p>
+            <div className="team-meta">
+              <div className="meta-item">
+                <span className="meta-label">Players:</span>
+                <span className="meta-value">{players.length}</span>
+              </div>
+            </div>
+          </div>
         )}
-      </div>
 
-      {/* Create Team Modal */}
-      {showCreateModal && (
+        <div className="stats-tabs">
+          <button
+            className={`tab-button ${activeTab === "players" ? "active" : ""}`}
+            onClick={() => setActiveTab("players")}
+          >
+            Players
+          </button>
+          <button
+            className={`tab-button ${activeTab === "matches" ? "active" : ""}`}
+            onClick={() => setActiveTab("matches")}
+          >
+            Matches
+          </button>
+          <button
+            className={`tab-button ${activeTab === "requests" ? "active" : ""}`}
+            onClick={() => setActiveTab("requests")}
+          >
+            Requests
+          </button>
+        </div>
+
+        {/* Tab Content */}
+        {activeTab === "players" && (
+          <div className="players-container">
+            <div className="players-header">
+              <div className="player-number-header">Jersey</div>
+              <div className="player-name-header">Name</div>
+              <div className="player-position-header">Position</div>
+              <div className="player-action-header">Action</div>
+            </div>
+
+            {players.length > 0 ? (
+              players.map((player) => (
+                <div className="player-item" key={player.playerId}>
+                  <div className="player-number">#{player.jerseyNum || "N/A"}</div>
+                  <div className="player-name">
+                    {player.fname} {player.lname}
+                  </div>
+                  <div className="player-position">{player.position || "Unknown"}</div>
+                  <div className="player-action">
+                    <button
+                      className="remove-player-button"
+                      onClick={() => handleRemovePlayer(player.playerId)}
+                    >
+                      Remove Player
+                    </button>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="no-players">No players found for this team.</div>
+            )}
+          </div>
+        )}
+
+        {activeTab === "matches" && <CMatches teamId={selectedTeamId} />}
+        {activeTab === "requests" && <CRequests />}
+      </>
+    )}
+    {showCreateModal && (
         <div className="modal-overlay" onClick={() => setShowCreateModal(false)}>
           <div className="modal-container" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
@@ -379,7 +431,6 @@ function CHome() {
         </div>
       )}
 
-      {/* Add Coach Modal */}
       {showAddCoachModal && (
         <div className="modal-overlay" onClick={() => setShowAddCoachModal(false)}>
           <div className="modal-container" onClick={(e) => e.stopPropagation()}>
@@ -431,8 +482,8 @@ function CHome() {
           </div>
         </div>
       )}
-    </main>
-  )
+  </main>
+);
 }
 
 export default CHome
