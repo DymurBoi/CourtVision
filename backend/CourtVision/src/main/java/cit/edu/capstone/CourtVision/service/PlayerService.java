@@ -34,6 +34,9 @@ public class PlayerService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private PlayerAveragesService playerAveragesService;
+
 
     public List<Player> getAllPlayers() {
         return playerRepository.findAll();
@@ -48,21 +51,23 @@ public class PlayerService {
         player.setPassword(passwordEncoder.encode(player.getPassword()));
         Player savedPlayer = playerRepository.save(player);
 
-        // Automatically create PhysicalRecords with initial zero values
-        PhysicalRecords initialRecord = PhysicalRecords.builder()
-                .weight(BigDecimal.ZERO)
-                .height(BigDecimal.ZERO)
-                .wingspan(BigDecimal.ZERO)
-                .vertical(BigDecimal.ZERO)
-                .bmi(BigDecimal.ZERO)
-                .dateRecorded(LocalDate.now())
-                .player(savedPlayer)
-                .build();
+        // Manually create PhysicalRecords without Lombok builder
+        PhysicalRecords initialRecord = new PhysicalRecords();
+        initialRecord.setWeight(BigDecimal.ZERO);
+        initialRecord.setHeight(BigDecimal.ZERO);
+        initialRecord.setWingspan(BigDecimal.ZERO);
+        initialRecord.setVertical(BigDecimal.ZERO);
+        initialRecord.setBmi(BigDecimal.ZERO);
+        initialRecord.setDateRecorded(LocalDate.now());
+        initialRecord.setPlayer(savedPlayer);
 
         physicalRecordService.save(initialRecord);
+        playerAveragesService.createInitialAveragesForPlayer(savedPlayer);
+
 
         return savedPlayer;
     }
+
 
 
     public Player updatePlayer(Long id, Player updatedPlayer) {

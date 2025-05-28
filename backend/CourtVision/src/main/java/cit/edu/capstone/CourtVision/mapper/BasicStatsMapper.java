@@ -25,6 +25,7 @@ public class BasicStatsMapper {
         dto.setdFouls(stat.getdFouls());
         dto.setPlusMinus(stat.getPlusMinus());
         dto.setMinutes(stat.getMinutes());
+        dto.setGamePoints(stat.getGamePoints());
 
         if (stat.getPlayer() != null) {
             Player temp=new Player();
@@ -34,6 +35,9 @@ public class BasicStatsMapper {
 
         if (stat.getGame() != null) {
             dto.setGameDTO(GameMapper.toDTO(stat.getGame()));
+        }
+        if (stat.getPlayerAverages() != null) {
+            dto.setPlayerAveragesDTO(PlayerAveragesMapper.toDTO(stat.getPlayerAverages()));
         }
 
         return dto;

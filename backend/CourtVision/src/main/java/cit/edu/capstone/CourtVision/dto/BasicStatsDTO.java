@@ -20,13 +20,27 @@ public class BasicStatsDTO {
     private int dFouls;
     private int plusMinus;
     private Time minutes;
+    private int gamePoints;
 
     private AdvancedStatsDTO advancedStatsDTO;
     private GameDTO gameDTO;
+    private PlayerAveragesDTO playerAveragesDTO;
     private String playerName;
 
 
     // Getters and Setters
+    public int getGamePoints() {
+        return gamePoints;
+    }
+    public void setGamePoints(int gamePoints) {
+        this.gamePoints = gamePoints;
+    }
+    public PlayerAveragesDTO getPlayerAveragesDTO() {
+        return playerAveragesDTO;
+    }
+    public void setPlayerAveragesDTO(PlayerAveragesDTO playerAveragesDTO) {
+        this.playerAveragesDTO = playerAveragesDTO;
+    }
     public String getPlayerName() {
         return playerName;
     }

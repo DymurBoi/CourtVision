@@ -25,6 +25,9 @@ public class BasicStatsService {
     @Autowired
     private GameRepository gameRepository;
 
+    @Autowired
+    private PlayerAveragesService playerAveragesService;
+
     public List<BasicStats> getAll() {
         return basicStatsRepository.findAll();
     }
@@ -34,6 +37,9 @@ public class BasicStatsService {
     }
 
     public BasicStats create(BasicStats basicStats) {
+        int points = (basicStats.getTwoPtMade() * 2) + (basicStats.getThreePtMade() * 3);
+        basicStats.setGamePoints(points); 
+
         // Save BasicStats first
         BasicStats savedBasic = basicStatsRepository.save(basicStats);
         Game game=new Game();
@@ -49,6 +55,9 @@ public class BasicStatsService {
         metrics.setBasicStats(savedBasic);
         metrics.setGame(game);
         physicalMetricsRepo.save(metrics);
+
+         playerAveragesService.updateAverages(savedBasic.getPlayer().getPlayerId());
+
 
         return savedBasic;
     }
@@ -77,6 +86,7 @@ public class BasicStatsService {
                 updatedMetrics.setBasicStats(savedBasic);
                 physicalMetricsRepo.save(updatedMetrics);
             }
+            
 
             return savedBasic;
         }

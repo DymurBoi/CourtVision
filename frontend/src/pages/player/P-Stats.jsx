@@ -13,10 +13,10 @@ function PStats() {
   const [refreshTrigger, setRefreshTrigger] = useState(0)
 
   const [physicalRecords, setPhysicalRecords] = useState({
-    height: 185,
-    weight: 78,
-    wingspan: 190,
-    vertical: 76,
+    height: 0,
+    weight: 0,
+    wingspan: 0,
+    vertical: 0,
     lastUpdated: "2023-03-15",
   })
 
@@ -113,33 +113,35 @@ function PStats() {
 
   useEffect(() => {
     if (user && user.id) {
-      const fetchPlayerData = async () => {
+      const fetchData = async () => {
         try {
           let playerId = user.id
           if (typeof playerId === "string" && playerId.startsWith("PLAYER_")) {
             playerId = playerId.substring(7)
           }
 
+          // Fetch physical records (UNCHANGED)
           const recordsResponse = await api.get(`/physical-records/get/by-player/${playerId}`)
           const recordsData = recordsResponse.data
 
           if (recordsData) {
             setPhysicalRecords({
-              height: recordsData.height || 185,
-              weight: recordsData.weight || 78,
-              wingspan: recordsData.wingspan || 190,
-              vertical: recordsData.vertical || 76,
+              height: recordsData.height || 0,
+              weight: recordsData.weight || 0,
+              wingspan: recordsData.wingspan || 0,
+              vertical: recordsData.vertical || 0,
               lastUpdated: recordsData.dateRecorded || "2023-03-15",
             })
             setEditedRecords({
-              height: recordsData.height || 185,
-              weight: recordsData.weight || 78,
-              wingspan: recordsData.wingspan || 190,
-              vertical: recordsData.vertical || 76,
+              height: recordsData.height || 0,
+              weight: recordsData.weight || 0,
+              wingspan: recordsData.wingspan || 0,
+              vertical: recordsData.vertical || 0,
             })
           }
 
-          const averagesResponse = await api.get(`/api/averages/get/by-player/${playerId}`)
+          // Fetch player performance averages
+          const averagesResponse = await api.get(`/averages/get/by-player/${playerId}`)
           const avg = averagesResponse.data
 
           if (avg) {
@@ -161,16 +163,16 @@ function PStats() {
         }
       }
 
-      fetchPlayerData()
+      fetchData()
     }
   }, [user, refreshTrigger])
 
   return (
     <div className="stats-container">
       <h1 className="page-title">My Statistics</h1>
-      <p className="page-subtitle">View your physical records and performance statistics</p>
+      <p className="page-subtitle">View your physical records and performance averages</p>
 
-    
+     
       <div className="stats-card">
         <div className="stats-card-header">
           <h2>Physical Records</h2>
@@ -319,51 +321,36 @@ function PStats() {
         )}
       </div>
 
+      {/* PERFORMANCE AVERAGES (ALWAYS SHOW, EVEN IF EMPTY) */}
       <div className="stats-card">
         <div className="stats-card-header">
-          <h2>Performance Statistics</h2>
+          <h2>Performance Averages</h2>
           <div className="header-actions">
-            <span className="games-played">Minutes Per Game: {playerAverages.minutesPerGame}</span>
+            <span className="games-played">
+              Minutes Per Game: {playerAverages.minutesPerGame.toFixed(1)}
+            </span>
           </div>
         </div>
 
         <div className="performance-stats-grid">
-          <div className="stat-box">
-            <div className="stat-value">{playerAverages.pointsPerGame.toFixed(1)}</div>
-            <div className="stat-label">Points Per Game</div>
-          </div>
-          <div className="stat-box">
-            <div className="stat-value">{playerAverages.reboundsPerGame.toFixed(1)}</div>
-            <div className="stat-label">Rebounds Per Game</div>
-          </div>
-          <div className="stat-box">
-            <div className="stat-value">{playerAverages.assistsPerGame.toFixed(1)}</div>
-            <div className="stat-label">Assists Per Game</div>
-          </div>
-          <div className="stat-box">
-            <div className="stat-value">{playerAverages.stealsPerGame.toFixed(1)}</div>
-            <div className="stat-label">Steals Per Game</div>
-          </div>
-          <div className="stat-box">
-            <div className="stat-value">{playerAverages.blocksPerGame.toFixed(1)}</div>
-            <div className="stat-label">Blocks Per Game</div>
-          </div>
-          <div className="stat-box">
-            <div className="stat-value">{playerAverages.trueShootingPercentage.toFixed(1)}%</div>
-            <div className="stat-label">True Shooting %</div>
-          </div>
-          <div className="stat-box">
-            <div className="stat-value">{playerAverages.usagePercentage.toFixed(1)}%</div>
-            <div className="stat-label">Usage %</div>
-          </div>
-          <div className="stat-box">
-            <div className="stat-value">{playerAverages.offensiveRating.toFixed(1)}</div>
-            <div className="stat-label">Offensive Rating</div>
-          </div>
-          <div className="stat-box">
-            <div className="stat-value">{playerAverages.defensiveRating.toFixed(1)}</div>
-            <div className="stat-label">Defensive Rating</div>
-          </div>
+          {[{ label: "Points Per Game", value: playerAverages.pointsPerGame },
+            { label: "Rebounds Per Game", value: playerAverages.reboundsPerGame },
+            { label: "Assists Per Game", value: playerAverages.assistsPerGame },
+            { label: "Steals Per Game", value: playerAverages.stealsPerGame },
+            { label: "Blocks Per Game", value: playerAverages.blocksPerGame },
+            { label: "True Shooting %", value: playerAverages.trueShootingPercentage, suffix: "%" },
+            { label: "Usage %", value: playerAverages.usagePercentage, suffix: "%" },
+            { label: "Offensive Rating", value: playerAverages.offensiveRating },
+            { label: "Defensive Rating", value: playerAverages.defensiveRating },
+          ].map((item) => (
+            <div className="stat-box" key={item.label}>
+              <div className="stat-value">
+                {item.value !== null && item.value !== undefined ? item.value.toFixed(1) : "0"}
+                {item.suffix || ""}
+              </div>
+              <div className="stat-label">{item.label}</div>
+            </div>
+          ))}
         </div>
       </div>
 

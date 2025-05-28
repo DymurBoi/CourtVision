@@ -16,8 +16,7 @@ public class PlayerAverages {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long playerAvgId;
 
-
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "player_id") // Many PlayerAverages → One Player
     private Player player;
 

@@ -33,6 +33,7 @@ public class BasicStats {
     private int dFouls;
     private int plusMinus;
     private Time minutes;
+    private int gamePoints;
 
     @ManyToOne
     @JoinColumn(name = "player_id")
@@ -48,6 +49,12 @@ public class BasicStats {
 
 
     //Getters and Setters
+    public int getGamePoints() {
+        return gamePoints;
+    }
+    public void setGamePoints(int gamePoints) {
+        this.gamePoints = gamePoints;
+    }
 
     public PlayerAverages getPlayerAverages() {
         return playerAverages;

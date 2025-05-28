@@ -4,16 +4,12 @@ import cit.edu.capstone.CourtVision.dto.PlayerAveragesDTO;
 import cit.edu.capstone.CourtVision.entity.PlayerAverages;
 
 public class PlayerAveragesMapper {
-    public static PlayerAveragesDTO toDto(PlayerAverages avg) {
+    public static PlayerAveragesDTO toDTO(PlayerAverages avg) {
         PlayerAveragesDTO dto = new PlayerAveragesDTO();
         dto.setPlayerAvgId(avg.getPlayerAvgId());
 
         if (avg.getPlayer() != null) {
             dto.setPlayer(PlayerMapper.toDto(avg.getPlayer()));
-        }
-
-        if (avg.getGame() != null) {
-            dto.setGame(GameMapper.toDTO(avg.getGame()));
         }
 
         dto.setPointsPerGame(avg.getPointsPerGame());

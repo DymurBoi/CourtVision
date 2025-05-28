@@ -3,7 +3,6 @@ package cit.edu.capstone.CourtVision.dto;
 public class PlayerAveragesDTO {
     private Long playerAvgId;
     private PlayerDTO player;
-    private GameDTO game;
     private double pointsPerGame;
     private double assistsPerGame;
     private double reboundsPerGame;
@@ -15,7 +14,10 @@ public class PlayerAveragesDTO {
     private double offensiveRating;
     private double defensiveRating;
 
+  
+
     // Getters and Setters
+
 
     public Long getPlayerAvgId() {
         return playerAvgId;
@@ -32,15 +34,6 @@ public class PlayerAveragesDTO {
     public void setPlayer(PlayerDTO player) {
         this.player = player;
     }
-
-    public GameDTO getGame() {
-        return game;
-    }
-
-    public void setGame(GameDTO game) {
-        this.game = game;
-    }
-
     public double getPointsPerGame() {
         return pointsPerGame;
     }

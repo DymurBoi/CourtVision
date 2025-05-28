@@ -60,7 +60,6 @@ public class PhysicalBasedMetricsStatsController {
 
 
     // Additional Endpoint
-
     @GetMapping("/get/by-basic-stats/{basicStatsId}")
     public ResponseEntity<PhysicalBasedMetricsStatsDTO> getByBasicStats(@PathVariable Long basicStatsId) {
         PhysicalBasedMetricsStats stat = service.getByBasicStatsId(basicStatsId);

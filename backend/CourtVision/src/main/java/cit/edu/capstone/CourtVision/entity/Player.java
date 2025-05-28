@@ -32,10 +32,6 @@ public class Player {
     @JsonIgnore
     private PhysicalRecords physicalRecords;
 
-    @OneToMany(mappedBy = "player") // One Player → Many PlayerAverages
-    @JsonIgnore
-    private List<PlayerAverages> playerAverages;
-
     @OneToMany(mappedBy = "player", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<BasicStats> basicStatsList;
@@ -57,14 +53,6 @@ public class Player {
 
     public void setPosition(String position) {
         this.position = position;
-    }
-
-    public List<PlayerAverages> getPlayerAverages() {
-        return playerAverages;
-    }
-
-    public void setPlayerAverages(List<PlayerAverages> playerAverages) {
-        this.playerAverages = playerAverages;
     }
 
     public PhysicalRecords getPhysicalRecords() {
