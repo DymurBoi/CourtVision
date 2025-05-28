@@ -4,6 +4,7 @@ import { api } from "../../utils/axiosConfig";
 import '../../styles/coach/C-GameDetails.css';
 import EditIcon from '@mui/icons-material/Edit';
 import BasicStatsEditModal from "../../components/BasicStatsEditModal";
+import CreateBasicStatsModal from "../../components/CreateBasicStatsModal";
 
 function CGameDetails() {
 
@@ -21,6 +22,7 @@ function CGameDetails() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [showAddRow, setShowAddRow] = useState(false);
+  const [showAddModal,setShowAddModal] = useState(false);
   const [selectedPlayerId, setSelectedPlayerId] = useState("");
   const [activeTab, setActiveTab] = useState("basic")
   const [hasFetchedStats, setHasFetchedStats] = useState(false);
@@ -127,7 +129,7 @@ useEffect(() => {
         dFouls: Number(playerStat.dFouls),
         plusMinus: 0,
         minutes: playerStat.minutes,
-        player: { playerId: playerStat.playerId },
+        player: { playerId: playerStat.selectedPlayer },
         game: { gameId: Number(gameId) },
       };
 
@@ -152,6 +154,7 @@ useEffect(() => {
       alert(`❌ Failed to create stats for player ${playerStat.playerId}`);
     } finally {
       setSaving(false);
+      setShowAddModal(false);
     }
     window.location.reload();
   };
@@ -328,7 +331,7 @@ const saveBasicStat = async (stat) => {
             <tr>
               <td colSpan={17}>
                 <button
-                  onClick={() => setShowAddRow((prev) => !prev)}
+                  onClick={() => setShowAddModal(true)}
                   disabled={availablePlayers.length === 0}
                 >
                   Add Row
@@ -566,6 +569,17 @@ const saveBasicStat = async (stat) => {
       onSave={(updatedData) => {
       handleSaveStats({ ...selectedStat, ...updatedData });
       setShowEditModal(false);
+      }}
+      />
+    )}
+
+    {showAddModal && (
+      <CreateBasicStatsModal
+      playersList={players}
+      onClose={() => setShowAddModal(false)}
+      onSave={(updatedData) => {
+      handleCreateStats({ ...selectedStat, ...updatedData });
+      setShowAddModal(false);
       }}
       />
     )}
