@@ -406,6 +406,7 @@ function CGameDetails() {
                 <tr>
                   <th>Player Name</th>
                   <th>MIN</th>
+                  <th>PTS</th>
                   <th>2 PTS M/A</th>
                   <th>3 PTS M/A</th>
                   <th>FT M/A</th>
@@ -488,6 +489,7 @@ function CGameDetails() {
                   <tr key={playerStat.basicStatId}>
                     <td>{playerStat.playerName}</td>
                     <td>{playerStat.minutes}</td>
+                    <td>{playerStat.gamePoints}</td>
                     <td>{playerStat.twoPtMade}/{playerStat.twoPtAttempts}</td>
                     <td>{playerStat.threePtMade}/{playerStat.threePtAttempts}</td>
                     <td>{playerStat.ftMade}/{playerStat.ftAttempts}</td>
