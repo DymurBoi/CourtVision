@@ -25,17 +25,41 @@ public class Game {
     @OneToMany(mappedBy = "game")
     private List<BasicStats> basicStatsList;
 
-    @OneToOne
-    @JoinColumn(name = "advanced_stats_id")
-    private AdvancedStats advancedStats;
-    @OneToOne
+    @OneToMany(mappedBy = "game")
+    private List<AdvancedStats> advancedStats;
+    @OneToMany
     @JoinColumn(name = "physical_based_metric_stats_id")
-    private PhysicalBasedMetricsStats physicalBasedMetricsStats;
+    private List<PhysicalBasedMetricsStats> physicalBasedMetricsStats;
 
     @OneToMany(mappedBy = "game") // One Game → Many PlayerAverages
     private List<PlayerAverages> playerAverages;
 
     // Getters and Setters
+
+
+    public List<BasicStats> getBasicStatsList() {
+        return basicStatsList;
+    }
+
+    public void setBasicStatsList(List<BasicStats> basicStatsList) {
+        this.basicStatsList = basicStatsList;
+    }
+
+    public List<AdvancedStats> getAdvancedStats() {
+        return advancedStats;
+    }
+
+    public void setAdvancedStats(List<AdvancedStats> advancedStats) {
+        this.advancedStats = advancedStats;
+    }
+
+    public List<PhysicalBasedMetricsStats> getPhysicalBasedMetricsStats() {
+        return physicalBasedMetricsStats;
+    }
+
+    public void setPhysicalBasedMetricsStats(List<PhysicalBasedMetricsStats> physicalBasedMetricsStats) {
+        this.physicalBasedMetricsStats = physicalBasedMetricsStats;
+    }
 
     public String getGameResult() {
         return gameResult;
@@ -51,21 +75,6 @@ public class Game {
 
     public void setFinalScore(String finalScore) {
         this.finalScore = finalScore;
-    }
-    public PhysicalBasedMetricsStats getPhysicalBasedMetricsStats() {
-        return physicalBasedMetricsStats;
-    }
-
-    public void setPhysicalBasedMetricsStats(PhysicalBasedMetricsStats physicalBasedMetricsStats) {
-        this.physicalBasedMetricsStats = physicalBasedMetricsStats;
-    }
-
-    public AdvancedStats getAdvancedStats() {
-        return advancedStats;
-    }
-
-    public void setAdvancedStats(AdvancedStats advancedStats) {
-        this.advancedStats = advancedStats;
     }
 
     public List<PlayerAverages> getPlayerAverages() {

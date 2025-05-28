@@ -216,15 +216,62 @@ public class BasicStatsService {
     private PhysicalBasedMetricsStats calculatePhysicalMetrics(BasicStats b) {
         PhysicalBasedMetricsStats p = new PhysicalBasedMetricsStats();
 
-        // Fill with actual formulas if you connect to PhysicalRecords later
-        p.setAthleticPerformanceIndex(0);
-        p.setDefensiveDisruptionRating(0);
-        p.setReboundPotentialIndex(0);
-        p.setMobilityAdjustedBuildScore(0);
-        p.setPositionSuitabilityIndex(0);
+        // Safely parse time to seconds
+        long minutesInSeconds = 0;
+        if (b.getMinutes() != null) {
+            try {
+                minutesInSeconds = b.getMinutes().toLocalTime().toSecondOfDay();
+            } catch (Exception e) {
+                minutesInSeconds = 0;  // fallback if parsing fails
+            }
+        }
+
+        double twoPtAttempts = b.getTwoPtAttempts();
+        double twoPtMade = b.getTwoPtMade();
+        double threePtAttempts = b.getThreePtAttempts();
+        double ftAttempts = b.getFtAttempts();
+        double gamePoints = b.getGamePoints();
+        double assists = b.getAssists();
+        double oReb = b.getoFRebounds();
+        double dReb = b.getdFRebounds();
+        double blocks = b.getBlocks();
+        double steals = b.getSteals();
+        double turnovers = b.getTurnovers();
+
+        double wingspan = 1.0;  // ← replace with real value later
+        double height = 1.0;    // ← replace with real value later
+        double vertical = 1.0;  // ← replace with real value later
+
+        // Finishing Efficiency
+        double finishingEfficiency = (twoPtAttempts > 0)
+                ? (twoPtMade / twoPtAttempts) / (0.52 + 0.25 * (vertical / 34.0) + 0.1 * (wingspan / height / 1.06))
+                : 0;
+
+        // Rebounding Efficiency
+        double reboundingEfficiency = (minutesInSeconds > 0)
+                ? ((oReb + dReb) / minutesInSeconds) / (0.008 + 0.02 * (wingspan / height / 1.06) + 0.015 * (vertical / 34.0))
+                : 0;
+
+        // Defensive Activity Index
+        double defensiveActivityIndex = (blocks + steals) / (1.0 + 0.25 * (wingspan / height / 1.06) + 0.15 * (vertical / 34.0));
+
+        // Physical Efficiency Rating (PER_Lite)
+        double tsAttempts = twoPtAttempts + threePtAttempts + 0.44 * ftAttempts;
+        double tsPct = (tsAttempts > 0) ? gamePoints / (2.0 * tsAttempts) : 0;
+
+        double FAI = 1.0;  // Finishing Ability Index — can adjust later if you have more metrics
+        double physicalEfficiencyRating = (tsPct + 0.45 * assists + 0.35 * (oReb + dReb) +
+                0.6 * (steals + blocks) - 0.5 * turnovers) * (0.5 + 0.5 * FAI);
+
+        // Set values
+        p.setFinishingEfficiency(finishingEfficiency);
+        p.setReboundingEfficiency(reboundingEfficiency);
+        p.setDefensiveActivityIndex(defensiveActivityIndex);
+        p.setPhysicalEfficiencyRating(physicalEfficiencyRating);
 
         return p;
     }
+
 
     public List<BasicStatsDTO> getBasicStatsByGameId(Long gameId) {
         List<BasicStats> stats = basicStatsRepository.findByGame_GameId(gameId);

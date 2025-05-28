@@ -7,11 +7,10 @@ public class PhysicalBasedMetricsStatsMapper {
     public static PhysicalBasedMetricsStatsDTO toDTO(PhysicalBasedMetricsStats stats) {
         PhysicalBasedMetricsStatsDTO dto = new PhysicalBasedMetricsStatsDTO();
         dto.setPhysicalBasedMetricsStatsId(stats.getPhysicalBasedMetricsStatsId());
-        dto.setAthleticPerformanceIndex(stats.getAthleticPerformanceIndex());
-        dto.setDefensiveDisruptionRating(stats.getDefensiveDisruptionRating());
-        dto.setReboundPotentialIndex(stats.getReboundPotentialIndex());
-        dto.setMobilityAdjustedBuildScore(stats.getMobilityAdjustedBuildScore());
-        dto.setPositionSuitabilityIndex(stats.getPositionSuitabilityIndex());
+        dto.setFinishingEfficiency(stats.getFinishingEfficiency());
+        dto.setReboundingEfficiency(stats.getReboundingEfficiency());
+        dto.setDefensiveActivityIndex(stats.getDefensiveActivityIndex());
+        dto.setPhysicalEfficiencyRating(stats.getPhysicalEfficiencyRating());
 
         if (stats.getBasicStats() != null) {
             dto.setBasicStatsDTO(BasicStatsMapper.toDTO(stats.getBasicStats()));
@@ -22,5 +21,3 @@ public class PhysicalBasedMetricsStatsMapper {
         return dto;
     }
 }
-
-
