@@ -2,8 +2,10 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { api } from "../../utils/axiosConfig";
 import '../../styles/coach/C-GameDetails.css';
+import BasicStatsEditModal from "../../components/BasicStatsEditModal";
 
 function CGameDetails() {
+
   const { id: gameId } = useParams();
   const params = new URLSearchParams(window.location.search);
   const teamId = params.get("teamId");
@@ -21,7 +23,8 @@ function CGameDetails() {
   const [selectedPlayerId, setSelectedPlayerId] = useState("");
   const [activeTab, setActiveTab] = useState("basic")
   const [hasFetchedStats, setHasFetchedStats] = useState(false);
-
+const [showEditModal, setShowEditModal] = useState(false);
+const [selectedStat, setSelectedStat] = useState(null);
 useEffect(() => {
   const fetchEverything = async () => {
     if (!teamId || !gameId) {
@@ -401,12 +404,14 @@ const saveBasicStat = async (stat) => {
                   ) : (
                     // Show Edit button when not editing
                     <button
-                      onClick={() => handleToggleEdit(playerStat.playerId)}
-                      disabled={saving}
-                      className="edit-button"
-                    >
-                      Edit
-                    </button>
+                    onClick={() => {
+                    setSelectedStat(playerStat);
+                    setShowEditModal(true);
+                    }}
+              className="edit-button"
+                  >
+                   Edit
+                </button>
                   )}
                 </td>
               </tr>
@@ -604,7 +609,19 @@ const saveBasicStat = async (stat) => {
         )}
       </div>
       </div>
+      {showEditModal && (
+  <BasicStatsEditModal
+    initialData={selectedStat}
+    onClose={() => setShowEditModal(false)}
+    onSave={(updatedData) => {
+      handleSaveStats({ ...selectedStat, ...updatedData });
+      setShowEditModal(false);
+    }}
+  />
+)}
+
     </main>
+    
   );
 }
 
