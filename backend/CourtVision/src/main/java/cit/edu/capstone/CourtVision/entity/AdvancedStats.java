@@ -17,7 +17,6 @@ public class AdvancedStats {
     private double uPER;
     private double eFG;
     private double ts;
-    private double usg;
     private double assistRatio;
     private double turnoverRatio;
     private double ftr;
@@ -144,14 +143,6 @@ public class AdvancedStats {
 
     public void setTs(double ts) {
         this.ts = ts;
-    }
-
-    public double getUsg() {
-        return usg;
-    }
-
-    public void setUsg(double usg) {
-        this.usg = usg;
     }
 
     public double getAssistRatio() {
