@@ -64,34 +64,94 @@ public class BasicStatsService {
 
 
     public BasicStats update(Long id, BasicStats updatedStats) {
-        BasicStats existing = getById(id);
-        if (existing != null) {
-            updatedStats.setBasicStatId(id);
-            BasicStats savedBasic = basicStatsRepository.save(updatedStats);
-
-            // Update AdvancedStats
-            AdvancedStats existingAdvanced = advancedStatsRepository.findByBasicStats(savedBasic);
-            if (existingAdvanced != null) {
-                AdvancedStats updatedAdvanced = calculateAdvancedStats(savedBasic);
-                updatedAdvanced.setAdvancedStatsId(existingAdvanced.getAdvancedStatsId());
-                updatedAdvanced.setBasicStats(savedBasic);
-                advancedStatsRepository.save(updatedAdvanced);
-            }
-
-            // Update PhysicalBasedMetricsStats
-            PhysicalBasedMetricsStats existingMetrics = physicalMetricsRepo.findByBasicStats(savedBasic);
-            if (existingMetrics != null) {
-                PhysicalBasedMetricsStats updatedMetrics = calculatePhysicalMetrics(savedBasic);
-                updatedMetrics.setPhysicalBasedMetricsStatsId(existingMetrics.getPhysicalBasedMetricsStatsId());
-                updatedMetrics.setBasicStats(savedBasic);
-                physicalMetricsRepo.save(updatedMetrics);
-            }
-            
-
-            return savedBasic;
+    BasicStats existing = getById(id);
+    if (existing != null) {
+        // Preserve existing values for fields that are not included in the update request
+        if (updatedStats.getTwoPtAttempts() != 0) {
+            existing.setTwoPtAttempts(updatedStats.getTwoPtAttempts());
         }
-        return null;
+        if (updatedStats.getTwoPtMade() != 0) {
+            existing.setTwoPtMade(updatedStats.getTwoPtMade());
+        }
+        if (updatedStats.getThreePtAttempts() != 0) {
+            existing.setThreePtAttempts(updatedStats.getThreePtAttempts());
+        }
+        if (updatedStats.getThreePtMade() != 0) {
+            existing.setThreePtMade(updatedStats.getThreePtMade());
+        }
+        if (updatedStats.getFtAttempts() != 0) {
+            existing.setFtAttempts(updatedStats.getFtAttempts());
+        }
+        if (updatedStats.getFtMade() != 0) {
+            existing.setFtMade(updatedStats.getFtMade());
+        }
+        if (updatedStats.getAssists() != 0) {
+            existing.setAssists(updatedStats.getAssists());
+        }
+        if (updatedStats.getoFRebounds() != 0) {
+            existing.setoFRebounds(updatedStats.getoFRebounds());
+        }
+        if (updatedStats.getdFRebounds() != 0) {
+            existing.setdFRebounds(updatedStats.getdFRebounds());
+        }
+        if (updatedStats.getBlocks() != 0) {
+            existing.setBlocks(updatedStats.getBlocks());
+        }
+        if (updatedStats.getSteals() != 0) {
+            existing.setSteals(updatedStats.getSteals());
+        }
+        if (updatedStats.getTurnovers() != 0) {
+            existing.setTurnovers(updatedStats.getTurnovers());
+        }
+        if (updatedStats.getpFouls() != 0) {
+            existing.setpFouls(updatedStats.getpFouls());
+        }
+        if (updatedStats.getdFouls() != 0) {
+            existing.setdFouls(updatedStats.getdFouls());
+        }
+        if (updatedStats.getPlusMinus() != 0) {
+            existing.setPlusMinus(updatedStats.getPlusMinus());
+        }
+        if (updatedStats.getMinutes() != null) {
+            existing.setMinutes(updatedStats.getMinutes());
+        }
+        if (updatedStats.getGamePoints() != 0) {
+            existing.setGamePoints(updatedStats.getGamePoints());
+        }
+        
+        // Set the player and game associations if they're provided in the update request
+        if (updatedStats.getPlayer() != null) {
+            existing.setPlayer(updatedStats.getPlayer());
+        }
+        if (updatedStats.getGame() != null) {
+            existing.setGame(updatedStats.getGame());
+        }
+
+        // Save the updated record
+        BasicStats savedBasic = basicStatsRepository.save(existing);
+
+        // Update related AdvancedStats and PhysicalBasedMetricsStats if necessary
+        AdvancedStats existingAdvanced = advancedStatsRepository.findByBasicStats(savedBasic);
+        if (existingAdvanced != null) {
+            AdvancedStats updatedAdvanced = calculateAdvancedStats(savedBasic);
+            updatedAdvanced.setAdvancedStatsId(existingAdvanced.getAdvancedStatsId());
+            updatedAdvanced.setBasicStats(savedBasic);
+            advancedStatsRepository.save(updatedAdvanced);
+        }
+
+        PhysicalBasedMetricsStats existingMetrics = physicalMetricsRepo.findByBasicStats(savedBasic);
+        if (existingMetrics != null) {
+            PhysicalBasedMetricsStats updatedMetrics = calculatePhysicalMetrics(savedBasic);
+            updatedMetrics.setPhysicalBasedMetricsStatsId(existingMetrics.getPhysicalBasedMetricsStatsId());
+            updatedMetrics.setBasicStats(savedBasic);
+            physicalMetricsRepo.save(updatedMetrics);
+        }
+
+        return savedBasic;
     }
+    return null;
+}
+
 
     public void delete(Long id) {
         BasicStats basic = getById(id);
