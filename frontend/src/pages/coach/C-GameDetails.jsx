@@ -9,6 +9,7 @@ function CGameDetails() {
   const teamId = params.get("teamId");
 
   const [players, setPlayers] = useState([]);
+  const [gameDetails, setGameDetails] = useState();
   const [basicStats,setBasicStats] = useState([]);
   const [advancedStats, setAdvancedStats] = useState([]);
   const [physicalMetrics, setPhysicalMetrics] = useState([]);
@@ -20,64 +21,85 @@ function CGameDetails() {
   const [selectedPlayerId, setSelectedPlayerId] = useState("");
   const [activeTab, setActiveTab] = useState("basic")
   useEffect(() => {
-    const fetchTeamPlayers = async () => {
-      if (!teamId) {
-        setError("No team ID provided. Cannot load players.");
-        setLoading(false);
-        return;
-      }
+  const fetchTeamPlayers = async () => {
+    if (!teamId) {
+      setError("No team ID provided. Cannot load players.");
+      setLoading(false);
+      return;
+    }
 
-      try {
-        const res = await api.get(`/players/get/by-team/${teamId}`);
-        setPlayers(res.data);
-      } catch (err) {
-        console.error("❌ Failed to load team players:", err);
-        setError("Failed to load team players.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    const fetchBasicStats = async () => {
-      try {
-        const res = await api.get(`/basic-stats/get/by-game/${gameId}`);
-        setBasicStats(res.data);
-      } catch (err) {
-        console.error("❌ Failed to load basic stats:", err);
-        setError("Failed to load basic stats.");
-      } finally {
-        setLoading(false);
-      }
-    };
+    try {
+      const res = await api.get(`/players/get/by-team/${teamId}`);
+      setPlayers(res.data);
+    } catch (err) {
+      console.error("❌ Failed to load team players:", err);
+      setError("Failed to load team players.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const fetchAdvancedStats = async () => {
-      try {
-        const res = await api.get(`/advanced-stats/get/by-game/${gameId}`);
-        setAdvancedStats(res.data);
-      } catch (err) {
-        console.error("❌ Failed to load basic stats:", err);
-        setError("Failed to load advanced stats.");
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchBasicStats = async () => {
+    try {
+      const res = await api.get(`/basic-stats/get/by-game/${gameId}`);
+      setBasicStats(res.data);
+    } catch (err) {
+      console.error("❌ Failed to load basic stats:", err);
+      setError("Failed to load basic stats.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const fetchPhysicalMetrics = async () => {
-      try {
-        const res = await api.get(`/physical-metrics/get/by-game/${gameId}`);
-        setPhysicalMetrics(res.data);
-      } catch (err) {
-        console.error("❌ Failed to load physical metrics stats:", err);
-        setError("Failed to load basic stats.");
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchAdvancedStats = async () => {
+    try {
+      const res = await api.get(`/advanced-stats/get/by-game/${gameId}`);
+      setAdvancedStats(res.data);
+    } catch (err) {
+      console.error("❌ Failed to load advanced stats:", err);
+      setError("Failed to load advanced stats.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  const fetchPhysicalMetrics = async () => {
+    try {
+      const res = await api.get(`/physical-metrics/get/by-game/${gameId}`);
+      setPhysicalMetrics(res.data);
+    } catch (err) {
+      console.error("❌ Failed to load physical metrics stats:", err);
+      setError("Failed to load physical metrics.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchGameDetails = async () => {
+    try {
+      const res = await api.get(`/games/get/${gameId}`);
+      setGameDetails(res.data);
+    } catch (err) {
+      console.error("❌ Failed to load game details:", err);
+      setError("Failed to load game details.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchGameDetails();
+
+  // Check if basicStatIds is not empty (length > 0) to trigger fetchBasicStats, fetchAdvancedStats, fetchPhysicalMetrics
+  if (gameDetails && gameDetails.basicStatIds && gameDetails.basicStatIds.length > 0) {
     fetchBasicStats();
     fetchAdvancedStats();
     fetchPhysicalMetrics();
-    fetchTeamPlayers();
-  }, [teamId]);
+  }
+
+  fetchTeamPlayers();
+}, [gameId, teamId, gameDetails]);
+ // Add gameDetails as a dependency to trigger effect after it's set
+
 
   const handleStatChange = (playerId, field, value) => {
     setBasicStatsInputs((prev) =>
