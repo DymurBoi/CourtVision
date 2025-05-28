@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalTime;
 import java.util.List;
-
 @Service
 public class PhysicalBasedMetricsStatsService {
 
@@ -19,26 +19,23 @@ public class PhysicalBasedMetricsStatsService {
 
     @Autowired
     private GameRepository gameRepo;
+
     @Autowired
     private BasicStatsRepository basicStatsRepo;
 
-    // Get All
     public List<PhysicalBasedMetricsStats> getAll() {
         return metricsRepo.findAll();
     }
 
-    // Get by ID
     public PhysicalBasedMetricsStats getById(Long id) {
         return metricsRepo.findById(id).orElse(null);
     }
 
-    //Get by Game ID
     public List<PhysicalBasedMetricsStats> getByGameId(Long gameId) {
         Game game = gameRepo.findById(gameId).orElse(null);
         return game != null ? metricsRepo.findByGame(game) : List.of();
     }
 
-    //Create from BasicStats
     public PhysicalBasedMetricsStats createFrom(BasicStats basicStats) {
         if (basicStats == null || basicStats.getGame() == null) return null;
 
@@ -46,12 +43,12 @@ public class PhysicalBasedMetricsStatsService {
         Team team = game.getTeam();
         if (team == null || team.getPlayers() == null || team.getPlayers().isEmpty()) return null;
 
-        Player player = team.getPlayers().get(0); // You can improve this by linking the actual player in the future
+        Player player = team.getPlayers().get(0);  // TODO: Adjust to match correct player
 
         PhysicalRecords record = physicalRepo.findByPlayer(player);
         if (record == null) return null;
 
-        PhysicalBasedMetricsStats stats = computeMetrics(record);
+        PhysicalBasedMetricsStats stats = computeMetrics(record, basicStats);
         stats.setBasicStats(basicStats);
         stats.setGame(game);
         stats.setPhysicalRecord(record);
@@ -59,26 +56,22 @@ public class PhysicalBasedMetricsStatsService {
         return metricsRepo.save(stats);
     }
 
-    //Update by ID
     public PhysicalBasedMetricsStats update(Long id, PhysicalBasedMetricsStats updated) {
         PhysicalBasedMetricsStats existing = metricsRepo.findById(id).orElse(null);
         if (existing == null) return null;
 
-        existing.setAthleticPerformanceIndex(updated.getAthleticPerformanceIndex());
-        existing.setDefensiveDisruptionRating(updated.getDefensiveDisruptionRating());
-        existing.setReboundPotentialIndex(updated.getReboundPotentialIndex());
-        existing.setMobilityAdjustedBuildScore(updated.getMobilityAdjustedBuildScore());
-        existing.setPositionSuitabilityIndex(updated.getPositionSuitabilityIndex());
+        existing.setFinishingEfficiency(updated.getFinishingEfficiency());
+        existing.setReboundingEfficiency(updated.getReboundingEfficiency());
+        existing.setDefensiveActivityIndex(updated.getDefensiveActivityIndex());
+        existing.setPhysicalEfficiencyRating(updated.getPhysicalEfficiencyRating());
 
         return metricsRepo.save(existing);
     }
 
-    //Delete by ID
     public void delete(Long id) {
         metricsRepo.deleteById(id);
     }
 
-    //Delete by Game
     public void deleteByGame(Game game) {
         PhysicalBasedMetricsStats stats = metricsRepo.findSingleByGame(game);
         if (stats != null) {
@@ -86,39 +79,62 @@ public class PhysicalBasedMetricsStatsService {
         }
     }
 
-    //Metric Computation
-    private PhysicalBasedMetricsStats computeMetrics(PhysicalRecords record) {
-        BigDecimal height = record.getHeight();
-        BigDecimal wingspan = record.getWingspan();
-        BigDecimal vertical = record.getVertical();
-        BigDecimal weight = record.getWeight();
+    private PhysicalBasedMetricsStats computeMetrics(PhysicalRecords record, BasicStats basicStats) {
+        double height = record.getHeight().doubleValue();
+        double wingspan = record.getWingspan().doubleValue();
+        double vertical = record.getVertical().doubleValue();
+        double weight = record.getWeight().doubleValue();
 
-        double Z_vert = vertical.doubleValue();
-        double Z_speed = 1.0; // Placeholder
-        double Z_agility = 1.0; // Placeholder
-        double Z_wingspan = wingspan.doubleValue();
+        double twoPtAttempts = basicStats.getTwoPtAttempts();
+        double twoPtMade = basicStats.getTwoPtMade();
+        double threePtAttempts = basicStats.getThreePtAttempts();
+        double ftAttempts = basicStats.getFtAttempts();
+        double gamePoints = basicStats.getGamePoints();
+        double assists = basicStats.getAssists();
+        double oFRebounds = basicStats.getoFRebounds();
+        double dFRebounds = basicStats.getdFRebounds();
+        double blocks = basicStats.getBlocks();
+        double steals = basicStats.getSteals();
+        double turnovers = basicStats.getTurnovers();
 
-        double api = (Z_vert + Z_speed + Z_agility + Z_wingspan) / 4;
-        double ddr = (1 + 1) * (wingspan.doubleValue() / height.doubleValue() + 1.0) / 2;
-        double rpi = (height.doubleValue() + 0.5 * wingspan.doubleValue()) / weight.doubleValue();
-        double mabs = (height.doubleValue() + wingspan.doubleValue()) / weight.doubleValue();
-        double psi = (wingspan.doubleValue() / height.doubleValue()) + 2.0; // 1 + 1 as constant part
+        LocalTime minutesTime = basicStats.getMinutes().toLocalTime();
+        long minutesInSeconds = minutesTime.toSecondOfDay();
+
+        double wingspanToHeightRatio = wingspan / height / 1.06;
+
+        double finishingEfficiency = (twoPtAttempts > 0)
+                ? (twoPtMade / twoPtAttempts) / (0.52 + 0.25 * (vertical / 34) + 0.1 * wingspanToHeightRatio)
+                : 0;
+
+        double reboundingEfficiency = (minutesInSeconds > 0)
+                ? ((oFRebounds + dFRebounds) / minutesInSeconds)
+                / (0.008 + 0.02 * wingspanToHeightRatio + 0.015 * (vertical / 34))
+                : 0;
+
+        double defensiveActivityIndex = (blocks + steals)
+                / (1.0 + 0.25 * wingspanToHeightRatio + 0.15 * (vertical / 34));
+
+        double tsAttempts = twoPtAttempts + threePtAttempts + 0.44 * ftAttempts;
+        double tsPct = (tsAttempts > 0) ? gamePoints / (2.0 * tsAttempts) : 0;
+
+        double PER_Lite = (tsPct + 0.45 * assists + 0.35 * (oFRebounds + dFRebounds) +
+                0.6 * (steals + blocks) - 0.5 * turnovers) *
+                (0.5 + 0.5 * finishingEfficiency);
 
         PhysicalBasedMetricsStats stats = new PhysicalBasedMetricsStats();
-        stats.setAthleticPerformanceIndex(api);
-        stats.setDefensiveDisruptionRating(ddr);
-        stats.setReboundPotentialIndex(rpi);
-        stats.setMobilityAdjustedBuildScore(mabs);
-        stats.setPositionSuitabilityIndex(psi);
+        stats.setFinishingEfficiency(finishingEfficiency);
+        stats.setReboundingEfficiency(reboundingEfficiency);
+        stats.setDefensiveActivityIndex(defensiveActivityIndex);
+        stats.setPhysicalEfficiencyRating(PER_Lite);
 
         return stats;
     }
+
     public PhysicalBasedMetricsStats getByBasicStatsId(Long basicStatsId) {
         BasicStats basic = basicStatsRepo.findById(basicStatsId).orElse(null);
         return basic != null ? metricsRepo.findByBasicStats(basic) : null;
     }
 
-    //delete by basicstats
     public void deleteByBasicStats(BasicStats basicStats) {
         PhysicalBasedMetricsStats stats = metricsRepo.findByBasicStats(basicStats);
         if (stats != null) {

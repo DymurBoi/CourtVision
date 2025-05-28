@@ -14,11 +14,10 @@ public class PhysicalBasedMetricsStats {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long physicalBasedMetricsStatsId;
 
-    private double athleticPerformanceIndex;
-    private double defensiveDisruptionRating;
-    private double reboundPotentialIndex;
-    private double mobilityAdjustedBuildScore;
-    private double positionSuitabilityIndex;
+    private double finishingEfficiency;
+    private double reboundingEfficiency;
+    private double defensiveActivityIndex;
+    private double physicalEfficiencyRating;
 
     @OneToOne
     @JoinColumn(name = "basic_stats_id")
@@ -44,44 +43,36 @@ public class PhysicalBasedMetricsStats {
         this.physicalBasedMetricsStatsId = physicalBasedMetricsStatsId;
     }
 
-    public double getAthleticPerformanceIndex() {
-        return athleticPerformanceIndex;
+    public double getFinishingEfficiency() {
+        return finishingEfficiency;
     }
 
-    public void setAthleticPerformanceIndex(double athleticPerformanceIndex) {
-        this.athleticPerformanceIndex = athleticPerformanceIndex;
+    public void setFinishingEfficiency(double finishingEfficiency) {
+        this.finishingEfficiency = finishingEfficiency;
     }
 
-    public double getDefensiveDisruptionRating() {
-        return defensiveDisruptionRating;
+    public double getReboundingEfficiency() {
+        return reboundingEfficiency;
     }
 
-    public void setDefensiveDisruptionRating(double defensiveDisruptionRating) {
-        this.defensiveDisruptionRating = defensiveDisruptionRating;
+    public void setReboundingEfficiency(double reboundingEfficiency) {
+        this.reboundingEfficiency = reboundingEfficiency;
     }
 
-    public double getReboundPotentialIndex() {
-        return reboundPotentialIndex;
+    public double getDefensiveActivityIndex() {
+        return defensiveActivityIndex;
     }
 
-    public void setReboundPotentialIndex(double reboundPotentialIndex) {
-        this.reboundPotentialIndex = reboundPotentialIndex;
+    public void setDefensiveActivityIndex(double defensiveActivityIndex) {
+        this.defensiveActivityIndex = defensiveActivityIndex;
     }
 
-    public double getMobilityAdjustedBuildScore() {
-        return mobilityAdjustedBuildScore;
+    public double getPhysicalEfficiencyRating() {
+        return physicalEfficiencyRating;
     }
 
-    public void setMobilityAdjustedBuildScore(double mobilityAdjustedBuildScore) {
-        this.mobilityAdjustedBuildScore = mobilityAdjustedBuildScore;
-    }
-
-    public double getPositionSuitabilityIndex() {
-        return positionSuitabilityIndex;
-    }
-
-    public void setPositionSuitabilityIndex(double positionSuitabilityIndex) {
-        this.positionSuitabilityIndex = positionSuitabilityIndex;
+    public void setPhysicalEfficiencyRating(double physicalEfficiencyRating) {
+        this.physicalEfficiencyRating = physicalEfficiencyRating;
     }
 
     public BasicStats getBasicStats() {

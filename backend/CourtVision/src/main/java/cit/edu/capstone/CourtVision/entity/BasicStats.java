@@ -35,6 +35,7 @@ public class BasicStats {
     private Time minutes;
     private int gamePoints;
 
+    //Relationship
     @ManyToOne
     @JoinColumn(name = "player_id")
     private Player player;
@@ -217,7 +218,5 @@ public class BasicStats {
         this.minutes = minutes;
     }
 
-
-    //Relationship
 
 }
