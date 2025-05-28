@@ -8,23 +8,69 @@ public class AdvancedStatsDTO {
     private double usg;
     private double assistRatio;
     private double turnoverRatio;
-    private double pie;
-    private double ortg;
-    private double drtg;
-    private double rebPercentage;
-    private double orbPercentage;
-    private double drbPercentage;
-    private double astPercentage;
-    private double stlPercentage;
-    private double blkPercentage;
-    private double tovPercentage;
     private double ftr;
-    
+
+    private double atRatio;
+    private double ftPercentage;
+    private double ortg;
+    private double usgPercentage;
+    private double pointsPerMinute;
+    private double shootingEfficiency;
+    private double pointsPerShot;
+
     private BasicStatsDTO basicStatsDTO;
     private GameDTO gameDTO;
 
     // Getters and Setters
 
+
+    public double getAtRatio() {
+        return atRatio;
+    }
+
+    public void setAtRatio(double atRatio) {
+        this.atRatio = atRatio;
+    }
+
+    public double getFtPercentage() {
+        return ftPercentage;
+    }
+
+    public void setFtPercentage(double ftPercentage) {
+        this.ftPercentage = ftPercentage;
+    }
+
+    public double getUsgPercentage() {
+        return usgPercentage;
+    }
+
+    public void setUsgPercentage(double usgPercentage) {
+        this.usgPercentage = usgPercentage;
+    }
+
+    public double getPointsPerMinute() {
+        return pointsPerMinute;
+    }
+
+    public void setPointsPerMinute(double pointsPerMinute) {
+        this.pointsPerMinute = pointsPerMinute;
+    }
+
+    public double getShootingEfficiency() {
+        return shootingEfficiency;
+    }
+
+    public void setShootingEfficiency(double shootingEfficiency) {
+        this.shootingEfficiency = shootingEfficiency;
+    }
+
+    public double getPointsPerShot() {
+        return pointsPerShot;
+    }
+
+    public void setPointsPerShot(double pointsPerShot) {
+        this.pointsPerShot = pointsPerShot;
+    }
 
     public Long getAdvancedStatsId() {
         return advancedStatsId;
@@ -99,13 +145,7 @@ public class AdvancedStatsDTO {
         this.turnoverRatio = turnoverRatio;
     }
 
-    public double getPie() {
-        return pie;
-    }
 
-    public void setPie(double pie) {
-        this.pie = pie;
-    }
 
     public double getOrtg() {
         return ortg;
@@ -113,70 +153,6 @@ public class AdvancedStatsDTO {
 
     public void setOrtg(double ortg) {
         this.ortg = ortg;
-    }
-
-    public double getDrtg() {
-        return drtg;
-    }
-
-    public void setDrtg(double drtg) {
-        this.drtg = drtg;
-    }
-
-    public double getRebPercentage() {
-        return rebPercentage;
-    }
-
-    public void setRebPercentage(double rebPercentage) {
-        this.rebPercentage = rebPercentage;
-    }
-
-    public double getOrbPercentage() {
-        return orbPercentage;
-    }
-
-    public void setOrbPercentage(double orbPercentage) {
-        this.orbPercentage = orbPercentage;
-    }
-
-    public double getDrbPercentage() {
-        return drbPercentage;
-    }
-
-    public void setDrbPercentage(double drbPercentage) {
-        this.drbPercentage = drbPercentage;
-    }
-
-    public double getAstPercentage() {
-        return astPercentage;
-    }
-
-    public void setAstPercentage(double astPercentage) {
-        this.astPercentage = astPercentage;
-    }
-
-    public double getStlPercentage() {
-        return stlPercentage;
-    }
-
-    public void setStlPercentage(double stlPercentage) {
-        this.stlPercentage = stlPercentage;
-    }
-
-    public double getBlkPercentage() {
-        return blkPercentage;
-    }
-
-    public void setBlkPercentage(double blkPercentage) {
-        this.blkPercentage = blkPercentage;
-    }
-
-    public double getTovPercentage() {
-        return tovPercentage;
-    }
-
-    public void setTovPercentage(double tovPercentage) {
-        this.tovPercentage = tovPercentage;
     }
 
     public double getFtr() {
