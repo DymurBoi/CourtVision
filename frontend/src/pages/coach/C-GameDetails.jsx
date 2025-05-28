@@ -217,7 +217,64 @@ useEffect(() => {
     (p) => !basicStatsInputs.some((stat) => stat.playerId === p.playerId)
   );
 
-  
+  const toggleBasicStatEdit = (index) => {
+  setBasicStats((prev) =>
+    prev.map((stat, i) =>
+      i === index ? { ...stat, editable: !stat.editable } : stat
+    )
+  );
+};
+
+const updateBasicStat = (index, field, value) => {
+  setBasicStats((prev) =>
+    prev.map((stat, i) =>
+      i === index ? { ...stat, [field]: value } : stat
+    )
+  );
+};
+
+const saveBasicStat = async (stat) => {
+  setSaving(true);
+  try {
+    const payload = {
+      basicStatId: stat.basicStatId,
+      minutes: stat.minutes,
+      twoPtAttempts: Number(stat.twoPtAttempts),
+      twoPtMade: Number(stat.twoPtMade),
+      threePtAttempts: Number(stat.threePtAttempts),
+      threePtMade: Number(stat.threePtMade),
+      ftAttempts: Number(stat.ftAttempts),
+      ftMade: Number(stat.ftMade),
+      steals: Number(stat.steals),
+      turnovers: Number(stat.turnovers),
+      assists: Number(stat.assists),
+      blocks: Number(stat.blocks),
+      oFRebounds: Number(stat.oFRebounds),
+      dFRebounds: Number(stat.dFRebounds),
+      pFouls: Number(stat.pFouls),
+      dFouls: Number(stat.dFouls),
+      plusMinus: stat.plusMinus || 0,
+      player: { playerId: stat.playerId },
+      game: { gameId: Number(gameId) },
+    };
+
+    const res = await api.put(`/basic-stats/put/${stat.basicStatId}`, payload);
+
+    setBasicStats((prev) =>
+      prev.map((s) =>
+        s.basicStatId === stat.basicStatId ? { ...s, editable: false } : s
+      )
+    );
+
+    alert(`✅ Saved updates for ${stat.playerName}`);
+  } catch (err) {
+    console.error("Failed to save basic stat:", err);
+    alert("❌ Failed to save stat.");
+  } finally {
+    setSaving(false);
+  }
+};
+
   if (loading) return <div className="loading">Loading players...</div>;
   if (error) return <div className="error">{error}</div>;
 
@@ -358,112 +415,113 @@ useEffect(() => {
         </table>
         <div className="stats-content">
          {activeTab === "basic" && (
-        <div className="stats-table-container">
-            <table className="stats-table">
-              <thead>
-                <tr>
-                  <th>Player Name</th>
-                  <th>MIN</th>
-                  <th>PTS</th>
-                  <th>2 PTS M/A</th>
-                  <th>3 PTS M/A</th>
-                  <th>FT M/A</th>
-                  <th>STL</th>
-                  <th>TO</th>
-                  <th>AST</th>
-                  <th>BLK</th>
-                  <th>OREB</th>
-                  <th>DREB</th>
-                  <th>FOULS PF/FD</th>
-                </tr>
-                {showAddRow && (
-              <tr>
-                <td colSpan={17}>
-                  <form
-                    onSubmit={e => {
-                      e.preventDefault();
-                      handleAddRow();
-                    }}
-                    style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}
-                  >
-                    <select
-                      value={selectedPlayerId}
-                      onChange={(e) => setSelectedPlayerId(Number(e.target.value))}
-                      required
-                    >
-                      <option value="">Select Player</option>
-                      {availablePlayers.map((player) => (
-                        <option key={player.playerId} value={player.playerId}>
-                          {player.fname} {player.lname}
-                        </option>
-                      ))}
-                    </select>
-                    <input
-                      type="text"
-                      placeholder="MIN"
-                      value={"00:00:00"}
-                      disabled
-                      style={{ width: "80px" }}
-                    />
-                    {[
-                      "twoPtAttempts",
-                      "twoPtMade",
-                      "threePtAttempts",
-                      "threePtMade",
-                      "ftAttempts",
-                      "ftMade",
-                      "assists",
-                      "oFRebounds",
-                      "dFRebounds",
-                      "blocks",
-                      "steals",
-                      "turnovers",
-                      "pFouls",
-                      "dFouls",
-                    ].map((field) => (
-                      <input
-                        key={field}
-                        type="number"
-                        value={0}
-                        disabled
-                        style={{ width: "60px" }}
-                        placeholder={field}
-                      />
-                    ))}
-                    <button
-                      type="submit"
-                      disabled={!selectedPlayerId}
-                      className="save-button"
-                    >
-                      Add
-                    </button>
-                  </form>
-                </td>
-              </tr>
-            )}
-              </thead>
-              <tbody>
-                {basicStats.map((playerStat) => (
-                  <tr key={playerStat.basicStatId}>
-                    <td>{playerStat.playerName}</td>
-                    <td>{playerStat.minutes}</td>
-                    <td>{playerStat.gamePoints}</td>
-                    <td>{playerStat.twoPtMade}/{playerStat.twoPtAttempts}</td>
-                    <td>{playerStat.threePtMade}/{playerStat.threePtAttempts}</td>
-                    <td>{playerStat.ftMade}/{playerStat.ftAttempts}</td>
-                    <td>{playerStat.steals}</td>
-                    <td>{playerStat.turnovers}</td>
-                    <td>{playerStat.assists}</td>
-                    <td>{playerStat.blocks}</td>
-                    <td>{playerStat.oFRebounds}</td>
-                    <td>{playerStat.dFRebounds}</td>
-                    <td>{playerStat.pFouls}/{playerStat.dFouls}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+  <div className="stats-table-container">
+    <table className="stats-table">
+      <thead>
+        <tr>
+          <th>Player Name</th>
+          <th>MIN</th>
+          <th>PTS</th>
+          <th>2 PTS M/A</th>
+          <th>3 PTS M/A</th>
+          <th>FT M/A</th>
+          <th>STL</th>
+          <th>TO</th>
+          <th>AST</th>
+          <th>BLK</th>
+          <th>OREB</th>
+          <th>DREB</th>
+          <th>FOULS PF/FD</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {basicStats.map((stat, index) => (
+          <tr key={stat.basicStatId}>
+            <td>{stat.playerName}</td>
+            <td>
+              <input
+                type="text"
+                value={stat.minutes}
+                onChange={(e) =>
+                  updateBasicStat(index, "minutes", e.target.value)
+                }
+                style={{ width: "80px" }}
+                readOnly={!stat.editable}
+              />
+            </td>
+            <td>{stat.gamePoints}</td> {/* PTS is display only */}
+            <td>
+              <input
+                type="text"
+                value={`${stat.twoPtMade}/${stat.twoPtAttempts}`}
+                readOnly
+                style={{ width: "80px" }}
+              />
+            </td>
+            <td>
+              <input
+                type="text"
+                value={`${stat.threePtMade}/${stat.threePtAttempts}`}
+                readOnly
+                style={{ width: "80px" }}
+              />
+            </td>
+            <td>
+              <input
+                type="text"
+                value={`${stat.ftMade}/${stat.ftAttempts}`}
+                readOnly
+                style={{ width: "80px" }}
+              />
+            </td>
+            {[
+              "steals",
+              "turnovers",
+              "assists",
+              "blocks",
+              "oFRebounds",
+              "dFRebounds",
+              "pFouls",
+              "dFouls",
+            ].map((field) => (
+              <td key={field}>
+                <input
+                  type="number"
+                  value={stat[field]}
+                  onChange={(e) =>
+                    updateBasicStat(index, field, e.target.value)
+                  }
+                  style={{ width: "60px" }}
+                  readOnly={!stat.editable}
+                />
+              </td>
+            ))}
+            <td>
+              {stat.editable ? (
+                <button
+                  onClick={() => saveBasicStat(stat)}
+                  disabled={saving}
+                  className="save-button"
+                >
+                  Save
+                </button>
+              ) : (
+                <button
+                  onClick={() => toggleBasicStatEdit(index)}
+                  className="edit-button"
+                >
+                  Edit
+                </button>
+              )}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)}
+
         {activeTab === "advanced" && (
           <div className="stats-table-container">
             <table className="stats-table">
