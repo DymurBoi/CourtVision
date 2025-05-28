@@ -31,13 +31,11 @@ public class BasicStatsMapper {
             Player temp=new Player();
             temp=stat.getPlayer();
             dto.setPlayerName(temp.getFname()+" "+temp.getLname());
+            dto.setPlayerId(temp.getPlayerId());
         }
 
         if (stat.getGame() != null) {
             dto.setGameDTO(GameMapper.toDTO(stat.getGame()));
-        }
-        if (stat.getPlayerAverages() != null) {
-            dto.setPlayerAveragesDTO(PlayerAveragesMapper.toDTO(stat.getPlayerAverages()));
         }
 
         return dto;

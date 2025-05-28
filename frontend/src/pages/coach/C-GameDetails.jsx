@@ -39,7 +39,6 @@ useEffect(() => {
     try {
       const gameRes = await api.get(`/games/get/${gameId}`);
       setGameDetails(gameRes.data);
-
       await api.get(`/players/get/by-team/${teamId}`).then(res => setPlayers(res.data));
 
       if (gameRes.data.basicStatIds?.length > 0 && !hasFetchedStats) {
@@ -56,57 +55,10 @@ useEffect(() => {
       setLoading(false);
     }
   };
-
+  
   fetchEverything();
 }, [gameId, teamId]);
- // Add gameDetails as a dependency to trigger effect after it's set
-
- 
-
-  const handleStatChange = (playerId, field, value) => {
-    setBasicStatsInputs((prev) =>
-      prev.map((input) =>
-        input.playerId === playerId ? { ...input, [field]: value } : input
-      )
-    );
-  };
-
-  // Add a new row for the selected player
-  const handleAddRow = () => {
-    if (!selectedPlayerId) return;
-    const player = players.find((p) => p.playerId === selectedPlayerId);
-    if (!player) return;
-    setBasicStatsInputs((prev) => [
-      ...prev,
-      {
-        playerId: player.playerId,
-        fname: player.fname,
-        lname: player.lname,
-        twoPtAttempts: 0,
-        twoPtMade: 0,
-        threePtAttempts: 0,
-        threePtMade: 0,
-        ftAttempts: 0,
-        ftMade: 0,
-        assists: 0,
-        oFRebounds: 0,
-        dFRebounds: 0,
-        blocks: 0,
-        steals: 0,
-        turnovers: 0,
-        pFouls: 0,
-        dFouls: 0,
-        plusMinus: 0,
-        minutes: "00:00:00",
-        saved: false,
-        editable: true,
-        basicStatId: null, // for PUT after POST
-      },
-    ]);
-    setShowAddRow(false);
-    setSelectedPlayerId("");
-  };
-
+  
   // POST to create new BasicStats
   const handleCreateStats = async (playerStat) => {
     setSaving(true);

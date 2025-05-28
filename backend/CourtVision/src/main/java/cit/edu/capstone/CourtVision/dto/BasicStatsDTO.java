@@ -21,39 +21,30 @@ public class BasicStatsDTO {
     private int plusMinus;
     private Time minutes;
     private int gamePoints;
-
-    private AdvancedStatsDTO advancedStatsDTO;
-    private GameDTO gameDTO;
-    private PlayerAveragesDTO playerAveragesDTO;
+    private Long playerId;
     private String playerName;
-
+    private GameDTO gameDTO;
+    
 
     // Getters and Setters
+    public Long getPlayerId() {
+        return playerId;
+    }
+    public void setPlayerId(Long playerId) {
+        this.playerId = playerId;
+    }
     public int getGamePoints() {
         return gamePoints;
     }
     public void setGamePoints(int gamePoints) {
         this.gamePoints = gamePoints;
     }
-    public PlayerAveragesDTO getPlayerAveragesDTO() {
-        return playerAveragesDTO;
-    }
-    public void setPlayerAveragesDTO(PlayerAveragesDTO playerAveragesDTO) {
-        this.playerAveragesDTO = playerAveragesDTO;
-    }
+
     public String getPlayerName() {
         return playerName;
     }
     public void setPlayerName(String playerName) {
         this.playerName = playerName;
-    }
-
-    public AdvancedStatsDTO getAdvancedStatsDTO() {
-        return advancedStatsDTO;
-    }
-
-    public void setAdvancedStatsDTO(AdvancedStatsDTO advancedStatsDTO) {
-        this.advancedStatsDTO = advancedStatsDTO;
     }
 
     public GameDTO getGameDTO() {
