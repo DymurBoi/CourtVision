@@ -100,7 +100,7 @@ useEffect(() => {
             : input
         )
       );
-      alert(`✅ Stats created for player ${playerStat.playerId}`);
+      alert(`✅ Stats created for player`);
     } catch (error) {
       console.error(`❌ Failed to create basic stats: `, error);
       alert(`❌ Failed to create stats for player ${playerStat.playerId}`);
