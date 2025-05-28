@@ -25,11 +25,11 @@ public class PhysicalRecords {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long recordId;
 
-    private BigDecimal weight;
-    private BigDecimal height;
-    private BigDecimal wingspan;
-    private BigDecimal vertical;
-    private BigDecimal bmi;
+    private double weight;
+    private double height;
+    private double wingspan;
+    private double vertical;
+    private double bmi;
     private LocalDate dateRecorded;
 
     @OneToOne
@@ -46,43 +46,43 @@ public class PhysicalRecords {
         this.recordId = recordId;
     }
 
-    public BigDecimal getWeight() {
+    public double getWeight() {
         return weight;
     }
 
-    public void setWeight(BigDecimal weight) {
+    public void setWeight(double weight) {
         this.weight = weight;
     }
 
-    public BigDecimal getHeight() {
+    public double getHeight() {
         return height;
     }
 
-    public void setHeight(BigDecimal height) {
+    public void setHeight(double height) {
         this.height = height;
     }
 
-    public BigDecimal getWingspan() {
+    public double getWingspan() {
         return wingspan;
     }
 
-    public void setWingspan(BigDecimal wingspan) {
+    public void setWingspan(double wingspan) {
         this.wingspan = wingspan;
     }
 
-    public BigDecimal getVertical() {
+    public double getVertical() {
         return vertical;
     }
 
-    public void setVertical(BigDecimal vertical) {
+    public void setVertical(double vertical) {
         this.vertical = vertical;
     }
 
-    public BigDecimal getBmi() {
+    public double getBmi() {
         return bmi;
     }
 
-    public void setBmi(BigDecimal bmi) {
+    public void setBmi(double bmi) {
         this.bmi = bmi;
     }
 

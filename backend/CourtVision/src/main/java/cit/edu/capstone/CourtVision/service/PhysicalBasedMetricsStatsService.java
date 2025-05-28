@@ -80,10 +80,10 @@ public class PhysicalBasedMetricsStatsService {
     }
 
     private PhysicalBasedMetricsStats computeMetrics(PhysicalRecords record, BasicStats basicStats) {
-        double height = record.getHeight().doubleValue();
-        double wingspan = record.getWingspan().doubleValue();
-        double vertical = record.getVertical().doubleValue();
-        double weight = record.getWeight().doubleValue();
+        double height = record.getHeight();
+        double wingspan = record.getWingspan();
+        double vertical = record.getVertical();
+        double weight = record.getWeight();
 
         double twoPtAttempts = basicStats.getTwoPtAttempts();
         double twoPtMade = basicStats.getTwoPtMade();

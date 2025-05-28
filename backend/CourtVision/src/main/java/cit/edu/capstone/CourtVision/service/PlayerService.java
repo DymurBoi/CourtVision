@@ -53,11 +53,11 @@ public class PlayerService {
 
         // Manually create PhysicalRecords without Lombok builder
         PhysicalRecords initialRecord = new PhysicalRecords();
-        initialRecord.setWeight(BigDecimal.ZERO);
-        initialRecord.setHeight(BigDecimal.ZERO);
-        initialRecord.setWingspan(BigDecimal.ZERO);
-        initialRecord.setVertical(BigDecimal.ZERO);
-        initialRecord.setBmi(BigDecimal.ZERO);
+        initialRecord.setWeight(0);
+        initialRecord.setHeight(0);
+        initialRecord.setWingspan(0);
+        initialRecord.setVertical(0);
+        initialRecord.setBmi(0);
         initialRecord.setDateRecorded(LocalDate.now());
         initialRecord.setPlayer(savedPlayer);
 

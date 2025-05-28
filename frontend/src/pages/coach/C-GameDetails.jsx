@@ -336,22 +336,18 @@ const saveBasicStat = async (stat) => {
               <thead>
                 <tr>
                   <th>Player Name</th>
+                  <th>UPER</th>
                   <th>EFG</th>
                   <th>TS</th>
-                  <th>USG</th>
+                  <th>USG %</th>
                   <th>AST RATIO</th>
                   <th>TO RATIO</th>
-                  <th>PIE</th>
-                  <th>ORTG</th>
-                  <th>DRTG</th>
-                  <th>REB %</th>
-                  <th>ORB %</th>
-                  <th>DRB %</th>
-                  <th>AST %</th>
-                  <th>STL %</th>
-                  <th>BLK %</th>
-                  <th>TOV %</th>
                   <th>FTR</th>
+                  <th>AST:TO</th>
+                  <th>ORTG</th>
+                  <th>PPM</th>
+                  <th>SE</th>
+                  <th>PPS %</th>
                   
                 </tr>
               </thead>
@@ -359,22 +355,18 @@ const saveBasicStat = async (stat) => {
                 {advancedStats.map((playerStat) => (
                   <tr key={playerStat.advancedStatId}>
                     <td>{playerStat.basicStatsDTO.playerName}</td>
+                    <td>{playerStat.uPER}</td>
                     <td>{playerStat.eFG}</td>
                     <td>{playerStat.ts}</td>
-                    <td>{playerStat.usg}</td>
+                    <td>{playerStat.usgPercentage}</td>
                     <td>{playerStat.assistRatio}</td>
                     <td>{playerStat.turnoverRatio}</td>
-                    <td>{playerStat.pie}</td>
-                    <td>{playerStat.ortg}</td>
-                    <td>{playerStat.drtg}</td>
-                    <td>{playerStat.rebPercentage}</td>
-                    <td>{playerStat.orbPercentage}</td>
-                    <td>{playerStat.drbPercentage}</td>
-                    <td>{playerStat.astPercentage}</td>
-                    <td>{playerStat.stlPercentage}</td>
-                    <td>{playerStat.blkPercentage}</td>
-                    <td>{playerStat.tovPercentage}</td>
                     <td>{playerStat.ftr}</td>
+                    <td>{playerStat.atRatio}</td>
+                    <td>{playerStat.ortg}</td>
+                    <td>{playerStat.pointsPerMinute}</td>
+                    <td>{playerStat.shootingEfficiency}</td>
+                    <td>{playerStat.pointsPerShot}</td>
                   </tr>
                 ))}
               </tbody>

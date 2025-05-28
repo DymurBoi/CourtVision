@@ -115,79 +115,74 @@ function PGameDetails() {
         )}
 
         {activeTab === "advanced" && (
-          <table className="stats-table">
-            <thead>
-              <tr>
-                <th>Player Name</th>
-                <th>EFG</th>
-                <th>TS</th>
-                <th>USG</th>
-                <th>AST RATIO</th>
-                <th>TO RATIO</th>
-                <th>PIE</th>
-                <th>ORTG</th>
-                <th>DRTG</th>
-                <th>REB %</th>
-                <th>ORB %</th>
-                <th>DRB %</th>
-                <th>AST %</th>
-                <th>STL %</th>
-                <th>BLK %</th>
-                <th>TOV %</th>
-                <th>FTR</th>
-              </tr>
-            </thead>
-            <tbody>
-              {advancedStats.map((stat) => (
-                <tr key={stat.advancedStatId}>
-                  <td>{stat.basicStatsDTO.playerName}</td>
-                  <td>{stat.eFG}</td>
-                  <td>{stat.ts}</td>
-                  <td>{stat.usg}</td>
-                  <td>{stat.assistRatio}</td>
-                  <td>{stat.turnoverRatio}</td>
-                  <td>{stat.pie}</td>
-                  <td>{stat.ortg}</td>
-                  <td>{stat.drtg}</td>
-                  <td>{stat.rebPercentage}</td>
-                  <td>{stat.orbPercentage}</td>
-                  <td>{stat.drbPercentage}</td>
-                  <td>{stat.astPercentage}</td>
-                  <td>{stat.stlPercentage}</td>
-                  <td>{stat.blkPercentage}</td>
-                  <td>{stat.tovPercentage}</td>
-                  <td>{stat.ftr}</td>
+          <div className="stats-table-container">
+            <table className="stats-table">
+              <thead>
+                <tr>
+                  <th>Player Name</th>
+                  <th>UPER</th>
+                  <th>EFG</th>
+                  <th>TS</th>
+                  <th>USG %</th>
+                  <th>AST RATIO</th>
+                  <th>TO RATIO</th>
+                  <th>FTR</th>
+                  <th>AST:TO</th>
+                  <th>ORTG</th>
+                  <th>PPM</th>
+                  <th>SE</th>
+                  <th>PPS %</th>
+                  
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {advancedStats.map((playerStat) => (
+                  <tr key={playerStat.advancedStatId}>
+                    <td>{playerStat.basicStatsDTO.playerName}</td>
+                    <td>{playerStat.uPER}</td>
+                    <td>{playerStat.eFG}</td>
+                    <td>{playerStat.ts}</td>
+                    <td>{playerStat.usgPercentage}</td>
+                    <td>{playerStat.assistRatio}</td>
+                    <td>{playerStat.turnoverRatio}</td>
+                    <td>{playerStat.ftr}</td>
+                    <td>{playerStat.atRatio}</td>
+                    <td>{playerStat.ortg}</td>
+                    <td>{playerStat.pointsPerMinute}</td>
+                    <td>{playerStat.shootingEfficiency}</td>
+                    <td>{playerStat.pointsPerShot}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
 
         {activeTab === "adjusted" && (
-          <table className="stats-table">
-            <thead>
-              <tr>
-                <th>Player Name</th>
-                <th>Athletic Performance Index</th>
-                <th>Defensive Disruption Rating</th>
-                <th>Rebound Potential Index</th>
-                <th>Mobility Adjusted Build Score</th>
-                <th>Position Suitability Index</th>
-              </tr>
-            </thead>
-            <tbody>
-              {physicalMetrics.map((stat) => (
-                <tr key={stat.physicalBasedMetricsStatsId}>
-                  <td>{stat.basicStatsDTO.playerName}</td>
-                  <td>{stat.athleticPerformanceIndex}</td>
-                  <td>{stat.defensiveDisruptionRating}</td>
-                  <td>{stat.reboundPotentialIndex}</td>
-                  <td>{stat.mobilityAdjustedBuildScore}</td>
-                  <td>{stat.positionSuitabilityIndex}</td>
+          <div className="stats-table-container">
+            <table className="stats-table">
+              <thead>
+                <tr>
+                  <th>Player Name</th>
+                  <th>Finishing Efficiency</th>
+                  <th>Rebounding Efficiency</th>
+                  <th>Defensive Activity Index</th>
+                  <th>Physical Efficiency Rating</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {physicalMetrics.map((playerStat) => (
+                  <tr key={playerStat.physicalBasedMetricsStatsId}>
+                    <td>{playerStat.basicStatsDTO.playerName}</td>
+                    <td>{playerStat.finishingEfficiency}</td>
+                    <td>{playerStat.reboundingEfficiency}</td>
+                    <td>{playerStat.defensiveActivityIndex}</td>
+                    <td>{playerStat.physicalEfficiencyRating}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </main>

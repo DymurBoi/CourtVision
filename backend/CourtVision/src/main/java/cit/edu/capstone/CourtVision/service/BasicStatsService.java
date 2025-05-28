@@ -30,6 +30,9 @@ public class BasicStatsService {
 
     @Autowired
     private PhysicalBasedMetricsStatsService physicalBasedMetricsStatsService;
+    
+    @Autowired
+    private PhysicalRecordService physicalRecordService;
 
     public List<BasicStats> getAll() {
         return basicStatsRepository.findAll();
@@ -214,7 +217,6 @@ public class BasicStatsService {
 
     private PhysicalBasedMetricsStats calculatePhysicalMetrics(BasicStats b) {
         PhysicalBasedMetricsStats p = new PhysicalBasedMetricsStats();
-
         // Safely parse time to seconds
         long minutesInSeconds = 0;
         if (b.getMinutes() != null) {
@@ -237,9 +239,13 @@ public class BasicStatsService {
         double steals = b.getSteals();
         double turnovers = b.getTurnovers();
 
-        double wingspan = 1.0;  // ← replace with real value later
-        double height = 1.0;    // ← replace with real value later
-        double vertical = 1.0;  // ← replace with real value later
+        PhysicalRecords temp=new PhysicalRecords();
+        Player tempPlayer=new Player();
+        tempPlayer=b.getPlayer();
+        temp= physicalRecordService.getByPlayerId(tempPlayer.getPlayerId());
+        double wingspan =  temp.getWingspan(); // ← replace with real value later
+        double height = temp.getHeight();    // ← replace with real value later
+        double vertical = temp.getVertical();  // ← replace with real value later
 
         // Finishing Efficiency
         double finishingEfficiency = (twoPtAttempts > 0)
@@ -258,9 +264,9 @@ public class BasicStatsService {
         double tsAttempts = twoPtAttempts + threePtAttempts + 0.44 * ftAttempts;
         double tsPct = (tsAttempts > 0) ? gamePoints / (2.0 * tsAttempts) : 0;
 
-        double FAI = 1.0;  // Finishing Ability Index — can adjust later if you have more metrics
+         // Finishing Ability Index — can adjust later if you have more metrics
         double physicalEfficiencyRating = (tsPct + 0.45 * assists + 0.35 * (oReb + dReb) +
-                0.6 * (steals + blocks) - 0.5 * turnovers) * (0.5 + 0.5 * FAI);
+                0.6 * (steals + blocks) - 0.5 * turnovers) * (0.5 + 0.5 * finishingEfficiency);
 
         // Set values
         p.setFinishingEfficiency(finishingEfficiency);
