@@ -12,6 +12,8 @@ public class PlayerDTO {
     private int jerseyNum;
     private boolean isCoach;
     private boolean isAdmin;
+    private String position;
+    
 
     // Team data
     private TeamDTO team;
@@ -22,7 +24,14 @@ public class PlayerDTO {
     private List<BasicStatsDTO> basicStatsList;
 
     // Getters and Setters
+    public String getPosition() {
+        return position;
+    }
 
+    public void setPosition(String position) {
+        this.position = position;
+    }
+    
     public Long getPlayerId() {
         return playerId;
     }

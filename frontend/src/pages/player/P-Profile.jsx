@@ -12,17 +12,7 @@ function PProfile() {
   const [loading, setLoading] = useState(true)
 
   // Player data state
-  const [playerData, setPlayerData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "••••••••",
-    birthDate: "",
-    jerseyNumber: "",
-    position: "",
-    teamId: "",
-    teamName: ""
-  })
+  const [playerData, setPlayerData] = useState();
 
   const [isEditing, setIsEditing] = useState(false)
   const [editedData, setEditedData] = useState({ ...playerData })
@@ -61,16 +51,17 @@ function PProfile() {
 
         // Map the backend field names to frontend field names
         setPlayerData({
-          firstName: data.fname || "",
-          lastName: data.lname || "",
-          email: data.email || "",
-          password: "••••••••", // Always mask password
-          birthDate: data.birthDate || "",
-          jerseyNumber: data.jerseyNum || "", // Using jerseyNum from backend
-          position: data.position || "",
-          teamId: data.teamId ? data.teamId.teamName : "",
-          teamName:data.teamName ? data.teamName: "Not Assigned",
-        });
+        firstName: data.fname || "",
+        lastName: data.lname || "",
+        email: data.email || "",
+        password: "••••••••", // Always mask password
+        birthDate: data.birthDate || "",
+        jerseyNumber: data.jerseyNum || "", // Using jerseyNum from backend
+        position: data.position || "",
+        teamId: data.teamId ? data.teamId.teamName : "", // Access teamName from team object
+        teamName: data.team ? data.team.teamName : "Not Assigned", // Correctly access teamName
+      });
+
         
         setEditedData({
           firstName: data.fname || "",

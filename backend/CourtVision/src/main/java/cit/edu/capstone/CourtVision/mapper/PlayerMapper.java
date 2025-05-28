@@ -20,6 +20,7 @@ public class PlayerMapper {
         dto.setEmail(player.getEmail());
         dto.setBirthDate(player.getBirthDate());
         dto.setJerseyNum(player.getJerseyNum());
+        dto.setPosition(player.getPosition());
         dto.setIsCoach(player.getIsCoach());
         dto.setIsAdmin(player.getIsAdmin());
 
