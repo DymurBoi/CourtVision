@@ -29,6 +29,7 @@ import AdminTeams from "./pages/admin/AdminTeams"
 import AdminMatches from "./pages/admin/AdminMatches"
 import AdminRequests from "./pages/admin/AdminRequests"
 import AdminLogin from "./pages/admin/AdminLogin"
+import PGameDetails from "./pages/player/P-GameDetails"
 import CoachManagement from "./pages/admin/CoachManagement" 
 import { AuthProvider } from "./components/AuthContext"
 import { useEffect } from "react"
@@ -234,11 +235,11 @@ function AppRoutes() {
           }
         />
         <Route
-          path="/player/match-details/:id"
+          path="/player/game-details/:id"
           element={
             <>
               <PlayerNavbar />
-              <PMatchDetails />
+              <PGameDetails />
             </>
           }
         />

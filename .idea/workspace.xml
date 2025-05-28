@@ -6,20 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="a29aee95-f4b1-4cdc-8e7e-d50e576a9f35" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/controller/PhysicalBasedMetricsStatsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/controller/PhysicalBasedMetricsStatsController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/controller/PlayerAveragesController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/controller/PlayerAveragesController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/dto/BasicStatsDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/dto/BasicStatsDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/dto/PlayerAveragesDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/dto/PlayerAveragesDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/entity/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/entity/Player.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/entity/PlayerAverages.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/entity/PlayerAverages.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/mapper/BasicStatsMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/mapper/BasicStatsMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/mapper/PlayerAveragesMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/mapper/PlayerAveragesMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/repository/BasicStatsRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/repository/BasicStatsRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/service/BasicStatsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/service/BasicStatsService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/service/PlayerAveragesService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/service/PlayerAveragesService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/service/PlayerService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/service/PlayerService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/CourtVision/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/CourtVision/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/player/P-Stats.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/player/P-Stats.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/player/P-Matches.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/player/P-Matches.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,17 +47,17 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Maven.CourtVision [org.springframework.boot:spring-boot-maven-plugin:3.4.4:run].executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "backup2",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/guest_sqp4brj/Documents/Clones/CourtVision-2"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Maven.CourtVision [org.springframework.boot:spring-boot-maven-plugin:3.4.4:run].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;backup2&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/guest_sqp4brj/Documents/Clones/CourtVision-2&quot;
   }
-}]]></component>
+}</component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
