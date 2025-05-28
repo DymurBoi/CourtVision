@@ -459,7 +459,19 @@ const saveBasicStat = async (stat) => {
                     <td>{playerStat.dFRebounds}</td>
                     <td>{playerStat.pFouls}</td>
                     <td>{playerStat.dFouls}</td>
-                    <td><EditIcon/></td>
+                    <td>
+                      <button
+                        onClick={() => {
+                        setSelectedStat(playerStat);
+                        setShowEditModal(true);
+                        }}
+                        className="icon-button"
+                        style={{ background: "none", border: "none", cursor: "pointer" }}
+                      >
+                      <EditIcon />
+                      </button>
+                    </td>
+
                   </tr>
                 ))}
               </tbody>
@@ -550,15 +562,15 @@ const saveBasicStat = async (stat) => {
       </div>
       </div>
       {showEditModal && (
-  <BasicStatsEditModal
-    initialData={selectedStat}
-    onClose={() => setShowEditModal(false)}
-    onSave={(updatedData) => {
+      <BasicStatsEditModal
+      initialData={selectedStat}
+      onClose={() => setShowEditModal(false)}
+      onSave={(updatedData) => {
       handleSaveStats({ ...selectedStat, ...updatedData });
       setShowEditModal(false);
-    }}
-  />
-)}
+      }}
+      />
+    )}
 
     </main>
     

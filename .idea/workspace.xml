@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="a29aee95-f4b1-4cdc-8e7e-d50e576a9f35" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/CourtVision/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/CourtVision/src/main/resources/application.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/pages/coach/C-GameDetails.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/coach/C-GameDetails.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
