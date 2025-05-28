@@ -144,6 +144,7 @@ public class BasicStatsService {
             PhysicalBasedMetricsStats updatedMetrics = calculatePhysicalMetrics(savedBasic);
             updatedMetrics.setPhysicalBasedMetricsStatsId(existingMetrics.getPhysicalBasedMetricsStatsId());
             updatedMetrics.setBasicStats(savedBasic);
+            updatedMetrics.setGame(savedBasic.getGame());
             physicalMetricsRepo.save(updatedMetrics);
         }
 

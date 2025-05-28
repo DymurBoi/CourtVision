@@ -148,7 +148,7 @@ useEffect(() => {
       );
       alert(`✅ Stats created for player ${playerStat.playerId}`);
     } catch (error) {
-      console.error("❌ Failed to create basic stats:", error);
+      console.error(`❌ Failed to create basic stats: `, error);
       alert(`❌ Failed to create stats for player ${playerStat.playerId}`);
     } finally {
       setSaving(false);
@@ -176,10 +176,7 @@ useEffect(() => {
         turnovers: Number(playerStat.turnovers),
         pFouls: Number(playerStat.pFouls),
         dFouls: Number(playerStat.dFouls),
-        plusMinus: 0,
-        minutes: playerStat.minutes,
-        player: { playerId: playerStat.playerId },
-        game: { gameId: Number(gameId) },
+        minutes: playerStat.minutes
       };
 
       const response = await api.put(`/basic-stats/put/${playerStat.basicStatId}`, payload);
@@ -197,13 +194,14 @@ useEffect(() => {
             : input
         )
       );
-      alert(`✅ Stats updated for player ${playerStat.playerId}`);
+      alert(`✅ Stats updated for player ${playerStat.playerName}`);
     } catch (error) {
       console.error("❌ Failed to update basic stats:", error);
       alert(`❌ Failed to update stats for player ${playerStat.playerId}`);
     } finally {
       setSaving(false);
     }
+    window.location.reload();
   };
 
   const handleToggleEdit = (playerId) => {
