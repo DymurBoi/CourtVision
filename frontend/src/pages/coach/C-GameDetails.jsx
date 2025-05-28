@@ -218,9 +218,9 @@ useEffect(() => {
   };
 
   // Players not yet added to the table
-  const availablePlayers = players.filter(
-    (p) => !basicStatsInputs.some((stat) => stat.playerId === p.playerId)
-  );
+ const availablePlayers = players.filter(
+  (p) => !basicStats.some((stat) => stat.playerId === p.playerId)
+);
 
   const toggleBasicStatEdit = (index) => {
   setBasicStats((prev) =>
@@ -471,16 +471,17 @@ const saveBasicStat = async (stat) => {
       />
     )}
 
-    {showAddModal && (
-      <CreateBasicStatsModal
-      playersList={players}
-      onClose={() => setShowAddModal(false)}
-      onSave={(updatedData) => {
+   {showAddModal && (
+  <CreateBasicStatsModal
+    playersList={availablePlayers} 
+    onClose={() => setShowAddModal(false)}
+    onSave={(updatedData) => {
       handleCreateStats({ ...selectedStat, ...updatedData });
       setShowAddModal(false);
-      }}
-      />
-    )}
+    }}
+  />
+)}
+
 
     </main>
     
