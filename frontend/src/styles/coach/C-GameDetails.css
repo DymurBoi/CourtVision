@@ -1,3 +1,22 @@
+.create-team-button {
+  background: linear-gradient(to right, var(--medium-purple), var(--bright-purple));
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-right: 10px;
+  margin-top: 12px;
+  max-height: 30px;
+  /* Push the button to the right */
+  margin-left: auto;
+}
+
 .game-header {
   background-color: white;
   border-radius: 12px;

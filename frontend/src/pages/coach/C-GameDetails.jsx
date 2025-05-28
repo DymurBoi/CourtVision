@@ -285,8 +285,10 @@ const saveBasicStat = async (stat) => {
 
   return (
     <main className="main-content">
+      
       <h1>Game Details — Game ID: {gameId}</h1>
       <h2>Team ID: {teamId}</h2>
+      
       <div className="stats-tabs">
         <button className={`tab-button ${activeTab === "basic" ? "active" : ""}`} onClick={() => setActiveTab("basic")}>
           Basic Stats
@@ -303,126 +305,21 @@ const saveBasicStat = async (stat) => {
         >
           Physical Based Metrics
         </button>
-      </div>
-
-      <div className="players-table-container">
-        <table className="players-table">
-          <thead>
-            <tr>
-              <th>Player Name</th>
-              <th>MIN</th>
-              <th>2PTA</th>
-              <th>2PTM</th>
-              <th>3PTA</th>
-              <th>3PTM</th>
-              <th>FTA</th>
-              <th>FTM</th>
-              <th>AST</th>
-              <th>OREB</th>
-              <th>DREB</th>
-              <th>BLK</th>
-              <th>STL</th>
-              <th>TO</th>
-              <th>PF</th>
-              <th>DF</th>
-              <th>Action</th>
-            </tr>
-            
-            <tr>
-              <td colSpan={17}>
-                <button
+        <button
+                  className="create-team-button"
                   onClick={() => setShowAddModal(true)}
                   disabled={availablePlayers.length === 0}
                 >
                   Add Row
                 </button>
-              </td>
-            </tr>
-          </thead>
-          <tbody>
-            {basicStatsInputs.map((playerStat) => (
-              <tr key={playerStat.playerId}>
-                <td>
-                  {playerStat.fname} {playerStat.lname}
-                </td>
-                <td>
-                  <input
-                    type="text"
-                    value={playerStat.minutes}
-                    onChange={(e) =>
-                      handleStatChange(playerStat.playerId, "minutes", e.target.value)
-                    }
-                    style={{ width: "80px" }}
-                    readOnly={!playerStat.editable}
-                  />
-                </td>
-                {[
-                  "twoPtAttempts",
-                  "twoPtMade",
-                  "threePtAttempts",
-                  "threePtMade",
-                  "ftAttempts",
-                  "ftMade",
-                  "assists",
-                  "oFRebounds",
-                  "dFRebounds",
-                  "blocks",
-                  "steals",
-                  "turnovers",
-                  "pFouls",
-                  "dFouls",
-                ].map((field) => (
-                  <td key={field}>
-                    <input
-                      type="number"
-                      value={playerStat[field]}
-                      onChange={(e) =>
-                        handleStatChange(playerStat.playerId, field, e.target.value)
-                      }
-                      style={{ width: "60px" }}
-                      readOnly={!playerStat.editable}
-                    />
-                  </td>
-                ))}
-                <td>
-                  {!playerStat.saved ? (
-                    // Only show Save (POST) button for new rows
-                    <button
-                      onClick={() => handleCreateStats(playerStat)}
-                      disabled={saving}
-                      className="save-button"
-                    >
-                      Save
-                    </button>
-                  ) : playerStat.editable ? (
-                    // Show Save (PUT) button when editing
-                    <button
-                      onClick={() => handleSaveStats(playerStat)}
-                      disabled={saving}
-                      className="save-button"
-                    >
-                      Save
-                    </button>
-                  ) : (
-                    // Show Edit button when not editing
-                    <button
-                    onClick={() => {
-                    setSelectedStat(playerStat);
-                    setShowEditModal(true);
-                    }}
-              className="edit-button"
-                  >
-                   Edit
-                </button>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      </div>
+
+      <div className="players-table-container">
         <div className="stats-content">
          {activeTab === "basic" && (
-  <div className="stats-table-container">
+          <div>
+            
+        <div className="stats-table-container">
             <table className="stats-table">
               <thead>
                 <tr>
@@ -477,6 +374,7 @@ const saveBasicStat = async (stat) => {
                 ))}
               </tbody>
             </table>
+          </div>
           </div>
 )}
 
