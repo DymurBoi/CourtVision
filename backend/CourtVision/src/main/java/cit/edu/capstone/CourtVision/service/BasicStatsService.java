@@ -53,8 +53,12 @@ public class BasicStatsService {
         advanced.setGame(game);
         advancedStatsRepository.save(advanced);
 
-        // Auto-create PhysicalBasedMetricsStats using the service (uses PhysicalRecords)
-        physicalBasedMetricsStatsService.createFrom(savedBasic);
+        // Auto-create PhysicalBasedMetricsStats
+        PhysicalBasedMetricsStats metrics = calculatePhysicalMetrics(savedBasic);
+        metrics.setBasicStats(savedBasic);
+        metrics.setGame(game);
+        physicalMetricsRepo.save(metrics);
+
 
         // Update player averages
         playerAveragesService.updateAverages(savedBasic.getPlayer().getPlayerId());
@@ -64,94 +68,62 @@ public class BasicStatsService {
 
 
     public BasicStats update(Long id, BasicStats updatedStats) {
-    BasicStats existing = getById(id);
-    if (existing != null) {
-        // Preserve existing values for fields that are not included in the update request
-        if (updatedStats.getTwoPtAttempts() != 0) {
+        BasicStats existing = getById(id);
+        if (existing != null) {
             existing.setTwoPtAttempts(updatedStats.getTwoPtAttempts());
-        }
-        if (updatedStats.getTwoPtMade() != 0) {
             existing.setTwoPtMade(updatedStats.getTwoPtMade());
-        }
-        if (updatedStats.getThreePtAttempts() != 0) {
             existing.setThreePtAttempts(updatedStats.getThreePtAttempts());
-        }
-        if (updatedStats.getThreePtMade() != 0) {
             existing.setThreePtMade(updatedStats.getThreePtMade());
-        }
-        if (updatedStats.getFtAttempts() != 0) {
             existing.setFtAttempts(updatedStats.getFtAttempts());
-        }
-        if (updatedStats.getFtMade() != 0) {
             existing.setFtMade(updatedStats.getFtMade());
-        }
-        if (updatedStats.getAssists() != 0) {
             existing.setAssists(updatedStats.getAssists());
-        }
-        if (updatedStats.getoFRebounds() != 0) {
             existing.setoFRebounds(updatedStats.getoFRebounds());
-        }
-        if (updatedStats.getdFRebounds() != 0) {
             existing.setdFRebounds(updatedStats.getdFRebounds());
-        }
-        if (updatedStats.getBlocks() != 0) {
             existing.setBlocks(updatedStats.getBlocks());
-        }
-        if (updatedStats.getSteals() != 0) {
             existing.setSteals(updatedStats.getSteals());
-        }
-        if (updatedStats.getTurnovers() != 0) {
             existing.setTurnovers(updatedStats.getTurnovers());
-        }
-        if (updatedStats.getpFouls() != 0) {
             existing.setpFouls(updatedStats.getpFouls());
-        }
-        if (updatedStats.getdFouls() != 0) {
             existing.setdFouls(updatedStats.getdFouls());
-        }
-        if (updatedStats.getPlusMinus() != 0) {
             existing.setPlusMinus(updatedStats.getPlusMinus());
-        }
-        if (updatedStats.getMinutes() != null) {
             existing.setMinutes(updatedStats.getMinutes());
-        }
-        if (updatedStats.getGamePoints() != 0) {
             existing.setGamePoints(updatedStats.getGamePoints());
-        }
-        
-        // Set the player and game associations if they're provided in the update request
-        if (updatedStats.getPlayer() != null) {
-            existing.setPlayer(updatedStats.getPlayer());
-        }
-        if (updatedStats.getGame() != null) {
-            existing.setGame(updatedStats.getGame());
-        }
 
-        // Save the updated record
-        BasicStats savedBasic = basicStatsRepository.save(existing);
+            if (updatedStats.getPlayer() != null) {
+                existing.setPlayer(updatedStats.getPlayer());
+            }
+            if (updatedStats.getGame() != null) {
+                existing.setGame(updatedStats.getGame());
+            }
 
-        // Update related AdvancedStats and PhysicalBasedMetricsStats if necessary
-        AdvancedStats existingAdvanced = advancedStatsRepository.findByBasicStats(savedBasic);
-        if (existingAdvanced != null) {
+            // Save the updated BasicStats
+            BasicStats savedBasic = basicStatsRepository.save(existing);
+            Game game = savedBasic.getGame();
+
+            // Recalculate and update AdvancedStats
             AdvancedStats updatedAdvanced = calculateAdvancedStats(savedBasic);
-            updatedAdvanced.setAdvancedStatsId(existingAdvanced.getAdvancedStatsId());
+            AdvancedStats existingAdvanced = advancedStatsRepository.findByBasicStats(savedBasic);
+            if (existingAdvanced != null) {
+                updatedAdvanced.setAdvancedStatsId(existingAdvanced.getAdvancedStatsId());
+            }
             updatedAdvanced.setBasicStats(savedBasic);
+            updatedAdvanced.setGame(game);
             advancedStatsRepository.save(updatedAdvanced);
-        }
 
-        PhysicalBasedMetricsStats existingMetrics = physicalMetricsRepo.findByBasicStats(savedBasic);
-        if (existingMetrics != null) {
-            PhysicalBasedMetricsStats updatedMetrics = calculatePhysicalMetrics(savedBasic);
-            updatedMetrics.setPhysicalBasedMetricsStatsId(existingMetrics.getPhysicalBasedMetricsStatsId());
-            updatedMetrics.setBasicStats(savedBasic);
-            updatedMetrics.setGame(savedBasic.getGame());
-            physicalMetricsRepo.save(updatedMetrics);
-        }
+            // Recalculate and update PhysicalBasedMetricsStats (mirroring AdvancedStats handling)
+            PhysicalBasedMetricsStats updatedMetrics = physicalBasedMetricsStatsService.createFrom(savedBasic);
+            PhysicalBasedMetricsStats existingMetrics = physicalMetricsRepo.findByBasicStats(savedBasic);
+            if (existingMetrics != null && updatedMetrics != null) {
+                updatedMetrics.setPhysicalBasedMetricsStatsId(existingMetrics.getPhysicalBasedMetricsStatsId());
+                updatedMetrics.setBasicStats(savedBasic);
+                updatedMetrics.setGame(game);
+                physicalMetricsRepo.save(updatedMetrics);
+            }
 
-        return savedBasic;
+            return savedBasic;
+        }
+        return null;
     }
-    return null;
-}
+
 
 
     public void delete(Long id) {
@@ -173,7 +145,7 @@ public class BasicStatsService {
 
     private AdvancedStats calculateAdvancedStats(BasicStats b) {
         double minutes = b.getMinutes().toLocalTime().toSecondOfDay() / 60.0;
-        if (minutes == 0) minutes = 1;
+        if (minutes == 0) minutes = 1;  // Avoid divide by zero
 
         int FGM = b.getTwoPtMade() + b.getThreePtMade();
         int FGA = b.getTwoPtAttempts() + b.getThreePtAttempts();
@@ -191,24 +163,51 @@ public class BasicStatsService {
 
         AdvancedStats a = new AdvancedStats();
 
+        // uPER
         a.setuPER((FGM + 0.5 * TPM - FGA + 0.5 * FTM - FTA + ORB + 0.5 * DRB + AST + STL + 0.5 * BLK - PF - TOV) / minutes);
+
+        // Effective Field Goal %
         a.seteFG(FGA != 0 ? (FGM + 0.5 * TPM) / (double) FGA : 0);
+
+        // True Shooting %
         a.setTs((FGA + 0.44 * FTA) != 0 ? PTS / (2.0 * (FGA + 0.44 * FTA)) : 0);
+
+        // Assist Ratio
         a.setAssistRatio((FGA + 0.44 * FTA + TOV) != 0 ? 100 * AST / (FGA + 0.44 * FTA + TOV) : 0);
+
+        // Turnover Ratio
         a.setTurnoverRatio((FGA + 0.44 * FTA + AST + TOV) != 0 ? 100 * TOV / (FGA + 0.44 * FTA + AST + TOV) : 0);
-        a.setTovPercentage((FGA + 0.44 * FTA + TOV) != 0 ? 100 * TOV / (FGA + 0.44 * FTA + TOV) : 0);
+
+        // Free Throw Rate
         a.setFtr(FGA != 0 ? (double) FTA / FGA : 0);
 
-        a.setUsg(0);
-        a.setPie(0);
-        a.setOrtg(0);
-        a.setDrtg(0);
-        a.setRebPercentage(0);
-        a.setOrbPercentage(0);
-        a.setDrbPercentage(0);
-        a.setAstPercentage(0);
-        a.setStlPercentage(0);
-        a.setBlkPercentage(0);
+        // Assist-to-Turnover Ratio (A/T)
+        a.setAtRatio(TOV != 0 ? (double) AST / TOV : 0);
+
+        // Free Throw Percentage (FT%)
+        a.setFtPercentage(FTA != 0 ? (double) FTM / FTA * 100 : 0);
+
+        // Offensive Rating (ORtg) — simplified
+        a.setOrtg(minutes != 0 ? (double) PTS / minutes * 100 : 0);
+
+        // Usage Rate (USG%) — simplified, assuming team possessions ~100 for now
+        double teamPossessions = 100;
+        a.setUsgPercentage((minutes * teamPossessions) != 0
+                ? (double) (b.getTwoPtAttempts() + 0.44 * b.getFtAttempts() + b.getTurnovers()) / (minutes * teamPossessions) * 100
+                : 0);
+
+        // Points Per Minute (PPM)
+        double totalMinutes = minutes;  // already in minutes
+        a.setPointsPerMinute(totalMinutes != 0 ? (double) PTS / totalMinutes : 0);
+
+        // Shooting Efficiency
+        int totalMade = b.getTwoPtMade() + b.getThreePtMade() + b.getFtMade();
+        int totalAttempts = b.getTwoPtAttempts() + b.getThreePtAttempts() + b.getFtAttempts();
+        a.setShootingEfficiency(totalAttempts != 0 ? (double) totalMade / totalAttempts : 0);
+
+        // Points Per Shot
+        int fgAttempts = b.getTwoPtAttempts() + b.getThreePtAttempts();
+        a.setPointsPerShot(fgAttempts != 0 ? (double) PTS / fgAttempts : 0);
 
         return a;
     }
