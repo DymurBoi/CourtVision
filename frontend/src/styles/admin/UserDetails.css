@@ -1,0 +1,232 @@
+.user-details-header {
+    background-color: white;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
+  .user-details-header h1 {
+    color: var(--dark-blue);
+    font-size: 1.8rem;
+    margin: 0 0 0.5rem 0;
+  }
+  
+  .user-type,
+  .user-status {
+    display: inline-block;
+    padding: 0.3rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-transform: capitalize;
+    margin-right: 0.5rem;
+  }
+  
+  .user-type.player {
+    background-color: #e3f2fd;
+    color: #1976d2;
+  }
+  
+  .user-type.coach {
+    background-color: #e8f5e9;
+    color: #388e3c;
+  }
+  
+  .user-status.active {
+    background-color: #e8f5e9;
+    color: #388e3c;
+  }
+  
+  .user-status.inactive {
+    background-color: #fafafa;
+    color: #757575;
+  }
+  
+  .user-status.pending {
+    background-color: #fff8e1;
+    color: #ffa000;
+  }
+  
+  .user-actions {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .edit-user-button,
+  .delete-user-button {
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+  }
+  
+  .edit-user-button {
+    background: linear-gradient(to right, var(--medium-purple), var(--bright-purple));
+    color: white;
+    border: none;
+  }
+  
+  .edit-user-button:hover {
+    background: linear-gradient(to right, var(--bright-purple), var(--medium-purple));
+    box-shadow: 0 4px 8px rgba(65, 65, 252, 0.3);
+  }
+  
+  .delete-user-button {
+    background-color: white;
+    color: #d32f2f;
+    border: 1px solid #d32f2f;
+  }
+  
+  .delete-user-button:hover {
+    background-color: #ffebee;
+  }
+  
+  .user-details-content {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .user-details-card {
+    background-color: white;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  }
+  
+  .user-details-card h2 {
+    color: var(--dark-blue);
+    font-size: 1.2rem;
+    margin: 0 0 1.5rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e9ecef;
+  }
+  
+  .details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .detail-item {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .detail-label {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+  }
+  
+  .detail-value {
+    color: var(--dark-blue);
+    font-size: 1rem;
+    font-weight: 500;
+  }
+  
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .stat-item {
+    background-color: var(--light-purple);
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+  }
+  
+  .stat-value {
+    color: var(--bright-purple);
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+  
+  .stat-label {
+    color: var(--dark-blue);
+    font-size: 0.9rem;
+  }
+  
+  .achievements-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .achievements-list li {
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid #e9ecef;
+    color: var(--dark-blue);
+  }
+  
+  .achievements-list li:last-child {
+    border-bottom: none;
+  }
+  
+  .back-navigation {
+    margin-top: 2rem;
+  }
+  
+  .back-link {
+    color: var(--bright-purple);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    font-weight: 500;
+    transition: color 0.3s ease;
+  }
+  
+  .back-link:hover {
+    color: var(--dark-blue);
+    text-decoration: underline;
+  }
+  
+  .loading,
+  .not-found {
+    background-color: white;
+    border-radius: 10px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    text-align: center;
+    color: #6c757d;
+    margin-bottom: 20px;
+  }
+  
+  .capitalize {
+    text-transform: capitalize;
+  }
+  
+  @media (max-width: 768px) {
+    .user-details-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .user-actions {
+      width: 100%;
+    }
+  
+    .edit-user-button,
+    .delete-user-button {
+      flex: 1;
+      text-align: center;
+    }
+  
+    .details-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  
