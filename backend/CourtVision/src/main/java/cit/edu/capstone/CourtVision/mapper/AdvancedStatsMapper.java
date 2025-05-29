@@ -10,6 +10,7 @@ public class AdvancedStatsMapper {
       dto.setuPER(stats.getuPER());
       dto.seteFG(stats.geteFG());
       dto.setTs(stats.getTs());
+      dto.setUsg(stats.getUsg());
       dto.setAssistRatio(stats.getAssistRatio());
       dto.setTurnoverRatio(stats.getTurnoverRatio());
       dto.setOrtg(stats.getOrtg());
