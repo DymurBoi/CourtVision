@@ -78,6 +78,8 @@ function CreateMatchModal({ onClose, onSave, teamId }) {
             <div className="match-form-section">
               <h3>Match Details</h3>
               <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="homeTeam">Home Team</label>
                 <input
                   type="text"
                   name="homeTeam"
@@ -87,6 +89,9 @@ function CreateMatchModal({ onClose, onSave, teamId }) {
                   required
                   style={{ width: "150px" }}
                 />
+                </div>
+                <div className="form-group">
+                <label htmlFor="awayTeam">Away Team</label>
                 <input
                   type="text"
                   name="awayTeam"
@@ -96,17 +101,11 @@ function CreateMatchModal({ onClose, onSave, teamId }) {
                   required
                   style={{ width: "150px" }}
                 />
-                <input
-                  type="text"
-                  name="finalScore"
-                  value={formData.finalScore}
-                  onChange={handleChange}
-                  placeholder="Score (e.g. 78-65)"
-                  required
-                />
+                </div>
+                
               </div>
-
               <div className="form-row">
+              <div className="form-group">
                 <label>Game Date</label>
                 <input
                   type="date"
@@ -117,7 +116,7 @@ function CreateMatchModal({ onClose, onSave, teamId }) {
                 />
               </div>
 
-              <div className="form-row">
+              <div className="form-group">
                 <label>Game Result</label>
                 <select
                   name="gameResult"
@@ -128,11 +127,24 @@ function CreateMatchModal({ onClose, onSave, teamId }) {
                   <option value="L">Loss</option>
                 </select>
               </div>
+
+              <div className="form-group">
+                <label htmlFor="finalScore">Final Score</label>
+                <input
+                  type="text"
+                  name="finalScore"
+                  value={formData.finalScore}
+                  onChange={handleChange}
+                  placeholder="Score (e.g. 78-65)"
+                  required
+                />
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="modal-footer">
-            <button type="submit" className="save-button" disabled={isSubmitting}>
+          <div className="modal-actions">
+            <button type="submit" className="save-button-create" disabled={isSubmitting}>
               {isSubmitting ? "Saving..." : "Save Match"}
             </button>
           </div>

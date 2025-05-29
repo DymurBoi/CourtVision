@@ -54,6 +54,8 @@ function CreateBasicStatsModal({ onClose, onSave, playersList }) {
         <form onSubmit={handleSubmit}>
           <div className="modal-content">
             <div className="modal-field">
+              <div className="form-row">
+              <div className="form-group">
               <label htmlFor="playerSelect">Player:</label>
                 <select
                 name="selectedPlayer"
@@ -69,6 +71,8 @@ function CreateBasicStatsModal({ onClose, onSave, playersList }) {
                     </option>
                 ))}
                 </select>
+                </div>
+                </div>
             </div>
             <div className="players-table-container">
               <table className="players-table">

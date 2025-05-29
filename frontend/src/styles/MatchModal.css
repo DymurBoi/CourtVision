@@ -3,7 +3,21 @@
     max-width: 1000px;
     max-height: 90vh;
   }
-  
+.save-button-create {
+  background: linear-gradient(to right, var(--medium-purple), var(--bright-purple));
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 6%;
+  margin-left: auto;
+  font-size: 15px;
+}
+
+.save-button-create:hover {
+  background: linear-gradient(to right, var(--bright-purple), var(--medium-purple));
+  box-shadow: 0 4px 12px rgba(65, 65, 252, 0.3);
+  transform: translateY(-2px);
+}
   .match-form-section {
     margin-bottom: 2rem;
     padding-bottom: 1.5rem;

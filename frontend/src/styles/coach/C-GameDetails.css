@@ -56,18 +56,19 @@
   font-weight: bold;
   padding: 0.3rem 1rem;
   border-radius: 20px;
-  color: white;
+  color: white; /* Text color */
   font-size: 0.9rem;
   margin-bottom: 0.5rem;
 }
 
 .game-result.win {
-  background-color: #2ecc71;
+  background-color: #2ecc71; /* Green for win */
 }
 
 .game-result.loss {
-  background-color: #e74c3c;
+  background-color: #e74c3c; /* Red for loss */
 }
+
 
 .score-display {
   font-size: 1.5rem;

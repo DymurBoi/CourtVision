@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { api } from "../../utils/axiosConfig";
 import '../../styles/coach/C-GameDetails.css';
 import EditIcon from '@mui/icons-material/Edit';
+import Tooltip from '@mui/material/Tooltip';
 import BasicStatsEditModal from "../../components/BasicStatsEditModal";
 import CreateBasicStatsModal from "../../components/CreateBasicStatsModal";
 
@@ -39,6 +40,7 @@ useEffect(() => {
     try {
       const gameRes = await api.get(`/games/get/${gameId}`);
       setGameDetails(gameRes.data);
+      setComments(gameRes.data.comments);
       await api.get(`/players/get/by-team/${teamId}`).then(res => setPlayers(res.data));
 
       if (gameRes.data.basicStatIds?.length > 0 && !hasFetchedStats) {
@@ -273,9 +275,18 @@ const handleSaveComments = async () => {
 
   return (
     <main className="main-content">
-      
-      <h1>Game Details — Game ID: {gameId}</h1>
-      <h2>Team ID: {teamId}</h2>
+      <div className="game-header">
+        <div className="game-title">
+            <h1>{gameDetails.gameName}</h1>
+            <span className="game-date">{gameDetails.gameDate}</span>
+        </div>
+        <div className="game-score">
+          <span className={`game-result ${gameDetails.gameResult === "W" ? "win" : "loss"}`}>
+            {gameDetails.gameResult === "W" ? "Win" : "Loss"}
+          </span>
+          <span className="score-display">{gameDetails.finalScore}</span>
+        </div>
+      </div>
       
       <div className="stats-tabs">
         <button className={`tab-button ${activeTab === "basic" ? "active" : ""}`} onClick={() => setActiveTab("basic")}>
@@ -312,19 +323,19 @@ const handleSaveComments = async () => {
               <thead>
                 <tr>
                   <th>Player Name</th>
-                  <th>MIN</th>
-                  <th>PTS</th>
-                  <th>2 PTS M/A</th>
-                  <th>3 PTS M/A</th>
-                  <th>FT M/A</th>
-                  <th>STL</th>
-                  <th>TO</th>
-                  <th>AST</th>
-                  <th>BLK</th>
-                  <th>OREB</th>
-                  <th>DREB</th>
-                  <th>PF</th>
-                  <th>DF</th>
+                  <Tooltip title="Minutes Played"><th>MIN</th></Tooltip>
+                  <Tooltip title="Points"><th>PTS</th></Tooltip>
+                  <Tooltip title="2 Points Made and Attempted"><th>2 PTS M/A</th></Tooltip>
+                  <Tooltip title="3 Points Made and Attempted"><th>3 PTS M/A</th></Tooltip>
+                  <Tooltip title="Free Throws Made and Attempted"><th>FT M/A</th></Tooltip>
+                  <Tooltip title="Steals"><th>STL</th></Tooltip>
+                  <Tooltip title="Turn Overs"><th>TO</th></Tooltip>
+                  <Tooltip title="Assists"><th>AST</th></Tooltip>
+                  <Tooltip title="Blocks"><th>BLK</th></Tooltip>
+                  <Tooltip title="Offensive Rebound"><th>OREB</th></Tooltip>
+                  <Tooltip title="Defensive Rebound"><th>DREB</th></Tooltip>
+                  <Tooltip title="Personal Fouls"><th>PF</th></Tooltip>
+                  <Tooltip title="Defensive Fouls"><th>DF</th></Tooltip>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -372,18 +383,18 @@ const handleSaveComments = async () => {
               <thead>
                 <tr>
                   <th>Player Name</th>
-                  <th>UPER</th>
-                  <th>EFG</th>
-                  <th>TS</th>
-                  <th>USG %</th>
-                  <th>AST RATIO</th>
-                  <th>TO RATIO</th>
-                  <th>FTR</th>
-                  <th>AST:TO</th>
-                  <th>ORTG</th>
-                  <th>PPM</th>
-                  <th>SE</th>
-                  <th>PPS %</th>
+                  <Tooltip title="Player Efficiency Rating"><th>PER</th></Tooltip>
+                  <Tooltip title="Effective Field Goal Percentage"><th>EFG%</th></Tooltip>
+                  <Tooltip title="True Shooting Percentage"><th>TS%</th></Tooltip>
+                  <Tooltip title="Usage Percentage"><th>USG%</th></Tooltip>
+                  <Tooltip title="Assist Ratio"><th>AST RATIO</th></Tooltip>
+                  <Tooltip title="Turn Over Ratio"><th>TO RATIO</th></Tooltip>
+                  <Tooltip title="Free Throw Rating"><th>FTR</th></Tooltip>
+                  <Tooltip title="Assist to Turn Over Ratio"><th>AST:TO</th></Tooltip>
+                  <Tooltip title="Offensive Rating"><th>ORTG</th></Tooltip>
+                  <Tooltip title="Points Per Minute"><th>PPM</th></Tooltip>
+                  <Tooltip title="Shooting Efficiency Percentage"><th>SE%</th></Tooltip>
+                  <Tooltip title="Points Per Shot"><th>PPS</th></Tooltip>
                   
                 </tr>
               </thead>

@@ -167,50 +167,50 @@ public class BasicStatsService {
         AdvancedStats a = new AdvancedStats();
 
         // uPER
-        a.setuPER((FGM + 0.5 * TPM - FGA + 0.5 * FTM - FTA + ORB + 0.5 * DRB + AST + STL + 0.5 * BLK - PF - TOV) / minutes);
+        a.setuPER(roundToTwoDecimalPlaces((FGM + 0.5 * TPM - FGA + 0.5 * FTM - FTA + ORB + 0.5 * DRB + AST + STL + 0.5 * BLK - PF - TOV) / minutes));
 
         // Effective Field Goal %
-        a.seteFG(FGA != 0 ? (FGM + 0.5 * TPM) / (double) FGA : 0);
+        a.seteFG(roundToTwoDecimalPlaces(FGA != 0 ? (FGM + 0.5 * TPM) / (double) FGA : 0));
 
         // True Shooting %
-        a.setTs((FGA + 0.44 * FTA) != 0 ? PTS / (2.0 * (FGA + 0.44 * FTA)) : 0);
+        a.setTs(roundToTwoDecimalPlaces((FGA + 0.44 * FTA) != 0 ? PTS / (2.0 * (FGA + 0.44 * FTA)) : 0));
 
         // Assist Ratio
-        a.setAssistRatio((FGA + 0.44 * FTA + TOV) != 0 ? 100 * AST / (FGA + 0.44 * FTA + TOV) : 0);
+        a.setAssistRatio(roundToTwoDecimalPlaces((FGA + 0.44 * FTA + TOV) != 0 ? 100 * AST / (FGA + 0.44 * FTA + TOV) : 0));
 
         // Turnover Ratio
-        a.setTurnoverRatio((FGA + 0.44 * FTA + AST + TOV) != 0 ? 100 * TOV / (FGA + 0.44 * FTA + AST + TOV) : 0);
+        a.setTurnoverRatio(roundToTwoDecimalPlaces((FGA + 0.44 * FTA + AST + TOV) != 0 ? 100 * TOV / (FGA + 0.44 * FTA + AST + TOV) : 0));
 
         // Free Throw Rate
-        a.setFtr(FGA != 0 ? (double) FTA / FGA : 0);
+        a.setFtr(roundToTwoDecimalPlaces(FGA != 0 ? (double) FTA / FGA : 0));
 
         // Assist-to-Turnover Ratio (A/T)
-        a.setAtRatio(TOV != 0 ? (double) AST / TOV : 0);
+        a.setAtRatio(roundToTwoDecimalPlaces(TOV != 0 ? (double) AST / TOV : 0));
 
         // Free Throw Percentage (FT%)
-        a.setFtPercentage(FTA != 0 ? (double) FTM / FTA * 100 : 0);
+        a.setFtPercentage(roundToTwoDecimalPlaces(FTA != 0 ? (double) FTM / FTA * 100 : 0));
 
         // Offensive Rating (ORtg) — simplified
-        a.setOrtg(minutes != 0 ? (double) PTS / minutes * 100 : 0);
+        a.setOrtg(roundToTwoDecimalPlaces(minutes != 0 ? (double) PTS / minutes * 100 : 0));
 
         // Usage Rate (USG%) — simplified, assuming team possessions ~100 for now
         double teamPossessions = 100;
-        a.setUsgPercentage((minutes * teamPossessions) != 0
+        a.setUsgPercentage(roundToTwoDecimalPlaces((minutes * teamPossessions) != 0
                 ? (double) (b.getTwoPtAttempts() + 0.44 * b.getFtAttempts() + b.getTurnovers()) / (minutes * teamPossessions) * 100
-                : 0);
+                : 0));
 
         // Points Per Minute (PPM)
         double totalMinutes = minutes;  // already in minutes
-        a.setPointsPerMinute(totalMinutes != 0 ? (double) PTS / totalMinutes : 0);
+        a.setPointsPerMinute(roundToTwoDecimalPlaces(totalMinutes != 0 ? (double) PTS / totalMinutes : 0));
 
         // Shooting Efficiency
         int totalMade = b.getTwoPtMade() + b.getThreePtMade() + b.getFtMade();
         int totalAttempts = b.getTwoPtAttempts() + b.getThreePtAttempts() + b.getFtAttempts();
-        a.setShootingEfficiency(totalAttempts != 0 ? (double) totalMade / totalAttempts : 0);
+        a.setShootingEfficiency(roundToTwoDecimalPlaces(totalAttempts != 0 ? (double) totalMade / totalAttempts : 0));
 
         // Points Per Shot
         int fgAttempts = b.getTwoPtAttempts() + b.getThreePtAttempts();
-        a.setPointsPerShot(fgAttempts != 0 ? (double) PTS / fgAttempts : 0);
+        a.setPointsPerShot(roundToTwoDecimalPlaces(fgAttempts != 0 ? (double) PTS / fgAttempts : 0));
 
         return a;
     }
@@ -249,24 +249,24 @@ public class BasicStatsService {
 
         // Finishing Efficiency
         double finishingEfficiency = (twoPtAttempts > 0)
-                ? (twoPtMade / twoPtAttempts) / (0.52 + 0.25 * (vertical / 34.0) + 0.1 * (wingspan / height / 1.06))
+                ? roundToTwoDecimalPlaces((twoPtMade / twoPtAttempts) / (0.52 + 0.25 * (vertical / 34.0) + 0.1 * (wingspan / height / 1.06)))
                 : 0;
 
         // Rebounding Efficiency
         double reboundingEfficiency = (minutesInSeconds > 0)
-                ? ((oReb + dReb) / minutesInSeconds) / (0.008 + 0.02 * (wingspan / height / 1.06) + 0.015 * (vertical / 34.0))
+                ? (roundToTwoDecimalPlaces((oReb + dReb) / minutesInSeconds) / (0.008 + 0.02 * (wingspan / height / 1.06) + 0.015 * (vertical / 34.0)))
                 : 0;
 
         // Defensive Activity Index
-        double defensiveActivityIndex = (blocks + steals) / (1.0 + 0.25 * (wingspan / height / 1.06) + 0.15 * (vertical / 34.0));
+        double defensiveActivityIndex = roundToTwoDecimalPlaces((blocks + steals) / (1.0 + 0.25 * (wingspan / height / 1.06) + 0.15 * (vertical / 34.0)));
 
         // Physical Efficiency Rating (PER_Lite)
         double tsAttempts = twoPtAttempts + threePtAttempts + 0.44 * ftAttempts;
         double tsPct = (tsAttempts > 0) ? gamePoints / (2.0 * tsAttempts) : 0;
 
          // Finishing Ability Index — can adjust later if you have more metrics
-        double physicalEfficiencyRating = (tsPct + 0.45 * assists + 0.35 * (oReb + dReb) +
-                0.6 * (steals + blocks) - 0.5 * turnovers) * (0.5 + 0.5 * finishingEfficiency);
+        double physicalEfficiencyRating = roundToTwoDecimalPlaces((tsPct + 0.45 * assists + 0.35 * (oReb + dReb) +
+                0.6 * (steals + blocks) - 0.5 * turnovers) * (0.5 + 0.5 * finishingEfficiency));
 
         // Set values
         p.setFinishingEfficiency(finishingEfficiency);
@@ -277,7 +277,9 @@ public class BasicStatsService {
         return p;
     }
 
-
+    private double roundToTwoDecimalPlaces(double value) {
+        return Math.round(value * 100.0) / 100.0;
+    }
     public List<BasicStatsDTO> getBasicStatsByGameId(Long gameId) {
         List<BasicStats> stats = basicStatsRepository.findByGame_GameId(gameId);
         return stats.stream()
