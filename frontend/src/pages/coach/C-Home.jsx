@@ -13,7 +13,7 @@ function CHome() {
   const { user } = useAuth()
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState("players")
+  const [activeTab, setActiveTab] = useState(localStorage.getItem("activeTab") || "players")
   const [coachData, setCoachData] = useState({
     fname: "",
     lname: "",
@@ -104,7 +104,50 @@ function CHome() {
       setPlayers([]);
     }
   }, [selectedTeamId, teams]);
+  
+  useEffect(() => {
+    const fetchCoachData = async () => {
+      if (!user || !user.id) {
+        console.log("No user data available for fetching coach info");
+        return
+      }
 
+      try {
+        let coachId = user.id;
+        if (typeof coachId === 'string' && coachId.startsWith("COACH_")) {
+          coachId = coachId.substring(6);
+        }
+        if (coachId && !isNaN(Number(coachId))) {
+          coachId = Number(coachId);
+        }
+
+        const coachRes = await api.get(`/coaches/get/${coachId}`);
+        const data = coachRes.data;
+        setCoachData(data);
+
+        const teamsRes = await api.get(`/teams/get/by-coach/${coachId}`);
+        const teamsData = teamsRes.data;
+        setTeams(
+          (teamsData || []).map(team => ({
+            id: team.teamId,
+            teamId: team.teamId,
+            name: team.teamName,
+            description: team.description || `Team coached by ${data.fname} ${data.lname}`,
+            players: team.players || []
+          }))
+        );
+        if (teamsData && teamsData.length > 0) {
+          setSelectedTeamId(teamsData[0].teamId);
+        }
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching coach or teams data:", error);
+        setTeams([]);
+        setLoading(false);
+      }
+    }
+    fetchCoachData();
+  }, [user]);
   const handleTeamChange = (e) => {
     setSelectedTeamId(Number(e.target.value))
   }
@@ -228,6 +271,10 @@ function CHome() {
     }
   };
 
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    localStorage.setItem("activeTab", tab);  // Save to localStorage
+  }
   // Find the selected team
   const selectedTeam = teams.find((team) => team.id === selectedTeamId || team.teamId === selectedTeamId) || teams[0]
   
@@ -337,25 +384,24 @@ function CHome() {
         <div className="stats-tabs">
           <button
             className={`tab-button ${activeTab === "players" ? "active" : ""}`}
-            onClick={() => setActiveTab("players")}
+            onClick={() => handleTabChange("players")}
           >
             Players
           </button>
           <button
             className={`tab-button ${activeTab === "matches" ? "active" : ""}`}
-            onClick={() => setActiveTab("matches")}
+            onClick={() => handleTabChange("matches")}
           >
             Matches
           </button>
           <button
             className={`tab-button ${activeTab === "requests" ? "active" : ""}`}
-            onClick={() => setActiveTab("requests")}
+            onClick={() => handleTabChange("requests")}
           >
             Requests
           </button>
         </div>
 
-        {/* Tab Content */}
         {activeTab === "players" && (
           <div className="players-container">
             <div className="players-header">

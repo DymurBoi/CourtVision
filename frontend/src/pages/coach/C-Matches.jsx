@@ -90,11 +90,31 @@ function CMatches({teamId}) {
     window.location.reload();
   };
 
+  const handle = async (newMatch) => {
+    try {
+      const savedGame = await gameService.createGame(newMatch);
+
+      const newMatchData = {
+        id: savedGame.gameId,
+        homeTeam: savedGame.gameName.split(' vs ')[0],
+        awayTeam: savedGame.gameName.split(' vs ')[1],
+        result: savedGame.gameResult,
+        score: savedGame.finalScore,
+        date: new Date(savedGame.gameDate).toLocaleDateString()
+      };
+
+      setMatches([...matches, newMatchData]);
+      setShowCreateModal(false);
+       // Consider removing this for smoother UX
+    } catch (err) {
+      console.error('Error creating match:', err);
+      setError('Failed to create match');
+    }
+    window.location.reload();
+  };
+
   return (
     <main className="main-content">
-      <div className="page-header">
-        <h1>Basketball Matches</h1>
-      </div>
       <div className="matches-actions">
         <button className="create-match-button" onClick={() => setShowCreateModal(true)}>
           <svg
@@ -156,6 +176,7 @@ function CMatches({teamId}) {
           teamId={teamId}
         />
       )}
+    
     </main>
   );
 }

@@ -12,6 +12,7 @@ function CGameDetails() {
   const params = new URLSearchParams(window.location.search);
   const teamId = params.get("teamId");
 
+  const [isEditingComment, setIsEditingComment] = useState(false);
   const [players, setPlayers] = useState([]);
   const [gameDetails, setGameDetails] = useState();
   const [basicStats,setBasicStats] = useState([]);
@@ -21,9 +22,8 @@ function CGameDetails() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
-  const [showAddRow, setShowAddRow] = useState(false);
+  const [comments, setComments] = useState("")
   const [showAddModal,setShowAddModal] = useState(false);
-  const [selectedPlayerId, setSelectedPlayerId] = useState("");
   const [activeTab, setActiveTab] = useState("basic")
   const [hasFetchedStats, setHasFetchedStats] = useState(false);
 const [showEditModal, setShowEditModal] = useState(false);
@@ -232,6 +232,42 @@ const saveBasicStat = async (stat) => {
   }
 };
 
+const handleSaveComments = async () => {
+    if (!gameId) {
+        alert("Game ID is missing!");
+        return;
+    }
+    setSaving(true);
+    try {
+        const payload = {
+            gameName: gameDetails.gameName,  // Or fetch game details if not already available
+            gameDate: gameDetails.gameDate,  // Similar as above, should be in gameDetails
+            gameResult: gameDetails.gameResult,  // Same as above
+            finalScore: gameDetails.finalScore,  // Same as above
+            comments: comments,  // Save the comments entered by the user
+            team: {
+                teamId: teamId  // Already obtained from query params
+            }
+        };
+
+        // Send the PUT request to update the game comments
+        const response = await api.put(`/games/put/${gameId}`, payload);
+        
+        if (response.status === 200) {
+            alert("✅ Comments saved successfully!");
+        } else {
+            alert("❌ Failed to save comments. Please try again.");
+        }
+    } catch (error) {
+        console.error("Failed to save comments:", error);
+        alert("❌ Failed to save comments. Please try again.");
+    } finally {
+        setSaving(false);
+    }
+    window.location.reload();
+};
+
+
   if (loading) return <div className="loading">Loading players...</div>;
   if (error) return <div className="error">{error}</div>;
 
@@ -423,7 +459,33 @@ const saveBasicStat = async (stat) => {
     }}
   />
 )}
+  <div className="comments-section">
+    <h3>Game Comments</h3>
 
+    {/* If editing, show textarea to edit comment */}
+    {isEditingComment ? (
+        <div>
+            <textarea
+                className="comments-textarea"
+                value={comments}
+                onChange={(e) => setComments(e.target.value)}
+                placeholder="Add your comments about this game..."
+                rows={5}
+            ></textarea>
+            <button className="save-comments-button" onClick={handleSaveComments}>
+                Save Changes
+            </button>
+        </div>
+    ) : (
+        // Otherwise, display the comment text as read-only
+        <div>
+            <p className="comments-textarea">{comments || "No comments added yet."}</p>
+            <button className="save-comments-button" onClick={() => setIsEditingComment(true)}>
+                Edit Comment
+            </button>
+        </div>
+    )}
+</div>
 
     </main>
     
