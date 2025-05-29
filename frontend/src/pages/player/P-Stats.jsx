@@ -112,60 +112,67 @@ function PStats() {
   }
 
   useEffect(() => {
-    if (user && user.id) {
-      const fetchData = async () => {
-        try {
-          let playerId = user.id
-          if (typeof playerId === "string" && playerId.startsWith("PLAYER_")) {
-            playerId = playerId.substring(7)
-          }
-
-          // Fetch physical records (UNCHANGED)
-          const recordsResponse = await api.get(`/physical-records/get/by-player/${playerId}`)
-          const recordsData = recordsResponse.data
-
-          if (recordsData) {
-            setPhysicalRecords({
-              height: recordsData.height || 0,
-              weight: recordsData.weight || 0,
-              wingspan: recordsData.wingspan || 0,
-              vertical: recordsData.vertical || 0,
-              lastUpdated: recordsData.dateRecorded || "2023-03-15",
-            })
-            setEditedRecords({
-              height: recordsData.height || 0,
-              weight: recordsData.weight || 0,
-              wingspan: recordsData.wingspan || 0,
-              vertical: recordsData.vertical || 0,
-            })
-          }
-
-          // Fetch player performance averages
-          const averagesResponse = await api.get(`/averages/get/by-player/${playerId}`)
-          const avg = averagesResponse.data
-
-          if (avg) {
-            setPlayerAverages({
-              pointsPerGame: avg.pointsPerGame || 0,
-              reboundsPerGame: avg.reboundsPerGame || 0,
-              assistsPerGame: avg.assistsPerGame || 0,
-              stealsPerGame: avg.stealsPerGame || 0,
-              blocksPerGame: avg.blocksPerGame || 0,
-              minutesPerGame: avg.minutesPerGame || 0,
-              trueShootingPercentage: avg.trueShootingPercentage || 0,
-              usagePercentage: avg.usagePercentage || 0,
-              offensiveRating: avg.offensiveRating || 0,
-              defensiveRating: avg.defensiveRating || 0,
-            })
-          }
-        } catch (error) {
-          console.error("Error fetching player data:", error)
+  if (user && user.id) {
+    const fetchData = async () => {
+      try {
+        let playerId = user.id
+        if (typeof playerId === "string" && playerId.startsWith("PLAYER_")) {
+          playerId = playerId.substring(7)
         }
-      }
 
-      fetchData()
+        // Fetch physical records (UNCHANGED)
+        const recordsResponse = await api.get(`/physical-records/get/by-player/${playerId}`)
+        const recordsData = recordsResponse.data
+
+        if (recordsData) {
+          setPhysicalRecords({
+            height: recordsData.height || 0,
+            weight: recordsData.weight || 0,
+            wingspan: recordsData.wingspan || 0,
+            vertical: recordsData.vertical || 0,
+            lastUpdated: recordsData.dateRecorded || "2023-03-15",
+          })
+          setEditedRecords({
+            height: recordsData.height || 0,
+            weight: recordsData.weight || 0,
+            wingspan: recordsData.wingspan || 0,
+            vertical: recordsData.vertical || 0,
+          })
+        }
+
+        // Fetch player performance averages (UNCHANGED)
+        const averagesResponse = await api.get(`/averages/get/by-player/${playerId}`)
+        const avg = averagesResponse.data
+
+        if (avg) {
+          setPlayerAverages({
+            pointsPerGame: avg.pointsPerGame || 0,
+            reboundsPerGame: avg.reboundsPerGame || 0,
+            assistsPerGame: avg.assistsPerGame || 0,
+            stealsPerGame: avg.stealsPerGame || 0,
+            blocksPerGame: avg.blocksPerGame || 0,
+            minutesPerGame: avg.minutesPerGame || 0,
+            trueShootingPercentage: avg.trueShootingPercentage || 0,
+            usagePercentage: avg.usagePercentage || 0,
+            offensiveRating: avg.offensiveRating || 0,
+            defensiveRating: avg.defensiveRating || 0,
+          })
+        }
+      } catch (error) {
+        console.error("Error fetching player data:", error)
+      }
     }
-  }, [user, refreshTrigger])
+
+    fetchData()
+
+    // Polling every 10 seconds
+    const intervalId = setInterval(fetchData, 10000) // Check every 10 seconds
+
+    // Cleanup function to stop polling on component unmount or when `user` or `refreshTrigger` changes
+    return () => clearInterval(intervalId)
+  }
+}, [user, refreshTrigger])
+
 
   return (
     <div className="stats-container">
