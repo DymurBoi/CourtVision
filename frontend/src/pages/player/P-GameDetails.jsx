@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { useParams, useLocation } from "react-router-dom"
 import { api } from "../../utils/axiosConfig"
+import Tooltip from '@mui/material/Tooltip';
 import '../../styles/coach/C-GameDetails.css'
 
 function PGameDetails() {
@@ -50,14 +51,20 @@ function PGameDetails() {
 
   return (
     <main className="main-content">
-      <h1>Game Details</h1>
       {gameDetails && (
-        <>
-          <h2>{gameDetails.gameName}</h2>
-          <p>Date: {new Date(gameDetails.gameDate).toLocaleDateString()}</p>
-          <p>Result: {gameDetails.gameResult}</p>
-          <p>Final Score: {gameDetails.finalScore}</p>
-        </>
+         
+      <div className="game-header">
+        <div className="game-title">
+            <h1>{gameDetails.gameName}</h1>
+            <span className="game-date">{gameDetails.gameDate}</span>
+        </div>
+        <div className="game-score">
+          <span className={`game-result ${gameDetails.gameResult === "W" ? "win" : "loss"}`}>
+            {gameDetails.gameResult === "W" ? "Win" : "Loss"}
+          </span>
+          <span className="score-display">{gameDetails.finalScore}</span>
+        </div>
+      </div>
       )}
 
       <div className="stats-tabs">
@@ -72,47 +79,57 @@ function PGameDetails() {
         </button>
       </div>
 
-      <div className="stats-content">
-        {activeTab === "basic" && (
-          <table className="stats-table">
-            <thead>
-              <tr>
-                <th>Player Name</th>
-                <th>MIN</th>
-                <th>PTS</th>
-                <th>2 PTS M/A</th>
-                <th>3 PTS M/A</th>
-                <th>FT M/A</th>
-                <th>STL</th>
-                <th>TO</th>
-                <th>AST</th>
-                <th>BLK</th>
-                <th>OREB</th>
-                <th>DREB</th>
-                <th>PF/DF</th>
-              </tr>
-            </thead>
-            <tbody>
-              {basicStats.map((stat) => (
-                <tr key={stat.basicStatId}>
-                  <td>{stat.playerName}</td>
-                  <td>{stat.minutes}</td>
-                  <td>{stat.gamePoints}</td>
-                  <td>{stat.twoPtMade}/{stat.twoPtAttempts}</td>
-                  <td>{stat.threePtMade}/{stat.threePtAttempts}</td>
-                  <td>{stat.ftMade}/{stat.ftAttempts}</td>
-                  <td>{stat.steals}</td>
-                  <td>{stat.turnovers}</td>
-                  <td>{stat.assists}</td>
-                  <td>{stat.blocks}</td>
-                  <td>{stat.oFRebounds}</td>
-                  <td>{stat.dFRebounds}</td>
-                  <td>{stat.pFouls}/{stat.dFouls}</td>
+       <div className="players-table-container">
+        <div className="stats-content">
+         {activeTab === "basic" && (
+          <div>
+            
+        <div className="stats-table-container">
+            <table className="stats-table">
+              <thead>
+                <tr>
+                  <th>Player Name</th>
+                  <Tooltip title="Minutes Played"><th>MIN</th></Tooltip>
+                  <Tooltip title="Points"><th>PTS</th></Tooltip>
+                  <Tooltip title="2 Points Made and Attempted"><th>2 PTS M/A</th></Tooltip>
+                  <Tooltip title="3 Points Made and Attempted"><th>3 PTS M/A</th></Tooltip>
+                  <Tooltip title="Free Throws Made and Attempted"><th>FT M/A</th></Tooltip>
+                  <Tooltip title="Steals"><th>STL</th></Tooltip>
+                  <Tooltip title="Turn Overs"><th>TO</th></Tooltip>
+                  <Tooltip title="Assists"><th>AST</th></Tooltip>
+                  <Tooltip title="Blocks"><th>BLK</th></Tooltip>
+                  <Tooltip title="Offensive Rebound"><th>OREB</th></Tooltip>
+                  <Tooltip title="Defensive Rebound"><th>DREB</th></Tooltip>
+                  <Tooltip title="Personal Fouls"><th>PF</th></Tooltip>
+                  <Tooltip title="Defensive Fouls"><th>DF</th></Tooltip>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+              </thead>
+              <tbody>
+                {basicStats.map((playerStat) => (
+                  <tr key={playerStat.basicStatId}>
+                    <td>{playerStat.playerName}</td>
+                    <td>{playerStat.minutes}</td>
+                    <td>{playerStat.gamePoints}</td>
+                    <td>{playerStat.twoPtMade}/{playerStat.twoPtAttempts}</td>
+                    <td>{playerStat.threePtMade}/{playerStat.threePtAttempts}</td>
+                    <td>{playerStat.ftMade}/{playerStat.ftAttempts}</td>
+                    <td>{playerStat.steals}</td>
+                    <td>{playerStat.turnovers}</td>
+                    <td>{playerStat.assists}</td>
+                    <td>{playerStat.blocks}</td>
+                    <td>{playerStat.oFRebounds}</td>
+                    <td>{playerStat.dFRebounds}</td>
+                    <td>{playerStat.pFouls}</td>
+                    <td>{playerStat.dFouls}</td>
+                    
+
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          </div>
+)}
 
         {activeTab === "advanced" && (
           <div className="stats-table-container">
@@ -120,18 +137,18 @@ function PGameDetails() {
               <thead>
                 <tr>
                   <th>Player Name</th>
-                  <th>UPER</th>
-                  <th>EFG</th>
-                  <th>TS</th>
-                  <th>USG %</th>
-                  <th>AST RATIO</th>
-                  <th>TO RATIO</th>
-                  <th>FTR</th>
-                  <th>AST:TO</th>
-                  <th>ORTG</th>
-                  <th>PPM</th>
-                  <th>SE</th>
-                  <th>PPS %</th>
+                  <Tooltip title="Player Efficiency Rating"><th>PER</th></Tooltip>
+                  <Tooltip title="Effective Field Goal Percentage"><th>EFG%</th></Tooltip>
+                  <Tooltip title="True Shooting Percentage"><th>TS%</th></Tooltip>
+                  <Tooltip title="Usage Percentage"><th>USG%</th></Tooltip>
+                  <Tooltip title="Assist Ratio"><th>AST RATIO</th></Tooltip>
+                  <Tooltip title="Turn Over Ratio"><th>TO RATIO</th></Tooltip>
+                  <Tooltip title="Free Throw Rating"><th>FTR</th></Tooltip>
+                  <Tooltip title="Assist to Turn Over Ratio"><th>AST:TO</th></Tooltip>
+                  <Tooltip title="Offensive Rating"><th>ORTG</th></Tooltip>
+                  <Tooltip title="Points Per Minute"><th>PPM</th></Tooltip>
+                  <Tooltip title="Shooting Efficiency Percentage"><th>SE%</th></Tooltip>
+                  <Tooltip title="Points Per Shot"><th>PPS</th></Tooltip>
                   
                 </tr>
               </thead>
@@ -184,6 +201,7 @@ function PGameDetails() {
             </table>
           </div>
         )}
+      </div>
       </div>
     </main>
   )

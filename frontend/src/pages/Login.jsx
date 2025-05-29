@@ -230,9 +230,7 @@ function Login() {
             <p>
               Don't have an account? <Link to="/register">Register here</Link>
             </p>
-            <p className="admin-link">
-              <Link to="/admin/login">Administrator Login</Link>
-            </p>
+
           </div>
         </div>
         <style jsx>{roleButtonStyles}</style>

@@ -79,18 +79,18 @@ function CreateBasicStatsModal({ onClose, onSave, playersList }) {
                 <thead>
                   <tr>
                     <th>MIN</th>
-                    <th>2PTA</th>
                     <th>2PTM</th>
-                    <th>3PTA</th>
+                    <th>2PTA</th>
                     <th>3PTM</th>
-                    <th>FTA</th>
+                    <th>3PTA</th>
                     <th>FTM</th>
-                    <th>AST</th>
-                    <th>OREB</th>
-                    <th>DREB</th>
-                    <th>BLK</th>
+                    <th>FTA</th>
                     <th>STL</th>
                     <th>TO</th>
+                    <th>AST</th>
+                    <th>BLK</th>
+                    <th>OREB</th>
+                    <th>DREB</th>
                     <th>PF</th>
                     <th>DF</th>
                   </tr>
@@ -109,15 +109,6 @@ function CreateBasicStatsModal({ onClose, onSave, playersList }) {
                     <td>
                       <input
                         type="number"
-                        name="twoPtAttempts"
-                        value={formData.twoPtAttempts}
-                        onChange={handleChange}
-                        style={{ width: "60px" }}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="number"
                         name="twoPtMade"
                         value={formData.twoPtMade}
                         onChange={handleChange}
@@ -127,8 +118,8 @@ function CreateBasicStatsModal({ onClose, onSave, playersList }) {
                     <td>
                       <input
                         type="number"
-                        name="threePtAttempts"
-                        value={formData.threePtAttempts}
+                        name="twoPtAttempts"
+                        value={formData.twoPtAttempts}
                         onChange={handleChange}
                         style={{ width: "60px" }}
                       />
@@ -145,8 +136,8 @@ function CreateBasicStatsModal({ onClose, onSave, playersList }) {
                     <td>
                       <input
                         type="number"
-                        name="ftAttempts"
-                        value={formData.ftAttempts}
+                        name="threePtAttempts"
+                        value={formData.threePtAttempts}
                         onChange={handleChange}
                         style={{ width: "60px" }}
                       />
@@ -163,35 +154,8 @@ function CreateBasicStatsModal({ onClose, onSave, playersList }) {
                     <td>
                       <input
                         type="number"
-                        name="assists"
-                        value={formData.assists}
-                        onChange={handleChange}
-                        style={{ width: "60px" }}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="number"
-                        name="oFRebounds"
-                        value={formData.oFRebounds}
-                        onChange={handleChange}
-                        style={{ width: "60px" }}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="number"
-                        name="dFRebounds"
-                        value={formData.dFRebounds}
-                        onChange={handleChange}
-                        style={{ width: "60px" }}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="number"
-                        name="blocks"
-                        value={formData.blocks}
+                        name="ftAttempts"
+                        value={formData.ftAttempts}
                         onChange={handleChange}
                         style={{ width: "60px" }}
                       />
@@ -214,6 +178,44 @@ function CreateBasicStatsModal({ onClose, onSave, playersList }) {
                         style={{ width: "60px" }}
                       />
                     </td>
+                    <td>
+                      <input
+                        type="number"
+                        name="assists"
+                        value={formData.assists}
+                        onChange={handleChange}
+                        style={{ width: "60px" }}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="number"
+                        name="blocks"
+                        value={formData.blocks}
+                        onChange={handleChange}
+                        style={{ width: "60px" }}
+                      />
+                    </td>
+                    
+                    <td>
+                      <input
+                        type="number"
+                        name="oFRebounds"
+                        value={formData.oFRebounds}
+                        onChange={handleChange}
+                        style={{ width: "60px" }}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="number"
+                        name="dFRebounds"
+                        value={formData.dFRebounds}
+                        onChange={handleChange}
+                        style={{ width: "60px" }}
+                      />
+                    </td>
+                    
                     <td>
                       <input
                         type="number"
