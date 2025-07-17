@@ -1,4 +1,4 @@
-package cit.edu.capstone.CourtVision;
+ package cit.edu.capstone.CourtVision;
 
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.boot.SpringApplication;

@@ -23,9 +23,6 @@ public class BasicStatsService {
     private PhysicalBasedMetricsStatsRepository physicalMetricsRepo;
 
     @Autowired
-    private GameRepository gameRepository;
-
-    @Autowired
     private PlayerAveragesService playerAveragesService;
 
     @Autowired
@@ -61,7 +58,6 @@ public class BasicStatsService {
         metrics.setBasicStats(savedBasic);
         metrics.setGame(game);
         physicalMetricsRepo.save(metrics);
-
 
         // Update player averages
         playerAveragesService.updateAverages(savedBasic.getPlayer().getPlayerId());
