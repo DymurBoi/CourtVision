@@ -20,7 +20,15 @@ function PStats() {
     lastUpdated: "2023-03-15",
   })
 
-  const [editedRecords, setEditedRecords] = useState({ ...physicalRecords })
+  const [physicalRecordsForm, setPhysicalRecordsForm] = useState({
+    height: 0,
+    weight: 0,
+    wingspan: 0,
+    vertical: 0,
+    lastUpdated: "2023-03-15",
+  })
+
+  const [editedRecords, setEditedRecords] = useState({ ...physicalRecordsForm })
 
   const [playerAverages, setPlayerAverages] = useState({
     pointsPerGame: 0,
@@ -132,12 +140,6 @@ function PStats() {
             vertical: recordsData.vertical || 0,
             lastUpdated: recordsData.dateRecorded || "2023-03-15",
           })
-          setEditedRecords({
-            height: recordsData.height || 0,
-            weight: recordsData.weight || 0,
-            wingspan: recordsData.wingspan || 0,
-            vertical: recordsData.vertical || 0,
-          })
         }
 
         // Fetch player performance averages (UNCHANGED)
@@ -172,7 +174,6 @@ function PStats() {
     return () => clearInterval(intervalId)
   }
 }, [user, refreshTrigger])
-
 
   return (
     <div className="stats-container">
