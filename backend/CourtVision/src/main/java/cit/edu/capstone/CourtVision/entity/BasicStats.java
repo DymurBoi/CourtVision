@@ -49,7 +49,21 @@ public class BasicStats {
     private PlayerAverages playerAverages;
 
 
+    @ManyToOne
+    @JoinColumn(name = "season_id")
+    private Season season;
+
+
+
     //Getters and Setters
+    public Season getSeason() {
+        return season;
+    }
+
+    public void setSeason(Season season) {
+        this.season = season;
+    }
+
     public int getGamePoints() {
         return gamePoints;
     }
