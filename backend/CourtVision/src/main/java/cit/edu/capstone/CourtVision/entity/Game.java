@@ -12,6 +12,10 @@ public class Game {
     private Long gameId;
 
     private String gameName;
+    // Game Types (Scrimmage, Practice, Official Match)
+    private String gameType;
+    // Recording Types (Live, Post Game)
+    private String recordingType;
     private LocalDate gameDate;
     private String gameResult;
     private String finalScore;
@@ -40,7 +44,21 @@ public class Game {
     public List<BasicStats> getBasicStatsList() {
         return basicStatsList;
     }
+    public String getRecordingType() {
+        return recordingType;
+    }
+    
+    public void setRecordingType(String recordingType) {
+        this.recordingType = recordingType;
+    }
 
+    public String getGameType() {
+        return gameType;
+    }
+
+    public void setGameType(String gameType) {
+        this.gameType = gameType;
+    }
     public void setBasicStatsList(List<BasicStats> basicStatsList) {
         this.basicStatsList = basicStatsList;
     }

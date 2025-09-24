@@ -36,6 +36,10 @@ public class Player {
     @JsonIgnore
     private List<BasicStats> basicStatsList;
 
+    @OneToMany(mappedBy = "player", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<PlayerAverages> playerAverages;
+
     // Getters and Setters
 
 

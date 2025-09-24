@@ -2,6 +2,8 @@ package cit.edu.capstone.CourtVision.controller;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,13 +19,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import cit.edu.capstone.CourtVision.dto.PlayerDTO;
-import cit.edu.capstone.CourtVision.mapper.PlayerMapper;
 import cit.edu.capstone.CourtVision.entity.Player;
 import cit.edu.capstone.CourtVision.entity.Team;
+import cit.edu.capstone.CourtVision.mapper.PlayerMapper;
 import cit.edu.capstone.CourtVision.repository.TeamRepository;
 import cit.edu.capstone.CourtVision.service.PlayerService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/api/players")
@@ -100,7 +100,6 @@ public class PlayerController {
         PlayerDTO dto = PlayerMapper.toDto(savedPlayer);
         return ResponseEntity.ok(dto);
     }
-
 
     @DeleteMapping("/delete/{id}")
     public void deletePlayer(@PathVariable Long id) {

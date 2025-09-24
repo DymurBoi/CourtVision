@@ -46,6 +46,12 @@ public class GameService {
             if (updatedGame.getGameName() != null) {
                 existingGame.setGameName(updatedGame.getGameName());
             }
+            if (updatedGame.getGameType() != null) {
+                existingGame.setGameType(updatedGame.getGameType());
+            }
+            if (updatedGame.getRecordingType() != null) {
+                existingGame.setRecordingType(updatedGame.getRecordingType());
+            }
             if (updatedGame.getGameDate() != null) {
                 existingGame.setGameDate(updatedGame.getGameDate());
             }

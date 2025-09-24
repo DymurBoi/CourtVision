@@ -7,6 +7,8 @@ function CreateMatchModal({ onClose, onSave, teamId }) {
   const [formData, setFormData] = useState({
     homeTeam: "CIT-U",
     awayTeam: "",
+    gameType:"",
+    recordingType:"",
     gameDate: new Date().toISOString().split("T")[0], // ISO 8601 format
     gameResult: "W",
     finalScore: "",
@@ -23,45 +25,53 @@ function CreateMatchModal({ onClose, onSave, teamId }) {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (isSubmitting) return; // Prevent multiple submissions
-    setIsSubmitting(true); // Set the submitting flag
+  if (isSubmitting) return;
+  setIsSubmitting(true);
 
-    // Validate form data before submission
-    if (!formData.awayTeam || !formData.finalScore || !formData.gameDate) {
-      alert("Please fill all the required fields.");
-      setIsSubmitting(false);
-      return;
-    }
+  // Basic validation
+  if (!formData.awayTeam || !formData.gameDate) {
+    alert("Please fill all the required fields.");
+    setIsSubmitting(false);
+    return;
+  }
 
-    try {
-      // Ensure the game date is formatted correctly
-      const formattedDate = new Date(formData.gameDate).toISOString(); // ISO format
+  if (formData.recordingType === "Post" && !formData.finalScore) {
+    alert("Please fill in the final score for Post Game Analysis.");
+    setIsSubmitting(false);
+    return;
+  }
 
-      const gamePayload = {
-        gameName: `${formData.homeTeam} vs ${formData.awayTeam}`,
-        gameResult: formData.gameResult,
-        finalScore: formData.finalScore,
-        gameDate: formattedDate,
-        team: { teamId: teamId },
-      };
+  try {
+    const formattedDate = new Date(formData.gameDate).toISOString();
 
-      const gameRes = await api.post("/games/post", gamePayload);
-      const savedGame = gameRes.data;
+    // Prepare the payload conditionally
+    const gamePayload = {
+      gameName: `${formData.homeTeam} vs ${formData.awayTeam}`,
+      gameType: formData.gameType,
+      recordingType: formData.recordingType,
+      gameResult: formData.recordingType === "Live" ? "" : formData.gameResult,
+      finalScore: formData.recordingType === "Live" ? "" : formData.finalScore,
+      gameDate: formattedDate,
+      team: { teamId: teamId },
+    };
 
-      console.log("✅ Game created:", savedGame);
+    const gameRes = await api.post("/games/post", gamePayload);
+    const savedGame = gameRes.data;
 
-      alert("✅ Match created successfully!");
-      onSave(savedGame); // Pass back the new game object
-      onClose();
-    } catch (error) {
-      console.error("❌ Failed to save match:", error);
-      alert("Failed to save match.");
-    } finally {
-      setIsSubmitting(false); // Reset after the request is done
-    }
-  };
+    console.log("✅ Game created:", savedGame);
+
+    alert("✅ Match created successfully!");
+    onSave(savedGame);
+    onClose();
+  } catch (error) {
+    console.error("❌ Failed to save match:", error);
+    alert("Failed to save match.");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -103,6 +113,21 @@ function CreateMatchModal({ onClose, onSave, teamId }) {
                 />
                 </div>
                 
+              <div className="form-group">
+                <label>Game Type</label>
+                <select
+                  name="gameType"
+                  value={formData.gameType}
+                  onChange={handleChange}
+                >
+                  <option value="Scrimmage">Scrimmage</option>
+                  <option value="Practice">Practice</option>
+                  <option value="Official Match">Official Match</option>
+                </select>
+              </div>
+              
+              
+
               </div>
               <div className="form-row">
               <div className="form-group">
@@ -115,7 +140,19 @@ function CreateMatchModal({ onClose, onSave, teamId }) {
                   required
                 />
               </div>
-
+              <div className="form-group">
+                <label>Recording Type</label>
+                <select
+                  name="recordingType"
+                  value={formData.recordingType}
+                  onChange={handleChange}
+                >
+                  <option value="Live">Live Analysis</option>
+                  <option value="Post">Post Game Analysis</option>
+                </select>
+              </div>
+              {formData.recordingType === "Post" && (
+              <div>
               <div className="form-group">
                 <label>Game Result</label>
                 <select
@@ -127,7 +164,6 @@ function CreateMatchModal({ onClose, onSave, teamId }) {
                   <option value="L">Loss</option>
                 </select>
               </div>
-
               <div className="form-group">
                 <label htmlFor="finalScore">Final Score</label>
                 <input
@@ -139,6 +175,12 @@ function CreateMatchModal({ onClose, onSave, teamId }) {
                   required
                 />
                 </div>
+              </div>
+              )}
+
+              
+
+              
               </div>
             </div>
           </div>
