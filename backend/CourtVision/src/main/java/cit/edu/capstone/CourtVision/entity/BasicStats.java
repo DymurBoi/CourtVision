@@ -35,6 +35,12 @@ public class BasicStats {
     private Time minutes;
     private int gamePoints;
 
+    @Transient // not stored in DB, just runtime
+    private boolean subbedIn = false;
+
+    @Transient
+    private long lastCheckInMillis; // timestamp when player was last subbed in
+
     //Relationship
     @ManyToOne
     @JoinColumn(name = "player_id")
