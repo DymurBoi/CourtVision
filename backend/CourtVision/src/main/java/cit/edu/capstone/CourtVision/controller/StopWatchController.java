@@ -3,17 +3,15 @@ package cit.edu.capstone.CourtVision.controller;
 import cit.edu.capstone.CourtVision.entity.BasicStats;
 import cit.edu.capstone.CourtVision.repository.BasicStatsRepository;
 import cit.edu.capstone.CourtVision.service.StopWatchService;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.Duration;
 
 @RestController
 @RequestMapping("/api/stopwatch")
 public class StopWatchController {
 
-    @Autowired
     private final StopWatchService stopwatchService;
-    @Autowired
     private final BasicStatsRepository basicStatsRepository;
 
     public StopWatchController(StopWatchService stopwatchService,
@@ -29,7 +27,7 @@ public class StopWatchController {
         return "Player " + basicStatId + " subbed in!";
     }
 
-    // Sub a player out (pause + persist elapsed minutes)
+    // Sub a player out (stop and save elapsed to DB)
     @PostMapping("/{basicStatId}/sub-out")
     public BasicStats subOut(@PathVariable Long basicStatId) {
         BasicStats stats = basicStatsRepository.findById(basicStatId)
@@ -40,10 +38,22 @@ public class StopWatchController {
         return basicStatsRepository.save(stats);
     }
 
-    // Optional: Reset the in-memory stopwatch
+    // Reset stopwatch for a player
     @PostMapping("/{basicStatId}/reset")
     public String reset(@PathVariable Long basicStatId) {
         stopwatchService.reset(basicStatId);
         return "Stopwatch for player " + basicStatId + " reset!";
+    }
+
+    // 🔹 Get live elapsed time (hh:mm:ss format)
+    @GetMapping("/{basicStatId}/elapsed")
+    public String getElapsed(@PathVariable Long basicStatId) {
+        Duration elapsed = stopwatchService.getElapsed(basicStatId);
+
+        long hours = elapsed.toHours();
+        long minutes = elapsed.toMinutesPart();
+        long seconds = elapsed.toSecondsPart();
+
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
     }
 }
