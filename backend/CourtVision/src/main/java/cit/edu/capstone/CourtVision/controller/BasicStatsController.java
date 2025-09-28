@@ -69,4 +69,14 @@ public class BasicStatsController {
     public List<BasicStatsDTO> getSubbedOut() {
         return service.getSubbedOutStats();
     }
+
+    @PostMapping("/post/batch")
+    public ResponseEntity<List<BasicStatsDTO>> createBatch(@RequestBody List<BasicStats> statsList) {
+        List<BasicStats> createdList = service.createBatch(statsList);
+        List<BasicStatsDTO> dtos = createdList.stream()
+                .map(BasicStatsMapper::toDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
+    }
+
 }

@@ -299,4 +299,11 @@ public class BasicStatsService {
                     .map(BasicStatsMapper::toDTO)  // Assuming you have a method to map BasicStats to BasicStatsDTO
                     .collect(Collectors.toList());
     }
+
+    public List<BasicStats> createBatch(List<BasicStats> statsList) {
+        return statsList.stream()
+                .map(this::create) // reuse existing create method
+                .collect(Collectors.toList());
+    }
+
 }
