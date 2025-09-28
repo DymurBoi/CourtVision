@@ -17,7 +17,7 @@ public class SeasonController {
     }
 
     @PostMapping("/start")
-    public Season startSeason(@RequestParam String name, @RequestParam Long coachId) {
+    public Season startSeason(@RequestParam String name, @RequestParam Integer coachId) {
         return seasonService.startSeason(name, coachId);
     }
 

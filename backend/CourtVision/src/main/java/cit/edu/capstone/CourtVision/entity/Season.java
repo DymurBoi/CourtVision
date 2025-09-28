@@ -1,5 +1,6 @@
 package cit.edu.capstone.CourtVision.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
@@ -18,6 +19,7 @@ public class Season {
 
     @ManyToOne
     @JoinColumn(name = "coach_id")
+    @JsonIgnore
     private Coach coach;
 
     @OneToMany(mappedBy = "season", cascade = CascadeType.ALL)

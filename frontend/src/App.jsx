@@ -34,6 +34,8 @@ import CoachManagement from "./pages/admin/CoachManagement"
 import { AuthProvider } from "./components/AuthContext"
 import { useEffect } from "react"
 import "./styles/App.css"
+import CSeason from "./pages/coach/C-Season";
+import CPlayerRanking from "./pages/coach/C-PlayerRanking";
 
 // Create a wrapper component that forces re-render on location change
 function AppRoutes() {
@@ -191,6 +193,24 @@ function AppRoutes() {
             <>
               <CoachNavbar />
               <CHome />
+            </>
+          }
+        />
+        <Route
+          path="/coach/season"
+          element={
+            <>
+              <CoachNavbar />
+              <CSeason />
+            </>
+          }
+        />
+        <Route
+          path="/coach/ranking"
+          element={
+            <>
+              <CoachNavbar />
+              <CPlayerRanking />
             </>
           }
         />

@@ -1,6 +1,8 @@
 package cit.edu.capstone.CourtVision.service;
 
+import cit.edu.capstone.CourtVision.entity.Coach;
 import cit.edu.capstone.CourtVision.entity.Season;
+import cit.edu.capstone.CourtVision.repository.CoachRepository;
 import cit.edu.capstone.CourtVision.repository.SeasonRepository;
 import org.springframework.stereotype.Service;
 import cit.edu.capstone.CourtVision.dto.PlayerSeasonAveragesDTO;
@@ -13,23 +15,34 @@ import java.util.List;
 @Service
 public class SeasonService {
 
+
     private final SeasonRepository seasonRepository;
     private final BasicStatsRepository basicStatsRepository;
+    private final CoachRepository coachRepository; // add this
 
-    public SeasonService(SeasonRepository seasonRepository, BasicStatsRepository basicStatsRepository) {
+    public SeasonService(
+            SeasonRepository seasonRepository,
+            BasicStatsRepository basicStatsRepository,
+            CoachRepository coachRepository // include in constructor
+    ) {
         this.seasonRepository = seasonRepository;
         this.basicStatsRepository = basicStatsRepository;
+        this.coachRepository = coachRepository;
     }
 
-    public Season startSeason(String name, Long coachId) {
+    public Season startSeason(String name, Integer coachId) {
         Season season = new Season();
         season.setSeasonName(name);
         season.setStartDate(LocalDate.now());
         season.setActive(true);
-        // set coach manually in controller with CoachService
+
+        // fetch coach and set
+        Coach coach = coachRepository.findById(coachId)
+                .orElseThrow(() -> new RuntimeException("Coach not found with id: " + coachId));
+        season.setCoach(coach);
+
         return seasonRepository.save(season);
     }
-
     public Season stopSeason(Long seasonId) {
         Season season = seasonRepository.findById(seasonId).orElseThrow();
         season.setEndDate(LocalDate.now());
