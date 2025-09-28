@@ -56,7 +56,6 @@ function CreateMatchModal({ onClose, onSave, teamId }) {
       gameDate: formattedDate,
       team: { teamId: teamId },
     };
-
     const gameRes = await api.post("/games/post", gamePayload);
     const savedGame = gameRes.data;
 

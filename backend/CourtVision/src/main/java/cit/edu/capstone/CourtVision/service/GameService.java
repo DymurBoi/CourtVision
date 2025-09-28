@@ -2,12 +2,16 @@ package cit.edu.capstone.CourtVision.service;
 
 import cit.edu.capstone.CourtVision.entity.Game;
 import cit.edu.capstone.CourtVision.entity.Team;
+import cit.edu.capstone.CourtVision.repository.BasicStatsVariationRepository;
 import cit.edu.capstone.CourtVision.repository.GameRepository;
 import cit.edu.capstone.CourtVision.repository.TeamRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import cit.edu.capstone.CourtVision.entity.BasicStatsVariation;
 
 @Service
 public class GameService {
@@ -18,6 +22,8 @@ public class GameService {
     @Autowired
     private TeamRepository teamRepo;
 
+    @Autowired
+    private BasicStatsVariationRepository basicStats;
     //Get all games
     public List<Game> getAll() {
         return gameRepo.findAll();
@@ -36,7 +42,13 @@ public class GameService {
 
     //Create a new game
     public Game save(Game game) {
-        return gameRepo.save(game);
+        Game savedGame = gameRepo.save(game);
+        if(savedGame.getRecordingType()=="Live"){
+            BasicStatsVariation stats = new BasicStatsVariation();
+            stats= setStats(stats,savedGame);
+            basicStats.save(stats);
+        }
+        return savedGame;
     }
 
     //Update existing game (partial update style)
@@ -88,5 +100,26 @@ public class GameService {
     //Delete game by ID
     public void delete(Long id) {
         gameRepo.deleteById(id);
+    }
+
+    public BasicStatsVariation setStats(BasicStatsVariation stats, Game game){
+        stats.setTwoPtAttempts(0);
+        stats.setTwoPtMade(0);
+        stats.setThreePtAttempts(0);
+        stats.setThreePtMade(0);
+        stats.setFtAttempts(0);
+        stats.setFtMade(0);
+        stats.setAssists(0);
+        stats.setoFRebounds(0);
+        stats.setdFRebounds(0);
+        stats.setBlocks(0);
+        stats.setSteals(0);
+        stats.setTurnovers(0);
+        stats.setpFouls(0);
+        stats.setdFouls(0);
+        stats.setPlusMinus(0);
+        stats.setGamePoints(0);
+        stats.setGame(game);
+        return stats;
     }
 }

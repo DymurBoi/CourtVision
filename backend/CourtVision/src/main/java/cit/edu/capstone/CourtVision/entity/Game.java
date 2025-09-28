@@ -1,6 +1,5 @@
 package cit.edu.capstone.CourtVision.entity;
 
-import cit.edu.capstone.CourtVision.dto.PhysicalBasedMetricsStatsDTO;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
@@ -124,6 +123,13 @@ public class Game {
     public List<BasicStats> getBasicStats() { return basicStatsList; }
     public void setBasicStats(List<BasicStats> basicStatsList) { this.basicStatsList = basicStatsList; }
 
+
+    public List<BasicStatsVariation> getBasicStatsVarList() {
+        return basicStatsVarList;
+    }
+    public void setBasicStatsVarList(List<BasicStatsVariation> basicStatsVarList) {
+        this.basicStatsVarList = basicStatsVarList;
+    }
     //private Long advancedStatId;
     //private Long adjustedStatId;
 }
