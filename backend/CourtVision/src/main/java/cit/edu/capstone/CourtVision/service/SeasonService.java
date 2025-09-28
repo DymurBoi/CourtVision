@@ -38,7 +38,7 @@ public class SeasonService {
     }
 
     public List<Season> getSeasonsByCoach(Long coachId) {
-        return seasonRepository.findByCoachId(coachId);
+        return seasonRepository.findByCoach_CoachId(coachId);
     }
 
     public List<Season> getActiveSeasons() {
@@ -46,7 +46,7 @@ public class SeasonService {
     }
 
     public PlayerSeasonAveragesDTO calculatePlayerSeasonAverages(Long playerId, Long seasonId) {
-        List<BasicStats> statsList = basicStatsRepository.findByPlayerIdAndSeasonId(playerId, seasonId);
+        List<BasicStats> statsList = basicStatsRepository.findByPlayer_PlayerIdAndSeasonId(playerId, seasonId);
 
         if (statsList.isEmpty()) {
             return new PlayerSeasonAveragesDTO(playerId, seasonId, 0, 0, 0, 0, 0, 0);

@@ -5,7 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a29aee95-f4b1-4cdc-8e7e-d50e576a9f35" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/copilot.data.migration.ask2agent.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/repository/BasicStatsRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/repository/BasicStatsRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/repository/SeasonRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/repository/SeasonRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/service/SeasonService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/service/SeasonService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/CourtVision/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/CourtVision/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,6 +67,14 @@
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-fbdcb00ec9e3-intellij.indexing.shared.core-IU-251.26094.121" />
+        <option value="bundled-js-predefined-d6986cc7102b-b26f3e71634d-JavaScript-IU-251.26094.121" />
+      </set>
+    </attachedChunks>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -73,6 +85,7 @@
       <updated>1745533056268</updated>
       <workItem from="1758436103448" duration="455000" />
       <workItem from="1758436582778" duration="5228000" />
+      <workItem from="1759020229578" duration="417000" />
     </task>
     <servers />
   </component>
