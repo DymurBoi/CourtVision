@@ -42,14 +42,17 @@ public class GameService {
 
     //Create a new game
     public Game save(Game game) {
-        Game savedGame = gameRepo.save(game);
-        if(savedGame.getRecordingType()=="Live"){
-            BasicStatsVariation stats = new BasicStatsVariation();
-            stats= setStats(stats,savedGame);
-            basicStats.save(stats);
-        }
-        return savedGame;
+    Game savedGame = gameRepo.save(game);
+
+    if ("Live".equalsIgnoreCase(savedGame.getRecordingType())) {
+        BasicStatsVariation stats = new BasicStatsVariation();
+        stats = setStats(stats, savedGame);
+        basicStats.save(stats);
     }
+
+    return savedGame;
+}
+
 
     //Update existing game (partial update style)
     public Game update(Long id, Game updatedGame) {
