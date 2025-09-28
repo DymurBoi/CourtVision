@@ -60,14 +60,14 @@ public class BasicStatsController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/get/subbed-in")
-    public List<BasicStatsDTO> getSubbedIn() {
-        return service.getSubbedInStats();
+    @GetMapping("/get/subbed-in/{gameId}")
+    public List<BasicStatsDTO> getSubbedIn(@PathVariable Long gameId) {
+        return service.getSubbedInStats(gameId);
     }
 
-    @GetMapping("/get/subbed-out")
-    public List<BasicStatsDTO> getSubbedOut() {
-        return service.getSubbedOutStats();
+    @GetMapping("/get/subbed-out/{gameId}")
+    public List<BasicStatsDTO> getSubbedOut(@PathVariable Long gameId) {
+        return service.getSubbedOutStats(gameId);
     }
 
     @PostMapping("/post/batch")

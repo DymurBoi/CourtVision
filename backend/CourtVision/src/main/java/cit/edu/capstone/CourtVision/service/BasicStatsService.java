@@ -286,19 +286,19 @@ public class BasicStatsService {
                     .map(BasicStatsMapper::toDTO)
                     .collect(Collectors.toList());
     }
-    public List<BasicStatsDTO> getSubbedInStats() {
-        List<BasicStats> stats = basicStatsRepository.findBySubbedInTrue();
-        return stats.stream()
-                    .map(BasicStatsMapper::toDTO)  // Assuming you have a method to map BasicStats to BasicStatsDTO
-                    .collect(Collectors.toList());
-    }
+    public List<BasicStatsDTO> getSubbedInStats(Long gameId) {
+    List<BasicStats> stats = basicStatsRepository.findByGame_GameIdAndSubbedInTrue(gameId);
+    return stats.stream()
+                .map(BasicStatsMapper::toDTO)
+                .collect(Collectors.toList());
+}
 
-    public List<BasicStatsDTO> getSubbedOutStats() {
-        List<BasicStats> stats = basicStatsRepository.findBySubbedInFalse();
-        return stats.stream()
-                    .map(BasicStatsMapper::toDTO)  // Assuming you have a method to map BasicStats to BasicStatsDTO
-                    .collect(Collectors.toList());
-    }
+public List<BasicStatsDTO> getSubbedOutStats(Long gameId) {
+    List<BasicStats> stats = basicStatsRepository.findByGame_GameIdAndSubbedInFalse(gameId);
+    return stats.stream()
+                .map(BasicStatsMapper::toDTO)
+                .collect(Collectors.toList());
+}
 
     public List<BasicStats> createBatch(List<BasicStats> statsList) {
         return statsList.stream()
