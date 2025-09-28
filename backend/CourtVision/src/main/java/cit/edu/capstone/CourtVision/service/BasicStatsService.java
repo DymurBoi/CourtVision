@@ -39,9 +39,13 @@ public class BasicStatsService {
         return basicStatsRepository.findById(id).orElse(null);
     }
 
-    public BasicStats create(BasicStats basicStats) {
+    public BasicStats pointsConvert(BasicStats basicStats){
         int points = (basicStats.getTwoPtMade() * 2) + (basicStats.getThreePtMade() * 3) + basicStats.getFtMade();
         basicStats.setGamePoints(points);
+        return basicStats;
+    }
+    public BasicStats create(BasicStats basicStats) {
+        basicStats=pointsConvert(basicStats);
 
         // Save BasicStats first
         BasicStats savedBasic = basicStatsRepository.save(basicStats);

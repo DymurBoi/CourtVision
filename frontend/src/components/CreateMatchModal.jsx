@@ -7,8 +7,8 @@ function CreateMatchModal({ onClose, onSave, teamId }) {
   const [formData, setFormData] = useState({
     homeTeam: "CIT-U",
     awayTeam: "",
-    gameType:"",
-    recordingType:"",
+    gameType:"Scrimmage",
+    recordingType:"Live",
     gameDate: new Date().toISOString().split("T")[0], // ISO 8601 format
     gameResult: "W",
     finalScore: "",

@@ -30,6 +30,9 @@ public class Game {
     private List<BasicStats> basicStatsList;
 
     @OneToMany(mappedBy = "game")
+    private List<BasicStatsVariation> basicStatsVarList;
+
+    @OneToMany(mappedBy = "game")
     private List<AdvancedStats> advancedStats;
     @OneToMany
     @JoinColumn(name = "physical_based_metric_stats_id")

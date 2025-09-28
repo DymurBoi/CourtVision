@@ -1,21 +1,19 @@
 package cit.edu.capstone.CourtVision.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
-
 import java.sql.Time;
 
-@Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class BasicStats {
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
+@Entity
+public class BasicStatsVariation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long basicStatId;
-
+    private Long basicStatVarId;
 
     private int twoPtAttempts;
     private int twoPtMade;
@@ -35,65 +33,24 @@ public class BasicStats {
     private Time minutes;
     private int gamePoints;
 
-    @Transient // not stored in DB, just runtime
-    private boolean subbedIn = false;
-
-    @Transient
-    private long lastCheckInMillis; // timestamp when player was last subbed in
-
-    //Relationship
-    @ManyToOne
-    @JoinColumn(name = "player_id")
-    private Player player;
-
     @ManyToOne
     @JoinColumn(name = "game_id")
     private Game game;
 
-    @ManyToOne
-    @JoinColumn(name = "player_avg_id")
-    private PlayerAverages playerAverages;
-
-
-    //Getters and Setters
-    public int getGamePoints() {
-        return gamePoints;
-    }
-    public void setGamePoints(int gamePoints) {
-        this.gamePoints = gamePoints;
+    public Long getBasicStatVarId() {
+        return basicStatVarId;
     }
 
-    public PlayerAverages getPlayerAverages() {
-        return playerAverages;
+    public void setBasicStatVarId(Long basicStatVarId) {
+        this.basicStatVarId = basicStatVarId;
     }
     
-    public void setPlayerAverages(PlayerAverages playerAverages) {
-        this.playerAverages = playerAverages;
+    public int getTwoPtAttempts() {
+        return twoPtAttempts;
     }
 
-
-    public Game getGame() {
-        return game;
-    }
-
-    public void setGame(Game game) {
-        this.game = game;
-    }
-
-    public Player getPlayer() {
-        return player;
-    }
-
-    public void setPlayer(Player player) {
-        this.player = player;
-    }
-
-    public Long getBasicStatId() {
-        return basicStatId;
-    }
-
-    public void setBasicStatId(Long basicStatId) {
-        this.basicStatId = basicStatId;
+    public void setTwoPtAttempts(int twoPtAttempts) {
+        this.twoPtAttempts = twoPtAttempts;
     }
 
     public int getTwoPtMade() {
@@ -102,14 +59,6 @@ public class BasicStats {
 
     public void setTwoPtMade(int twoPtMade) {
         this.twoPtMade = twoPtMade;
-    }
-
-    public int getTwoPtAttempts() {
-        return twoPtAttempts;
-    }
-
-    public void setTwoPtAttempts(int twoPtAttempts) {
-        this.twoPtAttempts = twoPtAttempts;
     }
 
     public int getThreePtAttempts() {
@@ -136,20 +85,20 @@ public class BasicStats {
         this.ftAttempts = ftAttempts;
     }
 
-    public int getAssists() {
-        return assists;
-    }
-
-    public void setAssists(int assists) {
-        this.assists = assists;
-    }
-
     public int getFtMade() {
         return ftMade;
     }
 
     public void setFtMade(int ftMade) {
         this.ftMade = ftMade;
+    }
+
+    public int getAssists() {
+        return assists;
+    }
+
+    public void setAssists(int assists) {
+        this.assists = assists;
     }
 
     public int getoFRebounds() {
@@ -192,20 +141,20 @@ public class BasicStats {
         this.turnovers = turnovers;
     }
 
-    public int getdFouls() {
-        return dFouls;
-    }
-
-    public void setdFouls(int dFouls) {
-        this.dFouls = dFouls;
-    }
-
     public int getpFouls() {
         return pFouls;
     }
 
     public void setpFouls(int pFouls) {
         this.pFouls = pFouls;
+    }
+
+    public int getdFouls() {
+        return dFouls;
+    }
+
+    public void setdFouls(int dFouls) {
+        this.dFouls = dFouls;
     }
 
     public int getPlusMinus() {
@@ -224,12 +173,20 @@ public class BasicStats {
         this.minutes = minutes;
     }
 
-    public boolean isSubbedIn() {
-    return subbedIn;
-}
+    public int getGamePoints() {
+        return gamePoints;
+    }
 
-    public void setSubbedIn(boolean subbedIn) {
-        this.subbedIn = subbedIn;
+    public void setGamePoints(int gamePoints) {
+        this.gamePoints = gamePoints;
+    }
+
+    public Game getGame() {
+        return game;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
     }
 
 }

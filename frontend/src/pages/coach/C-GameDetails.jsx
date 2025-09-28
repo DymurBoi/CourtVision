@@ -86,7 +86,7 @@ useEffect(() => {
         player: { playerId: playerStat.selectedPlayer },
         game: { gameId: Number(gameId) },
       };
-
+      
       const response = await api.post("/basic-stats/post", payload);
       const returned = response.data;
 

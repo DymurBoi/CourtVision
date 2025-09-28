@@ -35,7 +35,9 @@ public class StopWatchService {
                 long existingMillis = stats.getMinutes().getTime() + TimeZone.getDefault().getRawOffset();
                 sw.setBaseMillis(existingMillis);
             }
-
+            if (!stats.isSubbedIn()) { // transient check
+            stats.setSubbedIn(true); // runtime only
+            }
             stopwatches.put(basicStatId, sw);
         }
 
@@ -49,6 +51,9 @@ public class StopWatchService {
             sw.stop();
             updateMinutes(stats, sw);
         }
+        if (stats.isSubbedIn()) { // transient check
+            stats.setSubbedIn(false); // runtime only
+            }
     }
 
     // Reset stopwatch for a player (in-memory)
@@ -62,7 +67,6 @@ public class StopWatchService {
     // Helper: set DB minutes from stopWatch total elapsed (NO double-add)
     private void updateMinutes(BasicStats stats, StopWatch sw) {
         long totalMillis = sw.getElapsed().toMillis();
-
         // convert to java.sql.Time (adjust for timezone offset)
         stats.setMinutes(new Time(totalMillis - TimeZone.getDefault().getRawOffset()));
     }
