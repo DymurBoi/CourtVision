@@ -67,6 +67,16 @@ function CMatches({teamId}) {
     );
   }
 
+  //Handles View Game Button
+    const handleViewGame = (match) => {
+    if (match.recordingType === "Live") {
+      navigate(`/coach/live-record/${match.id}?teamId=${teamId}`);
+    } else {
+      navigate(`/coach/game-details/${match.id}?teamId=${teamId}`);
+    }
+  };
+
+  
   const handleCreateMatch = async (newMatch) => {
     try {
       const savedGame = await gameService.createGame(newMatch);
@@ -159,9 +169,12 @@ function CMatches({teamId}) {
                 <div className="score">{match.score}</div>
                 <div className="date">{match.date}</div>
                 <div className="actions">
-                  <Link to={`/coach/game-details/${match.id}?teamId=${teamId}`} className="view-button">
+                   <button
+                    className="view-button"
+                    onClick={() => handleViewGame(match)}
+                  >
                     View Game
-                  </Link>
+                  </button>
                 </div>
               </div>
             ))}

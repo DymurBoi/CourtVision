@@ -161,13 +161,6 @@ function AppRoutes() {
             </>
           }
         />
-        {/* Demo route to view Live Record page without auth */}
-      <Route 
-        path="/coach/live-record" 
-        element={
-        <CLiveRecord />
-        } 
-      />
         <Route
           path="/coach/requests"
           element={
