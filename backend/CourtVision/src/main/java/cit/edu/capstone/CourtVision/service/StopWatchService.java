@@ -25,24 +25,34 @@ public class StopWatchService {
 
     // Sub a player in (start/resume)
     public void subIn(Long basicStatId) {
-        StopWatch sw = stopwatches.get(basicStatId);
-        if (sw == null) {
-            sw = new StopWatch();
+    StopWatch sw = stopwatches.get(basicStatId);
+    BasicStats stats = basicStatsRepository.findById(basicStatId).orElse(null);
+    if (stats == null) {
+        // Handle this case if needed
+        return;
+    }
 
-            // Load existing minutes from DB (persisted total) and set as base
-            BasicStats stats = basicStatsRepository.findById(basicStatId).orElse(null);
-            if (stats != null && stats.getMinutes() != null) {
-                long existingMillis = stats.getMinutes().getTime() + TimeZone.getDefault().getRawOffset();
-                sw.setBaseMillis(existingMillis);
-            }
-            if (!stats.isSubbedIn()) { // transient check
-            stats.setSubbedIn(true); // runtime only
-            }
-            stopwatches.put(basicStatId, sw);
+    if (sw == null) {
+        sw = new StopWatch();
+
+        // Load existing minutes from DB (persisted total) and set as base
+        if (stats.getMinutes() != null) {
+            long existingMillis = stats.getMinutes().getTime() + TimeZone.getDefault().getRawOffset();
+            sw.setBaseMillis(existingMillis);
         }
 
-        sw.start();
+        stopwatches.put(basicStatId, sw);
     }
+
+    // Persist subbedIn state regardless
+    if (stats.isSubbedIn()==false) {
+        stats.setSubbedIn(true);
+        basicStatsRepository.save(stats);
+    }
+
+    sw.start();
+}
+
 
     // Sub a player out (stop + persist to DB)
     public void subOut(Long basicStatId, BasicStats stats) {
@@ -53,6 +63,7 @@ public class StopWatchService {
         }
         if (stats.isSubbedIn()) { // transient check
             stats.setSubbedIn(false); // runtime only
+            basicStatsRepository.save(stats);
             }
     }
 

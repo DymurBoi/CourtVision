@@ -59,4 +59,14 @@ public class BasicStatsController {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/get/subbed-in")
+    public List<BasicStatsDTO> getSubbedIn() {
+        return service.getSubbedInStats();
+    }
+
+    @GetMapping("/get/subbed-out")
+    public List<BasicStatsDTO> getSubbedOut() {
+        return service.getSubbedOutStats();
+    }
 }

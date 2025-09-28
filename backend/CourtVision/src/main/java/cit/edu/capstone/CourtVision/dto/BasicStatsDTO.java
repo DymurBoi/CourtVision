@@ -24,8 +24,15 @@ public class BasicStatsDTO {
     private Long playerId;
     private String playerName;
     private GameDTO gameDTO;
+    private boolean subbedIn;
     
 
+    public boolean isSubbedIn() {
+        return subbedIn;
+    }
+    public void setSubbedIn(boolean subbedIn) {
+        this.subbedIn = subbedIn;
+    }
     // Getters and Setters
     public Long getPlayerId() {
         return playerId;

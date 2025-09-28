@@ -34,8 +34,6 @@ public class BasicStats {
     private int plusMinus;
     private Time minutes;
     private int gamePoints;
-
-    @Transient // not stored in DB, just runtime
     private boolean subbedIn = false;
 
     @Transient
