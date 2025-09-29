@@ -85,16 +85,24 @@ function CLiveRecord() {
   const [teamBScore] = useState(65)
 
   //Fetching Players in First Five Modal
-   useEffect(() => {
-  if (showFirstFiveModal && teamId) {
-    api.get(`/players/get/by-team/${teamId}`)
-      .then(res => setTeamPlayers(res.data))
-      .catch(err => {
-        setTeamPlayers([]);
-        console.error("Failed to fetch team players:", err);
-      });
-  }
-}, [showFirstFiveModal, teamId]);
+  useEffect(() => {
+    // FIX 2: Ensure teamId is not null or empty string before fetching
+    if (showFirstFiveModal && teamId) { 
+      // Log to debug and confirm what ID is being used
+      console.log("Fetching players for teamId:", teamId); 
+      
+      api.get(`/players/get/by-team/${teamId}`)
+        .then(res => {
+          // Log the successful response data
+          console.log("Team Players fetched successfully:", res.data);
+          setTeamPlayers(res.data);
+        })
+        .catch(err => {
+          setTeamPlayers([]);
+          console.error("Failed to fetch team players:", err);
+        });
+    }
+  }, [showFirstFiveModal, teamId]);
 
 
   // Timer effect
@@ -423,8 +431,7 @@ function CLiveRecord() {
         </div>
       )}
 
-  {/* First Five Selection Modal */}
-      {showFirstFiveModal && (
+   {showFirstFiveModal && (
         <div className="modal-overlay" onClick={() => setShowFirstFiveModal(false)}>
           <div className="modal-container player-stats-modal wide-modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
@@ -432,19 +439,27 @@ function CLiveRecord() {
               <button className="close-button" onClick={() => setShowFirstFiveModal(false)}>&times;</button>
             </div>
             <div className="modal-content">
-              <div className="players-grid">
-                {teamPlayers.map((player) => (
-                  <div key={player.playerId} className="player-card">
-                    <input
-                      type="checkbox"
-                      checked={selectedPlayers.includes(player.playerId)}
-                      onChange={() => handleCheckboxChange(player.playerId)}
-                    />
-                    <div className="jersey-number">#{player.jerseyNum}</div>
-                    <div className="player-name">{player.lname}</div>
-                  </div>
-                ))}
-              </div>
+              {/* Check if players are loading or empty */}
+              {teamPlayers.length === 0 && teamId ? (
+                <p>Loading players or no players found for team ID: {teamId}</p>
+              ) : teamPlayers.length === 0 && !teamId ? (
+                <p>Error: Team ID is missing from the URL. Please ensure the URL contains `?teamId=...`.</p>
+              ) : (
+                <div className="players-grid">
+                  {/* Assuming API response uses playerId and lname */}
+                  {teamPlayers.map((player) => (
+                    <div key={player.playerId} className="player-card">
+                      <input
+                        type="checkbox"
+                        checked={selectedPlayers.includes(player.playerId)}
+                        onChange={() => handleCheckboxChange(player.playerId)}
+                      />
+                      <div className="jersey-number">#{player.jerseyNum}</div>
+                      <div className="player-name">{player.lname}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
             <div className="modal-actions">
               <button
