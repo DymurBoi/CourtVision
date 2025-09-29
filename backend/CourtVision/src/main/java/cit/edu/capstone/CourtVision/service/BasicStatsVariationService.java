@@ -1,16 +1,17 @@
 package cit.edu.capstone.CourtVision.service;
 
-import cit.edu.capstone.CourtVision.dto.BasicStatsDTO;
-import cit.edu.capstone.CourtVision.entity.*;
-import cit.edu.capstone.CourtVision.repository.*;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
+import cit.edu.capstone.CourtVision.dto.BasicStatsDTO;
+import cit.edu.capstone.CourtVision.entity.BasicStats;
+import cit.edu.capstone.CourtVision.entity.BasicStatsVariation;
 import cit.edu.capstone.CourtVision.mapper.BasicStatsVariationMapper;
+import cit.edu.capstone.CourtVision.repository.BasicStatsRepository;
+import cit.edu.capstone.CourtVision.repository.BasicStatsVariationRepository;
 
 @Service
 public class BasicStatsVariationService {
@@ -33,8 +34,10 @@ public class BasicStatsVariationService {
     public BasicStatsVariation pointsConvert(BasicStatsVariation basicStats){
         int points = (basicStats.getTwoPtMade() * 2) + (basicStats.getThreePtMade() * 3) + basicStats.getFtMade();
         basicStats.setGamePoints(points);
+        System.out.println("New Game Points: "+basicStats.getGamePoints());
         return basicStats;
     }
+
     public BasicStatsVariation create(BasicStatsVariation basicStats) {
     basicStats = pointsConvert(basicStats);
     BasicStatsVariation savedBasic = basicStatsVarRepository.save(basicStats);
@@ -44,13 +47,23 @@ public class BasicStatsVariationService {
     return savedBasic;
     }
 
-
+    public BasicStatsVariation testFunc(BasicStatsVariation temp, BasicStatsVariation updateStat){
+        temp.setTwoPtMade(updateStat.getTwoPtMade()-temp.getTwoPtMade());
+        System.out.println("Two: "+temp.getTwoPtMade());
+        temp.setThreePtMade(updateStat.getThreePtMade()-temp.getThreePtMade());
+        System.out.println("Three: "+temp.getThreePtMade());
+        temp.setFtMade(updateStat.getFtMade()-temp.getFtMade());
+        System.out.println("FT: "+temp.getFtMade());
+        System.out.println("GamePts: "+temp.getGamePoints());
+        temp=pointsConvert(temp);
+        return temp;
+    }
 
     public BasicStatsVariation update(Long id, BasicStatsVariation updatedStats) {
     BasicStatsVariation existing = getById(id);
     if (existing != null) {
-        int oldPoints = existing.getGamePoints();
-
+        BasicStatsVariation tempStat=existing;
+        tempStat=testFunc(tempStat,updatedStats);
         existing.setTwoPtAttempts(updatedStats.getTwoPtAttempts());
         existing.setTwoPtMade(updatedStats.getTwoPtMade());
         existing.setThreePtAttempts(updatedStats.getThreePtAttempts());
@@ -71,16 +84,15 @@ public class BasicStatsVariationService {
         if (updatedStats.getGame() != null) {
             existing.setGame(updatedStats.getGame());
         }
-
+        updateSubbedInPlusMinus(tempStat, tempStat.getGamePoints());
         // Recalculate points
         existing = pointsConvert(existing);
-        int newPoints = existing.getGamePoints();
 
         // Save the updated stats
         BasicStatsVariation savedBasic = basicStatsVarRepository.save(existing);
 
         // Adjust subbed-in players' plusMinus based on point delta
-        updateSubbedInPlusMinus(savedBasic, newPoints - oldPoints);
+        
 
         return savedBasic;
     }
@@ -102,20 +114,39 @@ public class BasicStatsVariationService {
                     .collect(Collectors.toList());
     }
 
+
     private void updateSubbedInPlusMinus(BasicStatsVariation variation) {
-    updateSubbedInPlusMinus(variation, variation.getGamePoints());
-}
+        updateSubbedInPlusMinus(variation, variation.getGamePoints());
+    }
 
     private void updateSubbedInPlusMinus(BasicStatsVariation variation, int pointDelta) {
         if (variation.getGame() == null || pointDelta == 0) return;
 
+        // Get all subbed-in players for the game
         List<BasicStats> subbedInPlayers = basicStatsRepository
                 .findByGame_GameIdAndSubbedInTrue(variation.getGame().getGameId());
 
+        // Iterate through each subbed-in player
         for (BasicStats stats : subbedInPlayers) {
-            stats.setPlusMinus(stats.getPlusMinus() + pointDelta);
+            // Calculate the point difference
+            int previousPoints = stats.getPlusMinus();  // This is the previous gamePoints value
+            int currentPoints = variation.getGamePoints();  // This is the updated gamePoints value
+
+            // Calculate the point difference (delta)
+            int pointDifference =  previousPoints-currentPoints;
+
+            // Log the pointDifference for debugging
+            System.out.println("Point Difference for player " + stats.getBasicStatId() + ": " + pointDifference);
+
+            // Update the PlusMinus by subtracting the pointDifference from the current PlusMinus
+            int newPlusMinus = pointDifference;
+            stats.setPlusMinus(newPlusMinus);
+
+            // Log the new PlusMinus value for debugging
+            System.out.println("Updated PlusMinus for player " + stats.getBasicStatId() + ": " + newPlusMinus);
         }
 
+        // Save all subbed-in players after the update
         basicStatsRepository.saveAll(subbedInPlayers);
     }
 

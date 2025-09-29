@@ -99,6 +99,7 @@ public class BasicStatsService {
             }
 
             // Save the updated BasicStats
+            existing=pointsConvert(existing);
             BasicStats savedBasic = basicStatsRepository.save(existing);
             Game game = savedBasic.getGame();
 
