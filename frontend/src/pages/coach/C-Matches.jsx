@@ -35,6 +35,7 @@ function CMatches({teamId}) {
           result: game.gameResult,
           score: game.finalScore,
           date: new Date(game.gameDate).toLocaleDateString(),
+          recordingType: game.recordingType,
         }));
 
         setMatches(transformed);
@@ -71,7 +72,7 @@ function CMatches({teamId}) {
   //Handles View Game Button
     const handleViewGame = (match) => {
     if (match.recordingType === "Live") {
-      navigate(`/coach/live-record/${match.id}?teamId=${teamId}`);
+      navigate(`/coach/live-record/?gameId=${match.id}&teamId=${teamId}`);
     } else {
       navigate(`/coach/game-details/${match.id}?teamId=${teamId}`);
     }
