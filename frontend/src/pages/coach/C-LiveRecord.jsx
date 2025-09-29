@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import CoachNavbar from "../../components/CoachNavbar"
 import "../../styles/coach/C-LiveRecord.css"
 import { api } from "../../utils/axiosConfig";
-import { useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 function CLiveRecord() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [time, setTime] = useState(0) // time in seconds
@@ -17,7 +17,9 @@ function CLiveRecord() {
   const [showFirstFiveModal, setShowFirstFiveModal] = useState(false);
   const [selectedPlayers, setSelectedPlayers] = useState([]); 
   const [teamPlayers, setTeamPlayers] = useState([]);
-  const { teamId } = useParams();
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+   const teamId = params.get("teamId");
   // Sample team data - you can replace this with actual data from props or API
   const [teamA, setTeamA] = useState({
     name: "CITU",
@@ -83,16 +85,16 @@ function CLiveRecord() {
   const [teamBScore] = useState(65)
 
   //Fetching Players in First Five Modal
-  useEffect(() => {
-    if (showFirstFiveModal) {
-      api.get(`/players/get/by-team/${teamId}`)
-        .then(res => setTeamPlayers(res.data))
-        .catch(err => {
-          setTeamPlayers([]);
-          console.error("Failed to fetch team players:", err);
-        });
-    }
-  }, [showFirstFiveModal, teamId]);
+   useEffect(() => {
+  if (showFirstFiveModal && teamId) {
+    api.get(`/players/get/by-team/${teamId}`)
+      .then(res => setTeamPlayers(res.data))
+      .catch(err => {
+        setTeamPlayers([]);
+        console.error("Failed to fetch team players:", err);
+      });
+  }
+}, [showFirstFiveModal, teamId]);
 
 
   // Timer effect
