@@ -81,7 +81,7 @@ useEffect(() => {
         turnovers: Number(playerStat.turnovers),
         pFouls: Number(playerStat.pFouls),
         dFouls: Number(playerStat.dFouls),
-        plusMinus: 0,
+        plusMinus: Number(0),
         minutes: playerStat.minutes,
         player: { playerId: playerStat.selectedPlayer },
         game: { gameId: Number(gameId) },

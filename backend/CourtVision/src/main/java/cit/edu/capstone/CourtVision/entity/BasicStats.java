@@ -54,6 +54,18 @@ public class BasicStats {
 
 
     //Getters and Setters
+    public BasicStats(BasicStats basicStats) {
+    this.twoPtMade = basicStats.getTwoPtMade();
+    this.threePtMade = basicStats.getThreePtMade();
+    this.ftMade = basicStats.getFtMade();
+    this.gamePoints = basicStats.getGamePoints();
+    this.game = basicStats.getGame();
+    this.player = basicStats.getPlayer();
+    this.basicStatId = basicStats.getBasicStatId();
+    this.subbedIn = basicStats.isSubbedIn();
+    this.plusMinus = basicStats.getPlusMinus();
+    }
+
     public int getGamePoints() {
         return gamePoints;
     }
