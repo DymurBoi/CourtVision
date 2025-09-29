@@ -47,7 +47,7 @@ public class BasicStatsVariationService {
     return savedBasic;
     }
 
-    public BasicStatsVariation testFunc(BasicStatsVariation temp, BasicStatsVariation updateStat){
+    public BasicStatsVariation differenceChecker(BasicStatsVariation temp, BasicStatsVariation updateStat){
         temp.setTwoPtMade(updateStat.getTwoPtMade()-temp.getTwoPtMade());
         System.out.println("Two: "+temp.getTwoPtMade());
         temp.setThreePtMade(updateStat.getThreePtMade()-temp.getThreePtMade());
@@ -63,7 +63,7 @@ public class BasicStatsVariationService {
     BasicStatsVariation existing = getById(id);
     if (existing != null) {
         BasicStatsVariation tempStat=existing;
-        tempStat=testFunc(tempStat,updatedStats);
+        tempStat=differenceChecker(tempStat,updatedStats);
         existing.setTwoPtAttempts(updatedStats.getTwoPtAttempts());
         existing.setTwoPtMade(updatedStats.getTwoPtMade());
         existing.setThreePtAttempts(updatedStats.getThreePtAttempts());
