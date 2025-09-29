@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react"
 import CoachNavbar from "../../components/CoachNavbar"
 import "../../styles/coach/C-LiveRecord.css"
-
+import { api } from "../../utils/axiosConfig";
+import { useLocation } from "react-router-dom";
 function CLiveRecord() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [time, setTime] = useState(0) // time in seconds
@@ -12,7 +13,13 @@ function CLiveRecord() {
   // Track which team and which player index is selected to always read fresh state
   const [selectedRef, setSelectedRef] = useState(null) // { team: 'A'|'B', index: number }
   const [showSubModal, setShowSubModal] = useState(false)
-
+  //First Five Modal
+  const [showFirstFiveModal, setShowFirstFiveModal] = useState(false);
+  const [selectedPlayers, setSelectedPlayers] = useState([]); 
+  const [teamPlayers, setTeamPlayers] = useState([]);
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+   const teamId = params.get("teamId");
   // Sample team data - you can replace this with actual data from props or API
   const [teamA, setTeamA] = useState({
     name: "CITU",
@@ -76,6 +83,27 @@ function CLiveRecord() {
 
   const [teamAScore] = useState(55)
   const [teamBScore] = useState(65)
+
+  //Fetching Players in First Five Modal
+  useEffect(() => {
+    // FIX 2: Ensure teamId is not null or empty string before fetching
+    if (showFirstFiveModal && teamId) { 
+      // Log to debug and confirm what ID is being used
+      console.log("Fetching players for teamId:", teamId); 
+      
+      api.get(`/players/get/by-team/${teamId}`)
+        .then(res => {
+          // Log the successful response data
+          console.log("Team Players fetched successfully:", res.data);
+          setTeamPlayers(res.data);
+        })
+        .catch(err => {
+          setTeamPlayers([]);
+          console.error("Failed to fetch team players:", err);
+        });
+    }
+  }, [showFirstFiveModal, teamId]);
+
 
   // Timer effect
   useEffect(() => {
@@ -182,6 +210,21 @@ function CLiveRecord() {
     }
   }
 
+  const handleCheckboxChange = (playerId) => {
+  if (selectedPlayers.includes(playerId)) {
+    // Remove if already selected
+    setSelectedPlayers(selectedPlayers.filter(id => id !== playerId));
+  } else {
+    // Add if less than 5 players are selected
+    if (selectedPlayers.length < 5) {
+      setSelectedPlayers([...selectedPlayers, playerId]);
+    } else {
+      alert("You can only select 5 players!");
+    }
+  }
+};
+
+
   return (
     <div className="live-record-page">
       <CoachNavbar />
@@ -252,6 +295,11 @@ function CLiveRecord() {
             </div>
           </div>
         </div>
+          <div style={{ paddingTop: "2rem" }}>
+            <button className="stat-btn" onClick={() => setShowFirstFiveModal(true)}>
+               Add First Five
+            </button>
+          </div>
       </div>
 
       {/* Player Stats Modal */}
@@ -378,6 +426,53 @@ function CLiveRecord() {
             </div>
             <div className="modal-actions">
               <button className="close-modal-btn" onClick={() => setShowSubModal(false)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+   {showFirstFiveModal && (
+        <div className="modal-overlay" onClick={() => setShowFirstFiveModal(false)}>
+          <div className="modal-container player-stats-modal wide-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Select First Five Players</h2>
+              <button className="close-button" onClick={() => setShowFirstFiveModal(false)}>&times;</button>
+            </div>
+            <div className="modal-content">
+              {/* Check if players are loading or empty */}
+              {teamPlayers.length === 0 && teamId ? (
+                <p>Loading players or no players found for team ID: {teamId}</p>
+              ) : teamPlayers.length === 0 && !teamId ? (
+                <p>Error: Team ID is missing from the URL. Please ensure the URL contains `?teamId=...`.</p>
+              ) : (
+                <div className="players-grid">
+                  {/* Assuming API response uses playerId and lname */}
+                  {teamPlayers.map((player) => (
+                    <div key={player.playerId} className="player-card">
+                      <input
+                        type="checkbox"
+                        checked={selectedPlayers.includes(player.playerId)}
+                        onChange={() => handleCheckboxChange(player.playerId)}
+                      />
+                      <div className="jersey-number">#{player.jerseyNum}</div>
+                      <div className="player-name">{player.lname}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="modal-actions">
+              <button
+                className="stat-btn"
+                disabled={selectedPlayers.length !== 5}
+                onClick={() => {
+                  console.log("Chosen first five:", selectedPlayers);
+                  setShowFirstFiveModal(false);
+                }}
+              >
+                Confirm First Five
+              </button>
+              <button className="close-modal-btn" onClick={() => setShowFirstFiveModal(false)}>Cancel</button>
             </div>
           </div>
         </div>

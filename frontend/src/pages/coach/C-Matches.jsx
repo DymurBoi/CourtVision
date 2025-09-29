@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation,useNavigate  } from "react-router-dom";
 import { api } from "../../utils/axiosConfig";
 import "../../styles/coach/C-Matches.css";
 import CreateMatchModal from '../../components/CreateMatchModal';
 import gameService from '../../services/gameService';
 
 function CMatches({teamId}) {
+  const navigate = useNavigate();
   const location = useLocation();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [matches, setMatches] = useState([]);
@@ -34,6 +35,7 @@ function CMatches({teamId}) {
           result: game.gameResult,
           score: game.finalScore,
           date: new Date(game.gameDate).toLocaleDateString(),
+          recordingType: game.recordingType,
         }));
 
         setMatches(transformed);
@@ -67,6 +69,16 @@ function CMatches({teamId}) {
     );
   }
 
+  //Handles View Game Button
+    const handleViewGame = (match) => {
+    if (match.recordingType === "Live") {
+      navigate(`/coach/live-record/?gameId=${match.id}&teamId=${teamId}`);
+    } else {
+      navigate(`/coach/game-details/${match.id}?teamId=${teamId}`);
+    }
+  };
+
+  
   const handleCreateMatch = async (newMatch) => {
     try {
       const savedGame = await gameService.createGame(newMatch);
@@ -159,9 +171,12 @@ function CMatches({teamId}) {
                 <div className="score">{match.score}</div>
                 <div className="date">{match.date}</div>
                 <div className="actions">
-                  <Link to={`/coach/game-details/${match.id}?teamId=${teamId}`} className="view-button">
+                   <button
+                    className="view-button"
+                    onClick={() => handleViewGame(match)}
+                  >
                     View Game
-                  </Link>
+                  </button>
                 </div>
               </div>
             ))}
