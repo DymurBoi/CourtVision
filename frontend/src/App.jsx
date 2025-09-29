@@ -53,7 +53,7 @@ function AppRoutes() {
       <Route path="/register" element={<PlayerRegistration />} />
       <Route path="/admin/login" element={<AdminLogin />} />
       {/* Demo route to view Live Record page without auth */}
-      <Route path="/demo/live-record" element={<CLiveRecord />} />
+      
 
       {/* Admin Routes */}
       <Route element={<AdminOnlyRoute key="admin" />}>
@@ -152,6 +152,7 @@ function AppRoutes() {
 
       {/* Coach Routes */}
       <Route element={<CoachOnlyRoute key="coach" />}>
+      <Route path="/demo/live-record" element={<CLiveRecord />} />
         <Route
           path="/coach/game-details/:id"
           element={

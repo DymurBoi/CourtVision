@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation,useNavigate  } from "react-router-dom";
 import { api } from "../../utils/axiosConfig";
 import "../../styles/coach/C-Matches.css";
 import CreateMatchModal from '../../components/CreateMatchModal';
 import gameService from '../../services/gameService';
 
 function CMatches({teamId}) {
+  const navigate = useNavigate();
   const location = useLocation();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [matches, setMatches] = useState([]);
