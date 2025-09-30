@@ -17,9 +17,19 @@ function CLiveRecord() {
   const [showFirstFiveModal, setShowFirstFiveModal] = useState(false);
   const [selectedPlayers, setSelectedPlayers] = useState([]); 
   const [teamPlayers, setTeamPlayers] = useState([]);
+  const [confirmedFirstFive, setConfirmedFirstFive] = useState([]);
+
+  //getting the teamid and gameid from the query string
   const location = useLocation();
   const params = new URLSearchParams(location.search);
-   const teamId = params.get("teamId");
+  const teamId = params.get("teamId");
+  const gameId = params.get("gameId");
+
+  //BasicStats
+  const [teamABasicStats, setTeamABasicStats] = useState([]);
+
+   //First Five Confirmation
+   const [firstFivePlayers, setFirstFivePlayers] = useState([]);
   // Sample team data - you can replace this with actual data from props or API
   const [teamA, setTeamA] = useState({
     name: "CITU",
@@ -78,31 +88,67 @@ function CLiveRecord() {
   })
 
   // Track the 5 on-court players as indices for each team
-  const [teamAOnCourt, setTeamAOnCourt] = useState([0, 1, 2, 3, 4])
+  const [teamAOnCourt, setTeamAOnCourt] = useState([])
   const [teamBOnCourt, setTeamBOnCourt] = useState([0, 1, 2, 3, 4])
 
   const [teamAScore] = useState(55)
   const [teamBScore] = useState(65)
 
-  //Fetching Players in First Five Modal
-  useEffect(() => {
-    // FIX 2: Ensure teamId is not null or empty string before fetching
-    if (showFirstFiveModal && teamId) { 
-      // Log to debug and confirm what ID is being used
-      console.log("Fetching players for teamId:", teamId); 
-      
-      api.get(`/players/get/by-team/${teamId}`)
-        .then(res => {
-          // Log the successful response data
-          console.log("Team Players fetched successfully:", res.data);
-          setTeamPlayers(res.data);
-        })
-        .catch(err => {
-          setTeamPlayers([]);
-          console.error("Failed to fetch team players:", err);
-        });
-    }
-  }, [showFirstFiveModal, teamId]);
+
+  //BasicStats Payload and logic
+const handleConfirmFirstFiveModal = async () => {
+  if (selectedPlayers.length !== 5) {
+    console.warn("You must select exactly 5 players.");
+    return;
+  }
+   console.log("Selected Players IDs:", selectedPlayers);
+  try {
+    // Build batch BasicStats
+    const statsList = selectedPlayers.map(playerId => ({
+      player: { playerId },
+      game: { gameId: Number(gameId) },
+      subbedIn: true,
+      twoPtAttempts: 0,
+      twoPtMade: 0,
+      threePtAttempts: 0,
+      threePtMade: 0,
+      ftAttempts: 0,
+      ftMade: 0,
+      assists: 0,
+      oFRebounds: 0,
+      dFRebounds: 0,
+      blocks: 0,
+      steals: 0,
+      turnovers: 0,
+      pFouls: 0,
+      dFouls: 0,
+      plusMinus: 0,
+      gamePoints: 0
+    }));
+
+    // Send batch
+    const res = await api.post("/basic-stats/post/batch", statsList);
+    console.log("Created BasicStats:", res.data);
+
+    // Match selected IDs to full player objects
+    const confirmedPlayers = teamPlayers.filter(p =>
+      selectedPlayers.includes(p.playerId)
+    );
+
+    setConfirmedFirstFive(confirmedPlayers);
+
+    // Map indices for on-court
+    setTeamAOnCourt(
+      confirmedPlayers.map(p =>
+        teamA.players.findIndex(tp => tp.id === p.playerId)
+      )
+    );
+
+    setShowFirstFiveModal(false);
+  } catch (err) {
+    console.error("Error creating first five BasicStats:", err);
+  }
+};
 
 
   // Timer effect
@@ -117,6 +163,43 @@ function CLiveRecord() {
     }
     return () => clearInterval(interval)
   }, [isPlaying, time])
+
+
+  // Fetch team players with teamId
+  // 🟢 Fetch players when First Five modal opens
+    useEffect(() => {
+      if (showFirstFiveModal && teamId) {
+        console.log("Fetching players for teamId:", teamId);
+        api
+          .get(`/players/get/by-team/${teamId}`)
+          .then((res) => {
+            console.log("Team Players fetched successfully:", res.data);
+            setTeamPlayers(res.data);
+          })
+          .catch((err) => {
+            setTeamPlayers([]);
+            console.error("Failed to fetch team players:", err);
+          });
+      }
+    }, [showFirstFiveModal, teamId]);
+
+
+    //Fetch BasicStats for Team A when gameId and teamId are available
+    useEffect(() => {
+      if (teamId && gameId) {
+        api
+          .get(`/basic-stats/get/by-game/${gameId}/team/${teamId}`)
+          .then((res) => {
+            // Only keep players where subbedIn = true
+            const filtered = res.data.filter(stat => stat.subbedIn === true);
+            setTeamABasicStats(filtered);
+          })
+          .catch((err) => {
+            console.error("Failed to fetch BasicStats for Team A:", err);
+            setTeamABasicStats([]);
+          });
+      }
+    }, [gameId, teamId]);
 
   // Format time to MM:SS
   const formatTime = (seconds) => {
@@ -196,7 +279,7 @@ function CLiveRecord() {
     if (team === 'A') {
       setTeamAOnCourt((prev) => {
         const next = [...prev]
-        const slot = next.indexOf(oldIndex)
+        const slot = next.indexOf(oldIndex) 
         if (slot !== -1) next[slot] = newIndex
         return next
       })
@@ -211,17 +294,16 @@ function CLiveRecord() {
   }
 
   const handleCheckboxChange = (playerId) => {
-  if (selectedPlayers.includes(playerId)) {
-    // Remove if already selected
-    setSelectedPlayers(selectedPlayers.filter(id => id !== playerId));
-  } else {
-    // Add if less than 5 players are selected
-    if (selectedPlayers.length < 5) {
-      setSelectedPlayers([...selectedPlayers, playerId]);
+  setSelectedPlayers((prev) => {
+    if (prev.includes(playerId)) {
+      return prev.filter(id => id !== playerId);
+    } else if (prev.length < 5) {
+      return [...prev, playerId];
     } else {
       alert("You can only select 5 players!");
+      return prev;
     }
-  }
+  });
 };
 
 
@@ -267,19 +349,27 @@ function CLiveRecord() {
 
         {/* Players Display */}
         <div className="teams-container">
-          <div className="team-section">
-            <h3 className="team-title">{teamA.name}</h3>
-            <div className="players-grid">
-              {teamAOnCourt.map((idx) => {
-                const player = teamA.players[idx]
-                return (
-                <div key={player.id} className="player-card" onClick={() => handlePlayerClick('A', idx)}>
-                  <div className="jersey-number">#{player.jerseyNum}</div>
-                  <div className="player-name">{player.lastName}</div>
-                </div>
-              )})}
-            </div>
-          </div>
+        <div className="team-section">
+  <h3 className="team-title">{teamA?.name || "Team A"}</h3>
+  <div className="players-grid">
+   {confirmedFirstFive.length === 0 ? (
+  <div className="player-card no-players">
+    No players selected yet
+  </div>
+) : (
+  confirmedFirstFive.map((player) => (
+    <div
+      key={player.playerId}
+      className="player-card selected"
+      onClick={() => handlePlayerClick("A", teamA.players.findIndex(tp => tp.id === player.playerId))}
+    >
+      <div className="jersey-number">#{player.jerseyNum}</div>
+      <div className="player-name">{player.fname} {player.lname}</div>
+    </div>
+  ))
+)}
+  </div>
+</div>
 
           <div className="team-section">
             <h3 className="team-title">{teamB.name}</h3>
@@ -296,7 +386,7 @@ function CLiveRecord() {
           </div>
         </div>
           <div style={{ paddingTop: "2rem" }}>
-            <button className="stat-btn" onClick={() => setShowFirstFiveModal(true)}>
+            <button className="stat-btn" onClick={() => setShowFirstFiveModal(true) }>
                Add First Five
             </button>
           </div>
@@ -455,23 +545,23 @@ function CLiveRecord() {
                         onChange={() => handleCheckboxChange(player.playerId)}
                       />
                       <div className="jersey-number">#{player.jerseyNum}</div>
-                      <div className="player-name">{player.lname}</div>
+                      <div className="player-name">{player.fname} {player.lname}</div>
                     </div>
                   ))}
                 </div>
               )}
             </div>
             <div className="modal-actions">
-              <button
-                className="stat-btn"
-                disabled={selectedPlayers.length !== 5}
-                onClick={() => {
-                  console.log("Chosen first five:", selectedPlayers);
-                  setShowFirstFiveModal(false);
+                <button
+                    className="stat-btn"
+                    disabled={selectedPlayers.length !== 5}
+                    onClick={() => {
+                        handleConfirmFirstFiveModal();
+                        setShowFirstFiveModal(false);
                 }}
-              >
-                Confirm First Five
-              </button>
+                  >
+                    Confirm First Five
+                </button>
               <button className="close-modal-btn" onClick={() => setShowFirstFiveModal(false)}>Cancel</button>
             </div>
           </div>

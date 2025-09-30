@@ -79,4 +79,9 @@ public class BasicStatsController {
         return ResponseEntity.ok(dtos);
     }
 
+    @GetMapping("/basic-stats/get/by-game/{gameId}/team/{teamId}")
+    public List<BasicStatsDTO> getByGameAndTeam(@PathVariable Long gameId, @PathVariable Long teamId) {
+    return service.getByGameAndTeam(gameId, teamId);
+}
+
 }

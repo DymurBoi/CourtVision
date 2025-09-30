@@ -352,4 +352,12 @@ public List<BasicStatsDTO> getSubbedOutStats(Long gameId) {
         basicStatsRepository.saveAll(subbedInPlayers);
     }
 
+     public List<BasicStatsDTO> getByGameAndTeam(Long gameId, Long teamId) {
+        List<BasicStats> stats = basicStatsRepository.findByGame_GameIdAndPlayer_Team_TeamId(gameId, teamId);
+
+        return stats.stream()
+                .map(BasicStatsMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
 }
