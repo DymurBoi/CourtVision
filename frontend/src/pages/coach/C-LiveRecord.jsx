@@ -1,10 +1,11 @@
 "use client"
-
-import { useState, useEffect } from "react"
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import CoachNavbar from "../../components/CoachNavbar"
 import "../../styles/coach/C-LiveRecord.css"
 import { api } from "../../utils/axiosConfig";
 import { useLocation } from "react-router-dom";
+
 function CLiveRecord() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [time, setTime] = useState(0) // time in seconds
@@ -21,9 +22,9 @@ function CLiveRecord() {
 
   //getting the teamid and gameid from the query string
   const location = useLocation();
-  const params = new URLSearchParams(location.search);
+  const { id: gameId } = useParams();
+  const params = new URLSearchParams(window.location.search);
   const teamId = params.get("teamId");
-  const gameId = params.get("gameId");
 
   //BasicStats
   const [teamABasicStats, setTeamABasicStats] = useState([]);
@@ -72,42 +73,41 @@ function CLiveRecord() {
 
   const [teamAScore] = useState(55)
   const [teamBScore] = useState(65)
+  
 
 
   //BasicStats Payload and logic
 const handleConfirmFirstFiveModal = async () => {
-  if (selectedPlayers.length !== 5) {
-    console.warn("You must select exactly 5 players.");
-    return;
-  }
-  
   try {
-    // Build batch BasicStats
-    const statsList = selectedPlayers.map(playerId => ({
-      player: { playerId },
-      game: { gameId: Number(gameId) },
-      subbedIn: true,
-      twoPtAttempts: 0,
-      twoPtMade: 0,
-      threePtAttempts: 0,
-      threePtMade: 0,
-      ftAttempts: 0,
-      ftMade: 0,
-      assists: 0,
-      oFRebounds: 0,
-      dFRebounds: 0,
-      blocks: 0,
-      steals: 0,
-      turnovers: 0,
-      pFouls: 0,
-      dFouls: 0,
-      plusMinus: 0,
-      gamePoints: 0
-    }));
+    console.log("Game Id: ",gameId);
+      const statsList = selectedPlayers.map(player => ({
+  twoPtAttempts: 0,
+  twoPtMade: 0,
+  threePtAttempts: 0,
+  threePtMade: 0,
+  ftAttempts: 0,
+  ftMade: 0,
+  assists: 0,
+  oFRebounds: 0,
+  dFRebounds: 0,
+  blocks: 0,
+  steals: 0,
+  turnovers: 0,
+  pFouls: 0,
+  dFouls: 0,
+  plusMinus: 0,
+  minutes: "00:00:00",
+  player: {
+    playerId: player
+  },
+  game: {
+    gameId: gameId
+  }
+}));
 
-    // Send batch
-    const res = await api.post("/basic-stats/post/batch", statsList);
-    console.log("Created BasicStats:", res.data);
+      console.log("Json Body:\n",statsList);
+      const res = await api.post("/basic-stats/post/batch", statsList);
+      console.log("Created BasicStats:", res.data);
 
     // Match selected IDs to full player objects
     const confirmedPlayers = teamPlayers.filter(p =>
@@ -117,11 +117,11 @@ const handleConfirmFirstFiveModal = async () => {
     setConfirmedFirstFive(confirmedPlayers);
 
     // Map indices for on-court
-    setTeamAOnCourt(
+    /*setTeamAOnCourt(
       confirmedPlayers.map(p =>
         teamA.players.findIndex(tp => tp.id === p.playerId)
       )
-    );
+    );*/
 
     setShowFirstFiveModal(false);
   } catch (err) {
@@ -160,6 +160,7 @@ const handleConfirmFirstFiveModal = async () => {
             console.error("Failed to fetch team players:", err);
           });
       }
+      console.log("Game Id: ",gameId);
     }, [showFirstFiveModal, teamId]);
 
 
@@ -273,6 +274,8 @@ const handleConfirmFirstFiveModal = async () => {
   }
 
   const handleCheckboxChange = (playerId) => {
+    console.log(playerId);
+    console.log(selectedPlayers);
   setSelectedPlayers((prev) => {
     if (prev.includes(playerId)) {
       return prev.filter(id => id !== playerId);
@@ -533,7 +536,6 @@ const handleConfirmFirstFiveModal = async () => {
             <div className="modal-actions">
                 <button
                     className="stat-btn"
-                    disabled={selectedPlayers.length !== 5}
                     onClick={() => {
                         handleConfirmFirstFiveModal();
                         setShowFirstFiveModal(false);

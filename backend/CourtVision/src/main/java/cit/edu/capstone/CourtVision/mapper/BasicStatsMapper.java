@@ -40,5 +40,4 @@ public class BasicStatsMapper {
 
         return dto;
     }
-
 }

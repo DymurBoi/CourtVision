@@ -152,7 +152,7 @@ function AppRoutes() {
 
       {/* Coach Routes */}
       <Route element={<CoachOnlyRoute key="coach" />}>
-      <Route path="/coach/live-record" element={<CLiveRecord />} />
+      <Route path="/coach/live-record/:id" element={<CLiveRecord />} />
         <Route
           path="/coach/game-details/:id"
           element={

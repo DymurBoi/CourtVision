@@ -54,6 +54,7 @@ useEffect(() => {
     } catch (err) {
       setError("Failed to load data.");
     } finally {
+      console.log("Game Id: ",gameId);
       setLoading(false);
     }
   };
