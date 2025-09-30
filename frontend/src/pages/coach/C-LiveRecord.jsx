@@ -167,7 +167,7 @@ const handleConfirmFirstFiveModal = async () => {
     useEffect(() => {
       if (teamId && gameId) {
         api
-          .get(`/basic-stats/get/by-game/${gameId}/team/${teamId}`)
+          .get(`/basic-stats/get/by-game/${gameId}`)
           .then((res) => {
             // Only keep players where subbedIn = true
             const filtered = res.data.filter(stat => stat.subbedIn === true);
