@@ -31,28 +31,7 @@ function CLiveRecord() {
    //First Five Confirmation
    const [firstFivePlayers, setFirstFivePlayers] = useState([]);
   // Sample team data - you can replace this with actual data from props or API
-  const [teamA, setTeamA] = useState({
-    name: "CITU",
-    players: [
-      {
-        id: 1,
-        jerseyNum: 23,
-        lastName: "Johnson",
-        stats: { ORB: 2, DRB: 5, AST: 3, STL: 1, BLK: 0, TO: 2, points: 15 },
-      },
-      { id: 2, jerseyNum: 10, lastName: "Smith", stats: { ORB: 1, DRB: 3, AST: 7, STL: 2, BLK: 1, TO: 1, points: 12 } },
-      {
-        id: 3,
-        jerseyNum: 7,
-        lastName: "Williams",
-        stats: { ORB: 0, DRB: 2, AST: 1, STL: 0, BLK: 2, TO: 3, points: 8 },
-      },
-      { id: 4, jerseyNum: 15, lastName: "Brown", stats: { ORB: 3, DRB: 4, AST: 2, STL: 1, BLK: 0, TO: 1, points: 18 } },
-      { id: 5, jerseyNum: 32, lastName: "Davis", stats: { ORB: 1, DRB: 6, AST: 1, STL: 0, BLK: 3, TO: 2, points: 10 } },
-      { id: 11, jerseyNum: 2, lastName: "Miller", stats: { ORB: 0, DRB: 1, AST: 0, STL: 0, BLK: 0, TO: 0, points: 0 } },
-      { id: 12, jerseyNum: 12, lastName: "Wilson", stats: { ORB: 0, DRB: 1, AST: 1, STL: 0, BLK: 0, TO: 0, points: 0 } },
-    ],
-  })
+  const [teamA, setTeamA] = useState({})
 
   const [teamB, setTeamB] = useState({
     name: "USJR",
@@ -101,7 +80,7 @@ const handleConfirmFirstFiveModal = async () => {
     console.warn("You must select exactly 5 players.");
     return;
   }
-   console.log("Selected Players IDs:", selectedPlayers);
+  
   try {
     // Build batch BasicStats
     const statsList = selectedPlayers.map(playerId => ({
