@@ -22,6 +22,12 @@ function CoachNavbar() {
           <Link to="/coach/matches" className="nav-item">
             Matches
           </Link>
+          <Link to="/coach/season" className="nav-item">
+            Seasons
+          </Link>
+          <Link to="/coach/ranking" className="nav-item">
+            Player Ranking
+          </Link>
           <Link to="/coach/requests" className="nav-item">
             Requests
           </Link>

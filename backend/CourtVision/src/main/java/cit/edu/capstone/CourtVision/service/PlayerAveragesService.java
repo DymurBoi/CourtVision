@@ -5,6 +5,9 @@ import cit.edu.capstone.CourtVision.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -119,5 +122,101 @@ public class PlayerAveragesService {
 
     public void delete(Long id) {
         averagesRepo.deleteById(id);
+    }
+
+    //get players by team and position
+    private List<PlayerAverages> getPlayers(Long teamId, String position) {
+        List<PlayerAverages> result = new ArrayList<>();
+        List<PlayerAverages> all = averagesRepo.findAll();
+
+        for (PlayerAverages avg : all) {
+            if (avg.getPlayer() != null &&
+                avg.getPlayer().getTeam() != null &&
+                avg.getPlayer().getTeam().getTeamId().equals(teamId) &&
+                avg.getPlayer().getPosition().equalsIgnoreCase(position)) {
+                result.add(avg);
+            }
+        }
+        return result;
+    }
+
+    // Rank Point Guards: Assists > Points
+    public List<PlayerAverages> rankPointGuards(Long teamId) {
+        List<PlayerAverages> players = getPlayers(teamId, "Point Guard");
+
+        Collections.sort(players, new Comparator<PlayerAverages>() {
+            public int compare(PlayerAverages p1, PlayerAverages p2) {
+                if (p2.getAssistsPerGame() != p1.getAssistsPerGame()) {
+                    return Double.compare(p2.getAssistsPerGame(), p1.getAssistsPerGame());
+                }
+                return Double.compare(p2.getPointsPerGame(), p1.getPointsPerGame());
+            }
+        });
+
+        return players;
+    }
+
+    // Rank Shooting Guards: Points > Assists
+    public List<PlayerAverages> rankShootingGuards(Long teamId) {
+        List<PlayerAverages> players = getPlayers(teamId, "Shooting Guard");
+
+        Collections.sort(players, new Comparator<PlayerAverages>() {
+            public int compare(PlayerAverages p1, PlayerAverages p2) {
+                if (p2.getPointsPerGame() != p1.getPointsPerGame()) {
+                    return Double.compare(p2.getPointsPerGame(), p1.getPointsPerGame());
+                }
+                return Double.compare(p2.getAssistsPerGame(), p1.getAssistsPerGame());
+            }
+        });
+
+        return players;
+    }
+
+    // Rank Small Forwards: Points > Rebounds
+    public List<PlayerAverages> rankSmallForwards(Long teamId) {
+        List<PlayerAverages> players = getPlayers(teamId, "Small Forward");
+
+        Collections.sort(players, new Comparator<PlayerAverages>() {
+            public int compare(PlayerAverages p1, PlayerAverages p2) {
+                if (p2.getPointsPerGame() != p1.getPointsPerGame()) {
+                    return Double.compare(p2.getPointsPerGame(), p1.getPointsPerGame());
+                }
+                return Double.compare(p2.getReboundsPerGame(), p1.getReboundsPerGame());
+            }
+        });
+
+        return players;
+    }
+
+    // Rank Power Forwards: Rebounds > Blocks
+    public List<PlayerAverages> rankPowerForwards(Long teamId) {
+        List<PlayerAverages> players = getPlayers(teamId, "Power Forward");
+
+        Collections.sort(players, new Comparator<PlayerAverages>() {
+            public int compare(PlayerAverages p1, PlayerAverages p2) {
+                if (p2.getReboundsPerGame() != p1.getReboundsPerGame()) {
+                    return Double.compare(p2.getReboundsPerGame(), p1.getReboundsPerGame());
+                }
+                return Double.compare(p2.getBlocksPerGame(), p1.getBlocksPerGame());
+            }
+        });
+
+        return players;
+    }
+
+    // Rank Centers: Blocks > Rebounds
+    public List<PlayerAverages> rankCenters(Long teamId) {
+        List<PlayerAverages> players = getPlayers(teamId, "Center");
+
+        Collections.sort(players, new Comparator<PlayerAverages>() {
+            public int compare(PlayerAverages p1, PlayerAverages p2) {
+                if (p2.getBlocksPerGame() != p1.getBlocksPerGame()) {
+                    return Double.compare(p2.getBlocksPerGame(), p1.getBlocksPerGame());
+                }
+                return Double.compare(p2.getReboundsPerGame(), p1.getReboundsPerGame());
+            }
+        });
+
+        return players;
     }
 }

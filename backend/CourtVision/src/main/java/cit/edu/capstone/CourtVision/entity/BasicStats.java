@@ -53,7 +53,14 @@ public class BasicStats {
     private PlayerAverages playerAverages;
 
 
-    //Getters and Setters
+    @ManyToOne
+    @JoinColumn(name = "season_id")
+    private Season season;
+
+
+
+    //Getter
+
     public BasicStats(BasicStats basicStats) {
     this.twoPtMade = basicStats.getTwoPtMade();
     this.threePtMade = basicStats.getThreePtMade();
@@ -64,6 +71,7 @@ public class BasicStats {
     this.basicStatId = basicStats.getBasicStatId();
     this.subbedIn = basicStats.isSubbedIn();
     this.plusMinus = basicStats.getPlusMinus();
+
     }
 
     public int getGamePoints() {
@@ -241,5 +249,10 @@ public class BasicStats {
     public void setSubbedIn(boolean subbedIn) {
         this.subbedIn = subbedIn;
     }
+public Season getSeason() {
+        return season;
+    }
 
+    public void setSeason(Season season) {
+        this.season = season;
 }
