@@ -27,6 +27,12 @@ public class StopWatchController {
         return "Player " + basicStatId + " subbed in!";
     }
 
+    @PostMapping("/sub-in/{gameId}")
+    public String startSubIn(@PathVariable Long gameId) {
+        stopwatchService.startSubIn(gameId);
+        return "Players subbed in!";
+    }
+
     // Sub a player out (stop and save elapsed to DB)
     @PostMapping("/{basicStatId}/sub-out")
     public BasicStats subOut(@PathVariable Long basicStatId) {
