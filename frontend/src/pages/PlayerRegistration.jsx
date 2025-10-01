@@ -3,7 +3,17 @@ import { Link, useNavigate } from "react-router-dom"
 import axios from "axios"
 import "../styles/Login.css"
 import basketballCourt from "../assets/BasketballCourt.jpg"
- 
+import {
+  Box,
+  Typography,
+  FormControl,
+  InputLabel,
+  OutlinedInput,
+  InputAdornment,
+  IconButton,
+  Button,
+} from "@mui/material"
+import { Visibility, VisibilityOff } from "@mui/icons-material"
 function PlayerRegistration() {
   const [formData, setFormData] = useState({
     fname: "",
@@ -14,7 +24,12 @@ function PlayerRegistration() {
   })
  
   const navigate = useNavigate()
- 
+ const [showPassword, setShowPassword] = useState(false)
+ const handleClickShowPassword = () => setShowPassword((prev) => !prev)
+ const handleMouseDownPassword = (event) => {
+  event.preventDefault()
+}
+
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormData({
@@ -37,6 +52,7 @@ function PlayerRegistration() {
       alert("Registration failed. Please try again.")
     }
   }
+  
  
   return (
 <div className="auth-container">
@@ -55,70 +71,103 @@ function PlayerRegistration() {
  
           <form className="auth-form" onSubmit={handleSubmit}>
 <div className="form-row">
-<div className="form-group">
-<label htmlFor="fname">First Name</label>
-<input
-                  type="text"
+           <FormControl
+                sx={{ m: 1, width: "100%", maxWidth: 400 }}
+                variant="outlined"
+                required
+              >
+                <InputLabel htmlFor="fname">First Name</InputLabel>
+                <OutlinedInput
                   id="fname"
                   name="fname"
                   value={formData.fname}
                   onChange={handleChange}
-                  required
                   placeholder="Enter your first name"
+                  sx={{ bgcolor: "#F5F5F5", width: "100%" }}
                 />
-</div>
+              </FormControl>
  
-              <div className="form-group">
-<label htmlFor="lname">Last Name</label>
-<input
-                  type="text"
+              <FormControl
+                sx={{ m: 1, width: "100%", maxWidth: 400 }}
+                variant="outlined"
+                required
+              >
+                <InputLabel htmlFor="lname">Last Name</InputLabel>
+                <OutlinedInput
                   id="lname"
                   name="lname"
                   value={formData.lname}
                   onChange={handleChange}
-                  required
                   placeholder="Enter your last name"
+                  sx={{ bgcolor: "#F5F5F5", width: "100%" }}
                 />
-</div>
-</div>
+              </FormControl>
+            </div>
+
  
-            <div className="form-group">
-<label htmlFor="email">Email</label>
-<input
-                type="email"
+           <FormControl
+              sx={{ m: 1, width: "100%", maxWidth: 400 }}
+              variant="outlined"
+              required
+            >
+              <InputLabel htmlFor="email">Email</InputLabel>
+              <OutlinedInput
                 id="email"
+                type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                required
                 placeholder="Enter your email"
+                sx={{ bgcolor: "#F5F5F5", width: "100%" }}
               />
-</div>
- 
-            <div className="form-group">
-<label htmlFor="password">Password</label>
-<input
-                type="password"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-                placeholder="Create a password"
-              />
-</div>
- 
-            <div className="form-group">
-<label htmlFor="birthDate">Birth Date</label>
-<input
-                type="date"
+            </FormControl>
+
+
+          <FormControl
+            sx={{ m: 1, width: "100%", maxWidth: 400 }}
+            variant="outlined"
+            required
+          >
+            <InputLabel htmlFor="password">Password</InputLabel>
+            <OutlinedInput
+              id="password"
+              type={showPassword ? "text" : "password"}
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Create a password"
+              sx={{ bgcolor: "#F5F5F5", width: "100%" }}
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={handleClickShowPassword}
+                    onMouseDown={handleMouseDownPassword}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              }
+            />
+          </FormControl>
+
+             <FormControl
+              sx={{ m: 1, width: "100%", maxWidth: 400 }}
+              variant="outlined"
+              required
+            >
+              <InputLabel shrink htmlFor="birthDate">
+                Birth Date
+              </InputLabel>
+              <OutlinedInput
                 id="birthDate"
+                type="date"
                 name="birthDate"
                 value={formData.birthDate}
                 onChange={handleChange}
-                required
+                sx={{ bgcolor: "#F5F5F5", width: "100%" }}
               />
-</div>
+            </FormControl>
  
             <button type="submit" className="auth-button">
               Register

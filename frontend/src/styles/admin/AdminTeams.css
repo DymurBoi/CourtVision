@@ -1,0 +1,97 @@
+/* Basic styles for layout */
+.main-content {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.page-header h1 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.page-header p {
+  font-size: 1rem;
+  color: #555;
+}
+
+/* Styles for the team cards */
+.teams-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.team-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.2s ease;
+}
+
+.team-card:hover {
+  transform: scale(1.05);
+}
+
+.team-banner {
+  height: 150px;
+  background: linear-gradient(45deg, #4a90e2, #9013fe);
+  position: relative;
+}
+
+.team-content {
+  padding: 20px;
+}
+
+.team-content h2 {
+  font-size: 1.5rem;
+  margin: 10px 0;
+}
+
+.team-content p {
+  font-size: 1rem;
+  color: #777;
+}
+
+.team-stats {
+  margin-top: 20px;
+}
+
+.player-count {
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.stat-label {
+  font-weight: bold;
+}
+
+.stat-value {
+  color: #333;
+}
+
+.save-button {
+  margin-top: 15px;
+  background-color: #9013fe;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.save-button:hover {
+  background-color: #4a90e2;
+}
+
+.save-button:focus {
+  outline: none;
+}

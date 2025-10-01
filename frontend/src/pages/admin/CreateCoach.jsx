@@ -3,10 +3,21 @@
 import { useState } from "react"
 import { useNavigate, Link } from "react-router-dom"
 import AdminNavbar from "../../components/AdminNavbar"
+import {
+  FormControl,
+  InputLabel,
+  OutlinedInput,
+  InputAdornment,
+  IconButton,
+  TextField,
+} from "@mui/material"
+import { Visibility, VisibilityOff } from "@mui/icons-material"
 import "../../styles/admin/UserForm.css"
 import axios from "axios"
  
 function CreateCoach() {
+  const handleClickShowPassword = () => setShowPassword((prev) => !prev)
+  const [showPassword, setShowPassword] = useState(false)
   const navigate = useNavigate()
   const [formData, setFormData] = useState({
     fname: "",
@@ -51,67 +62,83 @@ function CreateCoach() {
 <div className="form-section">
 <h2>Basic Information</h2>
 <div className="form-row">
-<div className="form-group">
-<label htmlFor="fname">First Name</label>
-<input
-                    type="text"
-                    id="fname"
-                    name="fname"
-                    value={formData.fname}
-                    onChange={handleChange}
-                    required
-                  />
+
+<FormControl sx={{  width: "15ch" }} variant="outlined" required>
+  <InputLabel htmlFor="fname">First Name</InputLabel>
+  <OutlinedInput
+    id="fname"
+    name="fname" // Added name attribute
+    type="text"
+    value={formData.fname}
+    onChange={handleChange}  // Ensure handleChange is used
+    sx={{ bgcolor: "#ffffffff", width: 440 }}
+  />
+</FormControl>
+
+
+<FormControl sx={{ marginLeft: 25, width: "15ch" }} variant="outlined" required>
+  <InputLabel htmlFor="lname">Last Name</InputLabel>
+  <OutlinedInput
+    id="lname"
+    name="lname" // Added name attribute
+    type="text"
+    value={formData.lname}
+    onChange={handleChange}  // Ensure handleChange is used
+    sx={{ bgcolor: "#ffffffff", width: 440 }}
+  />
+</FormControl>
 </div>
-<div className="form-group">
-<label htmlFor="lname">Last Name</label>
-<input
-                    type="text"
-                    id="lname"
-                    name="lname"
-                    value={formData.lname}
-                    onChange={handleChange}
-                    required
-                  />
-</div>
+ 
+<div className="form-row">
+<FormControl sx={{ width: "25ch" }} variant="outlined" required>
+                <InputLabel htmlFor="email">Email</InputLabel>
+                <OutlinedInput
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  sx={{ bgcolor: "#ffffffff", width: 440 }}
+                />
+              </FormControl>
+
+<FormControl sx={{ marginLeft: 25, width: "25ch" }} variant="outlined" required>
+  <InputLabel htmlFor="password">Password</InputLabel>
+  <OutlinedInput
+    id="password"
+    name="password"
+    type={showPassword ? "text" : "password"} // Toggle between text and password
+    value={formData.password}
+    onChange={handleChange}
+    sx={{ bgcolor: "#ffffffff", width: 440 }}
+    endAdornment={
+      <InputAdornment position="end">
+        <IconButton onClick={handleClickShowPassword} edge="end">
+          {showPassword ? <VisibilityOff /> : <Visibility />}
+        </IconButton>
+      </InputAdornment>
+    }
+  />
+</FormControl>
+
 </div>
  
               <div className="form-row">
-<div className="form-group">
-<label htmlFor="email">Email</label>
-<input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                  />
-</div>
-<div className="form-group">
-<label htmlFor="password">Password</label>
-<input
-                    type="password"
-                    id="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    required
-                  />
-</div>
-</div>
- 
-              <div className="form-row">
-<div className="form-group">
-<label htmlFor="birthDate">Birth Date</label>
-<input
-                    type="date"
-                    id="birthDate"
-                    name="birthDate"
-                    value={formData.birthDate}
-                    onChange={handleChange}
-                    required
-                  />
-</div>
+<FormControl sx={{  width: "25ch" }} variant="outlined" required>
+  <TextField
+    id="birthDate"
+    name="birthDate"
+    label="Birth Date"
+    type="date"
+    value={formData.birthDate}
+    onChange={handleChange}
+    sx={{ bgcolor: "#ffffffff", width: 440 }}
+    InputLabelProps={{
+      shrink: true, // Ensures the label stays above the input when the date is selected
+    }}
+  />
+</FormControl>
+
 </div>
 </div>
  

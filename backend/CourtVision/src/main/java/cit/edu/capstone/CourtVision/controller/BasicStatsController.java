@@ -59,4 +59,29 @@ public class BasicStatsController {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/get/subbed-in/{gameId}")
+    public List<BasicStatsDTO> getSubbedIn(@PathVariable Long gameId) {
+        return service.getSubbedInStats(gameId);
+    }
+
+    @GetMapping("/get/subbed-out/{gameId}")
+    public List<BasicStatsDTO> getSubbedOut(@PathVariable Long gameId) {
+        return service.getSubbedOutStats(gameId);
+    }
+
+    @PostMapping("/post/batch")
+    public ResponseEntity<List<BasicStatsDTO>> createBatch(@RequestBody List<BasicStats> statsList) {
+        List<BasicStats> createdList = service.createBatch(statsList);
+        List<BasicStatsDTO> dtos = createdList.stream()
+                .map(BasicStatsMapper::toDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
+    }
+
+    @GetMapping("/basic-stats/get/by-game/{gameId}/team/{teamId}")
+    public List<BasicStatsDTO> getByGameAndTeam(@PathVariable Long gameId, @PathVariable Long teamId) {
+    return service.getByGameAndTeam(gameId, teamId);
+}
+
 }

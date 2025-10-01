@@ -12,6 +12,8 @@ public class GameMapper {
         GameDTO dto = new GameDTO();
         dto.setGameId(game.getGameId());
         dto.setGameName(game.getGameName());
+        dto.setGameType(game.getGameType());
+        dto.setRecordingType(game.getRecordingType());
         dto.setGameDate(game.getGameDate());
         dto.setGameResult(game.getGameResult());
         dto.setFinalScore(game.getFinalScore());

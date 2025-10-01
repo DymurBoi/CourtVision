@@ -6,6 +6,8 @@ import java.util.List;
 public class GameDTO {
     private Long gameId;
     private String gameName;
+    private String gameType;
+    private String recordingType;
     private LocalDate gameDate;
     private String gameResult;
     private String finalScore;
@@ -19,6 +21,22 @@ public class GameDTO {
     public GameDTO() {}
 
     // Getters and Setters
+    public String getRecordingType() {
+        return recordingType;
+    }
+    
+    public void setRecordingType(String recordingType) {
+        this.recordingType = recordingType;
+    }
+    
+    public String getGameType() {
+        return gameType;
+    }
+
+    public void setGameType(String gameType) {
+        this.gameType = gameType;
+    }
+
     public Long getGameId() {
         return gameId;
     }

@@ -10,6 +10,8 @@
       <change beforePath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/repository/SeasonRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/repository/SeasonRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/service/SeasonService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/CourtVision/src/main/java/cit/edu/capstone/CourtVision/service/SeasonService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/CourtVision/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/CourtVision/src/main/resources/application.properties" afterDir="false" />
+
+     
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -75,6 +77,7 @@
       </set>
     </attachedChunks>
   </component>
+
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">

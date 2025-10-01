@@ -30,6 +30,7 @@ public class SecurityConfig {
         http.cors().and().csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/login/**", "/api/players/post").permitAll()
+                .requestMatchers("/api/basic-stats/**").hasAnyRole("COACH", "ADMIN")
                 .anyRequest().authenticated()
             )
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

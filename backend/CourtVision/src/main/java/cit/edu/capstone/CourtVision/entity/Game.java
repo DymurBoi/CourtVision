@@ -1,6 +1,5 @@
 package cit.edu.capstone.CourtVision.entity;
 
-import cit.edu.capstone.CourtVision.dto.PhysicalBasedMetricsStatsDTO;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
@@ -12,6 +11,10 @@ public class Game {
     private Long gameId;
 
     private String gameName;
+    // Game Types (Scrimmage, Practice, Official Match)
+    private String gameType;
+    // Recording Types (Live, Post Game)
+    private String recordingType;
     private LocalDate gameDate;
     private String gameResult;
     private String finalScore;
@@ -24,6 +27,9 @@ public class Game {
 
     @OneToMany(mappedBy = "game")
     private List<BasicStats> basicStatsList;
+
+    @OneToMany(mappedBy = "game")
+    private List<BasicStatsVariation> basicStatsVarList;
 
     @OneToMany(mappedBy = "game")
     private List<AdvancedStats> advancedStats;
@@ -40,7 +46,21 @@ public class Game {
     public List<BasicStats> getBasicStatsList() {
         return basicStatsList;
     }
+    public String getRecordingType() {
+        return recordingType;
+    }
+    
+    public void setRecordingType(String recordingType) {
+        this.recordingType = recordingType;
+    }
 
+    public String getGameType() {
+        return gameType;
+    }
+
+    public void setGameType(String gameType) {
+        this.gameType = gameType;
+    }
     public void setBasicStatsList(List<BasicStats> basicStatsList) {
         this.basicStatsList = basicStatsList;
     }
@@ -103,6 +123,13 @@ public class Game {
     public List<BasicStats> getBasicStats() { return basicStatsList; }
     public void setBasicStats(List<BasicStats> basicStatsList) { this.basicStatsList = basicStatsList; }
 
+
+    public List<BasicStatsVariation> getBasicStatsVarList() {
+        return basicStatsVarList;
+    }
+    public void setBasicStatsVarList(List<BasicStatsVariation> basicStatsVarList) {
+        this.basicStatsVarList = basicStatsVarList;
+    }
     //private Long advancedStatId;
     //private Long adjustedStatId;
 }

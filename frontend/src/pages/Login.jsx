@@ -7,6 +7,18 @@ import "../styles/Login.css"
 import basketballCourt from "../assets/BasketballCourt.jpg"
 import { api } from "../utils/axiosConfig"
 import { useAuth } from "../components/AuthContext"
+import {
+  Box,
+  Typography,
+  FormControl,
+  InputLabel,
+  OutlinedInput,
+  InputAdornment,
+  IconButton,
+  Button,
+} from "@mui/material"
+import { Visibility, VisibilityOff } from "@mui/icons-material"
+
 
 function Login() {
   const [email, setEmail] = useState("")
@@ -16,8 +28,10 @@ function Login() {
   const [error, setError] = useState("")
   const navigate = useNavigate()
   const location = useLocation()
-  const { login, user } = useAuth()
   
+  const [showPassword, setShowPassword] = useState(false)
+  const { login, user } = useAuth()
+  const handleClickShowPassword = () => setShowPassword((prev) => !prev)
   // Redirect if already logged in
   useEffect(() => {
     if (user) {
@@ -195,29 +209,34 @@ function Login() {
               </div>
             </div>
 
-            <div className="form-group">
-              <label htmlFor="email">Email</label>
-              <input
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                placeholder="Enter your email"
-              />
-            </div>
+            <FormControl sx={{ m: 1, width: "25ch" }} variant="outlined" required>
+                <InputLabel htmlFor="email">Email</InputLabel>
+                <OutlinedInput
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  sx={{ bgcolor: "#F5F5F5", width: 440 }}
+                />
+              </FormControl>
 
-            <div className="form-group">
-              <label htmlFor="password">Password</label>
-              <input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                placeholder="Enter your password"
-              />
-            </div>
+            <FormControl sx={{ m: 1, width: "25ch" }} variant="outlined" required>
+                <InputLabel htmlFor="password">Password</InputLabel>
+                <OutlinedInput
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  sx={{ bgcolor: "#F5F5F5", width: 440 }}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton onClick={handleClickShowPassword} edge="end">
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                />
+              </FormControl>
 
             {error && <div className="error-message">{error}</div>}
 

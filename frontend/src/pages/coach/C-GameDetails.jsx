@@ -54,6 +54,7 @@ useEffect(() => {
     } catch (err) {
       setError("Failed to load data.");
     } finally {
+      console.log("Game Id: ",gameId);
       setLoading(false);
     }
   };
@@ -81,12 +82,12 @@ useEffect(() => {
         turnovers: Number(playerStat.turnovers),
         pFouls: Number(playerStat.pFouls),
         dFouls: Number(playerStat.dFouls),
-        plusMinus: 0,
+        plusMinus: Number(0),
         minutes: playerStat.minutes,
         player: { playerId: playerStat.selectedPlayer },
         game: { gameId: Number(gameId) },
       };
-
+      
       const response = await api.post("/basic-stats/post", payload);
       const returned = response.data;
 
@@ -244,6 +245,7 @@ const handleSaveComments = async () => {
         const payload = {
             gameName: gameDetails.gameName,  // Or fetch game details if not already available
             gameDate: gameDetails.gameDate,  // Similar as above, should be in gameDetails
+            gameType:gameDetails.gameType,
             gameResult: gameDetails.gameResult,  // Same as above
             finalScore: gameDetails.finalScore,  // Same as above
             comments: comments,  // Save the comments entered by the user
@@ -278,7 +280,7 @@ const handleSaveComments = async () => {
       <div className="game-header">
         <div className="game-title">
             <h1>{gameDetails.gameName}</h1>
-            <span className="game-date">{gameDetails.gameDate}</span>
+            <span className="game-date">{gameDetails.gameDate} {gameDetails.gameType}</span>
         </div>
         <div className="game-score">
           <span className={`game-result ${gameDetails.gameResult === "W" ? "win" : "loss"}`}>

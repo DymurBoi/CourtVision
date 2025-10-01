@@ -18,7 +18,7 @@ function AdminNavbar() {
           <Link to="/admin/dashboard">CourtVision Admin</Link>
         </div>
         <div className="admin-nav-links">
-          <Link to="/admin/users" className="admin-nav-item">Users</Link>
+          <Link to="/admin/users" className="admin-nav-item">Players</Link>
           <Link to="/admin/coaches" className="admin-nav-item">Coach</Link>
           <Link to="/admin/teams" className="admin-nav-item">Teams</Link>
            <div className="admin-user-actions">

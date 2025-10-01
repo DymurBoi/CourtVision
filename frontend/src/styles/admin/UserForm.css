@@ -82,14 +82,23 @@
     margin-top: 1rem;
   }
   
-  .save-button,
-  .cancel-button {
+  .save-button
+   {
     padding: 0.8rem 1.5rem;
     border-radius: 6px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
     text-decoration: none;
+  }
+  .cancel-button{
+    margin-top: 15px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    height: 40px;
   }
   
   .save-button {
