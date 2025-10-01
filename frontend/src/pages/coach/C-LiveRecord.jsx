@@ -329,26 +329,25 @@ const handleStatUpdate = (statType, amount = 1) => {
   }
 };
 
-  const handleChooseSubstitute = (playerId) => {
-  if (!selectedRef) return;
+const handleChooseSubstitute = async (benchBasicStatId) => {
+  if (!selectedBasicStat) return;
 
-  // here you can send a PUT update to backend to toggle subbedIn states
-  // Example:
-  api.put(`/basic-stats/substitute/${selectedBasicStat.basicStatId}`, {
-    subbedIn: false
-  }).then(() => {
-    return api.put(`/basic-stats/substitute/${playerId}`, {
-      subbedIn: true
+  // Sub out the currently selected player (uses basicStatId)
+  await api.post(`/stopwatch/${selectedBasicStat.basicStatId}/sub-out`);
+
+  // Sub in the bench player (must also use basicStatId)
+  await api.post(`/stopwatch/${benchBasicStatId}/sub-in`);
+
+  // Refresh subbed-in list
+  api.get(`/basic-stats/get/subbed-in/${gameId}`)
+    .then((res) => {
+      setTeamABasicStats(res.data);
+      setShowSubModal(false);
+      setShowModal(false);
+    })
+    .catch((err) => {
+      console.error("Error fetching subbed-in players:", err);
     });
-  }).then(() => {
-    // refresh subbed-in players
-    return api.get(`/basic-stats/get/subbed-in/${gameId}`);
-  }).then((res) => {
-    setTeamABasicStats(res.data);
-    setShowSubModal(false);
-  }).catch((err) => {
-    console.error("Error substituting player:", err);
-  });
 };
 
   const getCurrentDate = () => {
@@ -683,7 +682,7 @@ const handleStatUpdate = (statType, amount = 1) => {
                     <div
                       key={p.playerId}
                       className="player-card"
-                      onClick={() => handleChooseSubstitute(p.playerId)}
+                      onClick={() => handleChooseSubstitute(p.basicStatId)}
                     >
                       <div className="jersey-number">#{p.jerseyNum}</div>
                       <div className="player-name">{p.fname} {p.lname}</div>
