@@ -242,18 +242,37 @@ const handleFormChange = (e) => {
 
 const handleUpdateBasicStats = async () => {
   try {
-    const res = await api.put(`/basic-stats/put/${formStats.basicStatId}`, formStats);
-    console.log("Updated:", res.data);
+    const payload = {
+      basicStatId: formStats.basicStatId,
+      twoPtAttempts: Number(formStats.twoPtAttempts),
+      twoPtMade: Number(formStats.twoPtMade),
+      threePtAttempts: Number(formStats.threePtAttempts),
+      threePtMade: Number(formStats.threePtMade),
+      ftAttempts: Number(formStats.ftAttempts),
+      ftMade: Number(formStats.ftMade),
+      assists: Number(formStats.assists),
+      oFRebounds: Number(formStats.oFRebounds),
+      dFRebounds: Number(formStats.dFRebounds),
+      blocks: Number(formStats.blocks),
+      steals: Number(formStats.steals),
+      turnovers: Number(formStats.turnovers),
+      pFouls: Number(formStats.pFouls),
+      dFouls: Number(formStats.dFouls),
+      plusMinus: Number(formStats.plusMinus),
+      minutes: formStats.minutes || "00:00:00", // must be string "HH:mm:ss"
+      gamePoints: Number(formStats.gamePoints),
+      subbedIn: formStats.subbedIn,
+      player: { playerId: formStats.playerId },
+      game: { gameId: gameId }
+    };
 
-    setTeamABasicStats((prev) =>
-      prev.map((s) => (s.basicStatsId === res.data.basicStatsId ? res.data : s))
-    );
-    setShowModal(false);
-    setSelectedBasicStat(null);
+    const res = await api.put(`/basic-stats/put/${formStats.basicStatId}`, payload);
+    // ...rest of your code...
   } catch (err) {
     console.error("Error updating stats:", err);
   }
-};  
+}; 
+
 const handleStatUpdate = (statType, amount = 1) => {
   if (!formStats) return;
 
@@ -455,7 +474,7 @@ const handleStatUpdate = (statType, amount = 1) => {
                 <h4>
                   {formStats?.fname} {formStats?.lname} - Current Stats
                 </h4>
-                <div className="stats-display two-col">
+                <div className="stats-display three-col">
                   <div className="stat-item">
                     <span className="stat-label">PTS:</span>
                     <span className="stat-value">{formStats?.points}</span>
@@ -466,7 +485,7 @@ const handleStatUpdate = (statType, amount = 1) => {
                   </div>
                   <div className="stat-item">
                     <span className="stat-label">ORB:</span>
-                    <span className="stat-value">{formStats?.offensiveRebounds}</span>
+                    <span className="stat-value">{formStats?.oFRebounds}</span>
                   </div>
                   <div className="stat-item">
                     <span className="stat-label">BLK:</span>
@@ -474,7 +493,7 @@ const handleStatUpdate = (statType, amount = 1) => {
                   </div>
                   <div className="stat-item">
                     <span className="stat-label">DRB:</span>
-                    <span className="stat-value">{formStats?.defensiveRebounds}</span>
+                    <span className="stat-value">{formStats?.dFRebounds}</span>
                   </div>
                   <div className="stat-item">
                     <span className="stat-label">TO:</span>
@@ -483,6 +502,39 @@ const handleStatUpdate = (statType, amount = 1) => {
                   <div className="stat-item ast">
                     <span className="stat-label">AST:</span>
                     <span className="stat-value">{formStats?.assists}</span>
+                  </div>
+
+                  <div className="stat-item">
+                    <span className="stat-label">2PA:</span>
+                    <span className="stat-value">{formStats?.twoPtAttempts}</span>
+                  </div>
+                  <div className="stat-item">
+                    <span className="stat-label">2PM:</span>
+                    <span className="stat-value">{formStats?.twoPtMade}</span>
+                  </div>
+                  <div className="stat-item">
+                    <span className="stat-label">3PA:</span>
+                    <span className="stat-value">{formStats?.threePtAttempts}</span>
+                  </div>
+                  <div className="stat-item">
+                    <span className="stat-label">3PM:</span>
+                    <span className="stat-value">{formStats?.threePtMade}</span>
+                  </div>
+                  <div className="stat-item">
+                    <span className="stat-label">FTA:</span>
+                    <span className="stat-value">{formStats?.ftAttempts}</span>
+                  </div>
+                  <div className="stat-item">
+                    <span className="stat-label">FTM:</span>
+                    <span className="stat-value">{formStats?.ftMade}</span>
+                  </div>
+                  <div className="stat-item">
+                    <span className="stat-label">PF:</span>
+                    <span className="stat-value">{formStats?.pFouls}</span>
+                  </div>
+                  <div className="stat-item">
+                    <span className="stat-label">DF:</span>
+                    <span className="stat-value">{formStats?.dFouls}</span>
                   </div>
                 </div>
               </div>
@@ -498,11 +550,11 @@ const handleStatUpdate = (statType, amount = 1) => {
                   </button>
                 </div>
 
-                <div className="stat-buttons">
-                  <button className="stat-btn" onClick={() => handleStatUpdate("offensiveRebounds")}>
+                <div className="stat-buttons four-col">
+                  <button className="stat-btn" onClick={() => handleStatUpdate("oFRebounds")}>
                     {isAddMode ? "+" : "-"} ORB
                   </button>
-                  <button className="stat-btn" onClick={() => handleStatUpdate("defensiveRebounds")}>
+                  <button className="stat-btn" onClick={() => handleStatUpdate("dFRebounds")}>
                     {isAddMode ? "+" : "-"} DRB
                   </button>
                   <button className="stat-btn" onClick={() => handleStatUpdate("assists")}>
@@ -517,9 +569,9 @@ const handleStatUpdate = (statType, amount = 1) => {
                   <button className="stat-btn" onClick={() => handleStatUpdate("turnovers")}>
                     {isAddMode ? "+" : "-"} TO
                   </button>
-                </div>
+                
 
-                <div className="stat-buttons" style={{ marginTop: "0.5rem" }}>
+               
                   <button className="stat-btn" onClick={() => handleStatUpdate("points", 1)}>
                     {isAddMode ? "+" : "-"} 1 PT
                   </button>
@@ -528,6 +580,33 @@ const handleStatUpdate = (statType, amount = 1) => {
                   </button>
                   <button className="stat-btn" onClick={() => handleStatUpdate("points", 3)}>
                     {isAddMode ? "+" : "-"} 3 PT
+                  </button>
+                
+
+            
+                  <button className="stat-btn" onClick={() => handleStatUpdate("twoPtAttempts")}>
+                    {isAddMode ? "+" : "-"} 2PA
+                  </button>
+                  <button className="stat-btn" onClick={() => handleStatUpdate("twoPtMade")}>
+                    {isAddMode ? "+" : "-"} 2PM
+                  </button>
+                  <button className="stat-btn" onClick={() => handleStatUpdate("threePtAttempts")}>
+                    {isAddMode ? "+" : "-"} 3PA
+                  </button>
+                  <button className="stat-btn" onClick={() => handleStatUpdate("threePtMade")}>
+                    {isAddMode ? "+" : "-"} 3PM
+                  </button>
+                  <button className="stat-btn" onClick={() => handleStatUpdate("ftAttempts")}>
+                    {isAddMode ? "+" : "-"} FTA
+                  </button>
+                  <button className="stat-btn" onClick={() => handleStatUpdate("ftMade")}>
+                    {isAddMode ? "+" : "-"} FTM
+                  </button>
+                  <button className="stat-btn" onClick={() => handleStatUpdate("pFouls")}>
+                    {isAddMode ? "+" : "-"} PF
+                  </button>
+                  <button className="stat-btn" onClick={() => handleStatUpdate("dFouls")}>
+                    {isAddMode ? "+" : "-"} DF
                   </button>
                 </div>
 

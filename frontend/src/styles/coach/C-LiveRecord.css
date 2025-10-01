@@ -164,7 +164,7 @@
   
   /* Player Stats Modal */
   .player-stats-modal {
-    max-width: 500px;
+    max-width: 700px;
   }
   
   .current-stats {
@@ -186,7 +186,18 @@
     padding: 1rem;
     border-radius: 8px;
 }
-  
+
+.stats-display.three-col {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 0.5rem;
+  row-gap: 0.5rem;
+}
+
+.stats-display.three-col .stat-item {
+  grid-template-columns: 100px 1fr;
+}
+
 .stat-item {
     display: grid;
     grid-template-columns: 140px 1fr;
@@ -237,7 +248,11 @@
     grid-template-columns: repeat(3, 1fr);
     gap: 0.5rem;
   }
-  
+  .stat-buttons.four-col {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
   .stat-btn {
     background: linear-gradient(135deg, var(--medium-purple), var(--bright-purple));
     color: white;
