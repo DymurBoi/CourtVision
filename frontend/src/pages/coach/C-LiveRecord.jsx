@@ -78,56 +78,61 @@ function CLiveRecord() {
 
   //BasicStats Payload and logic
 const handleConfirmFirstFiveModal = async () => {
+  if (selectedPlayers.length !== 5) { 
+    console.warn("You must select exactly 5 players."); 
+    return; 
+  }
   try {
     console.log("Game Id: ",gameId);
       const statsList = selectedPlayers.map(player => ({
-  twoPtAttempts: 0,
-  twoPtMade: 0,
-  threePtAttempts: 0,
-  threePtMade: 0,
-  ftAttempts: 0,
-  ftMade: 0,
-  assists: 0,
-  oFRebounds: 0,
-  dFRebounds: 0,
-  blocks: 0,
-  steals: 0,
-  turnovers: 0,
-  pFouls: 0,
-  dFouls: 0,
-  plusMinus: 0,
-  minutes: "00:00:00",
-  player: {
-    playerId: player
-  },
-  game: {
-    gameId: gameId
-  }
-}));
+    twoPtAttempts: 0,
+    twoPtMade: 0,
+    threePtAttempts: 0,
+    threePtMade: 0,
+    ftAttempts: 0,
+    ftMade: 0,
+    assists: 0,
+    oFRebounds: 0,
+    dFRebounds: 0,
+    blocks: 0,
+    steals: 0,
+    turnovers: 0,
+    pFouls: 0,
+    dFouls: 0,
+    plusMinus: 0,
+    minutes: "00:00:00",
+    subbedIn: true,
+    player: {
+      playerId: player
+    },
+    game: {
+      gameId: gameId
+    }
+  }));
 
-      console.log("Json Body:\n",statsList);
-      const res = await api.post("/basic-stats/post/batch", statsList);
-      console.log("Created BasicStats:", res.data);
+        console.log("Json Body:\n",statsList);
+        const res = await api.post("/basic-stats/post/batch", statsList);
+        console.log("Created BasicStats:", res.data);
 
-    // Match selected IDs to full player objects
-    const confirmedPlayers = teamPlayers.filter(p =>
-      selectedPlayers.includes(p.playerId)
-    );
+      // Match selected IDs to full player objects
+      const confirmedPlayers = teamPlayers.filter(p =>
+        selectedPlayers.includes(p.playerId)
+      );
 
-    setConfirmedFirstFive(confirmedPlayers);
+      setConfirmedFirstFive(confirmedPlayers);
 
-    // Map indices for on-court
-    /*setTeamAOnCourt(
-      confirmedPlayers.map(p =>
-        teamA.players.findIndex(tp => tp.id === p.playerId)
-      )
-    );*/
+      // Map indices for on-court
+      /*setTeamAOnCourt(
+        confirmedPlayers.map(p =>
+          teamA.players.findIndex(tp => tp.id === p.playerId)
+        )
+      );*/
 
-    setShowFirstFiveModal(false);
-  } catch (err) {
-    console.error("Error creating first five BasicStats:", err);
-  }
-};
+      setShowFirstFiveModal(false);
+    } catch (err) {
+      console.error("Error creating first five BasicStats:", err);
+    }
+  };
 
 
   // Timer effect
@@ -165,22 +170,20 @@ const handleConfirmFirstFiveModal = async () => {
 
 
     //Fetch BasicStats for Team A when gameId and teamId are available
-    useEffect(() => {
-      if (teamId && gameId) {
-        api
-          .get(`/basic-stats/get/by-game/${gameId}`)
-          .then((res) => {
-            // Only keep players where subbedIn = true
-            const filtered = res.data.filter(stat => stat.subbedIn === true);
-            setTeamABasicStats(filtered);
-          })
-          .catch((err) => {
-            console.error("Failed to fetch BasicStats for Team A:", err);
-            setTeamABasicStats([]);
-          });
-      }
-    }, [gameId, teamId]);
-
+   useEffect(() => {
+  if (gameId) {
+    api
+      .get(`/basic-stats/get/subbed-in/${gameId}`)
+      .then((res) => {
+        console.log("Subbed-in stats:", res.data);
+        setTeamABasicStats(res.data); // Each has player info
+      })
+      .catch((err) => {
+        console.error("Failed to fetch Subbed-In BasicStats:", err);
+        setTeamABasicStats([]);
+      });
+  }
+}, [gameId]);
   // Format time to MM:SS
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60)
@@ -332,26 +335,26 @@ const handleConfirmFirstFiveModal = async () => {
         {/* Players Display */}
         <div className="teams-container">
         <div className="team-section">
-  <h3 className="team-title">{teamA?.name || "Team A"}</h3>
-  <div className="players-grid">
-   {confirmedFirstFive.length === 0 ? (
-  <div className="player-card no-players">
-    No players selected yet
-  </div>
-) : (
-  confirmedFirstFive.map((player) => (
-    <div
-      key={player.playerId}
-      className="player-card selected"
-      onClick={() => handlePlayerClick("A", teamA.players.findIndex(tp => tp.id === player.playerId))}
-    >
-      <div className="jersey-number">#{player.jerseyNum}</div>
-      <div className="player-name">{player.fname} {player.lname}</div>
-    </div>
-  ))
-)}
-  </div>
-</div>
+          <h3 className="team-title">{teamA?.name || "Team A"}</h3>
+          <div className="players-grid">
+            {teamABasicStats.length === 0 ? (
+              <div className="player-card no-players">No players subbed in</div>
+            ) : (
+              teamABasicStats.map((stat) => (
+                <div
+                  key={stat.playerId}
+                  className="player-card selected"
+                  onClick={() =>
+                    handlePlayerClick("A", teamA.players.findIndex(tp => tp.id === stat.playerId))
+                  }
+                >
+                  <div className="jersey-number">#{stat.jerseyNum}</div>
+                  <div className="player-name">{stat.fname} {stat.lname}</div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
 
           <div className="team-section">
             <h3 className="team-title">{teamB.name}</h3>

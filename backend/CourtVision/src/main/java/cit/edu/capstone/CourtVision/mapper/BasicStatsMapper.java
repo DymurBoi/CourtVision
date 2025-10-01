@@ -26,11 +26,17 @@ public class BasicStatsMapper {
         dto.setPlusMinus(stat.getPlusMinus());
         dto.setMinutes(stat.getMinutes());
         dto.setGamePoints(stat.getGamePoints());
+        dto.setFname(stat.getPlayer().getFname());
+        dto.setLname(stat.getPlayer().getLname());
+        dto.setJerseyNum(stat.getPlayer().getJerseyNum());
 
         if (stat.getPlayer() != null) {
             Player temp=new Player();
             temp=stat.getPlayer();
-            dto.setPlayerName(temp.getFname()+" "+temp.getLname());
+            //dto.setPlayerName(temp.getFname()+" "+temp.getLname());
+            dto.setLname(temp.getLname());
+            dto.setFname(temp.getFname());
+            dto.setJerseyNum(temp.getJerseyNum());
             dto.setPlayerId(temp.getPlayerId());
         }
 
@@ -39,5 +45,5 @@ public class BasicStatsMapper {
         }
 
         return dto;
-    }
+    }   
 }
