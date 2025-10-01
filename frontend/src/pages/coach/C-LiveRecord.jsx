@@ -32,12 +32,10 @@ function CLiveRecord() {
 
   //BasicStats
   const [teamABasicStats, setTeamABasicStats] = useState([]);
-
-
   //Score
   const teamAScore = teamABasicStats.reduce((sum, stat) => sum + (stat.points || 0), 0);
-   //First Five Confirmation
-   const [firstFivePlayers, setFirstFivePlayers] = useState([]);
+   //Subbed Out Players
+   const [subbedOutPlayers, setSubbedOutPlayers] = useState([]);
   // Sample team data - you can replace this with actual data from props or API
   const [teamA, setTeamA] = useState({
     name: "",
@@ -92,56 +90,47 @@ const handleConfirmFirstFiveModal = async () => {
     return; 
   }
   try {
-    console.log("Game Id: ",gameId);
-      const statsList = selectedPlayers.map(player => ({
-    twoPtAttempts: 0,
-    twoPtMade: 0,
-    threePtAttempts: 0,
-    threePtMade: 0,
-    ftAttempts: 0,
-    ftMade: 0,
-    assists: 0,
-    oFRebounds: 0,
-    dFRebounds: 0,
-    blocks: 0,
-    steals: 0,
-    turnovers: 0,
-    pFouls: 0,
-    dFouls: 0,
-    plusMinus: 0,
-    minutes: "00:00:00",
-    subbedIn: true,
-    player: {
-      playerId: player
-    },
-    game: {
-      gameId: gameId
-    }
-  }));
+    console.log("Game Id: ", gameId);
 
-        console.log("Json Body:\n",statsList);
-        const res = await api.post("/basic-stats/post/batch", statsList);
-        console.log("Created BasicStats:", res.data);
+    // 🟢 Build payload for ALL players
+    const statsList = teamPlayers.map(player => ({
+      twoPtAttempts: 0,
+      twoPtMade: 0,
+      threePtAttempts: 0,
+      threePtMade: 0,
+      ftAttempts: 0,
+      ftMade: 0,
+      assists: 0,
+      oFRebounds: 0,
+      dFRebounds: 0,
+      blocks: 0,
+      steals: 0,
+      turnovers: 0,
+      pFouls: 0,
+      dFouls: 0,
+      plusMinus: 0,
+      minutes: "00:00:00",
+      subbedIn: selectedPlayers.includes(player.playerId), // ✅ starters in, rest out
+      player: { playerId: player.playerId },
+      game: { gameId: gameId }
+    }));
 
-      // Match selected IDs to full player objects
-      const confirmedPlayers = teamPlayers.filter(p =>
-        selectedPlayers.includes(p.playerId)
-      );
+    console.log("Json Body:\n", statsList);
+    const res = await api.post("/basic-stats/post/batch", statsList);
 
-      setConfirmedFirstFive(confirmedPlayers);
+    console.log("Created BasicStats:", res.data);
 
-      // Map indices for on-court
-      /*setTeamAOnCourt(
-        confirmedPlayers.map(p =>
-          teamA.players.findIndex(tp => tp.id === p.playerId)
-        )
-      );*/
+    // Save confirmed first five (full player objects)
+    const confirmedPlayers = teamPlayers.filter(p =>
+      selectedPlayers.includes(p.playerId)
+    );
+    setConfirmedFirstFive(confirmedPlayers);
 
-      setShowFirstFiveModal(false);
-    } catch (err) {
-      console.error("Error creating first five BasicStats:", err);
-    }
-  };
+    setShowFirstFiveModal(false);
+  } catch (err) {
+    console.error("Error creating BasicStats for all players:", err);
+  }
+};
 
 
   // Timer effect
@@ -327,18 +316,40 @@ const handleStatUpdate = (statType, amount = 1) => {
     });
   }
 };
-  const handleSubstitute = () => {
-    setShowSubModal(true)
+  const handleSubstitute = async () => {
+  try {
+    if (gameId) {
+      const res = await api.get(`/basic-stats/get/subbed-out/${gameId}`);
+      console.log("Subbed-out players:", res.data);
+      setSubbedOutPlayers(res.data);
+    }
+    setShowSubModal(true);
+  } catch (err) {
+    console.error("Failed to fetch subbed-out players:", err);
   }
+};
 
-  const handleChooseSubstitute = (newIndex) => {
-    if (!selectedRef) return
-    // Swap bench player into the current lineup slot
-    swapIntoLineup(selectedRef.team, selectedRef.index, newIndex)
-    // Update selection to the new player so modal shows stats for substituted player
-    setSelectedRef({ team: selectedRef.team, index: newIndex })
-    setShowSubModal(false)
-  }
+  const handleChooseSubstitute = (playerId) => {
+  if (!selectedRef) return;
+
+  // here you can send a PUT update to backend to toggle subbedIn states
+  // Example:
+  api.put(`/basic-stats/substitute/${selectedBasicStat.basicStatId}`, {
+    subbedIn: false
+  }).then(() => {
+    return api.put(`/basic-stats/substitute/${playerId}`, {
+      subbedIn: true
+    });
+  }).then(() => {
+    // refresh subbed-in players
+    return api.get(`/basic-stats/get/subbed-in/${gameId}`);
+  }).then((res) => {
+    setTeamABasicStats(res.data);
+    setShowSubModal(false);
+  }).catch((err) => {
+    console.error("Error substituting player:", err);
+  });
+};
 
   const getCurrentDate = () => {
     return new Date().toLocaleDateString("en-US", {
@@ -656,7 +667,7 @@ const handleStatUpdate = (statType, amount = 1) => {
       )}
 
       {/* Substitute Selection Modal */}
-      {showModal && showSubModal && selectedRef && (
+      {showModal && showSubModal && (
         <div className="modal-overlay" onClick={() => setShowSubModal(false)}>
           <div className="modal-container player-stats-modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
@@ -665,15 +676,20 @@ const handleStatUpdate = (statType, amount = 1) => {
             </div>
             <div className="modal-content">
               <div className="players-grid">
-                {(selectedRef.team === 'A'
-                  ? teamA.players.map((p, idx) => ({ p, idx })).filter(({ idx }) => !teamAOnCourt.includes(idx))
-                  : teamB.players.map((p, idx) => ({ p, idx })).filter(({ idx }) => !teamBOnCourt.includes(idx))
-                  ).map(({ p, idx }) => (
-                  <div key={p.id} className="player-card" onClick={() => handleChooseSubstitute(idx)}>
-                    <div className="jersey-number">#{p.jerseyNum}</div>
-                    <div className="player-name">{p.lastName}</div>
-                  </div>
-                ))}
+                {subbedOutPlayers.length === 0 ? (
+                  <p>No players available to substitute in</p>
+                ) : (
+                  subbedOutPlayers.map((p) => (
+                    <div
+                      key={p.playerId}
+                      className="player-card"
+                      onClick={() => handleChooseSubstitute(p.playerId)}
+                    >
+                      <div className="jersey-number">#{p.jerseyNum}</div>
+                      <div className="player-name">{p.fname} {p.lname}</div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
             <div className="modal-actions">
