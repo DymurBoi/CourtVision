@@ -33,11 +33,14 @@ function CLiveRecord() {
   //BasicStats
   const [teamABasicStats, setTeamABasicStats] = useState([]);
 
+
+  //Score
+  const teamAScore = teamABasicStats.reduce((sum, stat) => sum + (stat.points || 0), 0);
    //First Five Confirmation
    const [firstFivePlayers, setFirstFivePlayers] = useState([]);
   // Sample team data - you can replace this with actual data from props or API
   const [teamA, setTeamA] = useState({
-  name: "Team A",
+    name: "",
   players: []  // always exists
 });
 
@@ -78,7 +81,6 @@ function CLiveRecord() {
   const [teamAOnCourt, setTeamAOnCourt] = useState([])
   const [teamBOnCourt, setTeamBOnCourt] = useState([0, 1, 2, 3, 4])
 
-  const [teamAScore] = useState(55)
   const [teamBScore] = useState(65)
   
 
@@ -155,6 +157,22 @@ const handleConfirmFirstFiveModal = async () => {
     return () => clearInterval(interval)
   }, [isPlaying, time])
 
+  //fetch team A info with teamId
+ useEffect(() => {
+  if (!teamId) return;
+
+  api.get(`/teams/get/${teamId}`)
+    .then((res) => {
+      console.log("Fetched Team:", res.data);
+      setTeamA({
+        name: res.data.teamName,     // make sure your backend actually returns `name`
+        players: []              // keep empty until you fetch players
+      });
+    })
+    .catch((err) => {
+      console.error("Failed to fetch team:", err);
+    });
+}, [teamId]);
 
   // Fetch team players with teamId
   // 🟢 Fetch players when First Five modal opens
@@ -379,7 +397,7 @@ const handleStatUpdate = (statType, amount = 1) => {
         <div className="game-header">
           <div className="game-info-left">
             <div className="team-names">
-              {teamA.name} VS {teamB.name}
+              {teamA?.name} VS {teamB.name}
             </div>
             <div className="game-date">{getCurrentDate()}</div>
           </div>
