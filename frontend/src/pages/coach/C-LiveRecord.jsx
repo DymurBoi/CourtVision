@@ -7,8 +7,6 @@ import { api } from "../../utils/axiosConfig";
 import { useLocation } from "react-router-dom";
 
 function CLiveRecord() {
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [time, setTime] = useState(0) // time in seconds
   const [showModal, setShowModal] = useState(false)
   const [isAddMode, setIsAddMode] = useState(true) // true = add, false = subtract
   // Track which team and which player index is selected to always read fresh state
@@ -41,6 +39,11 @@ function CLiveRecord() {
     name: "",
   players: []  // always exists
 });
+
+//Timer 
+const [isPlaying, setIsPlaying] = useState(false);
+const [time, setTime] = useState(0);
+
 
   const [teamB, setTeamB] = useState({
     name: "USJR",
@@ -135,16 +138,17 @@ const handleConfirmFirstFiveModal = async () => {
 
   // Timer effect
   useEffect(() => {
-    let interval = null
-    if (isPlaying) {
-      interval = setInterval(() => {
-        setTime((time) => time + 1)
-      }, 1000)
-    } else if (!isPlaying && time !== 0) {
-      clearInterval(interval)
-    }
-    return () => clearInterval(interval)
-  }, [isPlaying, time])
+  let interval;
+  if (isPlaying) {
+    interval = setInterval(() => {
+      setTime((prev) => prev + 1);
+    }, 1000);
+  } else {
+    clearInterval(interval);
+  }
+  return () => clearInterval(interval);
+}, [isPlaying]);
+
 
   //fetch team A info with teamId
  useEffect(() => {
@@ -205,9 +209,25 @@ const handleConfirmFirstFiveModal = async () => {
     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`
   }
 
-  const handlePlayPause = () => {
-    setIsPlaying(!isPlaying)
+  const handlePlayPause = async () => {
+  try {
+    if (!isPlaying) {
+      // ⏱ Tell backend: start all stopwatches for current game
+      await api.post(`/stopwatch/sub-in/${gameId}`);
+      console.log("Backend stopwatches started for first 5 players!");
+    } else {
+      // (Optional) if you add a pause endpoint in backend later
+      // await api.post(`/stopwatch/pause/${gameId}`);
+      console.log("Paused frontend timer, backend still running.");
+    }
+
+    // Keep frontend timer toggling
+    setIsPlaying(!isPlaying);
+
+  } catch (err) {
+    console.error("Failed to sync with backend stopwatch:", err);
   }
+};
 
   const handlePlayerClick = (team, index) => {
     setSelectedRef({ team, index })
