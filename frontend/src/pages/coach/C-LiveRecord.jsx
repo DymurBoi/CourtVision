@@ -20,6 +20,10 @@ function CLiveRecord() {
   const [teamPlayers, setTeamPlayers] = useState([]);
   const [confirmedFirstFive, setConfirmedFirstFive] = useState([]);
 
+  //BasicStats Update
+  const [selectedBasicStat, setSelectedBasicStat] = useState(null);
+  const [formStats, setFormStats] = useState(null);
+
   //getting the teamid and gameid from the query string
   const location = useLocation();
   const { id: gameId } = useParams();
@@ -32,7 +36,10 @@ function CLiveRecord() {
    //First Five Confirmation
    const [firstFivePlayers, setFirstFivePlayers] = useState([]);
   // Sample team data - you can replace this with actual data from props or API
-  const [teamA, setTeamA] = useState({})
+  const [teamA, setTeamA] = useState({
+  name: "Team A",
+  players: []  // always exists
+});
 
   const [teamB, setTeamB] = useState({
     name: "USJR",
@@ -200,36 +207,89 @@ const handleConfirmFirstFiveModal = async () => {
     setShowModal(true)
   }
 
+  const handlePlayersClick = (playerId) => {
+  const stat = teamABasicStats.find(s => s.playerId === playerId);
+ if (stat) {
+  setSelectedBasicStat(stat);
+  setFormStats({
+    ...stat,
+    basicStatId: stat.basicStatId,
+    fname: stat.fname,
+    lname: stat.lname,
+    jerseyNum: stat.jerseyNum,
+    playerId: stat.playerId
+  });
+  setShowModal(true);
+}
+};
+
   const handleCloseModal = () => {
     setShowModal(false)
     setSelectedRef(null)
   }
 
-  const handleStatUpdate = (statType, amount = 1) => {
-    if (!selectedRef) return
+  //BasicStats Update
+  useEffect(() => {
+  if (selectedBasicStat) {
+    setFormStats({ ...selectedBasicStat });
+  }
+}, [selectedBasicStat]);
 
-    const delta = (isAddMode ? 1 : -1) * amount
-    if (selectedRef.team === 'A') {
-      setTeamA((prev) => {
-        const next = { ...prev, players: [...prev.players] }
-        const player = { ...next.players[selectedRef.index], stats: { ...next.players[selectedRef.index].stats } }
-        const nextValue = Math.max(0, (player.stats[statType] || 0) + delta)
-        player.stats[statType] = nextValue
-        next.players[selectedRef.index] = player
-        return next
-      })
-    } else {
-      setTeamB((prev) => {
-        const next = { ...prev, players: [...prev.players] }
-        const player = { ...next.players[selectedRef.index], stats: { ...next.players[selectedRef.index].stats } }
-        const nextValue = Math.max(0, (player.stats[statType] || 0) + delta)
-        player.stats[statType] = nextValue
-        next.players[selectedRef.index] = player
-        return next
-      })
-    }
+const handleFormChange = (e) => {
+  const { name, value } = e.target;
+  setFormStats((prev) => ({ ...prev, [name]: value }));
+};
+
+const handleUpdateBasicStats = async () => {
+  try {
+    const res = await api.put(`/basic-stats/put/${formStats.basicStatId}`, formStats);
+    console.log("Updated:", res.data);
+
+    setTeamABasicStats((prev) =>
+      prev.map((s) => (s.basicStatsId === res.data.basicStatsId ? res.data : s))
+    );
+    setShowModal(false);
+    setSelectedBasicStat(null);
+  } catch (err) {
+    console.error("Error updating stats:", err);
+  }
+};  
+const handleStatUpdate = (statType, amount = 1) => {
+  if (!formStats) return;
+
+  const delta = (isAddMode ? 1 : -1) * amount;
+
+  // ✅ Team A (BasicStats-driven)
+  if (formStats?.playerId) {
+    setFormStats((prev) => {
+      const updated = { ...prev };
+
+      if (statType === "points") {
+        updated.points = Math.max(0, (updated.points || 0) + delta);
+      } else {
+        updated[statType] = Math.max(0, (updated[statType] || 0) + delta);
+      }
+
+      return updated;
+    });
+    return;
   }
 
+  // ✅ Team B (dummy team state, relies on selectedRef)
+  if (selectedRef && selectedRef.team === "B") {
+    setTeamB((prev) => {
+      const next = { ...prev, players: [...prev.players] };
+      const player = {
+        ...next.players[selectedRef.index],
+        stats: { ...next.players[selectedRef.index].stats },
+      };
+      const nextValue = Math.max(0, (player.stats[statType] || 0) + delta);
+      player.stats[statType] = nextValue;
+      next.players[selectedRef.index] = player;
+      return next;
+    });
+  }
+};
   const handleSubstitute = () => {
     setShowSubModal(true)
   }
@@ -251,11 +311,10 @@ const handleConfirmFirstFiveModal = async () => {
     })
   }
 
-  const currentPlayer = selectedRef
-    ? selectedRef.team === 'A'
-      ? teamA.players[selectedRef.index]
-      : teamB.players[selectedRef.index]
-    : null
+  const currentPlayer =
+  selectedRef && selectedRef.team === "A" && selectedRef.index != null
+    ? teamA.players[selectedRef.index] || null
+    : null;
 
   // When a bench player is chosen, swap them with the current on-court player
   const swapIntoLineup = (team, oldIndex, newIndex) => {
@@ -345,7 +404,7 @@ const handleConfirmFirstFiveModal = async () => {
                   key={stat.playerId}
                   className="player-card selected"
                   onClick={() =>
-                    handlePlayerClick("A", teamA.players.findIndex(tp => tp.id === stat.playerId))
+                     handlePlayersClick(stat.playerId)
                   }
                 >
                   <div className="jersey-number">#{stat.jerseyNum}</div>
@@ -378,81 +437,89 @@ const handleConfirmFirstFiveModal = async () => {
       </div>
 
       {/* Player Stats Modal */}
-      {showModal && currentPlayer && (
+      {showModal && (currentPlayer || selectedBasicStat) && (
         <div className="modal-overlay" onClick={handleCloseModal}>
           <div className="modal-container player-stats-modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>
-                #{currentPlayer.jerseyNum} {currentPlayer.lastName}
-              </h2>
+             <h2>
+              #{currentPlayer?.jerseyNum || formStats?.jerseyNum}{" "}
+              {currentPlayer?.lastName || formStats?.lname}
+            </h2>
               <button className="close-button" onClick={handleCloseModal}>
                 &times;
               </button>
             </div>
 
-            <div className="modal-content">
+        <div className="modal-content">
               <div className="current-stats">
-                <h4>Current Stats</h4>
+                <h4>
+                  {formStats?.fname} {formStats?.lname} - Current Stats
+                </h4>
                 <div className="stats-display two-col">
                   <div className="stat-item">
                     <span className="stat-label">PTS:</span>
-                    <span className="stat-value">{currentPlayer.stats.points}</span>
+                    <span className="stat-value">{formStats?.points}</span>
                   </div>
                   <div className="stat-item">
                     <span className="stat-label">STL:</span>
-                    <span className="stat-value">{currentPlayer.stats.STL}</span>
+                    <span className="stat-value">{formStats?.steals}</span>
                   </div>
                   <div className="stat-item">
                     <span className="stat-label">ORB:</span>
-                    <span className="stat-value">{currentPlayer.stats.ORB}</span>
+                    <span className="stat-value">{formStats?.offensiveRebounds}</span>
                   </div>
                   <div className="stat-item">
                     <span className="stat-label">BLK:</span>
-                    <span className="stat-value">{currentPlayer.stats.BLK}</span>
+                    <span className="stat-value">{formStats?.blocks}</span>
                   </div>
                   <div className="stat-item">
                     <span className="stat-label">DRB:</span>
-                    <span className="stat-value">{currentPlayer.stats.DRB}</span>
+                    <span className="stat-value">{formStats?.defensiveRebounds}</span>
                   </div>
                   <div className="stat-item">
                     <span className="stat-label">TO:</span>
-                    <span className="stat-value">{currentPlayer.stats.TO}</span>
+                    <span className="stat-value">{formStats?.turnovers}</span>
                   </div>
                   <div className="stat-item ast">
                     <span className="stat-label">AST:</span>
-                    <span className="stat-value">{currentPlayer.stats.AST}</span>
+                    <span className="stat-value">{formStats?.assists}</span>
                   </div>
                 </div>
               </div>
 
               <div className="stat-controls">
                 <h4>Record Stats</h4>
-                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '0.75rem' }}>
-                  <button className="close-modal-btn" onClick={() => setIsAddMode((m) => !m)}>
-                    Mode: {isAddMode ? 'Add' : 'Subtract'}
+                <div style={{ display: "flex", justifyContent: "center", marginBottom: "0.75rem" }}>
+                  <button
+                    className="close-modal-btn"
+                    onClick={() => setIsAddMode((m) => !m)}
+                  >
+                    Mode: {isAddMode ? "Add" : "Subtract"}
                   </button>
                 </div>
+
                 <div className="stat-buttons">
-                  <button className="stat-btn" onClick={() => handleStatUpdate("ORB")}>
+                  <button className="stat-btn" onClick={() => handleStatUpdate("offensiveRebounds")}>
                     {isAddMode ? "+" : "-"} ORB
                   </button>
-                  <button className="stat-btn" onClick={() => handleStatUpdate("DRB")}>
+                  <button className="stat-btn" onClick={() => handleStatUpdate("defensiveRebounds")}>
                     {isAddMode ? "+" : "-"} DRB
                   </button>
-                  <button className="stat-btn" onClick={() => handleStatUpdate("AST")}>
+                  <button className="stat-btn" onClick={() => handleStatUpdate("assists")}>
                     {isAddMode ? "+" : "-"} AST
                   </button>
-                  <button className="stat-btn" onClick={() => handleStatUpdate("STL")}>
+                  <button className="stat-btn" onClick={() => handleStatUpdate("steals")}>
                     {isAddMode ? "+" : "-"} STL
                   </button>
-                  <button className="stat-btn" onClick={() => handleStatUpdate("BLK")}>
+                  <button className="stat-btn" onClick={() => handleStatUpdate("blocks")}>
                     {isAddMode ? "+" : "-"} BLK
                   </button>
-                  <button className="stat-btn" onClick={() => handleStatUpdate("TO")}>
+                  <button className="stat-btn" onClick={() => handleStatUpdate("turnovers")}>
                     {isAddMode ? "+" : "-"} TO
                   </button>
                 </div>
-                <div className="stat-buttons" style={{ marginTop: '0.5rem' }}>
+
+                <div className="stat-buttons" style={{ marginTop: "0.5rem" }}>
                   <button className="stat-btn" onClick={() => handleStatUpdate("points", 1)}>
                     {isAddMode ? "+" : "-"} 1 PT
                   </button>
@@ -463,15 +530,28 @@ const handleConfirmFirstFiveModal = async () => {
                     {isAddMode ? "+" : "-"} 3 PT
                   </button>
                 </div>
+
+                <div style={{ textAlign: "center", marginTop: "1rem" }}>
+                  <button className="stat-btn" onClick={handleUpdateBasicStats}>
+                    Save
+                  </button>
+                  <button
+                    className="close-modal-btn"
+                    style={{ marginLeft: "1rem" }}
+                    onClick={() => {
+                      setShowModal(false);
+                      setSelectedBasicStat(null);
+                    }}
+                  >
+                    Close
+                  </button>
+                </div>
               </div>
             </div>
 
             <div className="modal-actions">
               <button className="substitute-btn" onClick={handleSubstitute}>
                 Substitute Player
-              </button>
-              <button className="close-modal-btn" onClick={handleCloseModal}>
-                Close
               </button>
             </div>
           </div>

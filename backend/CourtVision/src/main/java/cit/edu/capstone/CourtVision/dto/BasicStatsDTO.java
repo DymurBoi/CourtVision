@@ -26,6 +26,7 @@ public class BasicStatsDTO {
     private GameDTO gameDTO;
     private boolean subbedIn;
     
+    
 
     // Player details
     private String fname;
@@ -45,7 +46,7 @@ public class BasicStatsDTO {
         this.playerId = playerId;
     }
     public int getGamePoints() {
-        return gamePoints;
+        return (twoPtMade * 2) + (threePtMade * 3) + ftMade;
     }
     public void setGamePoints(int gamePoints) {
         this.gamePoints = gamePoints;
@@ -220,6 +221,8 @@ public class BasicStatsDTO {
         this.jerseyNum = jerseyNum;
     }
 
-    
+    public int getPoints() {
+    return (twoPtMade * 2) + (threePtMade * 3) + ftMade;
+}
 }
 
