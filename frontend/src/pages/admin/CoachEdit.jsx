@@ -154,7 +154,7 @@ function CoachEdit() {
               <button type="submit" className="save-button">
                 Save Changes
               </button>
-              <Link to={`/admin/users/${id}`} className="cancel-button">
+              <Link to={`/admin/coaches`} className="cancel-button">
                 Cancel
               </Link>
             </div>

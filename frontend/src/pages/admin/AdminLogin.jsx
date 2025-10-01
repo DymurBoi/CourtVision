@@ -5,12 +5,21 @@ import "../../styles/Login.css"
 import basketballCourt from "../../assets/BasketballCourt.jpg"
 import { api } from "../../utils/axiosConfig"
 import { useAuth } from "../../components/AuthContext"
+import {
+  FormControl,
+  InputLabel,
+  OutlinedInput,
+  IconButton,
+  InputAdornment,
+} from "@mui/material"
+import { Visibility, VisibilityOff } from "@mui/icons-material"
 
 function AdminLogin() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
   const { login, user } = useAuth()
@@ -54,6 +63,8 @@ function AdminLogin() {
     }
   }
 
+  const handleClickShowPassword = () => setShowPassword((prev) => !prev)
+
   return (
     <div className="auth-container">
       <div className="auth-image">
@@ -71,27 +82,38 @@ function AdminLogin() {
 
           <form className="auth-form" onSubmit={handleLogin}>
             <div className="form-group">
-              <label htmlFor="email">Email</label>
-              <input
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                placeholder="Enter your admin email"
-              />
+              <FormControl fullWidth variant="outlined" required sx={{ marginBottom: 2 }}>
+                <InputLabel htmlFor="email">Email</InputLabel>
+                <OutlinedInput
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  label="Email"
+                  sx={{ bgcolor: "#fff" }}
+                />
+              </FormControl>
             </div>
 
             <div className="form-group">
-              <label htmlFor="password">Password</label>
-              <input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                placeholder="Enter your password"
-              />
+              <FormControl fullWidth variant="outlined" required sx={{ marginBottom: 2 }}>
+                <InputLabel htmlFor="password">Password</InputLabel>
+                <OutlinedInput
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  label="Password"
+                  sx={{ bgcolor: "#fff" }}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton onClick={handleClickShowPassword} edge="end">
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                />
+              </FormControl>
             </div>
 
             {error && <div className="error-message">{error}</div>}

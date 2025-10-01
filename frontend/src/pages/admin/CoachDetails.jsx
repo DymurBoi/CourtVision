@@ -106,7 +106,7 @@ function CoachDetails() {
         </div>
 
         <div className="back-navigation">
-          <Link to="/admin/users" className="back-link">Back to User Management</Link>
+          <Link to="/admin/coaches" className="back-link">Back to User Management</Link>
         </div>
       </main>
     </div>

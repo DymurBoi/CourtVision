@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { api } from "../../utils/axiosConfig";
-import "../../styles/coach/C-Team.css";
+import "../../styles/admin/AdminTeams.css";
 
 function AdminTeams() {
   const [teams, setTeams] = useState([]);
