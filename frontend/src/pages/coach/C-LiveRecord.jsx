@@ -30,7 +30,7 @@ function CLiveRecord() {
   const params = new URLSearchParams(window.location.search);
   const teamId = params.get("teamId");
 
-  //BasicStats
+  //BasicStats for team A or CITU
   const [teamABasicStats, setTeamABasicStats] = useState([]);
   //Score
   const teamAScore = teamABasicStats.reduce((sum, stat) => sum + (stat.points || 0), 0);
@@ -52,16 +52,16 @@ const [time, setTime] = useState(0);
     players: [
       {
         id: 6,
-        jerseyNum: 11,
-        lastName: "Garcia",
-        stats: { ORB: 2, DRB: 4, AST: 5, STL: 1, BLK: 1, TO: 2, points: 14 },
+        jerseyNum: 100,
+        lastName: "Opponent Player",
+
       }, 
     ],
   })
 
   // Track the 5 on-court players as indices for each team
   const [teamAOnCourt, setTeamAOnCourt] = useState([])
-  const [teamBOnCourt, setTeamBOnCourt] = useState([0, 1, 2, 3, 4])
+  const [teamBOnCourt, setTeamBOnCourt] = useState([0])
 
   const [teamBScore] = useState(65)
   
@@ -120,28 +120,27 @@ const handleConfirmFirstFiveModal = async () => {
 const handleUpdateBasicStatsVariation = async () => {
   try {
     const payload = {
-      basicStatId: formStats.basicStatId,
-      twoPtAttempts: Number(formStats.twoPtAttempts),
-      twoPtMade: Number(formStats.twoPtMade),
-      threePtAttempts: Number(formStats.threePtAttempts),
-      threePtMade: Number(formStats.threePtMade),
-      ftAttempts: Number(formStats.ftAttempts),
-      ftMade: Number(formStats.ftMade),
-      assists: Number(formStats.assists),
-      oFRebounds: Number(formStats.oFRebounds),
-      dFRebounds: Number(formStats.dFRebounds),
-      blocks: Number(formStats.blocks),
-      steals: Number(formStats.steals),
-      turnovers: Number(formStats.turnovers),
-      pFouls: Number(formStats.pFouls),
-      dFouls: Number(formStats.dFouls),
-      plusMinus: Number(formStats.plusMinus),
-      minutes: formStats.minutes || "00:00:00",
-      gamePoints: Number(formStats.gamePoints),
-      game: { gameId: gameId }  // ✅ No player object for variation, only game
+    twoPtAttempts: Number(formStats.twoPtAttempts),
+    twoPtMade: Number(formStats.twoPtMade),
+    threePtAttempts: Number(formStats.threePtAttempts),
+    threePtMade: Number(formStats.threePtMade),
+    ftAttempts: Number(formStats.ftAttempts),
+    ftMade: Number(formStats.ftMade),
+    assists: Number(formStats.assists),
+    oFRebounds: Number(formStats.oFRebounds),
+    dFRebounds: Number(formStats.dFRebounds),
+    blocks: Number(formStats.blocks),
+    steals: Number(formStats.steals),
+    turnovers: Number(formStats.turnovers),
+    pFouls: Number(formStats.pFouls),
+    dFouls: Number(formStats.dFouls),
+    plusMinus: Number(formStats.plusMinus),
+    minutes: formStats.minutes || "00:00:00",
+    gamePoints: Number(formStats.gamePoints),
+    game: { gameId: gameId }
     };
 
-    const res = await api.put(`/basic-stats-var/put/${formStats.basicStatId}`, payload);
+    const res = await api.put(`/basic-stats-var/put/${formStats.basicStatVarId}`, payload);
     console.log("Updated Enemy Team Stat:", res.data);
 
     setShowModal(false);
@@ -293,10 +292,10 @@ const handleEndGame = async () => {
     // Enemy team: fetch BasicStatsVariation
     const player = teamB.players[index];
     try {
-      const res = await api.get(`/basic-stats-var/get/by-game/${gameId}`);
-      const enemyStats = res.data[0]; // since enemy team stats are team-based
-      setSelectedBasicStat(enemyStats);
-      setFormStats({ ...enemyStats });
+    const res = await api.get(`/basic-stats-var/get/by-game/${gameId}`);
+    const enemyStats = res.data[0];
+    setSelectedBasicStat(enemyStats);
+    setFormStats({ ...enemyStats, basicStatVarId: enemyStats.basicStatVarId });
     } catch (err) {
       console.error("Failed to fetch enemy stats:", err);
     }
