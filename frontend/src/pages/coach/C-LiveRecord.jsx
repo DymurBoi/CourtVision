@@ -5,6 +5,8 @@ import CoachNavbar from "../../components/CoachNavbar"
 import "../../styles/coach/C-LiveRecord.css"
 import { api } from "../../utils/axiosConfig";
 import { useLocation } from "react-router-dom";
+import { Button } from "@mui/material"
+import { StopCircle } from "lucide-react"
 
 function CLiveRecord() {
   const [showModal, setShowModal] = useState(false)
@@ -53,28 +55,7 @@ const [time, setTime] = useState(0);
         jerseyNum: 11,
         lastName: "Garcia",
         stats: { ORB: 2, DRB: 4, AST: 5, STL: 1, BLK: 1, TO: 2, points: 14 },
-      },
-      {
-        id: 7,
-        jerseyNum: 22,
-        lastName: "Martinez",
-        stats: { ORB: 1, DRB: 3, AST: 2, STL: 3, BLK: 0, TO: 1, points: 16 },
-      },
-      { id: 8, jerseyNum: 5, lastName: "Lopez", stats: { ORB: 0, DRB: 2, AST: 8, STL: 1, BLK: 0, TO: 4, points: 9 } },
-      {
-        id: 9,
-        jerseyNum: 33,
-        lastName: "Rodriguez",
-        stats: { ORB: 4, DRB: 7, AST: 1, STL: 0, BLK: 2, TO: 1, points: 20 },
-      },
-      {
-        id: 10,
-        jerseyNum: 8,
-        lastName: "Hernandez",
-        stats: { ORB: 1, DRB: 1, AST: 3, STL: 2, BLK: 1, TO: 3, points: 6 },
-      },
-      { id: 13, jerseyNum: 4, lastName: "Sanchez", stats: { ORB: 0, DRB: 1, AST: 0, STL: 0, BLK: 0, TO: 0, points: 0 } },
-      { id: 14, jerseyNum: 14, lastName: "Torres", stats: { ORB: 0, DRB: 0, AST: 1, STL: 0, BLK: 0, TO: 0, points: 0 } },
+      }, 
     ],
   })
 
@@ -135,19 +116,90 @@ const handleConfirmFirstFiveModal = async () => {
   }
 };
 
+//BasicStatsVariation payload and Logic for the opponent team
+const handleUpdateBasicStatsVariation = async () => {
+  try {
+    const payload = {
+      basicStatId: formStats.basicStatId,
+      twoPtAttempts: Number(formStats.twoPtAttempts),
+      twoPtMade: Number(formStats.twoPtMade),
+      threePtAttempts: Number(formStats.threePtAttempts),
+      threePtMade: Number(formStats.threePtMade),
+      ftAttempts: Number(formStats.ftAttempts),
+      ftMade: Number(formStats.ftMade),
+      assists: Number(formStats.assists),
+      oFRebounds: Number(formStats.oFRebounds),
+      dFRebounds: Number(formStats.dFRebounds),
+      blocks: Number(formStats.blocks),
+      steals: Number(formStats.steals),
+      turnovers: Number(formStats.turnovers),
+      pFouls: Number(formStats.pFouls),
+      dFouls: Number(formStats.dFouls),
+      plusMinus: Number(formStats.plusMinus),
+      minutes: formStats.minutes || "00:00:00",
+      gamePoints: Number(formStats.gamePoints),
+      game: { gameId: gameId }  // ✅ No player object for variation, only game
+    };
 
-  // Timer effect
-  useEffect(() => {
+    const res = await api.put(`/basic-stats-var/put/${formStats.basicStatId}`, payload);
+    console.log("Updated Enemy Team Stat:", res.data);
+
+    setShowModal(false);
+  } catch (err) {
+    console.error("Error updating enemy stats:", err);
+  }
+};
+
+
+ useEffect(() => {
+  const savedStartTime = localStorage.getItem("timer_startTime");
+  const savedElapsed = localStorage.getItem("timer_elapsed");
+  const savedIsPlaying = localStorage.getItem("timer_isPlaying") === "true";
+
+  if (savedIsPlaying && savedStartTime) {
+    // If running → compute how much time passed since start
+    const elapsed = Math.floor((Date.now() - parseInt(savedStartTime, 10)) / 1000);
+    setTime(elapsed);
+    setIsPlaying(true);
+  } else if (savedElapsed) {
+    // If paused → restore stored elapsed
+    setTime(parseInt(savedElapsed, 10));
+    setIsPlaying(false);
+  }
+}, []);
+
+useEffect(() => {
   let interval;
   if (isPlaying) {
     interval = setInterval(() => {
-      setTime((prev) => prev + 1);
+      setTime((prev) => {
+        const newTime = prev + 1;
+        localStorage.setItem("timer_elapsed", newTime); // keep persisting
+        return newTime;
+      });
     }, 1000);
+
+    // Save absolute startTime so refresh can recalc
+    localStorage.setItem("timer_startTime", Date.now() - time * 1000);
+    localStorage.setItem("timer_isPlaying", "true");
   } else {
-    clearInterval(interval);
+    localStorage.setItem("timer_elapsed", time);
+    localStorage.setItem("timer_isPlaying", "false");
   }
+
   return () => clearInterval(interval);
-}, [isPlaying]);
+}, [isPlaying, time]);
+
+//EndGame
+const handleEndGame = async () => {
+  try {
+    await api.post(`/subout/${gameId}`);
+    console.log(`Game ${gameId} ended. All players subbed out.`);
+    setIsPlaying(false); // stop the timer locally
+  } catch (err) {
+    console.error("Failed to end game:", err);
+  }
+};
 
 
   //fetch team A info with teamId
@@ -229,10 +281,30 @@ const handleConfirmFirstFiveModal = async () => {
   }
 };
 
-  const handlePlayerClick = (team, index) => {
-    setSelectedRef({ team, index })
-    setShowModal(true)
+  const handlePlayerClick = async (team, index) => {
+  setSelectedRef({ team, index });
+
+  if (team === "A") {
+    // Normal flow: get player basic stats
+    const stat = teamABasicStats[index];
+    setSelectedBasicStat(stat);
+    setFormStats({ ...stat });
+  } else if (team === "B") {
+    // Enemy team: fetch BasicStatsVariation
+    const player = teamB.players[index];
+    try {
+      const res = await api.get(`/basic-stats-var/get/by-game/${gameId}`);
+      const enemyStats = res.data[0]; // since enemy team stats are team-based
+      setSelectedBasicStat(enemyStats);
+      setFormStats({ ...enemyStats });
+    } catch (err) {
+      console.error("Failed to fetch enemy stats:", err);
+    }
   }
+
+  setShowModal(true);
+};
+
 
   const handlePlayersClick = (playerId) => {
   const stat = teamABasicStats.find(s => s.playerId === playerId);
@@ -299,6 +371,14 @@ const handleUpdateBasicStats = async () => {
     console.error("Error updating stats:", err);
   }
 }; 
+const handleSaveStats = async () => {
+  if (selectedRef?.team === "A") {
+    await handleUpdateBasicStats();
+  } else if (selectedRef?.team === "B") {
+    await handleUpdateBasicStatsVariation();
+  }
+};
+
 
 const handleStatUpdate = (statType, amount = 1) => {
   if (!formStats) return;
@@ -423,40 +503,68 @@ const handleChooseSubstitute = async (benchBasicStatId) => {
       <CoachNavbar />
 
       <div className="live-record-container">
-        {/* Header/Banner */}
-        <div className="game-header">
-          <div className="game-info-left">
-            <div className="team-names">
-              {teamA?.name} VS {teamB.name}
-            </div>
-            <div className="game-date">{getCurrentDate()}</div>
-          </div>
+     {/* Header/Banner */}
+<div className="game-header">
+  {/* Left: Teams + Date */}
+  <div className="game-info-left">
+    <div className="team-names">
+      {teamA?.name} VS {teamB?.name}
+    </div>
+    <div className="game-date">{getCurrentDate()}</div>
+  </div>
 
-          <div className="game-info-center">
-            <div className="score-display">
-              <span className="team-score">{teamAScore}</span>
-              <span className="score-separator">-</span>
-              <span className="team-score">{teamBScore}</span>
-            </div>
-          </div>
+  {/* Center: Score */}
+  <div className="game-info-center">
+    <div className="score-display">
+      <span className="team-score">{teamAScore}</span>
+      <span className="score-separator">-</span>
+      <span className="team-score">{teamBScore}</span>
+    </div>
+  </div>
 
-          <div className="game-info-right">
-            <div className="timer-controls">
-              <button className={`play-pause-btn ${isPlaying ? "playing" : "paused"}`} onClick={handlePlayPause}>
-                {isPlaying ? (
-                  <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
-                  </svg>
-                ) : (
-                  <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                )}
-              </button>
-              <div className="timer-display">{formatTime(time)}</div>
-            </div>
-          </div>
-        </div>
+  {/* Right: Timer + Controls */}
+  <div className="game-info-right">
+    <div className="timer-controls">
+      <button
+        className={`play-pause-btn ${isPlaying ? "playing" : "paused"}`}
+        onClick={handlePlayPause}
+      >
+        {isPlaying ? (
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
+          </svg>
+        ) : (
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+        )}
+      </button>
+      <div className="timer-display">{formatTime(time)}</div>
+
+ 
+    </div>
+     {/* End Game Button */}
+   <Button
+      variant="contained"
+      color="error"
+      onClick={handleEndGame}
+      sx={{
+        marginLeft: 1,
+        minWidth: "50px",
+        width: "60px",
+        height: "60px",
+        borderRadius: "50%",
+        padding: 0,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
+      }}
+    >
+      <StopCircle />
+    </Button>
+  </div>
+</div>
+
 
         {/* Players Display */}
         <div className="teams-container">

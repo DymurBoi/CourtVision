@@ -379,5 +379,30 @@
     .player-name {
       font-size: 0.8rem;
     }
+
+    .end-game-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: none;
+  background-color: #e53935; /* Red */
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.end-game-btn:hover {
+  background-color: #c62828; /* Darker red on hover */
+}
+
+.end-game-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
   }
   

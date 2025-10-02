@@ -84,6 +84,27 @@ public void startSubIn(Long gameId) {
     sw.start();}
 }
 
+
+// Stop all currently subbed-in players for a game
+public void startSubOut(Long gameId) {
+    List<BasicStats> subbedInPlayers = basicStatsRepository.findByGame_GameIdAndSubbedInTrue(gameId);
+
+    for (BasicStats stats : subbedInPlayers) {
+        StopWatch sw = stopwatches.get(stats.getBasicStatId());
+
+        if (sw != null) {
+            sw.stop();
+            updateMinutes(stats, sw); // persist elapsed time
+        }
+
+        if (stats.isSubbedIn()) {
+            stats.setSubbedIn(false);
+            basicStatsRepository.save(stats);
+        }
+    }
+}
+
+
     // Sub a player out (stop + persist to DB)
     public void subOut(Long basicStatId, BasicStats stats) {
         StopWatch sw = stopwatches.get(basicStatId);
