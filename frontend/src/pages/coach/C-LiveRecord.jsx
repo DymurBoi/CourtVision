@@ -10,6 +10,7 @@ import { StopCircle } from "lucide-react"
 
 function CLiveRecord() {
   const [gameDetails, setGameDetails] = useState();
+  const [opponentStats, setOpponenetStats] = useState();
   const [showModal, setShowModal] = useState(false)
   const [isAddMode, setIsAddMode] = useState(true) // true = add, false = subtract
   // Track which team and which player index is selected to always read fresh state
@@ -222,24 +223,39 @@ const handleEndGame = async () => {
 useEffect(() => {
   if (!gameId) return;
 
-  api.get(`/games/get/${gameId}`)
-    .then((res) => {
-      console.log("Fetched Game:", res.data);
-      const gameName = res.data.gameName || ""; // Get the game name from the response
+  const fetchGameData = async () => {
+    try {
+      // Fetch the game data
+      const gameRes = await api.get(`/games/get/${gameId}`);
+      console.log("Fetched Game:", gameRes.data);
+
+      const gameName = gameRes.data.gameName || ""; // Get the game name from the response
 
       // Extract the part after " vs " in the gameName
       const opponentName = gameName.split(' vs ')[1] || ''; // If " vs " is not found, return empty string
 
       // Set gameDetails with opponentName
       setGameDetails({
-        ...res.data,
+        ...gameRes.data,
         opponentName: opponentName, // Add opponentName to gameDetails
       });
-    }) 
-    .catch((err) => {
-      console.error("Failed to fetch game:", err);
-    });
+
+      // Fetch the opponent stats
+      const opponentRes = await api.get(`/basic-stats-var/get/by-game/${gameId}`);
+      console.log("Fetched Opponent Stats:", opponentRes.data);
+
+      // Set the opponent stats
+      setOpponenetStats(opponentRes.data);
+
+    } catch (err) {
+      console.error("Failed to fetch game data:", err);
+    }
+  };
+
+  fetchGameData();
+
 }, [gameId]);
+
 
   // Fetch team players with teamId
   // 🟢 Fetch players when First Five modal opens
@@ -316,9 +332,10 @@ useEffect(() => {
     const player = teamB.players[index];
     try {
     const res = await api.get(`/basic-stats-var/get/by-game/${gameId}`);
-    const enemyStats = res.data[0];
-    setSelectedBasicStat(enemyStats);
-    setFormStats({ ...enemyStats, basicStatVarId: enemyStats.basicStatVarId });
+    console.log("yey: ",res.data);
+    console.log("yey2: ",opponentStats);
+    setSelectedBasicStat(opponentStats);
+    setFormStats({ ...opponentStats });
     } catch (err) {
       console.error("Failed to fetch enemy stats:", err);
     }
@@ -614,15 +631,11 @@ const handleChooseSubstitute = async (benchBasicStatId) => {
 
           <div className="team-section">
             <h3 className="team-title">{gameDetails?.opponentName}</h3>
-            <div className="players-grid">
-              {teamBOnCourt.map((idx) => {
-                const player = teamB.players[idx]
-                return (
-                <div key={player.id} className="player-card" onClick={() => handlePlayerClick('B', idx)}>
-                  <div className="jersey-number">#{player.jerseyNum}</div>
-                  <div className="player-name">{player.lastName}</div>
+            <div className="players-grid">    
+                <div key={opponentStats?.basicStatVarId} className="player-card" onClick={() => handlePlayerClick('B', 0)}>
+                  <div className="jersey-number">Opponent Stats</div>
+                  <div className="player-name">sample</div>
                 </div>
-              )})}
             </div>
           </div>
         </div>
@@ -789,7 +802,7 @@ const handleChooseSubstitute = async (benchBasicStatId) => {
                 </div>
 
                 <div style={{ textAlign: "center", marginTop: "1rem" }}>
-                  <button className="stat-btn" onClick={handleUpdateBasicStats}>
+                  <button className="stat-btn" onClick={handleSaveStats}>
                     Save
                   </button>
                   <button
