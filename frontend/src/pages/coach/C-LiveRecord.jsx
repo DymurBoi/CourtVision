@@ -9,6 +9,7 @@ import { Button } from "@mui/material"
 import { StopCircle } from "lucide-react"
 
 function CLiveRecord() {
+  const [gameDetails, setGameDetails] = useState();
   const [showModal, setShowModal] = useState(false)
   const [isAddMode, setIsAddMode] = useState(true) // true = add, false = subtract
   // Track which team and which player index is selected to always read fresh state
@@ -217,6 +218,28 @@ const handleEndGame = async () => {
       console.error("Failed to fetch team:", err);
     });
 }, [teamId]);
+
+useEffect(() => {
+  if (!gameId) return;
+
+  api.get(`/games/get/${gameId}`)
+    .then((res) => {
+      console.log("Fetched Game:", res.data);
+      const gameName = res.data.gameName || ""; // Get the game name from the response
+
+      // Extract the part after " vs " in the gameName
+      const opponentName = gameName.split(' vs ')[1] || ''; // If " vs " is not found, return empty string
+
+      // Set gameDetails with opponentName
+      setGameDetails({
+        ...res.data,
+        opponentName: opponentName, // Add opponentName to gameDetails
+      });
+    }) 
+    .catch((err) => {
+      console.error("Failed to fetch game:", err);
+    });
+}, [gameId]);
 
   // Fetch team players with teamId
   // 🟢 Fetch players when First Five modal opens
@@ -507,7 +530,7 @@ const handleChooseSubstitute = async (benchBasicStatId) => {
   {/* Left: Teams + Date */}
   <div className="game-info-left">
     <div className="team-names">
-      {teamA?.name} VS {teamB?.name}
+      {gameDetails?.gameName}
     </div>
     <div className="game-date">{getCurrentDate()}</div>
   </div>
@@ -590,7 +613,7 @@ const handleChooseSubstitute = async (benchBasicStatId) => {
         </div>
 
           <div className="team-section">
-            <h3 className="team-title">{teamB.name}</h3>
+            <h3 className="team-title">{gameDetails?.opponentName}</h3>
             <div className="players-grid">
               {teamBOnCourt.map((idx) => {
                 const player = teamB.players[idx]
