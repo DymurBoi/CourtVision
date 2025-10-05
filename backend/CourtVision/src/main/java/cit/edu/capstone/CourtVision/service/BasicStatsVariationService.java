@@ -107,12 +107,9 @@ public class BasicStatsVariationService {
         }
     }
 
-    public List<BasicStatsDTO> getBasicStatsByGameId(Long gameId) {
-        List<BasicStatsVariation> stats = basicStatsVarRepository.findByGame_GameId(gameId);
-        return stats.stream()
-                    .map(BasicStatsVariationMapper::toDTO)
-                    .collect(Collectors.toList());
-    }
+   public List<BasicStatsVariation> getBasicStatsByGameId(Long gameId) {
+    return basicStatsVarRepository.findByGame_GameId(gameId);
+}
 
 
     private void updateSubbedInPlusMinus(BasicStatsVariation variation) {

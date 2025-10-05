@@ -122,29 +122,28 @@ const handleConfirmFirstFiveModal = async () => {
 const handleUpdateBasicStatsVariation = async () => {
   try {
     const payload = {
-    twoPtAttempts: Number(formStats.twoPtAttempts),
-    twoPtMade: Number(formStats.twoPtMade),
-    threePtAttempts: Number(formStats.threePtAttempts),
-    threePtMade: Number(formStats.threePtMade),
-    ftAttempts: Number(formStats.ftAttempts),
-    ftMade: Number(formStats.ftMade),
-    assists: Number(formStats.assists),
-    oFRebounds: Number(formStats.oFRebounds),
-    dFRebounds: Number(formStats.dFRebounds),
-    blocks: Number(formStats.blocks),
-    steals: Number(formStats.steals),
-    turnovers: Number(formStats.turnovers),
-    pFouls: Number(formStats.pFouls),
-    dFouls: Number(formStats.dFouls),
-    plusMinus: Number(formStats.plusMinus),
-    minutes: formStats.minutes || "00:00:00",
-    gamePoints: Number(formStats.gamePoints),
-    game: { gameId: gameId }
+      basicStatVarId: formStats.basicStatVarId,
+      twoPtAttempts: Number(formStats.twoPtAttempts),
+      twoPtMade: Number(formStats.twoPtMade),
+      threePtAttempts: Number(formStats.threePtAttempts),
+      threePtMade: Number(formStats.threePtMade),
+      ftAttempts: Number(formStats.ftAttempts),
+      ftMade: Number(formStats.ftMade),
+      assists: Number(formStats.assists),
+      oFRebounds: Number(formStats.oFRebounds),
+      dFRebounds: Number(formStats.dFRebounds),
+      blocks: Number(formStats.blocks),
+      steals: Number(formStats.steals),
+      turnovers: Number(formStats.turnovers),
+      pFouls: Number(formStats.pFouls),
+      dFouls: Number(formStats.dFouls),
+      plusMinus: Number(formStats.plusMinus),
+      minutes: formStats.minutes || "00:00:00",
+      gamePoints: Number(formStats.gamePoints),
+      gameId: gameId
     };
 
-    const res = await api.put(`/basic-stats-var/put/${formStats.basicStatVarId}`, payload);
-    console.log("Updated Enemy Team Stat:", res.data);
-
+    await api.put(`/basic-stats-var/put/${formStats.basicStatVarId}`, payload);
     setShowModal(false);
   } catch (err) {
     console.error("Error updating enemy stats:", err);
@@ -242,6 +241,7 @@ useEffect(() => {
 
       // Fetch the opponent stats
       const opponentRes = await api.get(`/basic-stats-var/get/by-game/${gameId}`);
+      console.log("Opponent stats raw response:", opponentRes.data);
       console.log("Fetched Opponent Stats:", opponentRes.data);
 
       // Set the opponent stats
@@ -319,25 +319,30 @@ useEffect(() => {
   }
 };
 
-  const handlePlayerClick = async (team, index) => {
+const handlePlayerClick = async (team, index) => {
   setSelectedRef({ team, index });
 
   if (team === "A") {
-    // Normal flow: get player basic stats
     const stat = teamABasicStats[index];
     setSelectedBasicStat(stat);
     setFormStats({ ...stat });
   } else if (team === "B") {
-    // Enemy team: fetch BasicStatsVariation
-    const player = teamB.players[index];
     try {
-    const res = await api.get(`/basic-stats-var/get/by-game/${gameId}`);
-    console.log("yey: ",res.data);
-    console.log("yey2: ",opponentStats);
-    setSelectedBasicStat(opponentStats);
-    setFormStats({ ...opponentStats });
+      const res = await api.get(`/basic-stats-var/get/by-game/${gameId}`);
+      console.log("Opponent stats raw response:", res.data);
+
+      // Accept BasicStatsVariationDTO (array) and use basicStatVarId
+      let opponentStat = Array.isArray(res.data) ? res.data[0] : res.data;
+      if (!opponentStat || typeof opponentStat !== "object" || opponentStat.basicStatVarId == null) {
+        alert("No opponent stats found for this game.");
+        setShowModal(false);
+        return;
+      }
+      setSelectedBasicStat(opponentStat);
+      setFormStats({ ...opponentStat });
     } catch (err) {
       console.error("Failed to fetch enemy stats:", err);
+      setShowModal(false);
     }
   }
 
@@ -424,37 +429,32 @@ const handleStatUpdate = (statType, amount = 1) => {
 
   const delta = (isAddMode ? 1 : -1) * amount;
 
-  // ✅ Team A (BasicStats-driven)
+  // Team A (BasicStats)
   if (formStats?.playerId) {
     setFormStats((prev) => {
       const updated = { ...prev };
-
       if (statType === "points") {
         updated.points = Math.max(0, (updated.points || 0) + delta);
       } else {
         updated[statType] = Math.max(0, (updated[statType] || 0) + delta);
       }
-
       return updated;
     });
     return;
   }
 
-  // ✅ Team B (dummy team state, relies on selectedRef)
-  if (selectedRef && selectedRef.team === "B") {
-    setTeamB((prev) => {
-      const next = { ...prev, players: [...prev.players] };
-      const player = {
-        ...next.players[selectedRef.index],
-        stats: { ...next.players[selectedRef.index].stats },
-      };
-      const nextValue = Math.max(0, (player.stats[statType] || 0) + delta);
-      player.stats[statType] = nextValue;
-      next.players[selectedRef.index] = player;
-      return next;
+  // Team B (BasicStatsVariationDTO)
+  if (formStats?.basicStatVarId) {
+    setFormStats((prev) => {
+      const updated = { ...prev };
+      updated[statType] = Math.max(0, (updated[statType] || 0) + delta);
+      return updated;
     });
+    return;
   }
 };
+
+
   const handleSubstitute = async () => {
   try {
     if (gameId) {
@@ -535,6 +535,21 @@ const handleChooseSubstitute = async (benchBasicStatId) => {
     }
   });
 };
+
+// GEt Points
+const getPoints = (stats) => {
+  if (!stats) return 0;
+  if (stats.basicStatVarId) {
+    return (Number(stats.twoPtMade) * 2) + (Number(stats.threePtMade) * 3) + Number(stats.ftMade);
+  }
+  return Number(stats.points) || 0;
+};
+
+const getStat = (stats, key) => {
+  if (!stats) return 0;
+  return Number(stats[key]) || 0;
+};
+
 
 
   return (
@@ -660,75 +675,75 @@ const handleChooseSubstitute = async (benchBasicStatId) => {
               </button>
             </div>
 
-        <div className="modal-content">
-              <div className="current-stats">
-                <h4>
-                  {formStats?.fname} {formStats?.lname} - Current Stats
-                </h4>
-                <div className="stats-display three-col">
-                  <div className="stat-item">
-                    <span className="stat-label">PTS:</span>
-                    <span className="stat-value">{formStats?.points}</span>
-                  </div>
-                  <div className="stat-item">
-                    <span className="stat-label">STL:</span>
-                    <span className="stat-value">{formStats?.steals}</span>
-                  </div>
-                  <div className="stat-item">
-                    <span className="stat-label">ORB:</span>
-                    <span className="stat-value">{formStats?.oFRebounds}</span>
-                  </div>
-                  <div className="stat-item">
-                    <span className="stat-label">BLK:</span>
-                    <span className="stat-value">{formStats?.blocks}</span>
-                  </div>
-                  <div className="stat-item">
-                    <span className="stat-label">DRB:</span>
-                    <span className="stat-value">{formStats?.dFRebounds}</span>
-                  </div>
-                  <div className="stat-item">
-                    <span className="stat-label">TO:</span>
-                    <span className="stat-value">{formStats?.turnovers}</span>
-                  </div>
-                  <div className="stat-item ast">
-                    <span className="stat-label">AST:</span>
-                    <span className="stat-value">{formStats?.assists}</span>
-                  </div>
-
-                  <div className="stat-item">
-                    <span className="stat-label">2PA:</span>
-                    <span className="stat-value">{formStats?.twoPtAttempts}</span>
-                  </div>
-                  <div className="stat-item">
-                    <span className="stat-label">2PM:</span>
-                    <span className="stat-value">{formStats?.twoPtMade}</span>
-                  </div>
-                  <div className="stat-item">
-                    <span className="stat-label">3PA:</span>
-                    <span className="stat-value">{formStats?.threePtAttempts}</span>
-                  </div>
-                  <div className="stat-item">
-                    <span className="stat-label">3PM:</span>
-                    <span className="stat-value">{formStats?.threePtMade}</span>
-                  </div>
-                  <div className="stat-item">
-                    <span className="stat-label">FTA:</span>
-                    <span className="stat-value">{formStats?.ftAttempts}</span>
-                  </div>
-                  <div className="stat-item">
-                    <span className="stat-label">FTM:</span>
-                    <span className="stat-value">{formStats?.ftMade}</span>
-                  </div>
-                  <div className="stat-item">
-                    <span className="stat-label">PF:</span>
-                    <span className="stat-value">{formStats?.pFouls}</span>
-                  </div>
-                  <div className="stat-item">
-                    <span className="stat-label">DF:</span>
-                    <span className="stat-value">{formStats?.dFouls}</span>
-                  </div>
+          <div className="modal-content">
+            <div className="current-stats">
+              <h4>
+                {formStats?.fname || ""} {formStats?.lname || ""} - Current Stats
+              </h4>
+              <div className="stats-display three-col">
+                <div className="stat-item">
+                  <span className="stat-label">PTS:</span>
+                  <span className="stat-value">{getPoints(formStats)}</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-label">STL:</span>
+                  <span className="stat-value">{getStat(formStats, "steals")}</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-label">ORB:</span>
+                  <span className="stat-value">{getStat(formStats, "oFRebounds")}</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-label">BLK:</span>
+                  <span className="stat-value">{getStat(formStats, "blocks")}</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-label">DRB:</span>
+                  <span className="stat-value">{getStat(formStats, "dFRebounds")}</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-label">TO:</span>
+                  <span className="stat-value">{getStat(formStats, "turnovers")}</span>
+                </div>
+                <div className="stat-item ast">
+                  <span className="stat-label">AST:</span>
+                  <span className="stat-value">{getStat(formStats, "assists")}</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-label">2PA:</span>
+                  <span className="stat-value">{getStat(formStats, "twoPtAttempts")}</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-label">2PM:</span>
+                  <span className="stat-value">{getStat(formStats, "twoPtMade")}</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-label">3PA:</span>
+                  <span className="stat-value">{getStat(formStats, "threePtAttempts")}</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-label">3PM:</span>
+                  <span className="stat-value">{getStat(formStats, "threePtMade")}</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-label">FTA:</span>
+                  <span className="stat-value">{getStat(formStats, "ftAttempts")}</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-label">FTM:</span>
+                  <span className="stat-value">{getStat(formStats, "ftMade")}</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-label">PF:</span>
+                  <span className="stat-value">{getStat(formStats, "pFouls")}</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-label">DF:</span>
+                  <span className="stat-value">{getStat(formStats, "dFouls")}</span>
                 </div>
               </div>
+            </div>
+        
 
               <div className="stat-controls">
                 <h4>Record Stats</h4>
