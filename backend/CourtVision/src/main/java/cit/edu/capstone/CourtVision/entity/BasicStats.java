@@ -256,3 +256,4 @@ public Season getSeason() {
     public void setSeason(Season season) {
         this.season = season;
 }
+}
