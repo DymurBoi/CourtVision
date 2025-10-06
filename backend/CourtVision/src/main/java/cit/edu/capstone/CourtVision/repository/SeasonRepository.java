@@ -10,6 +10,5 @@ import java.util.List;
 public interface SeasonRepository extends JpaRepository<Season, Long> {
     List<Season> findByCoach_CoachId(Long coachId);
     List<Season> findByActiveTrue();
-    Season findBySeasonName(String seasonName);
 }
 
