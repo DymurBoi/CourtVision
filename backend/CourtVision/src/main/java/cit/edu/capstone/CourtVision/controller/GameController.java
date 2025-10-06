@@ -4,6 +4,7 @@ import cit.edu.capstone.CourtVision.dto.GameDTO;
 import cit.edu.capstone.CourtVision.entity.Game;
 import cit.edu.capstone.CourtVision.mapper.GameMapper;
 import cit.edu.capstone.CourtVision.service.GameService;
+import cit.edu.capstone.CourtVision.repository.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,6 +19,7 @@ public class GameController {
 
     @Autowired
     private GameService service;
+    private GameRepository gameRepository;
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH') or hasAuthority('ROLE_PLAYER')")
     @GetMapping("/get/all")
@@ -55,5 +57,14 @@ public class GameController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/update-analysis-type/{gameId}")
+    public ResponseEntity<?> updateAnalysisType(@PathVariable Long gameId, @RequestParam String type) {
+        Game game = gameRepository.findById(gameId).orElse(null);
+        if (game == null) return ResponseEntity.notFound().build();
+        game.setRecordingType(type); // or game.setStatus(type)
+        gameRepository.save(game);
+        return ResponseEntity.ok("Game analysis type updated to " + type);
     }
 }

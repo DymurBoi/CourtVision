@@ -10,6 +10,8 @@ import java.sql.Time;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name = "basic_stats",
+    uniqueConstraints = @UniqueConstraint(columnNames = {"player_id", "game_id"}))
 public class BasicStats {
 
     @Id

@@ -330,10 +330,13 @@ public List<BasicStatsDTO> getSubbedOutStats(Long gameId) {
 }
 
     public List<BasicStats> createBatch(List<BasicStats> statsList) {
-        return statsList.stream()
-                .map(this::create) // reuse existing create method
-                .collect(Collectors.toList());
-    }
+    return statsList.stream()
+        .filter(stat -> basicStatsRepository.findByGame_GameIdAndPlayer_PlayerId(
+            stat.getGame().getGameId(), stat.getPlayer().getPlayerId()
+        ).isEmpty())
+        .map(this::create)
+        .collect(Collectors.toList());
+}
 
     private void updateSubbedInPlusMinus(BasicStats sourcePlayer, int pointDelta) {
         if (pointDelta == 0) return;
