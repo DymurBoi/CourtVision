@@ -23,6 +23,10 @@ public class GameMapper {
             dto.setTeamId(game.getTeam().getTeamId());
         }
 
+        if (game.getSeason() != null) {
+            dto.setSeasonId(game.getSeason().getId());
+        }
+
         // Populate the list of BasicStats IDs
         if (game.getBasicStats() != null) {
             List<Long> basicStatIds = game.getBasicStats().stream()

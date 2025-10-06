@@ -44,7 +44,19 @@ function CreateMatchModal({ onClose, onSave, teamId }) {
   }
 
   try {
-    const formattedDate = new Date(formData.gameDate).toISOString();
+  // use the date input value (YYYY-MM-DD) to match backend LocalDate expected format
+  const formattedDate = formData.gameDate; // already in YYYY-MM-DD
+
+    // Ensure there is an active season and include it in the game payload
+    const seasonsRes = await api.get("/seasons/active");
+    const active = seasonsRes.data;
+    if (!active || active.length === 0) {
+      alert("No active season found. Start a season before creating matches.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    const seasonId = active[0].id;
 
     // Prepare the payload conditionally
     const gamePayload = {
@@ -55,7 +67,9 @@ function CreateMatchModal({ onClose, onSave, teamId }) {
       finalScore: formData.recordingType === "Live" ? "" : formData.finalScore,
       gameDate: formattedDate,
       team: { teamId: teamId },
+      season: { id: seasonId }
     };
+
     const gameRes = await api.post("/games/post", gamePayload);
     const savedGame = gameRes.data;
 
@@ -66,7 +80,9 @@ function CreateMatchModal({ onClose, onSave, teamId }) {
     onClose();
   } catch (error) {
     console.error("❌ Failed to save match:", error);
-    alert("Failed to save match.");
+    // Try to show meaningful server error
+    const serverMsg = error?.response?.data || error?.response?.data?.message || error?.message;
+    alert(serverMsg || "Failed to save match.");
   } finally {
     setIsSubmitting(false);
   }

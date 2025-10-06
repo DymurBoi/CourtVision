@@ -106,4 +106,45 @@ public class PlayerAveragesController {
         }
         return result;
     }
+
+    // Seasonal rankings (by seasonId)
+    @GetMapping("/season/rank/point-guards/{teamId}/{seasonId}")
+    public List<PlayerAveragesDTO> rankPointGuardsBySeason(@PathVariable Long teamId, @PathVariable Long seasonId) {
+        List<PlayerAverages> players = avgService.rankPointGuardsBySeason(teamId, seasonId);
+        List<PlayerAveragesDTO> result = new ArrayList<>();
+        for (PlayerAverages p : players) result.add(PlayerAveragesMapper.toDTO(p));
+        return result;
+    }
+
+    @GetMapping("/season/rank/shooting-guards/{teamId}/{seasonId}")
+    public List<PlayerAveragesDTO> rankShootingGuardsBySeason(@PathVariable Long teamId, @PathVariable Long seasonId) {
+        List<PlayerAverages> players = avgService.rankShootingGuardsBySeason(teamId, seasonId);
+        List<PlayerAveragesDTO> result = new ArrayList<>();
+        for (PlayerAverages p : players) result.add(PlayerAveragesMapper.toDTO(p));
+        return result;
+    }
+
+    @GetMapping("/season/rank/small-forwards/{teamId}/{seasonId}")
+    public List<PlayerAveragesDTO> rankSmallForwardsBySeason(@PathVariable Long teamId, @PathVariable Long seasonId) {
+        List<PlayerAverages> players = avgService.rankSmallForwardsBySeason(teamId, seasonId);
+        List<PlayerAveragesDTO> result = new ArrayList<>();
+        for (PlayerAverages p : players) result.add(PlayerAveragesMapper.toDTO(p));
+        return result;
+    }
+
+    @GetMapping("/season/rank/power-forwards/{teamId}/{seasonId}")
+    public List<PlayerAveragesDTO> rankPowerForwardsBySeason(@PathVariable Long teamId, @PathVariable Long seasonId) {
+        List<PlayerAverages> players = avgService.rankPowerForwardsBySeason(teamId, seasonId);
+        List<PlayerAveragesDTO> result = new ArrayList<>();
+        for (PlayerAverages p : players) result.add(PlayerAveragesMapper.toDTO(p));
+        return result;
+    }
+
+    @GetMapping("/season/rank/centers/{teamId}/{seasonId}")
+    public List<PlayerAveragesDTO> rankCentersBySeason(@PathVariable Long teamId, @PathVariable Long seasonId) {
+        List<PlayerAverages> players = avgService.rankCentersBySeason(teamId, seasonId);
+        List<PlayerAveragesDTO> result = new ArrayList<>();
+        for (PlayerAverages p : players) result.add(PlayerAveragesMapper.toDTO(p));
+        return result;
+    }
 }

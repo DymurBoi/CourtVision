@@ -1,5 +1,6 @@
 package cit.edu.capstone.CourtVision.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
@@ -21,9 +22,16 @@ public class Game {
     
     private String comments;
 
+    @Column(name = "is_timer_playing", nullable = false)
+    private boolean isTimerPlaying = false;
+
     @ManyToOne
     @JoinColumn(name = "team_id")
     private Team team;
+
+    @ManyToOne
+    @JoinColumn(name = "season_id")
+    private Season season;
 
     @OneToMany(mappedBy = "game")
     private List<BasicStats> basicStatsList;
@@ -33,6 +41,7 @@ public class Game {
 
     @OneToMany(mappedBy = "game")
     private List<AdvancedStats> advancedStats;
+
     @OneToMany
     @JoinColumn(name = "physical_based_metric_stats_id")
     private List<PhysicalBasedMetricsStats> physicalBasedMetricsStats;
@@ -119,6 +128,12 @@ public class Game {
 
     public Team getTeam() { return team; }
     public void setTeam(Team team) { this.team = team; }
+
+    public Season getSeason() { return season; }
+    public void setSeason(Season season) { this.season = season; }
+
+    public boolean isTimerPlaying() { return isTimerPlaying; }
+    public void setTimerPlaying(boolean timerPlaying) { isTimerPlaying = timerPlaying; }
 
     public List<BasicStats> getBasicStats() { return basicStatsList; }
     public void setBasicStats(List<BasicStats> basicStatsList) { this.basicStatsList = basicStatsList; }

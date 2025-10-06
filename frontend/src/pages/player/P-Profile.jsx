@@ -224,7 +224,14 @@ function PProfile() {
               <div className="info-group">
                 <label>Position</label>
                 {isEditing ? (
-                  <input type="text" name="position" value={editedData.position} onChange={handleInputChange} />
+                  <select name="position" value={editedData.position} onChange={handleInputChange}>
+                    <option value="">Select position</option>
+                    <option value={"Point Guard"}>Point Guard</option>
+                    <option value={"Shooting Guard"}>Shooting Guard</option>
+                    <option value={"Small Forward"}>Small Forward</option>
+                    <option value={"Power Forward"}>Power Forward</option>
+                    <option value={"Center"}>Center</option>
+                  </select>
                 ) : (
                   <p>{playerData.position || "Not assigned"}</p>
                 )}

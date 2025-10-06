@@ -25,6 +25,10 @@ public class Season {
     @OneToMany(mappedBy = "season", cascade = CascadeType.ALL)
     private List<BasicStats> basicStats;
 
+    @OneToMany(mappedBy = "season")
+    @JsonIgnore
+    private List<Game> games;
+
     // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -46,5 +50,8 @@ public class Season {
 
     public List<BasicStats> getBasicStats() { return basicStats; }
     public void setBasicStats(List<BasicStats> basicStats) { this.basicStats = basicStats; }
+
+    public List<Game> getGames() { return games; }
+    public void setGames(List<Game> games) { this.games = games; }
 }
 

@@ -5,6 +5,8 @@ import cit.edu.capstone.CourtVision.entity.Team;
 import cit.edu.capstone.CourtVision.repository.BasicStatsVariationRepository;
 import cit.edu.capstone.CourtVision.repository.GameRepository;
 import cit.edu.capstone.CourtVision.repository.TeamRepository;
+import cit.edu.capstone.CourtVision.repository.SeasonRepository;
+import cit.edu.capstone.CourtVision.entity.Season;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,8 @@ public class GameService {
 
     @Autowired
     private BasicStatsVariationRepository basicStats;
+    @Autowired
+    private SeasonRepository seasonRepository;
     //Get all games
     public List<Game> getAll() {
         return gameRepo.findAll();
@@ -42,7 +46,24 @@ public class GameService {
 
     //Create a new game
     public Game save(Game game) {
-    Game savedGame = gameRepo.save(game);
+        // Assign a season to the game: prefer explicit season in request, otherwise pick an active season
+        if (game.getSeason() != null && game.getSeason().getId() != null) {
+            Long sid = game.getSeason().getId();
+            Season season = seasonRepository.findById(sid).orElseThrow(() -> new RuntimeException("Season not found"));
+            if (!season.isActive()) {
+                throw new RuntimeException("Cannot add game to an inactive season");
+            }
+            game.setSeason(season);
+        } else {
+            // find any active season
+            var active = seasonRepository.findByActiveTrue();
+            if (active == null || active.isEmpty()) {
+                throw new RuntimeException("No active season found. Start a season before creating games.");
+            }
+            game.setSeason(active.get(0));
+        }
+
+        Game savedGame = gameRepo.save(game);
 
     if ("Live".equalsIgnoreCase(savedGame.getRecordingType())) {
         BasicStatsVariation stats = new BasicStatsVariation();
