@@ -1,13 +1,14 @@
 package cit.edu.capstone.CourtVision.mapper;
 
 import cit.edu.capstone.CourtVision.dto.BasicStatsDTO;
+import cit.edu.capstone.CourtVision.dto.BasicStatsVariationDTO;
 import cit.edu.capstone.CourtVision.entity.BasicStatsVariation;
 
 public class BasicStatsVariationMapper {
 
-   public static BasicStatsDTO toDTO(BasicStatsVariation stat) {
-        BasicStatsDTO dto = new BasicStatsDTO();
-        dto.setBasicStatId(stat.getBasicStatVarId());
+ public static BasicStatsVariationDTO toDTO(BasicStatsVariation stat) {
+        BasicStatsVariationDTO dto = new BasicStatsVariationDTO();
+        dto.setBasicStatVarId(stat.getBasicStatVarId());
         dto.setTwoPtAttempts(stat.getTwoPtAttempts());
         dto.setTwoPtMade(stat.getTwoPtMade());
         dto.setThreePtAttempts(stat.getThreePtAttempts());
@@ -25,12 +26,34 @@ public class BasicStatsVariationMapper {
         dto.setPlusMinus(stat.getPlusMinus());
         dto.setMinutes(stat.getMinutes());
         dto.setGamePoints(stat.getGamePoints());
-
         if (stat.getGame() != null) {
-            dto.setGameDTO(GameMapper.toDTO(stat.getGame()));
+            dto.setGameId(stat.getGame().getGameId());
         }
-
         return dto;
     }
 
+    public static BasicStatsVariation toEntity(BasicStatsVariationDTO dto) {
+        BasicStatsVariation stat = new BasicStatsVariation();
+        stat.setBasicStatVarId(dto.getBasicStatVarId());
+        stat.setTwoPtAttempts(dto.getTwoPtAttempts());
+        stat.setTwoPtMade(dto.getTwoPtMade());
+        stat.setThreePtAttempts(dto.getThreePtAttempts());
+        stat.setThreePtMade(dto.getThreePtMade());
+        stat.setFtAttempts(dto.getFtAttempts());
+        stat.setFtMade(dto.getFtMade());
+        stat.setAssists(dto.getAssists());
+        stat.setoFRebounds(dto.getoFRebounds());
+        stat.setdFRebounds(dto.getdFRebounds());
+        stat.setBlocks(dto.getBlocks());
+        stat.setSteals(dto.getSteals());
+        stat.setTurnovers(dto.getTurnovers());
+        stat.setpFouls(dto.getpFouls());
+        stat.setdFouls(dto.getdFouls());
+        stat.setPlusMinus(dto.getPlusMinus());
+        stat.setMinutes(dto.getMinutes());
+        stat.setGamePoints(dto.getGamePoints());
+        // You may need to set Game object here if needed
+        return stat;
+
+}
 }

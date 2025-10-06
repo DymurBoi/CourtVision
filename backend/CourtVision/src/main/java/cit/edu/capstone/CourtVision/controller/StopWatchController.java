@@ -3,6 +3,8 @@ package cit.edu.capstone.CourtVision.controller;
 import cit.edu.capstone.CourtVision.entity.BasicStats;
 import cit.edu.capstone.CourtVision.repository.BasicStatsRepository;
 import cit.edu.capstone.CourtVision.service.StopWatchService;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
@@ -25,6 +27,18 @@ public class StopWatchController {
     public String subIn(@PathVariable Long basicStatId) {
         stopwatchService.subIn(basicStatId);
         return "Player " + basicStatId + " subbed in!";
+    }
+
+    @PostMapping("/sub-in/{gameId}")
+    public String startSubIn(@PathVariable Long gameId) {
+        stopwatchService.startSubIn(gameId);
+        return "Players subbed in!";
+    }
+
+   @PostMapping("/subout/{gameId}")
+    public ResponseEntity<String> startSubOut(@PathVariable Long gameId) {
+        stopwatchService.startSubOut(gameId);
+        return ResponseEntity.ok("SubOut started for game " + gameId);
     }
 
     // Sub a player out (stop and save elapsed to DB)

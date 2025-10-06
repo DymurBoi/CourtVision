@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Time;
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
@@ -51,6 +52,56 @@ public class StopWatchService {
     }
 
     sw.start();
+}
+public void startSubIn(Long gameId) {
+    List<BasicStats> subbedInPlayers=basicStatsRepository.findByGame_GameIdAndSubbedInTrue(gameId);
+    for(BasicStats stat: subbedInPlayers){
+    StopWatch sw = stopwatches.get(stat.getBasicStatId());
+    BasicStats stats = basicStatsRepository.findById(stat.getBasicStatId()).orElse(null);
+    if (stats == null) {
+        // Handle this case if needed
+        return;
+    }
+
+    if (sw == null) {
+        sw = new StopWatch();
+
+        // Load existing minutes from DB (persisted total) and set as base
+        if (stats.getMinutes() != null) {
+            long existingMillis = stats.getMinutes().getTime() + TimeZone.getDefault().getRawOffset();
+            sw.setBaseMillis(existingMillis);
+        }
+
+        stopwatches.put(stat.getBasicStatId(), sw);
+    }
+
+    // Persist subbedIn state regardless
+    if (stats.isSubbedIn()==false) {
+        stats.setSubbedIn(true);
+        basicStatsRepository.save(stats);
+    }
+
+    sw.start();}
+}
+
+
+// Stop all currently subbed-in players for a game
+public void startSubOut(Long gameId) {
+    List<BasicStats> subbedInPlayers = basicStatsRepository.findByGame_GameIdAndSubbedInTrue(gameId);
+
+    for (BasicStats stats : subbedInPlayers) {
+        StopWatch sw = stopwatches.get(stats.getBasicStatId());
+
+        if (sw != null) {
+            sw.stop();
+            updateMinutes(stats, sw); // persist elapsed time
+        }
+
+        if (stats.isSubbedIn()) {
+            stats.setSubbedIn(false);
+            basicStatsRepository.save(stats);
+        }
+    }
 }
 
 

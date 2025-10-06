@@ -5,10 +5,12 @@ import CoachNavbar from "../../components/CoachNavbar"
 import "../../styles/coach/C-LiveRecord.css"
 import { api } from "../../utils/axiosConfig";
 import { useLocation } from "react-router-dom";
+import { Button } from "@mui/material"
+import { StopCircle } from "lucide-react"
 
 function CLiveRecord() {
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [time, setTime] = useState(0) // time in seconds
+  const [gameDetails, setGameDetails] = useState();
+  const [opponentStats, setOpponenetStats] = useState();
   const [showModal, setShowModal] = useState(false)
   const [isAddMode, setIsAddMode] = useState(true) // true = add, false = subtract
   // Track which team and which player index is selected to always read fresh state
@@ -30,7 +32,7 @@ function CLiveRecord() {
   const params = new URLSearchParams(window.location.search);
   const teamId = params.get("teamId");
 
-  //BasicStats
+  //BasicStats for team A or CITU
   const [teamABasicStats, setTeamABasicStats] = useState([]);
   //Score
   const teamAScore = teamABasicStats.reduce((sum, stat) => sum + (stat.points || 0), 0);
@@ -42,42 +44,26 @@ function CLiveRecord() {
   players: []  // always exists
 });
 
+//Timer 
+const [isPlaying, setIsPlaying] = useState(false);
+const [time, setTime] = useState(0);
+
+
   const [teamB, setTeamB] = useState({
     name: "USJR",
     players: [
       {
         id: 6,
-        jerseyNum: 11,
-        lastName: "Garcia",
-        stats: { ORB: 2, DRB: 4, AST: 5, STL: 1, BLK: 1, TO: 2, points: 14 },
-      },
-      {
-        id: 7,
-        jerseyNum: 22,
-        lastName: "Martinez",
-        stats: { ORB: 1, DRB: 3, AST: 2, STL: 3, BLK: 0, TO: 1, points: 16 },
-      },
-      { id: 8, jerseyNum: 5, lastName: "Lopez", stats: { ORB: 0, DRB: 2, AST: 8, STL: 1, BLK: 0, TO: 4, points: 9 } },
-      {
-        id: 9,
-        jerseyNum: 33,
-        lastName: "Rodriguez",
-        stats: { ORB: 4, DRB: 7, AST: 1, STL: 0, BLK: 2, TO: 1, points: 20 },
-      },
-      {
-        id: 10,
-        jerseyNum: 8,
-        lastName: "Hernandez",
-        stats: { ORB: 1, DRB: 1, AST: 3, STL: 2, BLK: 1, TO: 3, points: 6 },
-      },
-      { id: 13, jerseyNum: 4, lastName: "Sanchez", stats: { ORB: 0, DRB: 1, AST: 0, STL: 0, BLK: 0, TO: 0, points: 0 } },
-      { id: 14, jerseyNum: 14, lastName: "Torres", stats: { ORB: 0, DRB: 0, AST: 1, STL: 0, BLK: 0, TO: 0, points: 0 } },
+        jerseyNum: 100,
+        lastName: "Opponent Player",
+
+      }, 
     ],
   })
 
   // Track the 5 on-court players as indices for each team
   const [teamAOnCourt, setTeamAOnCourt] = useState([])
-  const [teamBOnCourt, setTeamBOnCourt] = useState([0, 1, 2, 3, 4])
+  const [teamBOnCourt, setTeamBOnCourt] = useState([0])
 
   const [teamBScore] = useState(65)
   
@@ -132,19 +118,89 @@ const handleConfirmFirstFiveModal = async () => {
   }
 };
 
+//BasicStatsVariation payload and Logic for the opponent team
+const handleUpdateBasicStatsVariation = async () => {
+  try {
+    const payload = {
+      basicStatVarId: formStats.basicStatVarId,
+      twoPtAttempts: Number(formStats.twoPtAttempts),
+      twoPtMade: Number(formStats.twoPtMade),
+      threePtAttempts: Number(formStats.threePtAttempts),
+      threePtMade: Number(formStats.threePtMade),
+      ftAttempts: Number(formStats.ftAttempts),
+      ftMade: Number(formStats.ftMade),
+      assists: Number(formStats.assists),
+      oFRebounds: Number(formStats.oFRebounds),
+      dFRebounds: Number(formStats.dFRebounds),
+      blocks: Number(formStats.blocks),
+      steals: Number(formStats.steals),
+      turnovers: Number(formStats.turnovers),
+      pFouls: Number(formStats.pFouls),
+      dFouls: Number(formStats.dFouls),
+      plusMinus: Number(formStats.plusMinus),
+      minutes: formStats.minutes || "00:00:00",
+      gamePoints: Number(formStats.gamePoints),
+      gameId: gameId
+    };
 
-  // Timer effect
-  useEffect(() => {
-    let interval = null
-    if (isPlaying) {
-      interval = setInterval(() => {
-        setTime((time) => time + 1)
-      }, 1000)
-    } else if (!isPlaying && time !== 0) {
-      clearInterval(interval)
-    }
-    return () => clearInterval(interval)
-  }, [isPlaying, time])
+    await api.put(`/basic-stats-var/put/${formStats.basicStatVarId}`, payload);
+    setShowModal(false);
+  } catch (err) {
+    console.error("Error updating enemy stats:", err);
+  }
+};
+
+
+ useEffect(() => {
+  const savedStartTime = localStorage.getItem("timer_startTime");
+  const savedElapsed = localStorage.getItem("timer_elapsed");
+  const savedIsPlaying = localStorage.getItem("timer_isPlaying") === "true";
+
+  if (savedIsPlaying && savedStartTime) {
+    // If running → compute how much time passed since start
+    const elapsed = Math.floor((Date.now() - parseInt(savedStartTime, 10)) / 1000);
+    setTime(elapsed);
+    setIsPlaying(true);
+  } else if (savedElapsed) {
+    // If paused → restore stored elapsed
+    setTime(parseInt(savedElapsed, 10));
+    setIsPlaying(false);
+  }
+}, []);
+
+useEffect(() => {
+  let interval;
+  if (isPlaying) {
+    interval = setInterval(() => {
+      setTime((prev) => {
+        const newTime = prev + 1;
+        localStorage.setItem("timer_elapsed", newTime); // keep persisting
+        return newTime;
+      });
+    }, 1000);
+
+    // Save absolute startTime so refresh can recalc
+    localStorage.setItem("timer_startTime", Date.now() - time * 1000);
+    localStorage.setItem("timer_isPlaying", "true");
+  } else {
+    localStorage.setItem("timer_elapsed", time);
+    localStorage.setItem("timer_isPlaying", "false");
+  }
+
+  return () => clearInterval(interval);
+}, [isPlaying, time]);
+
+//EndGame
+const handleEndGame = async () => {
+  try {
+    await api.post(`/subout/${gameId}`);
+    console.log(`Game ${gameId} ended. All players subbed out.`);
+    setIsPlaying(false); // stop the timer locally
+  } catch (err) {
+    console.error("Failed to end game:", err);
+  }
+};
+
 
   //fetch team A info with teamId
  useEffect(() => {
@@ -162,6 +218,44 @@ const handleConfirmFirstFiveModal = async () => {
       console.error("Failed to fetch team:", err);
     });
 }, [teamId]);
+
+useEffect(() => {
+  if (!gameId) return;
+
+  const fetchGameData = async () => {
+    try {
+      // Fetch the game data
+      const gameRes = await api.get(`/games/get/${gameId}`);
+      console.log("Fetched Game:", gameRes.data);
+
+      const gameName = gameRes.data.gameName || ""; // Get the game name from the response
+
+      // Extract the part after " vs " in the gameName
+      const opponentName = gameName.split(' vs ')[1] || ''; // If " vs " is not found, return empty string
+
+      // Set gameDetails with opponentName
+      setGameDetails({
+        ...gameRes.data,
+        opponentName: opponentName, // Add opponentName to gameDetails
+      });
+
+      // Fetch the opponent stats
+      const opponentRes = await api.get(`/basic-stats-var/get/by-game/${gameId}`);
+      console.log("Opponent stats raw response:", opponentRes.data);
+      console.log("Fetched Opponent Stats:", opponentRes.data);
+
+      // Set the opponent stats
+      setOpponenetStats(opponentRes.data);
+
+    } catch (err) {
+      console.error("Failed to fetch game data:", err);
+    }
+  };
+
+  fetchGameData();
+
+}, [gameId]);
+
 
   // Fetch team players with teamId
   // 🟢 Fetch players when First Five modal opens
@@ -205,14 +299,56 @@ const handleConfirmFirstFiveModal = async () => {
     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`
   }
 
-  const handlePlayPause = () => {
-    setIsPlaying(!isPlaying)
+  const handlePlayPause = async () => {
+  try {
+    if (!isPlaying) {
+      // ⏱ Tell backend: start all stopwatches for current game
+      await api.post(`/stopwatch/sub-in/${gameId}`);
+      console.log("Backend stopwatches started for first 5 players!");
+    } else {
+      // (Optional) if you add a pause endpoint in backend later
+      // await api.post(`/stopwatch/pause/${gameId}`);
+      console.log("Paused frontend timer, backend still running.");
+    }
+
+    // Keep frontend timer toggling
+    setIsPlaying(!isPlaying);
+
+  } catch (err) {
+    console.error("Failed to sync with backend stopwatch:", err);
+  }
+};
+
+const handlePlayerClick = async (team, index) => {
+  setSelectedRef({ team, index });
+
+  if (team === "A") {
+    const stat = teamABasicStats[index];
+    setSelectedBasicStat(stat);
+    setFormStats({ ...stat });
+  } else if (team === "B") {
+    try {
+      const res = await api.get(`/basic-stats-var/get/by-game/${gameId}`);
+      console.log("Opponent stats raw response:", res.data);
+
+      // Accept BasicStatsVariationDTO (array) and use basicStatVarId
+      let opponentStat = Array.isArray(res.data) ? res.data[0] : res.data;
+      if (!opponentStat || typeof opponentStat !== "object" || opponentStat.basicStatVarId == null) {
+        alert("No opponent stats found for this game.");
+        setShowModal(false);
+        return;
+      }
+      setSelectedBasicStat(opponentStat);
+      setFormStats({ ...opponentStat });
+    } catch (err) {
+      console.error("Failed to fetch enemy stats:", err);
+      setShowModal(false);
+    }
   }
 
-  const handlePlayerClick = (team, index) => {
-    setSelectedRef({ team, index })
-    setShowModal(true)
-  }
+  setShowModal(true);
+};
+
 
   const handlePlayersClick = (playerId) => {
   const stat = teamABasicStats.find(s => s.playerId === playerId);
@@ -279,43 +415,46 @@ const handleUpdateBasicStats = async () => {
     console.error("Error updating stats:", err);
   }
 }; 
+const handleSaveStats = async () => {
+  if (selectedRef?.team === "A") {
+    await handleUpdateBasicStats();
+  } else if (selectedRef?.team === "B") {
+    await handleUpdateBasicStatsVariation();
+  }
+};
+
 
 const handleStatUpdate = (statType, amount = 1) => {
   if (!formStats) return;
 
   const delta = (isAddMode ? 1 : -1) * amount;
 
-  // ✅ Team A (BasicStats-driven)
+  // Team A (BasicStats)
   if (formStats?.playerId) {
     setFormStats((prev) => {
       const updated = { ...prev };
-
       if (statType === "points") {
         updated.points = Math.max(0, (updated.points || 0) + delta);
       } else {
         updated[statType] = Math.max(0, (updated[statType] || 0) + delta);
       }
-
       return updated;
     });
     return;
   }
 
-  // ✅ Team B (dummy team state, relies on selectedRef)
-  if (selectedRef && selectedRef.team === "B") {
-    setTeamB((prev) => {
-      const next = { ...prev, players: [...prev.players] };
-      const player = {
-        ...next.players[selectedRef.index],
-        stats: { ...next.players[selectedRef.index].stats },
-      };
-      const nextValue = Math.max(0, (player.stats[statType] || 0) + delta);
-      player.stats[statType] = nextValue;
-      next.players[selectedRef.index] = player;
-      return next;
+  // Team B (BasicStatsVariationDTO)
+  if (formStats?.basicStatVarId) {
+    setFormStats((prev) => {
+      const updated = { ...prev };
+      updated[statType] = Math.max(0, (updated[statType] || 0) + delta);
+      return updated;
     });
+    return;
   }
 };
+
+
   const handleSubstitute = async () => {
   try {
     if (gameId) {
@@ -397,46 +536,89 @@ const handleChooseSubstitute = async (benchBasicStatId) => {
   });
 };
 
+// GEt Points
+const getPoints = (stats) => {
+  if (!stats) return 0;
+  if (stats.basicStatVarId) {
+    return (Number(stats.twoPtMade) * 2) + (Number(stats.threePtMade) * 3) + Number(stats.ftMade);
+  }
+  return Number(stats.points) || 0;
+};
+
+const getStat = (stats, key) => {
+  if (!stats) return 0;
+  return Number(stats[key]) || 0;
+};
+
+
 
   return (
     <div className="live-record-page">
       <CoachNavbar />
 
       <div className="live-record-container">
-        {/* Header/Banner */}
-        <div className="game-header">
-          <div className="game-info-left">
-            <div className="team-names">
-              {teamA?.name} VS {teamB.name}
-            </div>
-            <div className="game-date">{getCurrentDate()}</div>
-          </div>
+     {/* Header/Banner */}
+<div className="game-header">
+  {/* Left: Teams + Date */}
+  <div className="game-info-left">
+    <div className="team-names">
+      {gameDetails?.gameName}
+    </div>
+    <div className="game-date">{getCurrentDate()}</div>
+  </div>
 
-          <div className="game-info-center">
-            <div className="score-display">
-              <span className="team-score">{teamAScore}</span>
-              <span className="score-separator">-</span>
-              <span className="team-score">{teamBScore}</span>
-            </div>
-          </div>
+  {/* Center: Score */}
+  <div className="game-info-center">
+    <div className="score-display">
+      <span className="team-score">{teamAScore}</span>
+      <span className="score-separator">-</span>
+      <span className="team-score">{teamBScore}</span>
+    </div>
+  </div>
 
-          <div className="game-info-right">
-            <div className="timer-controls">
-              <button className={`play-pause-btn ${isPlaying ? "playing" : "paused"}`} onClick={handlePlayPause}>
-                {isPlaying ? (
-                  <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
-                  </svg>
-                ) : (
-                  <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                )}
-              </button>
-              <div className="timer-display">{formatTime(time)}</div>
-            </div>
-          </div>
-        </div>
+  {/* Right: Timer + Controls */}
+  <div className="game-info-right">
+    <div className="timer-controls">
+      <button
+        className={`play-pause-btn ${isPlaying ? "playing" : "paused"}`}
+        onClick={handlePlayPause}
+      >
+        {isPlaying ? (
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
+          </svg>
+        ) : (
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+        )}
+      </button>
+      <div className="timer-display">{formatTime(time)}</div>
+
+ 
+    </div>
+     {/* End Game Button */}
+   <Button
+      variant="contained"
+      color="error"
+      onClick={handleEndGame}
+      sx={{
+        marginLeft: 1,
+        minWidth: "50px",
+        width: "60px",
+        height: "60px",
+        borderRadius: "50%",
+        padding: 0,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
+      }}
+    >
+      <StopCircle />
+    </Button>
+  </div>
+</div>
+
 
         {/* Players Display */}
         <div className="teams-container">
@@ -463,16 +645,12 @@ const handleChooseSubstitute = async (benchBasicStatId) => {
         </div>
 
           <div className="team-section">
-            <h3 className="team-title">{teamB.name}</h3>
-            <div className="players-grid">
-              {teamBOnCourt.map((idx) => {
-                const player = teamB.players[idx]
-                return (
-                <div key={player.id} className="player-card" onClick={() => handlePlayerClick('B', idx)}>
-                  <div className="jersey-number">#{player.jerseyNum}</div>
-                  <div className="player-name">{player.lastName}</div>
+            <h3 className="team-title">{gameDetails?.opponentName}</h3>
+            <div className="players-grid">    
+                <div key={opponentStats?.basicStatVarId} className="player-card" onClick={() => handlePlayerClick('B', 0)}>
+                  <div className="jersey-number">Opponent Stats</div>
+                  <div className="player-name">sample</div>
                 </div>
-              )})}
             </div>
           </div>
         </div>
@@ -497,75 +675,75 @@ const handleChooseSubstitute = async (benchBasicStatId) => {
               </button>
             </div>
 
-        <div className="modal-content">
-              <div className="current-stats">
-                <h4>
-                  {formStats?.fname} {formStats?.lname} - Current Stats
-                </h4>
-                <div className="stats-display three-col">
-                  <div className="stat-item">
-                    <span className="stat-label">PTS:</span>
-                    <span className="stat-value">{formStats?.points}</span>
-                  </div>
-                  <div className="stat-item">
-                    <span className="stat-label">STL:</span>
-                    <span className="stat-value">{formStats?.steals}</span>
-                  </div>
-                  <div className="stat-item">
-                    <span className="stat-label">ORB:</span>
-                    <span className="stat-value">{formStats?.oFRebounds}</span>
-                  </div>
-                  <div className="stat-item">
-                    <span className="stat-label">BLK:</span>
-                    <span className="stat-value">{formStats?.blocks}</span>
-                  </div>
-                  <div className="stat-item">
-                    <span className="stat-label">DRB:</span>
-                    <span className="stat-value">{formStats?.dFRebounds}</span>
-                  </div>
-                  <div className="stat-item">
-                    <span className="stat-label">TO:</span>
-                    <span className="stat-value">{formStats?.turnovers}</span>
-                  </div>
-                  <div className="stat-item ast">
-                    <span className="stat-label">AST:</span>
-                    <span className="stat-value">{formStats?.assists}</span>
-                  </div>
-
-                  <div className="stat-item">
-                    <span className="stat-label">2PA:</span>
-                    <span className="stat-value">{formStats?.twoPtAttempts}</span>
-                  </div>
-                  <div className="stat-item">
-                    <span className="stat-label">2PM:</span>
-                    <span className="stat-value">{formStats?.twoPtMade}</span>
-                  </div>
-                  <div className="stat-item">
-                    <span className="stat-label">3PA:</span>
-                    <span className="stat-value">{formStats?.threePtAttempts}</span>
-                  </div>
-                  <div className="stat-item">
-                    <span className="stat-label">3PM:</span>
-                    <span className="stat-value">{formStats?.threePtMade}</span>
-                  </div>
-                  <div className="stat-item">
-                    <span className="stat-label">FTA:</span>
-                    <span className="stat-value">{formStats?.ftAttempts}</span>
-                  </div>
-                  <div className="stat-item">
-                    <span className="stat-label">FTM:</span>
-                    <span className="stat-value">{formStats?.ftMade}</span>
-                  </div>
-                  <div className="stat-item">
-                    <span className="stat-label">PF:</span>
-                    <span className="stat-value">{formStats?.pFouls}</span>
-                  </div>
-                  <div className="stat-item">
-                    <span className="stat-label">DF:</span>
-                    <span className="stat-value">{formStats?.dFouls}</span>
-                  </div>
+          <div className="modal-content">
+            <div className="current-stats">
+              <h4>
+                {formStats?.fname || ""} {formStats?.lname || ""} - Current Stats
+              </h4>
+              <div className="stats-display three-col">
+                <div className="stat-item">
+                  <span className="stat-label">PTS:</span>
+                  <span className="stat-value">{getPoints(formStats)}</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-label">STL:</span>
+                  <span className="stat-value">{getStat(formStats, "steals")}</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-label">ORB:</span>
+                  <span className="stat-value">{getStat(formStats, "oFRebounds")}</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-label">BLK:</span>
+                  <span className="stat-value">{getStat(formStats, "blocks")}</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-label">DRB:</span>
+                  <span className="stat-value">{getStat(formStats, "dFRebounds")}</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-label">TO:</span>
+                  <span className="stat-value">{getStat(formStats, "turnovers")}</span>
+                </div>
+                <div className="stat-item ast">
+                  <span className="stat-label">AST:</span>
+                  <span className="stat-value">{getStat(formStats, "assists")}</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-label">2PA:</span>
+                  <span className="stat-value">{getStat(formStats, "twoPtAttempts")}</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-label">2PM:</span>
+                  <span className="stat-value">{getStat(formStats, "twoPtMade")}</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-label">3PA:</span>
+                  <span className="stat-value">{getStat(formStats, "threePtAttempts")}</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-label">3PM:</span>
+                  <span className="stat-value">{getStat(formStats, "threePtMade")}</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-label">FTA:</span>
+                  <span className="stat-value">{getStat(formStats, "ftAttempts")}</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-label">FTM:</span>
+                  <span className="stat-value">{getStat(formStats, "ftMade")}</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-label">PF:</span>
+                  <span className="stat-value">{getStat(formStats, "pFouls")}</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-label">DF:</span>
+                  <span className="stat-value">{getStat(formStats, "dFouls")}</span>
                 </div>
               </div>
+            </div>
+        
 
               <div className="stat-controls">
                 <h4>Record Stats</h4>
@@ -639,7 +817,7 @@ const handleChooseSubstitute = async (benchBasicStatId) => {
                 </div>
 
                 <div style={{ textAlign: "center", marginTop: "1rem" }}>
-                  <button className="stat-btn" onClick={handleUpdateBasicStats}>
+                  <button className="stat-btn" onClick={handleSaveStats}>
                     Save
                   </button>
                   <button
