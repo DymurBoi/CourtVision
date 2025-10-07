@@ -22,13 +22,13 @@ function PlayerRegistration() {
     password: "",
     birthDate: ""
   })
- 
+
   const navigate = useNavigate()
- const [showPassword, setShowPassword] = useState(false)
- const handleClickShowPassword = () => setShowPassword((prev) => !prev)
- const handleMouseDownPassword = (event) => {
-  event.preventDefault()
-}
+  const [showPassword, setShowPassword] = useState(false)
+  const handleClickShowPassword = () => setShowPassword((prev) => !prev)
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault()
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -37,13 +37,13 @@ function PlayerRegistration() {
       [name]: value
     })
   }
- 
+
   const handleSubmit = async (e) => {
     e.preventDefault()
- 
+
     try {
       const response = await axios.post("http://localhost:8080/api/players/post", formData)
- 
+
       console.log("Registration successful:", response.data)
       alert("Registration successful! Please log in.")
       navigate("/login")
@@ -52,65 +52,92 @@ function PlayerRegistration() {
       alert("Registration failed. Please try again.")
     }
   }
-  
- 
-  return (
-<div className="auth-container">
-<div className="auth-image">
-<img src={basketballCourt || "/placeholder.svg"} alt="Basketball Court" />
-</div>
- 
-      <div className="auth-form-container">
-<div className="auth-form-wrapper">
-<div className="auth-logo">
-<h1>CourtVision</h1>
-</div>
- 
-          <h2 className="auth-title">Player Registration</h2>
-<p className="auth-subtitle">Join CourtVision as a player</p>
- 
-          <form className="auth-form" onSubmit={handleSubmit}>
-<div className="form-row">
-           <FormControl
-                sx={{ m: 1, width: "100%", maxWidth: 400 }}
-                variant="outlined"
-                required
-              >
-                <InputLabel htmlFor="fname">First Name</InputLabel>
-                <OutlinedInput
-                  id="fname"
-                  name="fname"
-                  value={formData.fname}
-                  onChange={handleChange}
-                  placeholder="Enter your first name"
-                  sx={{ bgcolor: "#F5F5F5", width: "100%" }}
-                />
-              </FormControl>
- 
-              <FormControl
-                sx={{ m: 1, width: "100%", maxWidth: 400 }}
-                variant="outlined"
-                required
-              >
-                <InputLabel htmlFor="lname">Last Name</InputLabel>
-                <OutlinedInput
-                  id="lname"
-                  name="lname"
-                  value={formData.lname}
-                  onChange={handleChange}
-                  placeholder="Enter your last name"
-                  sx={{ bgcolor: "#F5F5F5", width: "100%" }}
-                />
-              </FormControl>
-            </div>
 
- 
-           <FormControl
+
+  return (
+    <div className="auth-container">
+      <div className="auth-image">
+        <img src={basketballCourt || "/placeholder.svg"} alt="Basketball Court" />
+      </div>
+
+      <div className="auth-form-container">
+        <div className="auth-form-wrapper">
+          <div className="auth-logo">
+            <h1>CourtVision</h1>
+          </div>
+
+          <h2 className="auth-title">Player Registration</h2>
+          <p className="auth-subtitle">Join CourtVision as a player</p>
+
+          <form className="auth-form" onSubmit={handleSubmit}>
+            <FormControl
               sx={{ m: 1, width: "100%", maxWidth: 400 }}
               variant="outlined"
               required
             >
-              <InputLabel htmlFor="email">Email</InputLabel>
+              <InputLabel shrink htmlFor="fname">First Name</InputLabel>
+              <OutlinedInput
+                id="fname"
+                name="fname"
+                value={formData.fname}
+                onChange={handleChange}
+                placeholder="Enter your first name"
+                sx={{ bgcolor: "#F5F5F5", width: "100%" }}
+              />
+            </FormControl>
+
+            <FormControl
+              sx={{ m: 1, width: "100%", maxWidth: 400 }}
+              variant="outlined"
+              required
+            >
+              <InputLabel shrink htmlFor="lname">Last Name</InputLabel>
+              <OutlinedInput
+                id="lname"
+                name="lname"
+                value={formData.lname}
+                onChange={handleChange}
+                placeholder="Enter your last name"
+                sx={{ bgcolor: "#F5F5F5", width: "100%" }}
+              />
+            </FormControl>
+            <FormControl
+              sx={{ m: 1, width: "100%", maxWidth: 400 }}
+              variant="outlined"
+              required
+            >
+              <InputLabel shrink htmlFor="position">Position</InputLabel>
+              <select
+                id="position"
+                name="position"
+                value={formData.position}
+                onChange={handleChange}
+                style={{
+                  width: "100%",
+                  padding: "14px",
+                  borderRadius: "8px",
+                  border: "1px solid #ccc",
+                  backgroundColor: "#F5F5F5",
+                  fontSize: "16px",
+                }}
+              >
+                <option value="" disabled>Select your position</option>
+                <option value="Point Guard">Point Guard (PG)</option>
+                <option value="Shooting Guard">Shooting Guard (SG)</option>
+                <option value="Small Forward">Small Forward (SF)</option>
+                <option value="Power Forward">Power Forward (PF)</option>
+                <option value="Center">Center (C)</option>
+              </select>
+            </FormControl>
+
+
+
+            <FormControl
+              sx={{ m: 1, width: "100%", maxWidth: 400 }}
+              variant="outlined"
+              required
+            >
+              <InputLabel shrink htmlFor="email">Email</InputLabel>
               <OutlinedInput
                 id="email"
                 type="email"
@@ -123,35 +150,35 @@ function PlayerRegistration() {
             </FormControl>
 
 
-          <FormControl
-            sx={{ m: 1, width: "100%", maxWidth: 400 }}
-            variant="outlined"
-            required
-          >
-            <InputLabel htmlFor="password">Password</InputLabel>
-            <OutlinedInput
-              id="password"
-              type={showPassword ? "text" : "password"}
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Create a password"
-              sx={{ bgcolor: "#F5F5F5", width: "100%" }}
-              endAdornment={
-                <InputAdornment position="end">
-                  <IconButton
-                    onClick={handleClickShowPassword}
-                    onMouseDown={handleMouseDownPassword}
-                    edge="end"
-                  >
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              }
-            />
-          </FormControl>
+            <FormControl
+              sx={{ m: 1, width: "100%", maxWidth: 400 }}
+              variant="outlined"
+              required
+            >
+              <InputLabel shrink htmlFor="password">Password</InputLabel>
+              <OutlinedInput
+                id="password"
+                type={showPassword ? "text" : "password"}
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Create a password"
+                sx={{ bgcolor: "#F5F5F5", width: "100%" }}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={handleClickShowPassword}
+                      onMouseDown={handleMouseDownPassword}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+              />
+            </FormControl>
 
-             <FormControl
+            <FormControl
               sx={{ m: 1, width: "100%", maxWidth: 400 }}
               variant="outlined"
               required
@@ -168,21 +195,21 @@ function PlayerRegistration() {
                 sx={{ bgcolor: "#F5F5F5", width: "100%" }}
               />
             </FormControl>
- 
+
             <button type="submit" className="auth-button">
               Register
-</button>
-</form>
- 
+            </button>
+          </form>
+
           <div className="auth-footer">
-<p>
+            <p>
               Already have an account? <Link to="/login">Login here</Link>
-</p>
-</div>
-</div>
-</div>
-</div>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
- 
+
 export default PlayerRegistration

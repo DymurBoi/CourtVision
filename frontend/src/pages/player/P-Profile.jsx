@@ -4,6 +4,18 @@ import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../../components/AuthContext"
 import { api } from "../../utils/axiosConfig"
+import {
+  FormControl,
+  InputLabel,
+  OutlinedInput,
+  InputAdornment,
+  IconButton,
+  TextField,
+  Select,
+  MenuItem,
+  Button,
+} from "@mui/material"
+import { Visibility, VisibilityOff } from "@mui/icons-material"
 import "../../styles/player/P-Profile.css"
 
 function PProfile() {
@@ -11,110 +23,94 @@ function PProfile() {
   const { user, logout } = useAuth()
   const [loading, setLoading] = useState(true)
 
-  // Player data state
-  const [playerData, setPlayerData] = useState();
-
+  const [playerData, setPlayerData] = useState()
   const [isEditing, setIsEditing] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
   const [editedData, setEditedData] = useState({ ...playerData })
 
-  // Fetch player data when component mounts
+  const handleClickShowPassword = () => setShowPassword((prev) => !prev)
+  const handleMouseDownPassword = (event) => event.preventDefault()
+
   useEffect(() => {
     const fetchPlayerData = async () => {
       if (!user || !user.id) {
-        console.log("No user data available, redirecting to login");
-        navigate("/login", { replace: true });
-        return;
+        console.log("No user data available, redirecting to login")
+        navigate("/login", { replace: true })
+        return
       }
-      
+
       try {
-        // Extract the numeric ID from the format "PLAYER_123"
-        let playerId = user.id;
-        
-        if (typeof playerId === 'string' && playerId.startsWith("PLAYER_")) {
-          playerId = playerId.substring(7); // Remove "PLAYER_" prefix
+        let playerId = user.id
+        if (typeof playerId === "string" && playerId.startsWith("PLAYER_")) {
+          playerId = playerId.substring(7)
         }
-        
-        // Make sure ID is a number if the backend expects it
         if (playerId && !isNaN(Number(playerId))) {
-          playerId = Number(playerId);
+          playerId = Number(playerId)
         }
-        
-        // Get player data using the API client
-        const response = await api.get(`/players/get/${playerId}`);
-        const data = response.data;
-        
+
+        const response = await api.get(`/players/get/${playerId}`)
+        const data = response.data
         if (!data) {
-          console.error("Received empty data from API");
-          setLoading(false);
-          return;
+          console.error("Received empty data from API")
+          setLoading(false)
+          return
         }
 
-        // Map the backend field names to frontend field names
         setPlayerData({
-        firstName: data.fname || "",
-        lastName: data.lname || "",
-        email: data.email || "",
-        password: "••••••••", // Always mask password
-        birthDate: data.birthDate || "",
-        jerseyNumber: data.jerseyNum || "", // Using jerseyNum from backend
-        position: data.position || "",
-        teamId: data.teamId ? data.teamId.teamName : "", // Access teamName from team object
-        teamName: data.team ? data.team.teamName : "Not Assigned", // Correctly access teamName
-      });
+          firstName: data.fname || "",
+          lastName: data.lname || "",
+          email: data.email || "",
+          password: "••••••••",
+          birthDate: data.birthDate || "",
+          jerseyNumber: data.jerseyNum ? data.jerseyNum : "",
+          position: data.position || "",
+          teamName: data.team ? data.team.teamName : "Not Assigned",
+        })
 
-        
         setEditedData({
           firstName: data.fname || "",
           lastName: data.lname || "",
           email: data.email || "",
           password: "••••••••",
           birthDate: data.birthDate || "",
-          jerseyNumber: data.jerseyNum || "", // Using jerseyNum from backend
+          jerseyNumber: data.jerseyNum || "",
           position: data.position || "",
-          team: data.team ? data.team.teamName : "Not assigned",
-        });
-        
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching player data:", error);
-        setLoading(false);
-      }
-    };
+          teamName: data.team ? data.team.teamName : "Not assigned",
+        })
 
-    fetchPlayerData();
-  }, [user, navigate]);
+        setLoading(false)
+      } catch (error) {
+        console.error("Error fetching player data:", error)
+        setLoading(false)
+      }
+    }
+
+    fetchPlayerData()
+  }, [user, navigate])
 
   const handleEditToggle = async () => {
     if (isEditing) {
-      // Save changes to backend
       try {
-        // Extract the numeric ID from the format "PLAYER_123"
-        const playerId = user.id.startsWith("PLAYER_") 
-          ? user.id.substring(7) // Remove "PLAYER_" prefix
-          : user.id;
-      
+        const playerId = user.id.startsWith("PLAYER_") ? user.id.substring(7) : user.id
+
         const updateData = {
           fname: editedData.firstName,
           lname: editedData.lastName,
           email: editedData.email,
           birthDate: editedData.birthDate,
-          jerseyNum: editedData.jerseyNumber, // Using jerseyNum for backend
+          jerseyNum: editedData.jerseyNumber,
           position: editedData.position,
         }
-        
-        // Only include password if it was changed
+
         if (editedData.password !== "••••••••") {
           updateData.password = editedData.password
         }
-        
+
         await api.put(`/players/put/${playerId}`, updateData)
-        
-        // Update local state after successful save
         setPlayerData({ ...editedData })
       } catch (error) {
         console.error("Error updating player data:", error)
         alert("Failed to update profile. Please try again.")
-        // Reset edited data to current player data
         setEditedData({ ...playerData })
         setIsEditing(false)
         return
@@ -141,16 +137,15 @@ function PProfile() {
     navigate("/login", { replace: true })
   }
 
-  if (loading) {
-    return <div className="loading">Loading profile data...</div>
-  }
+  if (loading) return <div className="loading">Loading profile data...</div>
 
   return (
     <main className="main-content">
       <div className="profile-container">
         <div className="profile-header">
           <div className="profile-avatar">
-            {playerData.firstName.charAt(0)}{playerData.lastName.charAt(0)}
+            {playerData.firstName?.charAt(0)}
+            {playerData.lastName?.charAt(0)}
           </div>
           <div className="profile-title">
             <h1>Player Profile</h1>
@@ -162,99 +157,157 @@ function PProfile() {
           <div className="profile-card">
             <h2>Personal Information</h2>
             <div className="profile-info">
-              <div className="info-group">
-                <label>First Name</label>
-                {isEditing ? (
-                  <input type="text" name="firstName" value={editedData.firstName} onChange={handleInputChange} />
-                ) : (
-                  <p>{playerData.firstName}</p>
-                )}
-              </div>
+              <FormControl fullWidth sx={{ mb: 2 }}>
+                <TextField
+                  label="First Name"
+                  name="firstName"
+                  value={isEditing ? editedData.firstName : playerData.firstName}
+                  onChange={handleInputChange}
+                  InputProps={{ readOnly: !isEditing }}
+                  variant="outlined"
+                />
+              </FormControl>
 
-              <div className="info-group">
-                <label>Last Name</label>
-                {isEditing ? (
-                  <input type="text" name="lastName" value={editedData.lastName} onChange={handleInputChange} />
-                ) : (
-                  <p>{playerData.lastName}</p>
-                )}
-              </div>
+              <FormControl fullWidth sx={{ mb: 2 }}>
+                <TextField
+                  label="Last Name"
+                  name="lastName"
+                  value={isEditing ? editedData.lastName : playerData.lastName}
+                  onChange={handleInputChange}
+                  InputProps={{ readOnly: !isEditing }}
+                  variant="outlined"
+                />
+              </FormControl>
 
-              <div className="info-group">
-                <label>Email</label>
-                {isEditing ? (
-                  <input type="email" name="email" value={editedData.email} onChange={handleInputChange} />
-                ) : (
-                  <p>{playerData.email}</p>
-                )}
-              </div>
+              <FormControl fullWidth sx={{ mb: 2 }}>
+                <TextField
+                  label="Email"
+                  name="email"
+                  value={isEditing ? editedData.email : playerData.email}
+                  onChange={handleInputChange}
+                  InputProps={{ readOnly: !isEditing }}
+                  variant="outlined"
+                />
+              </FormControl>
 
-              <div className="info-group">
-                <label>Password</label>
-                {isEditing ? (
-                  <input type="password" name="password" value={editedData.password} onChange={handleInputChange} />
-                ) : (
-                  <p>{playerData.password}</p>
-                )}
-              </div>
+              <FormControl
+                sx={{ mb: 2, width: "100%" }}
+                variant="outlined"
+              >
+                <InputLabel htmlFor="password">Password</InputLabel>
+                <OutlinedInput
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={isEditing ? editedData.password : playerData.password}
+                  onChange={handleInputChange}
+                  readOnly={!isEditing}
+                  endAdornment={
+                    isEditing && (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    )
+                  }
+                  label="Password"
+                />
+              </FormControl>
 
-              <div className="info-group">
-                <label>Birth Date</label>
-                {isEditing ? (
-                  <input type="date" name="birthDate" value={editedData.birthDate} onChange={handleInputChange} />
-                ) : (
-                  <p>{playerData.birthDate}</p>
-                )}
-              </div>
+              <FormControl fullWidth sx={{ mb: 2 }}>
+                <TextField
+                  label="Birth Date"
+                  name="birthDate"
+                  type="date"
+                  value={isEditing ? editedData.birthDate : playerData.birthDate}
+                  onChange={handleInputChange}
+                  InputLabelProps={{ shrink: true }}
+                  InputProps={{ readOnly: !isEditing }}
+                />
+              </FormControl>
             </div>
           </div>
 
           <div className="profile-card">
             <h2>Basketball Information</h2>
             <div className="profile-info">
-              <div className="info-group">
-                <label>Jersey Number</label>
+              <FormControl fullWidth sx={{ mb: 2 }}>
                 {isEditing ? (
-                  <input type="number" name="jerseyNumber" value={editedData.jerseyNumber} onChange={handleInputChange} />
+                  <TextField
+                    label="Jersey Number"
+                    name="jerseyNumber"
+                    type="number"
+                    value={editedData.jerseyNumber}
+                    onChange={handleInputChange}
+                    InputLabelProps={{ shrink: true }}
+                  />
                 ) : (
-                  <p>#{playerData.jerseyNumber || "Not assigned"}</p>
+                  <TextField
+                    label="Jersey Number"
+                    value={playerData.jerseyNumber ? `#${playerData.jerseyNumber}` : "Not Assigned"}
+                    InputProps={{ readOnly: true }}
+                  />
                 )}
-              </div>
+              </FormControl>
 
-              <div className="info-group">
-                <label>Position</label>
+              <FormControl fullWidth sx={{ mb: 2 }}>
                 {isEditing ? (
-                  <input type="text" name="position" value={editedData.position} onChange={handleInputChange} />
+                  <>
+                    <InputLabel>Position</InputLabel>
+                    <Select
+                      name="position"
+                      value={editedData.position}
+                      onChange={handleInputChange}
+                    >
+                      <MenuItem value="Point Guard">Point Guard (PG)</MenuItem>
+                      <MenuItem value="Shooting Guard">Shooting Guard (SG)</MenuItem>
+                      <MenuItem value="Small Forward">Small Forward (SF)</MenuItem>
+                      <MenuItem value="Power Forward">Power Forward (PF)</MenuItem>
+                      <MenuItem value="Center">Center (C)</MenuItem>
+                    </Select>
+                  </>
                 ) : (
-                  <p>{playerData.position || "Not assigned"}</p>
+                  <TextField
+                    label="Position"
+                    value={playerData.position || "Not assigned"}
+                    InputProps={{ readOnly: true }}
+                  />
                 )}
-              </div>
+              </FormControl>
 
-              <div className="info-group">
-                <label>Team</label>
-                <p>{playerData.teamName}</p>
-              </div>
+              <FormControl fullWidth sx={{ mb: 2 }}>
+                <TextField
+                  label="Team"
+                  value={playerData.teamName}
+                  InputProps={{ readOnly: true }}
+                />
+              </FormControl>
             </div>
           </div>
 
           <div className="profile-actions">
             {isEditing ? (
               <>
-                <button className="save-button" onClick={handleEditToggle}>
+                <Button variant="contained" color="success" onClick={handleEditToggle}>
                   Save Changes
-                </button>
-                <button className="cancel-button" onClick={handleCancel}>
+                </Button>
+                <Button variant="outlined" color="error" onClick={handleCancel} sx={{ ml: 2 }}>
                   Cancel
-                </button>
+                </Button>
               </>
             ) : (
               <>
-                <button className="edit-button" onClick={handleEditToggle}>
+                <Button variant="contained" onClick={handleEditToggle}>
                   Edit Profile
-                </button>
-                <button className="logout-button" onClick={handleLogout}>
+                </Button>
+                <Button variant="outlined" color="error" onClick={handleLogout} sx={{ ml: 2 }}>
                   Logout
-                </button>
+                </Button>
               </>
             )}
           </div>
