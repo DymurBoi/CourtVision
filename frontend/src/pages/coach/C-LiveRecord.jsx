@@ -309,22 +309,23 @@ function CLiveRecord() {
   const handlePlayPause = async () => {
     try {
       if (!isPlaying) {
-        // ⏱ Tell backend: start all stopwatches for current game
+        // Resume timers
         await api.post(`/stopwatch/sub-in/${gameId}`);
-        console.log("Backend stopwatches started for first 5 players!");
+        console.log("Backend stopwatches resumed for all subbed-in players.");
       } else {
-        // (Optional) if you add a pause endpoint in backend later
-        // await api.post(`/stopwatch/pause/${gameId}`);
-        console.log("Paused frontend timer, backend still running.");
+        // Pause timers (Timeout)
+        await api.post(`/stopwatch/timeout/${gameId}`);
+        console.log("Backend stopwatches paused (timeout).");
       }
 
-      // Keep frontend timer toggling
+      // Toggle frontend state
       setIsPlaying(!isPlaying);
 
     } catch (err) {
-      console.error("Failed to sync with backend stopwatch:", err);
+      console.error("Failed to sync stopwatch state:", err);
     }
   };
+
 
   const handlePlayerClick = async (team, index) => {
     setSelectedRef({ team, index });
@@ -639,7 +640,7 @@ function CLiveRecord() {
                   <div
                     key={stat.playerId}
                     className="player-card selected"
-                    onClick={() =>  
+                    onClick={() =>
                       handlePlayersClick(stat.playerId)
                     }
                   >
@@ -908,15 +909,15 @@ function CLiveRecord() {
                         onClick={() => handleCheckboxChange(player.playerId)}
                       >
                         <input
-                          type="checkbox" 
+                          type="checkbox"
                           checked={isSelected}
                           onChange={() => handleCheckboxChange(player.playerId)}
                           onClick={(e) => e.stopPropagation()} // prevent double toggling
                         />
-                        
-                            <div className="jersey-numnber">#{player.jerseyNum}</div>
-                            <div className="player-name">{player.fname} {player.lname}</div>
-                      
+
+                        <div className="jersey-numnber">#{player.jerseyNum}</div>
+                        <div className="player-name">{player.fname} {player.lname}</div>
+
                       </div>
                     );
                   })}

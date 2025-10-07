@@ -59,7 +59,7 @@ public class StopWatchController {
         return "Stopwatch for player " + basicStatId + " reset!";
     }
 
-    // 🔹 Get live elapsed time (hh:mm:ss format)
+    // Get live elapsed time (hh:mm:ss format)
     @GetMapping("/{basicStatId}/elapsed")
     public String getElapsed(@PathVariable Long basicStatId) {
         Duration elapsed = stopwatchService.getElapsed(basicStatId);
@@ -69,5 +69,11 @@ public class StopWatchController {
         long seconds = elapsed.toSecondsPart();
 
         return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+    }
+
+    // Timeout - Pause all subbed-in players
+    @PostMapping("/timeout/{gameId}")
+    public void timeout(@PathVariable Long gameId) {
+        stopwatchService.timeout(gameId);
     }
 }

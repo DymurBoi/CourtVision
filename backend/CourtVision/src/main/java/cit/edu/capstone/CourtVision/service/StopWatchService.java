@@ -151,4 +151,20 @@ public void startSubOut(Long gameId) {
         StopWatch sw = stopwatches.get(basicStatId);
         return (sw != null) ? sw.getElapsed() : Duration.ZERO;
     }
+
+    // Timeout (pause all subbed-in players without toggling subbedIn flag)
+    public void timeout(Long gameId) {
+    List<BasicStats> subbedInPlayers = basicStatsRepository.findByGame_GameIdAndSubbedInTrue(gameId);
+
+    for (BasicStats stats : subbedInPlayers) {
+        StopWatch sw = stopwatches.get(stats.getBasicStatId());
+
+        if (sw != null && sw.isRunning()) {
+            sw.stop();
+            updateMinutes(stats, sw); // persist elapsed time during timeout
+            basicStatsRepository.save(stats);
+        }
+    }
+}
+
 }
