@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect } from "react";
+import { useState, useEffect,useRef } from "react";
 import { useParams } from "react-router-dom";
 import CoachNavbar from "../../components/CoachNavbar"
 import "../../styles/coach/C-LiveRecord.css"
@@ -7,6 +7,7 @@ import { api } from "../../utils/axiosConfig";
 import { useLocation } from "react-router-dom";
 import { Button } from "@mui/material"
 import { StopCircle } from "lucide-react"
+import axios from "axios";
 
 function CLiveRecord() {
   const [gameDetails, setGameDetails] = useState();
@@ -43,13 +44,7 @@ function CLiveRecord() {
     name: "",
     players: []  // always exists
   });
-
-  //Timer 
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [time, setTime] = useState(0);
-
-
-  const [teamB, setTeamB] = useState({
+   const [teamB, setTeamB] = useState({
     name: "USJR",
     players: [
       {
@@ -60,6 +55,24 @@ function CLiveRecord() {
       },
     ],
   })
+
+  //Timer 
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [time, setTime] = useState(0);
+  // New Timer Handles
+  function formatTime(ms) {
+    const totalSeconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    const millis = ms % 1000;
+    return `${minutes.toString().padStart(2, '0')}:${seconds
+        .toString()
+        .padStart(2, '0')}.${Math.floor(millis / 100)}`;
+}
+
+
+
+ 
 
   // Track the 5 on-court players as indices for each team
   const [teamAOnCourt, setTeamAOnCourt] = useState([])
@@ -156,45 +169,46 @@ function CLiveRecord() {
     }
   };
 
+//Timer useEffect
+// --- On mount: restore timer state ---
+useEffect(() => {
+  const savedStartTime = localStorage.getItem("timer_startTime");
+  const savedElapsed = localStorage.getItem("timer_elapsed");
+  const savedIsPlaying = localStorage.getItem("timer_isPlaying") === "true";
 
-  useEffect(() => {
-    const savedStartTime = localStorage.getItem("timer_startTime");
-    const savedElapsed = localStorage.getItem("timer_elapsed");
-    const savedIsPlaying = localStorage.getItem("timer_isPlaying") === "true";
+  if (savedIsPlaying && savedStartTime) {
+    const elapsedSinceStart = Math.floor((Date.now() - parseInt(savedStartTime, 10)) / 1000);
+    setTime((savedElapsed ? parseInt(savedElapsed, 10) : 0) + elapsedSinceStart);
+    setIsPlaying(true);
+  } else if (savedElapsed) {
+    setTime(parseInt(savedElapsed, 10));
+  }
+}, []);
 
-    if (savedIsPlaying && savedStartTime) {
-      // If running → compute how much time passed since start
-      const elapsed = Math.floor((Date.now() - parseInt(savedStartTime, 10)) / 1000);
-      setTime(elapsed);
-      setIsPlaying(true);
-    } else if (savedElapsed) {
-      // If paused → restore stored elapsed
-      setTime(parseInt(savedElapsed, 10));
-      setIsPlaying(false);
-    }
-  }, []);
+// --- When timer state changes: persist values ---
+useEffect(() => {
+  let interval;
 
-  useEffect(() => {
-    let interval;
-    if (isPlaying) {
-      interval = setInterval(() => {
-        setTime((prev) => {
-          const newTime = prev + 1;
-          localStorage.setItem("timer_elapsed", newTime); // keep persisting
-          return newTime;
-        });
-      }, 1000);
+  if (isPlaying) {
+    const startTime = Date.now() - time * 1000;
+    localStorage.setItem("timer_startTime", startTime.toString());
+    localStorage.setItem("timer_isPlaying", "true");
 
-      // Save absolute startTime so refresh can recalc
-      localStorage.setItem("timer_startTime", Date.now() - time * 1000);
-      localStorage.setItem("timer_isPlaying", "true");
-    } else {
-      localStorage.setItem("timer_elapsed", time);
-      localStorage.setItem("timer_isPlaying", "false");
-    }
+    interval = setInterval(() => {
+      setTime((prev) => {
+        const newTime = prev + 1;
+        localStorage.setItem("timer_elapsed", newTime.toString());
+        return newTime;
+      });
+    }, 1000);
+  } else {
+    localStorage.setItem("timer_isPlaying", "false");
+    localStorage.setItem("timer_elapsed", time.toString());
+    // ❌ don't remove startTime — keep it for restoration
+  }
 
-    return () => clearInterval(interval);
-  }, [isPlaying, time]);
+  return () => clearInterval(interval);
+}, [isPlaying]);
 
   //EndGame
   const handleEndGame = async () => {
@@ -265,7 +279,7 @@ function CLiveRecord() {
 
 
   // Fetch team players with teamId
-  // 🟢 Fetch players when First Five modal opens
+  //Fetch players when First Five modal opens
   useEffect(() => {
     if (showFirstFiveModal && teamId) {
       console.log("Fetching players for teamId:", teamId);
@@ -300,11 +314,12 @@ function CLiveRecord() {
     }
   }, [gameId]);
   // Format time to MM:SS
-  const formatTime = (seconds) => {
+  {/*const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60)
     const secs = seconds % 60
     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`
   }
+*/  }
 
   const handlePlayPause = async () => {
     try {
@@ -559,6 +574,52 @@ function CLiveRecord() {
   };
 
 
+  //Timer New Handles
+
+    const [elapsedTime, setElapsedTime] = useState(0);
+    const [running, setRunning] = useState(false);
+    const intervalRef = useRef(null);
+ 
+    const fetchState = async () => {
+        const res = await api.get("/stopwatch/state");
+        setElapsedTime(res.data.elapsedTimeMillis);
+        setRunning(res.data.running);
+    };
+ 
+    useEffect(() => {
+        fetchState();
+    }, []);
+ 
+    useEffect(() => {
+        if (running) {
+            intervalRef.current = setInterval(() => {
+                setElapsedTime((prev) => prev + 100);
+            }, 100);
+        } else {
+            clearInterval(intervalRef.current);
+        }
+ 
+        return () => clearInterval(intervalRef.current);
+    }, [running]);
+ 
+    const handleStart = async () => {
+        await api.post("/stopwatch/start");
+        setRunning(true);
+    };
+ 
+    const handleStop = async () => {
+        await api.post("/stopwatch/stop");
+        setRunning(false);
+    };
+ 
+    const handleReset = async () => {
+        await api.post("/stopwatch/reset");
+        setElapsedTime(0);
+        setRunning(false);
+    };
+  
+  
+
 
   return (
     <div className="live-record-page">
@@ -589,7 +650,7 @@ function CLiveRecord() {
             <div className="timer-controls">
               <button
                 className={`play-pause-btn ${isPlaying ? "playing" : "paused"}`}
-                onClick={handlePlayPause}
+                onClick={running ? handleStop : handleStart}
               >
                 {isPlaying ? (
                   <svg viewBox="0 0 24 24" fill="currentColor">
@@ -601,7 +662,7 @@ function CLiveRecord() {
                   </svg>
                 )}
               </button>
-              <div className="timer-display">{formatTime(time)}</div>
+              <div className="timer-display">{formatTime(elapsedTime)}</div>
 
 
             </div>

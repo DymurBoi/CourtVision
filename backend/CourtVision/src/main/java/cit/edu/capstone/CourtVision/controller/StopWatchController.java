@@ -1,6 +1,7 @@
 package cit.edu.capstone.CourtVision.controller;
 
 import cit.edu.capstone.CourtVision.entity.BasicStats;
+import cit.edu.capstone.CourtVision.entity.Stopwatch;
 import cit.edu.capstone.CourtVision.repository.BasicStatsRepository;
 import cit.edu.capstone.CourtVision.service.StopWatchService;
 
@@ -8,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/stopwatch")
@@ -15,6 +18,7 @@ public class StopWatchController {
 
     private final StopWatchService stopwatchService;
     private final BasicStatsRepository basicStatsRepository;
+    private final Stopwatch stopwatch = new Stopwatch();
 
     public StopWatchController(StopWatchService stopwatchService,
                                BasicStatsRepository basicStatsRepository) {
@@ -75,5 +79,29 @@ public class StopWatchController {
     @PostMapping("/timeout/{gameId}")
     public void timeout(@PathVariable Long gameId) {
         stopwatchService.timeout(gameId);
+    }
+
+    //For Handling The time in the frontend
+        @PostMapping("/start")
+    public void start() {
+        stopwatch.start();
+    }
+ 
+    @PostMapping("/stop")
+    public void stop() {
+        stopwatch.stop();
+    }
+ 
+    @PostMapping("/reset")
+    public void reset() {
+        stopwatch.reset();
+    }
+ 
+    @GetMapping("/state")
+    public Map<String, Object> getState() {
+        Map<String, Object> state = new HashMap<>();
+        state.put("running", stopwatch.isRunning());
+        state.put("elapsedTimeMillis", stopwatch.getElapsedTime().toMillis());
+        return state;
     }
 }
