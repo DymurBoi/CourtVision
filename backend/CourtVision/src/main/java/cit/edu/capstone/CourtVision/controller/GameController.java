@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -60,11 +61,10 @@ public class GameController {
     }
 
     @PutMapping("/update-analysis-type/{gameId}")
-    public ResponseEntity<?> updateAnalysisType(@PathVariable Long gameId, @RequestParam String type) {
-        Game game = gameRepository.findById(gameId).orElse(null);
-        if (game == null) return ResponseEntity.notFound().build();
-        game.setRecordingType(type); // or game.setStatus(type)
-        gameRepository.save(game);
-        return ResponseEntity.ok("Game analysis type updated to " + type);
+    public ResponseEntity<?> updateAnalysisType(@PathVariable Long gameId, @RequestBody Map<String, String> payload) {
+        String type = payload.get("type");
+        String updatedType = service.updateRecordingType(gameId, type);
+        if (updatedType == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok("Game analysis type updated to " + updatedType);
     }
 }

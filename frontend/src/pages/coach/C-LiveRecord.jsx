@@ -199,8 +199,8 @@ function CLiveRecord() {
   //EndGame
   const handleEndGame = async () => {
     try {
-      await api.post(`/subout/${gameId}`); // Stop all timers
-      await api.put(`/games/update-analysis-type/${gameId}?type=Post Analysis`); // Update game type/status
+      await api.post(`/stopwatch/subout/${gameId}`); 
+      await api.put(`/games/update-analysis-type/${gameId}`, { type: "Post" });// Update game type/status
       console.log(`Game ${gameId} ended. All players subbed out and analysis type set to Post Analysis.`);
       setIsPlaying(false); // stop the timer locally
     } catch (err) {
