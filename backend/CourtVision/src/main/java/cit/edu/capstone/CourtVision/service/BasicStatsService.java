@@ -106,8 +106,10 @@ public class BasicStatsService {
             existing.setMinutes(updatedStats.getMinutes());
             existing.setGamePoints(updatedStats.getGamePoints());
 
-            int points = (existing.getTwoPtMade() * 2) + (existing.getThreePtMade() * 3) + existing.getFtMade();
-                existing.setGamePoints(points);
+            int points = (existing.getTwoPtMade() * 2)
+                   + (existing.getThreePtMade() * 3)
+                   + existing.getFtMade();
+            existing.setGamePoints(points);
             // Update the player and game if present
             if (updatedStats.getPlayer() != null) {
                 existing.setPlayer(updatedStats.getPlayer());
@@ -119,12 +121,11 @@ public class BasicStatsService {
             // Calculate the difference between the existing and updated stats for point values
             tempStat = differenceChecker(tempStat, updatedStats);
 
-            // Update the gamePoints after the difference
-            existing.setGamePoints(tempStat.getGamePoints());
+            
 
             // If the player was subbed in, update the PlusMinus for subbed-in players
 
-                updateSubbedInPlusMinus(existing, tempStat.getGamePoints());
+            updateSubbedInPlusMinus(existing, tempStat.getGamePoints());
             
 
             // Save the updated BasicStats back to the repository
