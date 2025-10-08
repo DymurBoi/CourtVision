@@ -106,6 +106,8 @@ public class BasicStatsService {
             existing.setMinutes(updatedStats.getMinutes());
             existing.setGamePoints(updatedStats.getGamePoints());
 
+            int points = (existing.getTwoPtMade() * 2) + (existing.getThreePtMade() * 3) + existing.getFtMade();
+                existing.setGamePoints(points);
             // Update the player and game if present
             if (updatedStats.getPlayer() != null) {
                 existing.setPlayer(updatedStats.getPlayer());

@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect,useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import CoachNavbar from "../../components/CoachNavbar"
 import "../../styles/coach/C-LiveRecord.css"
@@ -36,7 +36,7 @@ function CLiveRecord() {
   //BasicStats for team A or CITU
   const [teamABasicStats, setTeamABasicStats] = useState([]);
   //Score
-  const teamAScore = teamABasicStats.reduce((sum, stat) => sum + (stat.points || 0), 0);
+  const [allTeamABasicStats, setAllTeamABasicStats] = useState([]);
   //Subbed Out Players
   const [subbedOutPlayers, setSubbedOutPlayers] = useState([]);
   // Sample team data - you can replace this with actual data from props or API
@@ -44,7 +44,7 @@ function CLiveRecord() {
     name: "",
     players: []  // always exists
   });
-   const [teamB, setTeamB] = useState({
+  const [teamB, setTeamB] = useState({
     name: "USJR",
     players: [
       {
@@ -66,20 +66,37 @@ function CLiveRecord() {
     const seconds = totalSeconds % 60;
     const millis = ms % 1000;
     return `${minutes.toString().padStart(2, '0')}:${seconds
-        .toString()
-        .padStart(2, '0')}.${Math.floor(millis / 100)}`;
-}
+      .toString()
+      .padStart(2, '0')}.${Math.floor(millis / 100)}`;
+  }
 
 
 
- 
+
 
   // Track the 5 on-court players as indices for each team
   const [teamAOnCourt, setTeamAOnCourt] = useState([])
   const [teamBOnCourt, setTeamBOnCourt] = useState([0])
 
 
+  //UseEffect for getting basicStats by game
+  useEffect(() => {
+    if (gameId) {
+      api
+        .get(`/basic-stats/get/by-game/${gameId}`)
+        .then((res) => {
+          setAllTeamABasicStats(res.data);
+        })
+        .catch((err) => {
+          setAllTeamABasicStats([]);
+          console.error("Failed to fetch all BasicStats:", err);
+        });
+    }
+  }, [gameId]);
 
+  const teamAScore = Array.isArray(allTeamABasicStats)
+    ? allTeamABasicStats.reduce((sum, stat) => sum + (stat.points || 0), 0)
+    : 0;
 
   //BasicStats Payload and logic for the first five players
   const handleConfirmFirstFiveModal = async () => {
@@ -168,51 +185,51 @@ function CLiveRecord() {
     }
   };
 
-//Timer useEffect
-// --- On mount: restore timer state ---
-useEffect(() => {
-  const savedStartTime = localStorage.getItem("timer_startTime");
-  const savedElapsed = localStorage.getItem("timer_elapsed");
-  const savedIsPlaying = localStorage.getItem("timer_isPlaying") === "true";
+  //Timer useEffect
+  // --- On mount: restore timer state ---
+  useEffect(() => {
+    const savedStartTime = localStorage.getItem("timer_startTime");
+    const savedElapsed = localStorage.getItem("timer_elapsed");
+    const savedIsPlaying = localStorage.getItem("timer_isPlaying") === "true";
 
-  if (savedIsPlaying && savedStartTime) {
-    const elapsedSinceStart = Math.floor((Date.now() - parseInt(savedStartTime, 10)) / 1000);
-    setTime((savedElapsed ? parseInt(savedElapsed, 10) : 0) + elapsedSinceStart);
-    setIsPlaying(true);
-  } else if (savedElapsed) {
-    setTime(parseInt(savedElapsed, 10));
-  }
-}, []);
+    if (savedIsPlaying && savedStartTime) {
+      const elapsedSinceStart = Math.floor((Date.now() - parseInt(savedStartTime, 10)) / 1000);
+      setTime((savedElapsed ? parseInt(savedElapsed, 10) : 0) + elapsedSinceStart);
+      setIsPlaying(true);
+    } else if (savedElapsed) {
+      setTime(parseInt(savedElapsed, 10));
+    }
+  }, []);
 
-// --- When timer state changes: persist values ---
-useEffect(() => {
-  let interval;
+  // --- When timer state changes: persist values ---
+  useEffect(() => {
+    let interval;
 
-  if (isPlaying) {
-    const startTime = Date.now() - time * 1000;
-    localStorage.setItem("timer_startTime", startTime.toString());
-    localStorage.setItem("timer_isPlaying", "true");
+    if (isPlaying) {
+      const startTime = Date.now() - time * 1000;
+      localStorage.setItem("timer_startTime", startTime.toString());
+      localStorage.setItem("timer_isPlaying", "true");
 
-    interval = setInterval(() => {
-      setTime((prev) => {
-        const newTime = prev + 1;
-        localStorage.setItem("timer_elapsed", newTime.toString());
-        return newTime;
-      });
-    }, 1000);
-  } else {
-    localStorage.setItem("timer_isPlaying", "false");
-    localStorage.setItem("timer_elapsed", time.toString());
-    // ❌ don't remove startTime — keep it for restoration
-  }
+      interval = setInterval(() => {
+        setTime((prev) => {
+          const newTime = prev + 1;
+          localStorage.setItem("timer_elapsed", newTime.toString());
+          return newTime;
+        });
+      }, 1000);
+    } else {
+      localStorage.setItem("timer_isPlaying", "false");
+      localStorage.setItem("timer_elapsed", time.toString());
+      // ❌ don't remove startTime — keep it for restoration
+    }
 
-  return () => clearInterval(interval);
-}, [isPlaying]);
+    return () => clearInterval(interval);
+  }, [isPlaying]);
 
   //EndGame
   const handleEndGame = async () => {
     try {
-      await api.post(`/stopwatch/subout/${gameId}`); 
+      await api.post(`/stopwatch/subout/${gameId}`);
       await api.put(`/games/update-analysis-type/${gameId}`, { type: "Post" });// Update game type/status
       console.log(`Game ${gameId} ended. All players subbed out and analysis type set to Post Analysis.`);
       setIsPlaying(false); // stop the timer locally
@@ -239,7 +256,7 @@ useEffect(() => {
       });
   }, [teamId]);
 
-  useEffect(() => {
+  useEffect (() => {
     if (!gameId) return;
 
     const fetchGameData = async () => {
@@ -281,21 +298,21 @@ useEffect(() => {
     ? opponentStats.reduce((sum, stat) => sum + (stat.gamePoints || 0), 0)
     : (opponentStats?.gamePoints || 0);
 
-  
+
   useEffect(() => {
-  if (!gameId) return;
+    if (!gameId) return;
 
-  const interval = setInterval(async () => {
-    try {
-      const res = await api.get(`/basic-stats-var/get/by-game/${gameId}`);
-      setOpponenetStats(res.data);
-    } catch (err) {
-      console.error("Failed to auto-refresh opponent stats:", err);
-    }
-  }, 3000); // every 3 seconds
+    const interval = setInterval(async () => {
+      try {
+        const res = await api.get(`/basic-stats-var/get/by-game/${gameId}`);
+        setOpponenetStats(res.data);
+      } catch (err) {
+        console.error("Failed to auto-refresh opponent stats:", err);
+      }
+    }, 3000); // every 3 seconds
 
-  return () => clearInterval(interval);
-}, [gameId]);
+    return () => clearInterval(interval);
+  }, [gameId]);
 
   // Fetch team players with teamId
   //Fetch players when First Five modal opens
@@ -395,6 +412,7 @@ useEffect(() => {
   const handlePlayersClick = (playerId) => {
     const stat = teamABasicStats.find(s => s.playerId === playerId);
     if (stat) {
+      setSelectedRef({ team: "A", index: teamABasicStats.indexOf(stat) }); // <-- Add this line!
       setSelectedBasicStat(stat);
       setFormStats({
         ...stat,
@@ -426,6 +444,7 @@ useEffect(() => {
   };
 
   const handleUpdateBasicStats = async () => {
+    console.log("Called");
     try {
       const payload = {
         basicStatId: formStats.basicStatId,
@@ -445,23 +464,30 @@ useEffect(() => {
         dFouls: Number(formStats.dFouls),
         plusMinus: Number(formStats.plusMinus),
         minutes: formStats.minutes || "00:00:00", // must be string "HH:mm:ss"
-        gamePoints: Number(formStats.gamePoints),
         subbedIn: formStats.subbedIn,
         player: { playerId: formStats.playerId },
         game: { gameId: gameId }
       };
 
       const res = await api.put(`/basic-stats/put/${formStats.basicStatId}`, payload);
-      // ...rest of your code...
+      console.log("Updated BasicStats:", res.data);
+      const updated = await api.get(`/basic-stats/get/subbed-in/${gameId}`)
+      setTeamABasicStats(updated.data);
+      setShowModal(false);
     } catch (err) {
       console.error("Error updating stats:", err);
     }
   };
   const handleSaveStats = async () => {
+    console.log("handleSaveStats called, selectedRef:", selectedRef);
     if (selectedRef?.team === "A") {
+      console.log("Calling handleUpdateBasicStats");
       await handleUpdateBasicStats();
     } else if (selectedRef?.team === "B") {
+      console.log("Calling handleUpdateBasicStatsVariation");
       await handleUpdateBasicStatsVariation();
+    } else {
+      console.log("No team selected!");
     }
   };
 
@@ -472,18 +498,23 @@ useEffect(() => {
     const delta = (isAddMode ? 1 : -1) * amount;
 
     // Team A (BasicStats)
-    if (formStats?.playerId) {
-      setFormStats((prev) => {
-        const updated = { ...prev };
-        if (statType === "points") {
-          updated.points = Math.max(0, (updated.points || 0) + delta);
-        } else {
-          updated[statType] = Math.max(0, (updated[statType] || 0) + delta);
-        }
-        return updated;
-      });
-      return;
+   if (formStats?.playerId) {
+  setFormStats((prev) => {
+    const updated = { ...prev };
+    if (statType === "points") {
+      updated.points = Math.max(0, (updated.points || 0) + delta);
+    } else {
+      updated[statType] = Math.max(0, (updated[statType] || 0) + delta);
     }
+    // Update gamePoints instantly for Team A
+    updated.gamePoints =
+      (Number(updated.twoPtMade) * 2) +
+      (Number(updated.threePtMade) * 3) +
+      Number(updated.ftMade);
+    return updated;
+  });
+  return;
+}
 
     // Team B (BasicStatsVariationDTO)
     if (formStats?.basicStatVarId) {
@@ -579,13 +610,15 @@ useEffect(() => {
   };
 
   // GEt Points
-  const getPoints = (stats) => {
-    if (!stats) return 0;
-    if (stats.basicStatVarId) {
-      return (Number(stats.twoPtMade) * 2) + (Number(stats.threePtMade) * 3) + Number(stats.ftMade);
-    }
-    return Number(stats.points) || 0;
-  };
+ const getPoints = (stats) => {
+  if (!stats) return 0;
+  // Always use calculated gamePoints for both teams
+  return (
+    (Number(stats.twoPtMade) * 2) +
+    (Number(stats.threePtMade) * 3) +
+    Number(stats.ftMade)
+  );
+};
 
   const getStat = (stats, key) => {
     if (!stats) return 0;
@@ -593,50 +626,50 @@ useEffect(() => {
   };
 
 
-    //Timer New Handles
-    const [elapsedTime, setElapsedTime] = useState(0);
-    const [running, setRunning] = useState(false);
-    const intervalRef = useRef(null);
- 
-    const fetchState = async () => {
-        const res = await api.get("/stopwatch/state");
-        setElapsedTime(res.data.elapsedTimeMillis);
-        setRunning(res.data.running);
-    };
- 
-    useEffect(() => {
-        fetchState();
-    }, []);
- 
-    useEffect(() => {
-        if (running) {
-            intervalRef.current = setInterval(() => {
-                setElapsedTime((prev) => prev + 100);
-            }, 100);
-        } else {
-            clearInterval(intervalRef.current);
-        }
- 
-        return () => clearInterval(intervalRef.current);
-    }, [running]);
- 
-    const handleStart = async () => {
-        await api.post("/stopwatch/start");
-        setRunning(true);
-    };
- 
-    const handleStop = async () => {
-        await api.post("/stopwatch/stop");
-        setRunning(false);
-    };
- 
-    const handleReset = async () => {
-        await api.post("/stopwatch/reset");
-        setElapsedTime(0);
-        setRunning(false);
-    };
-  
-  
+  //Timer New Handles
+  const [elapsedTime, setElapsedTime] = useState(0);
+  const [running, setRunning] = useState(false);
+  const intervalRef = useRef(null);
+
+  const fetchState = async () => {
+    const res = await api.get("/stopwatch/state");
+    setElapsedTime(res.data.elapsedTimeMillis);
+    setRunning(res.data.running);
+  };
+
+  useEffect(() => {
+    fetchState();
+  }, []);
+
+  useEffect(() => {
+    if (running) {
+      intervalRef.current = setInterval(() => {
+        setElapsedTime((prev) => prev + 100);
+      }, 100);
+    } else {
+      clearInterval(intervalRef.current);
+    }
+
+    return () => clearInterval(intervalRef.current);
+  }, [running]);
+
+  const handleStart = async () => {
+    await api.post("/stopwatch/start");
+    setRunning(true);
+  };
+
+  const handleStop = async () => {
+    await api.post("/stopwatch/stop");
+    setRunning(false);
+  };
+
+  const handleReset = async () => {
+    await api.post("/stopwatch/reset");
+    setElapsedTime(0);
+    setRunning(false);
+  };
+
+
 
 
   return (
