@@ -78,7 +78,6 @@ function CLiveRecord() {
   const [teamAOnCourt, setTeamAOnCourt] = useState([])
   const [teamBOnCourt, setTeamBOnCourt] = useState([0])
 
-  const [teamBScore] = useState(65)
 
 
 
@@ -277,6 +276,26 @@ useEffect(() => {
 
   }, [gameId]);
 
+  // Compute Team B score dynamically based on opponentStats
+  const teamBScore = Array.isArray(opponentStats)
+    ? opponentStats.reduce((sum, stat) => sum + (stat.gamePoints || 0), 0)
+    : (opponentStats?.gamePoints || 0);
+
+  
+  useEffect(() => {
+  if (!gameId) return;
+
+  const interval = setInterval(async () => {
+    try {
+      const res = await api.get(`/basic-stats-var/get/by-game/${gameId}`);
+      setOpponenetStats(res.data);
+    } catch (err) {
+      console.error("Failed to auto-refresh opponent stats:", err);
+    }
+  }, 3000); // every 3 seconds
+
+  return () => clearInterval(interval);
+}, [gameId]);
 
   // Fetch team players with teamId
   //Fetch players when First Five modal opens
@@ -574,8 +593,7 @@ useEffect(() => {
   };
 
 
-  //Timer New Handles
-
+    //Timer New Handles
     const [elapsedTime, setElapsedTime] = useState(0);
     const [running, setRunning] = useState(false);
     const intervalRef = useRef(null);
@@ -844,19 +862,6 @@ useEffect(() => {
                   <button className="stat-btn" onClick={() => handleStatUpdate("turnovers")}>
                     {isAddMode ? "+" : "-"} TO
                   </button>
-
-
-
-                  <button className="stat-btn" onClick={() => handleStatUpdate("points", 1)}>
-                    {isAddMode ? "+" : "-"} 1 PT
-                  </button>
-                  <button className="stat-btn" onClick={() => handleStatUpdate("points", 2)}>
-                    {isAddMode ? "+" : "-"} 2 PT
-                  </button>
-                  <button className="stat-btn" onClick={() => handleStatUpdate("points", 3)}>
-                    {isAddMode ? "+" : "-"} 3 PT
-                  </button>
-
 
 
                   <button className="stat-btn" onClick={() => handleStatUpdate("twoPtAttempts")}>
