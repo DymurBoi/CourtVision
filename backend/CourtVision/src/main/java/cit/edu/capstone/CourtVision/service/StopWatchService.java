@@ -175,10 +175,4 @@ public void startSubOut(Long gameId) {
             }
         }
     }
-    public void stopGame(Long gameId){
-        stopwatch.stop(gameId);
-        Game game=gameRepository.findByGameId(gameId);
-        game.setGameDuration(stopwatch.getElapsedTime(gameId).toMillis());
-        gameRepository.save(game);
-    }
 }

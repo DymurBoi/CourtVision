@@ -265,7 +265,7 @@ function CLiveRecord() {
     const fetchGameData = async () => {
       try {
         // Fetch the game data
-        api.post(`/stopwatch/reset`);
+        await api.post(`/stopwatch/reset`);
         const gameRes = await api.get(`/games/get/${gameId}`);
         console.log("Fetched Game:", gameRes.data);
 
