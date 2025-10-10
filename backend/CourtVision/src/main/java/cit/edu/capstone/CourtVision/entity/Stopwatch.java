@@ -22,17 +22,13 @@ public class Stopwatch {
             Game game = gameRepository.findByGameId(gameId);
             Long savedDuration = game.getGameDuration();
 
-            if (savedDuration == null || savedDuration == 0L) {
-                // Start fresh
-                startTime = Instant.now();
-            } else {
-                // Resume from where we left off
-                startTime = Instant.now().minusSeconds(savedDuration);
-            }
+        if (savedDuration == null) savedDuration = 0L;
+        startTime = Instant.now();
 
             running = true;
         }
     }
+
 
 
     public synchronized void stop(Long gameId) {
