@@ -8,8 +8,10 @@ import { useLocation } from "react-router-dom";
 import { Button } from "@mui/material"
 import { StopCircle } from "lucide-react"
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function CLiveRecord() {
+  const navigate = useNavigate();
   const [gameDetails, setGameDetails] = useState();
   const [opponentStats, setOpponenetStats] = useState();
   const [showModal, setShowModal] = useState(false)
@@ -233,6 +235,7 @@ function CLiveRecord() {
       await api.put(`/games/update-analysis-type/${gameId}`, { type: "Post" });// Update game type/status
       console.log(`Game ${gameId} ended. All players subbed out and analysis type set to Post Analysis.`);
       setIsPlaying(false); // stop the timer locally
+      navigate(`/coach/game-details/${gameId}?teamId=${teamId}`);
     } catch (err) {
       console.error("Failed to end game:", err);
     }
