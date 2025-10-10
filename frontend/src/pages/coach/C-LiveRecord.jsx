@@ -636,7 +636,7 @@ function CLiveRecord() {
   const intervalRef = useRef(null);
 
   const fetchState = async () => {
-    const res = await api.get("/stopwatch/state");
+    const res = await api.get(`/stopwatch/state/${gameId}`);
     setElapsedTime(res.data.elapsedTimeMillis);
     setRunning(res.data.running);
   };
@@ -658,12 +658,12 @@ function CLiveRecord() {
   }, [running]);
 
   const handleStart = async () => {
-    await api.post("/stopwatch/start");
+    await api.post(`/stopwatch/start/${gameId}`);
     setRunning(true);
   };
 
   const handleStop = async () => {
-    await api.post("/stopwatch/stop");
+    await api.post(`/stopwatch/stop/${gameId}`);
     setRunning(false);
   };
 
