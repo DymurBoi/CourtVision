@@ -648,8 +648,8 @@ function CLiveRecord() {
   useEffect(() => {
     if (running) {
       intervalRef.current = setInterval(() => {
-        setElapsedTime((prev) => prev + 100);
-      }, 100);
+        setElapsedTime((prev) => prev + 1000);
+      }, 1000);
     } else {
       clearInterval(intervalRef.current);
     }
