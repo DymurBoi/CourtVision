@@ -17,6 +17,7 @@ public class GameMapper {
         dto.setGameDate(game.getGameDate());
         dto.setGameResult(game.getGameResult());
         dto.setFinalScore(game.getFinalScore());
+        dto.setGameDuration(game.getGameDuration());
         dto.setComments(game.getComments());
 
         if (game.getTeam() != null) {

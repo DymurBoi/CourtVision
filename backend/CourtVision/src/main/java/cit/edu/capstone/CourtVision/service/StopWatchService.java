@@ -1,8 +1,11 @@
 package cit.edu.capstone.CourtVision.service;
 
 import cit.edu.capstone.CourtVision.entity.BasicStats;
+import cit.edu.capstone.CourtVision.entity.Stopwatch;
 import cit.edu.capstone.CourtVision.repository.BasicStatsRepository;
 import cit.edu.capstone.CourtVision.util.StopWatch;
+import cit.edu.capstone.CourtVision.entity.Game;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -13,12 +16,18 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 
+import cit.edu.capstone.CourtVision.repository.GameRepository;
+
 @Service
 public class StopWatchService {
 
     // thread-safe map for multiple concurrent requests / scheduler
     private final Map<Long, StopWatch> stopwatches = new ConcurrentHashMap<>();
+    @Autowired
     private final BasicStatsRepository basicStatsRepository;
+    private final Stopwatch stopwatch = new Stopwatch();
+    @Autowired
+    private GameRepository gameRepository;
 
     public StopWatchService(BasicStatsRepository basicStatsRepository) {
         this.basicStatsRepository = basicStatsRepository;
@@ -154,17 +163,22 @@ public void startSubOut(Long gameId) {
 
     // Timeout (pause all subbed-in players without toggling subbedIn flag)
     public void timeout(Long gameId) {
-    List<BasicStats> subbedInPlayers = basicStatsRepository.findByGame_GameIdAndSubbedInTrue(gameId);
+        List<BasicStats> subbedInPlayers = basicStatsRepository.findByGame_GameIdAndSubbedInTrue(gameId);
 
-    for (BasicStats stats : subbedInPlayers) {
-        StopWatch sw = stopwatches.get(stats.getBasicStatId());
+        for (BasicStats stats : subbedInPlayers) {
+            StopWatch sw = stopwatches.get(stats.getBasicStatId());
 
-        if (sw != null && sw.isRunning()) {
-            sw.stop();
-            updateMinutes(stats, sw); // persist elapsed time during timeout
-            basicStatsRepository.save(stats);
+            if (sw != null && sw.isRunning()) {
+                sw.stop();
+                updateMinutes(stats, sw); // persist elapsed time during timeout
+                basicStatsRepository.save(stats);
+            }
         }
     }
-}
-
+    public void stopGame(Long gameId){
+        stopwatch.stop(gameId);
+        Game game=gameRepository.findByGameId(gameId);
+        game.setGameDuration(stopwatch.getElapsedTime(gameId).toMillis());
+        gameRepository.save(game);
+    }
 }

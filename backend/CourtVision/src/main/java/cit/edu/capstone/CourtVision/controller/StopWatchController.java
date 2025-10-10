@@ -5,6 +5,7 @@ import cit.edu.capstone.CourtVision.entity.Stopwatch;
 import cit.edu.capstone.CourtVision.repository.BasicStatsRepository;
 import cit.edu.capstone.CourtVision.service.StopWatchService;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,14 +17,18 @@ import java.util.Map;
 @RequestMapping("/api/stopwatch")
 public class StopWatchController {
 
+    @Autowired
     private final StopWatchService stopwatchService;
+    @Autowired
     private final BasicStatsRepository basicStatsRepository;
-    private final Stopwatch stopwatch = new Stopwatch();
+    private final Stopwatch stopwatch;
 
     public StopWatchController(StopWatchService stopwatchService,
-                               BasicStatsRepository basicStatsRepository) {
+                               BasicStatsRepository basicStatsRepository,
+                               Stopwatch stopwatch) { // 👈 ADD Stopwatch here
         this.stopwatchService = stopwatchService;
         this.basicStatsRepository = basicStatsRepository;
+        this.stopwatch = stopwatch; // 👈 Assign the injected bean
     }
 
     // Sub a player in (start/resume)
@@ -82,26 +87,26 @@ public class StopWatchController {
     }
 
     //For Handling The time in the frontend
-        @PostMapping("/start")
-    public void start() {
-        stopwatch.start();
+    @PostMapping("/start/{gameId}")
+    public void start(@PathVariable Long gameId) {
+        stopwatch.start(gameId);
     }
  
-    @PostMapping("/stop")
-    public void stop() {
-        stopwatch.stop();
+    @PostMapping("/stop/{gameId}")
+    public void stop(@PathVariable Long gameId) {
+        stopwatch.stop(gameId);
     }
  
-    @PostMapping("/reset")
-    public void reset() {
+    @PostMapping("/resetGame")
+    public void resetGameStopWatch() {
         stopwatch.reset();
     }
  
-    @GetMapping("/state")
-    public Map<String, Object> getState() {
+    @GetMapping("/state/{gameId}")
+    public Map<String, Object> getState(@PathVariable Long gameId) {
         Map<String, Object> state = new HashMap<>();
         state.put("running", stopwatch.isRunning());
-        state.put("elapsedTimeMillis", stopwatch.getElapsedTime().toMillis());
+        state.put("elapsedTimeMillis", stopwatch.getElapsedTime(gameId).toMillis());
         return state;
     }
 }
