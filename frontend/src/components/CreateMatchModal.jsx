@@ -74,7 +74,6 @@ function CreateMatchModal({ onClose, onSave, teamId }) {
     const savedGame = gameRes.data;
 
     console.log("✅ Game created:", savedGame);
-
     alert("✅ Match created successfully!");
     onSave(savedGame);
     onClose();
@@ -89,7 +88,7 @@ function CreateMatchModal({ onClose, onSave, teamId }) {
 };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div className="modal-overlay"  onClick={() => !isSubmitting && onClose()}>
       <div className="modal-container match-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>Create New Match</h2>
@@ -201,7 +200,7 @@ function CreateMatchModal({ onClose, onSave, teamId }) {
           </div>
 
           <div className="modal-actions">
-            <button type="submit" className="save-button-create" disabled={isSubmitting}>
+            <button type="submit" className="save-button-create" disabled={isSubmitting} onClick={(e) => e.stopPropagation()}>
               {isSubmitting ? "Saving..." : "Save Match"}
             </button>
           </div>
