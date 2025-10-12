@@ -2,6 +2,8 @@ package cit.edu.capstone.CourtVision.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -19,7 +21,7 @@ public class Game {
     private LocalDate gameDate;
     private String gameResult;
     private String finalScore;
-    
+    private Long gameDuration;
     private String comments;
 
     @Column(name = "is_timer_playing", nullable = false)
@@ -145,6 +147,10 @@ public class Game {
     public void setBasicStatsVarList(List<BasicStatsVariation> basicStatsVarList) {
         this.basicStatsVarList = basicStatsVarList;
     }
-    //private Long advancedStatId;
-    //private Long adjustedStatId;
+    public Long getGameDuration() {
+        return gameDuration;
+    }
+    public void setGameDuration(Long gameDuration) {
+        this.gameDuration = gameDuration;
+    }
 }

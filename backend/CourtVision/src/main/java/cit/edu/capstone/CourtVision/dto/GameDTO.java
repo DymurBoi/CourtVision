@@ -1,5 +1,6 @@
 package cit.edu.capstone.CourtVision.dto;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -17,6 +18,7 @@ public class GameDTO {
     private List<Long> basicStatIds; // List of BasicStats IDs
     private Long advancedStatId;
     private Long adjustedStatId;
+    private Long gameDuration;
 
     // Constructors
     public GameDTO() {}
@@ -124,5 +126,12 @@ public class GameDTO {
 
     public void setAdjustedStatId(Long adjustedStatId) {
         this.adjustedStatId = adjustedStatId;
+    }
+
+    public Long getGameDuration() {
+        return gameDuration;
+    }
+    public void setGameDuration(Long gameDuration) {
+        this.gameDuration = gameDuration;
     }
 }

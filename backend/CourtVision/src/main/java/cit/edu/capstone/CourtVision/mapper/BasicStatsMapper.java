@@ -33,7 +33,7 @@ public class BasicStatsMapper {
         if (stat.getPlayer() != null) {
             Player temp=new Player();
             temp=stat.getPlayer();
-            //dto.setPlayerName(temp.getFname()+" "+temp.getLname());
+            dto.setPlayerName(temp.getFname()+" "+temp.getLname());
             dto.setLname(temp.getLname());
             dto.setFname(temp.getFname());
             dto.setJerseyNum(temp.getJerseyNum());

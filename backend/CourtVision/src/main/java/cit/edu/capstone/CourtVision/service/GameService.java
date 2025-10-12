@@ -146,4 +146,13 @@ public class GameService {
         stats.setGame(game);
         return stats;
     }
+
+    public String updateRecordingType(Long gameId, String type) {
+        Game game = gameRepo.findById(gameId).orElse(null);
+        if (game == null) return null;
+        game.setRecordingType(type);
+        gameRepo.save(game);
+        return type;
+    }
+
 }
