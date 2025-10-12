@@ -156,6 +156,144 @@ public class PlayerAveragesService {
         return players;
     }
 
+    // Seasonal ranking methods (based only on BasicStats from a given season)
+    private List<PlayerAverages> computeSeasonalAveragesForPosition(Long teamId, Long seasonId, String position) {
+        List<PlayerAverages> result = new ArrayList<>();
+
+        // get all players in team
+        List<Player> teamPlayers = playerRepo.findByTeam_TeamId(teamId);
+
+        for (Player p : teamPlayers) {
+            String ppos = p.getPosition() == null ? "" : p.getPosition().trim().toLowerCase();
+            String want = position == null ? "" : position.trim().toLowerCase();
+            if (ppos.isEmpty()) continue;
+            // allow minor variations: compare normalized strings
+            if (!ppos.equals(want)) continue;
+
+            // fetch basic stats for this player in the season.
+            // Some flows set season on BasicStats directly; others only set the Game->Season relationship.
+            // Prefer querying through Game->Season, fall back to BasicStats.season if the former returns empty.
+            List<BasicStats> statsList = basicStatsRepo.findByPlayer_PlayerIdAndGame_Season_Id(p.getPlayerId(), seasonId);
+            if (statsList == null || statsList.isEmpty()) {
+                statsList = basicStatsRepo.findByPlayer_PlayerIdAndSeason_Id(p.getPlayerId(), seasonId);
+            }
+            if (statsList == null || statsList.isEmpty()) continue;
+
+            // compute aggregated values similar to updateAverages
+            int totalGames = statsList.size();
+            double totalPoints = 0, totalAssists = 0, totalRebounds = 0;
+            double totalSteals = 0, totalBlocks = 0, totalMinutes = 0;
+            double totalFGA = 0, totalFGM = 0, totalFTA = 0, totalFTM = 0, totalThreePA = 0, totalThreePM = 0;
+            double totalTurnovers = 0;
+
+            for (BasicStats b : statsList) {
+                totalPoints += (b.getTwoPtMade() * 2) + (b.getThreePtMade() * 3) + b.getFtMade();
+                totalAssists += b.getAssists();
+                totalRebounds += b.getoFRebounds() + b.getdFRebounds();
+                totalSteals += b.getSteals();
+                totalBlocks += b.getBlocks();
+                if (b.getMinutes() != null)
+                    totalMinutes += b.getMinutes().toLocalTime().toSecondOfDay() / 60.0;
+
+                totalFGA += b.getTwoPtAttempts() + b.getThreePtAttempts();
+                totalFGM += b.getTwoPtMade() + b.getThreePtMade();
+                totalFTA += b.getFtAttempts();
+                totalFTM += b.getFtMade();
+                totalThreePA += b.getThreePtAttempts();
+                totalThreePM += b.getThreePtMade();
+                totalTurnovers += b.getTurnovers();
+            }
+
+            PlayerAverages avg = new PlayerAverages();
+            avg.setPlayer(p);
+            avg.setPointsPerGame(totalPoints / totalGames);
+            avg.setAssistsPerGame(totalAssists / totalGames);
+            avg.setReboundsPerGame(totalRebounds / totalGames);
+            avg.setStealsPerGame(totalSteals / totalGames);
+            avg.setBlocksPerGame(totalBlocks / totalGames);
+            avg.setMinutesPerGame(totalMinutes / totalGames);
+
+            result.add(avg);
+        }
+
+        return result;
+    }
+
+    public List<PlayerAverages> rankPointGuardsBySeason(Long teamId, Long seasonId) {
+        List<PlayerAverages> players = computeSeasonalAveragesForPosition(teamId, seasonId, "Point Guard");
+
+        Collections.sort(players, new Comparator<PlayerAverages>() {
+            public int compare(PlayerAverages p1, PlayerAverages p2) {
+                if (p2.getAssistsPerGame() != p1.getAssistsPerGame()) {
+                    return Double.compare(p2.getAssistsPerGame(), p1.getAssistsPerGame());
+                }
+                return Double.compare(p2.getPointsPerGame(), p1.getPointsPerGame());
+            }
+        });
+
+        return players;
+    }
+
+    public List<PlayerAverages> rankShootingGuardsBySeason(Long teamId, Long seasonId) {
+        List<PlayerAverages> players = computeSeasonalAveragesForPosition(teamId, seasonId, "Shooting Guard");
+
+        Collections.sort(players, new Comparator<PlayerAverages>() {
+            public int compare(PlayerAverages p1, PlayerAverages p2) {
+                if (p2.getPointsPerGame() != p1.getPointsPerGame()) {
+                    return Double.compare(p2.getPointsPerGame(), p1.getPointsPerGame());
+                }
+                return Double.compare(p2.getAssistsPerGame(), p1.getAssistsPerGame());
+            }
+        });
+
+        return players;
+    }
+
+    public List<PlayerAverages> rankSmallForwardsBySeason(Long teamId, Long seasonId) {
+        List<PlayerAverages> players = computeSeasonalAveragesForPosition(teamId, seasonId, "Small Forward");
+
+        Collections.sort(players, new Comparator<PlayerAverages>() {
+            public int compare(PlayerAverages p1, PlayerAverages p2) {
+                if (p2.getPointsPerGame() != p1.getPointsPerGame()) {
+                    return Double.compare(p2.getPointsPerGame(), p1.getPointsPerGame());
+                }
+                return Double.compare(p2.getReboundsPerGame(), p1.getReboundsPerGame());
+            }
+        });
+
+        return players;
+    }
+
+    public List<PlayerAverages> rankPowerForwardsBySeason(Long teamId, Long seasonId) {
+        List<PlayerAverages> players = computeSeasonalAveragesForPosition(teamId, seasonId, "Power Forward");
+
+        Collections.sort(players, new Comparator<PlayerAverages>() {
+            public int compare(PlayerAverages p1, PlayerAverages p2) {
+                if (p2.getReboundsPerGame() != p1.getReboundsPerGame()) {
+                    return Double.compare(p2.getReboundsPerGame(), p1.getReboundsPerGame());
+                }
+                return Double.compare(p2.getBlocksPerGame(), p1.getBlocksPerGame());
+            }
+        });
+
+        return players;
+    }
+
+    public List<PlayerAverages> rankCentersBySeason(Long teamId, Long seasonId) {
+        List<PlayerAverages> players = computeSeasonalAveragesForPosition(teamId, seasonId, "Center");
+
+        Collections.sort(players, new Comparator<PlayerAverages>() {
+            public int compare(PlayerAverages p1, PlayerAverages p2) {
+                if (p2.getBlocksPerGame() != p1.getBlocksPerGame()) {
+                    return Double.compare(p2.getBlocksPerGame(), p1.getBlocksPerGame());
+                }
+                return Double.compare(p2.getReboundsPerGame(), p1.getReboundsPerGame());
+            }
+        });
+
+        return players;
+    }
+
     // Rank Shooting Guards: Points > Assists
     public List<PlayerAverages> rankShootingGuards(Long teamId) {
         List<PlayerAverages> players = getPlayers(teamId, "Shooting Guard");

@@ -104,11 +104,19 @@ function CSeason() {
                         {season.active ? <span style={{ color: 'green' }}>Active</span> : 'Ended'}
                       </td>
                       <td style={{ padding: 8 }}>
-                        {season.active && (
-                          <button className="apply-button" style={{ padding: '4px 12px', fontSize: 14 }} onClick={() => handleEndSeason(season.id)}>
-                            End Season
-                          </button>
-                        )}
+                        <div style={{ display: 'flex', gap: 8 }}>
+                          {season.active && (
+                            <button className="apply-button" style={{ padding: '4px 12px', fontSize: 14 }} onClick={() => handleEndSeason(season.id)}>
+                              End Season
+                            </button>
+                          )}
+                          <a href={`/coach/season/${season.id}/games`} className="apply-button" style={{ padding: '4px 12px', fontSize: 14, textDecoration: 'none' }}>
+                            View Games
+                          </a>
+                          <a href={`/coach/season/${season.id}/ranking`} className="apply-button" style={{ padding: '4px 12px', fontSize: 14, textDecoration: 'none' }}>
+                            View Player Ranking
+                          </a>
+                        </div>
                       </td>
                     </tr>
                   ))}

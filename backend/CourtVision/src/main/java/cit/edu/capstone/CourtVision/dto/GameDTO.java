@@ -14,6 +14,7 @@ public class GameDTO {
     private String finalScore;
     private String comments;
     private Long teamId;
+    private Long seasonId;
     private List<Long> basicStatIds; // List of BasicStats IDs
     private Long advancedStatId;
     private Long adjustedStatId;
@@ -93,6 +94,14 @@ public class GameDTO {
 
     public void setTeamId(Long teamId) {
         this.teamId = teamId;
+    }
+
+    public Long getSeasonId() {
+        return seasonId;
+    }
+
+    public void setSeasonId(Long seasonId) {
+        this.seasonId = seasonId;
     }
 
     public List<Long> getBasicStatIds() {

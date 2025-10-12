@@ -257,20 +257,14 @@ function PProfile() {
 
               <FormControl fullWidth sx={{ mb: 2 }}>
                 {isEditing ? (
-                  <>
-                    <InputLabel>Position</InputLabel>
-                    <Select
-                      name="position"
-                      value={editedData.position}
-                      onChange={handleInputChange}
-                    >
-                      <MenuItem value="Point Guard">Point Guard (PG)</MenuItem>
-                      <MenuItem value="Shooting Guard">Shooting Guard (SG)</MenuItem>
-                      <MenuItem value="Small Forward">Small Forward (SF)</MenuItem>
-                      <MenuItem value="Power Forward">Power Forward (PF)</MenuItem>
-                      <MenuItem value="Center">Center (C)</MenuItem>
-                    </Select>
-                  </>
+                  <select name="position" value={editedData.position} onChange={handleInputChange}>
+                    <option value="">Select position</option>
+                    <option value={"Point Guard"}>Point Guard</option>
+                    <option value={"Shooting Guard"}>Shooting Guard</option>
+                    <option value={"Small Forward"}>Small Forward</option>
+                    <option value={"Power Forward"}>Power Forward</option>
+                    <option value={"Center"}>Center</option>
+                  </select>
                 ) : (
                   <TextField
                     label="Position"

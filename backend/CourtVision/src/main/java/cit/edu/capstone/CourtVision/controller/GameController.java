@@ -45,8 +45,14 @@ public class GameController {
     }
 
     @PostMapping("/post")
-    public ResponseEntity<GameDTO> create(@RequestBody Game game) {
-        return ResponseEntity.ok(GameMapper.toDTO(service.save(game)));
+    public ResponseEntity<?> create(@RequestBody Game game) {
+        try {
+            Game saved = service.save(game);
+            return ResponseEntity.ok(GameMapper.toDTO(saved));
+        } catch (Exception e) {
+            // Return a meaningful error message to client
+            return ResponseEntity.badRequest().body(e.getMessage() != null ? e.getMessage() : "Failed to save game");
+        }
     }
     @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
     @PutMapping("/put/{id}")

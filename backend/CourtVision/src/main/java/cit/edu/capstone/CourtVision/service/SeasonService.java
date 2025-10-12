@@ -3,6 +3,8 @@ package cit.edu.capstone.CourtVision.service;
 import cit.edu.capstone.CourtVision.entity.Coach;
 import cit.edu.capstone.CourtVision.entity.Season;
 import cit.edu.capstone.CourtVision.repository.CoachRepository;
+import cit.edu.capstone.CourtVision.entity.Game;
+import cit.edu.capstone.CourtVision.repository.GameRepository;
 import cit.edu.capstone.CourtVision.repository.SeasonRepository;
 import org.springframework.stereotype.Service;
 import cit.edu.capstone.CourtVision.dto.PlayerSeasonAveragesDTO;
@@ -18,16 +20,19 @@ public class SeasonService {
 
     private final SeasonRepository seasonRepository;
     private final BasicStatsRepository basicStatsRepository;
+    private final GameRepository gameRepository;
     private final CoachRepository coachRepository; // add this
 
     public SeasonService(
             SeasonRepository seasonRepository,
             BasicStatsRepository basicStatsRepository,
-            CoachRepository coachRepository // include in constructor
+            CoachRepository coachRepository, // include in constructor
+            GameRepository gameRepository
     ) {
         this.seasonRepository = seasonRepository;
         this.basicStatsRepository = basicStatsRepository;
         this.coachRepository = coachRepository;
+        this.gameRepository = gameRepository;
     }
 
     public Season startSeason(String name, Integer coachId) {
@@ -59,7 +64,11 @@ public class SeasonService {
     }
 
     public PlayerSeasonAveragesDTO calculatePlayerSeasonAverages(Long playerId, Long seasonId) {
-        List<BasicStats> statsList = basicStatsRepository.findByPlayer_PlayerIdAndSeasonId(playerId, seasonId);
+    // Prefer Game -> Season lookup (some BasicStats records may not have season set directly)
+    List<BasicStats> statsList = basicStatsRepository.findByPlayer_PlayerIdAndGame_Season_Id(playerId, seasonId);
+    if (statsList == null || statsList.isEmpty()) {
+        statsList = basicStatsRepository.findByPlayer_PlayerIdAndSeason_Id(playerId, seasonId);
+    }
 
         if (statsList.isEmpty()) {
             return new PlayerSeasonAveragesDTO(playerId, seasonId, 0, 0, 0, 0, 0, 0);
@@ -88,6 +97,19 @@ public class SeasonService {
                 totalBlocks / gamesPlayed,
                 totalTurnovers / gamesPlayed
         );
+    }
+
+    public List<Season> getAllSeasons() {
+        return seasonRepository.findAll();
+    }
+
+    public Season getSeasonById(Long seasonId) {
+        return seasonRepository.findById(seasonId).orElseThrow(() -> new RuntimeException("Season not found"));
+    }
+
+    public List<Game> getGamesBySeason(Long seasonId) {
+        // Fetch games directly from repository using season id. This avoids relying on Season.games
+        return gameRepository.findBySeason_Id(seasonId);
     }
 }
 

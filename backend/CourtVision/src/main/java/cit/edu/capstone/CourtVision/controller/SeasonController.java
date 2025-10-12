@@ -2,6 +2,9 @@ package cit.edu.capstone.CourtVision.controller;
 
 import cit.edu.capstone.CourtVision.entity.Season;
 import cit.edu.capstone.CourtVision.service.SeasonService;
+import cit.edu.capstone.CourtVision.mapper.GameMapper;
+import cit.edu.capstone.CourtVision.dto.GameDTO;
+import cit.edu.capstone.CourtVision.entity.Game;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,6 +37,22 @@ public class SeasonController {
     @GetMapping("/active")
     public List<Season> getActiveSeasons() {
         return seasonService.getActiveSeasons();
+    }
+
+    @GetMapping
+    public List<Season> getAllSeasons() {
+        return seasonService.getAllSeasons();
+    }
+
+    @GetMapping("/{seasonId}")
+    public Season getSeasonById(@PathVariable Long seasonId) {
+        return seasonService.getSeasonById(seasonId);
+    }
+
+    @GetMapping("/{seasonId}/games")
+    public List<GameDTO> getGamesBySeason(@PathVariable Long seasonId) {
+        List<Game> games = seasonService.getGamesBySeason(seasonId);
+        return games.stream().map(GameMapper::toDTO).toList();
     }
 }
 

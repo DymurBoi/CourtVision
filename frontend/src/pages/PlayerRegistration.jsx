@@ -12,6 +12,9 @@ import {
   InputAdornment,
   IconButton,
   Button,
+  Select,
+  MenuItem,
+  FormHelperText,
 } from "@mui/material"
 import { Visibility, VisibilityOff } from "@mui/icons-material"
 function PlayerRegistration() {
@@ -20,7 +23,9 @@ function PlayerRegistration() {
     lname: "",
     email: "",
     password: "",
-    birthDate: ""
+    confirmPassword: "",
+    birthDate: "",
+    position: ""
   })
 
   const navigate = useNavigate()
@@ -40,9 +45,23 @@ function PlayerRegistration() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+ 
+    // client-side validations
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords do not match. Please confirm your password.")
+      return
+    }
+
+    if (!formData.position) {
+      alert("Please select your playing position.")
+      return
+    }
+
+    // prepare payload (remove confirmPassword)
+    const { confirmPassword, ...payload } = formData
 
     try {
-      const response = await axios.post("http://localhost:8080/api/players/post", formData)
+      const response = await axios.post("http://localhost:8080/api/players/post", payload)
 
       console.log("Registration successful:", response.data)
       alert("Registration successful! Please log in.")
@@ -150,19 +169,47 @@ function PlayerRegistration() {
             </FormControl>
 
 
+          <FormControl
+            sx={{ m: 1, width: "100%", maxWidth: 400 }}
+            variant="outlined"
+            required
+          >
+            <InputLabel htmlFor="password">Password</InputLabel>
+            <OutlinedInput
+              id="password"
+              type={showPassword ? "text" : "password"}
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Create a password"
+              sx={{ bgcolor: "#F5F5F5", width: "100%" }}
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={handleClickShowPassword}
+                    onMouseDown={handleMouseDownPassword}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              }
+            />
+          </FormControl>
+
             <FormControl
               sx={{ m: 1, width: "100%", maxWidth: 400 }}
               variant="outlined"
               required
             >
-              <InputLabel shrink htmlFor="password">Password</InputLabel>
+              <InputLabel htmlFor="confirmPassword">Confirm Password</InputLabel>
               <OutlinedInput
-                id="password"
+                id="confirmPassword"
                 type={showPassword ? "text" : "password"}
-                name="password"
-                value={formData.password}
+                name="confirmPassword"
+                value={formData.confirmPassword}
                 onChange={handleChange}
-                placeholder="Create a password"
+                placeholder="Confirm your password"
                 sx={{ bgcolor: "#F5F5F5", width: "100%" }}
                 endAdornment={
                   <InputAdornment position="end">
@@ -196,6 +243,30 @@ function PlayerRegistration() {
               />
             </FormControl>
 
+            <FormControl
+              sx={{ m: 1, width: "100%", maxWidth: 400 }}
+              variant="outlined"
+              required
+            >
+              <InputLabel id="position-label">Position</InputLabel>
+              <Select
+                labelId="position-label"
+                id="position"
+                name="position"
+                value={formData.position}
+                label="Position"
+                onChange={handleChange}
+                sx={{ bgcolor: "#F5F5F5", width: "100%" }}
+              >
+                <MenuItem value={"Point Guard"}>Point Guard</MenuItem>
+                <MenuItem value={"Shooting Guard"}>Shooting Guard</MenuItem>
+                <MenuItem value={"Small Forward"}>Small Forward</MenuItem>
+                <MenuItem value={"Power Forward"}>Power Forward</MenuItem>
+                <MenuItem value={"Center"}>Center</MenuItem>
+              </Select>
+              <FormHelperText>Select your primary playing position</FormHelperText>
+            </FormControl>
+ 
             <button type="submit" className="auth-button">
               Register
             </button>
