@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation,useNavigate  } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { api } from "../../utils/axiosConfig";
 import "../../styles/coach/C-Matches.css";
 import CreateMatchModal from '../../components/CreateMatchModal';
 import gameService from '../../services/gameService';
 
-function CMatches({teamId}) {
+function CMatches({ teamId }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -70,7 +70,7 @@ function CMatches({teamId}) {
   }
 
   //Handles View Game Button
-    const handleViewGame = (match) => {
+  const handleViewGame = (match) => {
     if (match.recordingType === "Live") {
       navigate(`/coach/live-record/${match.id}?teamId=${teamId}`);
     } else {
@@ -78,52 +78,28 @@ function CMatches({teamId}) {
     }
   };
 
-  
-  const handleCreateMatch = async (newMatch) => {
-    try {
-      const savedGame = await gameService.createGame(newMatch);
 
+  const handleCreateMatch = (savedGame) => {
+    try {
       const newMatchData = {
         id: savedGame.gameId,
         homeTeam: savedGame.gameName.split(' vs ')[0],
         awayTeam: savedGame.gameName.split(' vs ')[1],
         result: savedGame.gameResult,
         score: savedGame.finalScore,
-        date: new Date(savedGame.gameDate).toLocaleDateString()
+        date: new Date(savedGame.gameDate).toLocaleDateString(),
+        recordingType: savedGame.recordingType,
       };
 
-      setMatches([...matches, newMatchData]);
+      setMatches((prev) => [...prev, newMatchData]);
       setShowCreateModal(false);
-       // Consider removing this for smoother UX
     } catch (err) {
-      console.error('Error creating match:', err);
-      setError('Failed to create match');
+      console.error('Error handling created match:', err);
+      setError('Failed to add match to list');
     }
-    window.location.reload();
   };
 
-  const handle = async (newMatch) => {
-    try {
-      const savedGame = await gameService.createGame(newMatch);
 
-      const newMatchData = {
-        id: savedGame.gameId,
-        homeTeam: savedGame.gameName.split(' vs ')[0],
-        awayTeam: savedGame.gameName.split(' vs ')[1],
-        result: savedGame.gameResult,
-        score: savedGame.finalScore,
-        date: new Date(savedGame.gameDate).toLocaleDateString()
-      };
-
-      setMatches([...matches, newMatchData]);
-      setShowCreateModal(false);
-       // Consider removing this for smoother UX
-    } catch (err) {
-      console.error('Error creating match:', err);
-      setError('Failed to create match');
-    }
-    window.location.reload();
-  };
 
   return (
     <main className="main-content">
@@ -171,7 +147,7 @@ function CMatches({teamId}) {
                 <div className="score">{match.score}</div>
                 <div className="date">{match.date}</div>
                 <div className="actions">
-                   <button
+                  <button
                     className="view-button"
                     onClick={() => handleViewGame(match)}
                   >
@@ -191,7 +167,7 @@ function CMatches({teamId}) {
           teamId={teamId}
         />
       )}
-    
+
     </main>
   );
 }

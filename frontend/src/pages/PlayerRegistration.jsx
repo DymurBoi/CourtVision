@@ -120,34 +120,6 @@ function PlayerRegistration() {
                 sx={{ bgcolor: "#F5F5F5", width: "100%" }}
               />
             </FormControl>
-            <FormControl
-              sx={{ m: 1, width: "100%", maxWidth: 400 }}
-              variant="outlined"
-              required
-            >
-              <InputLabel shrink htmlFor="position">Position</InputLabel>
-              <select
-                id="position"
-                name="position"
-                value={formData.position}
-                onChange={handleChange}
-                style={{
-                  width: "100%",
-                  padding: "14px",
-                  borderRadius: "8px",
-                  border: "1px solid #ccc",
-                  backgroundColor: "#F5F5F5",
-                  fontSize: "16px",
-                }}
-              >
-                <option value="" disabled>Select your position</option>
-                <option value="Point Guard">Point Guard (PG)</option>
-                <option value="Shooting Guard">Shooting Guard (SG)</option>
-                <option value="Small Forward">Small Forward (SF)</option>
-                <option value="Power Forward">Power Forward (PF)</option>
-                <option value="Center">Center (C)</option>
-              </select>
-            </FormControl>
 
 
 
