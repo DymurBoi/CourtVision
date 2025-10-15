@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 function CLiveRecord() {
   const navigate = useNavigate();
   const [gameDetails, setGameDetails] = useState();
-  const [opponentStats, setOpponenetStats] = useState();
+  const [opponentStats, setOpponentStats] = useState();
   const [showModal, setShowModal] = useState(false)
   const [isAddMode, setIsAddMode] = useState(true) // true = add, false = subtract
   // Track which team and which player index is selected to always read fresh state
@@ -233,6 +233,8 @@ function CLiveRecord() {
     try {
       await api.post(`/stopwatch/subout/${gameId}`);
       await api.put(`/games/update-analysis-type/${gameId}`, { type: "Post" });// Update game type/status
+      await api.put (`/games/update-final-score/${gameId}`,{finalScore:`${teamAScore}-${teamBScore}`});
+      await api.post(`/stopwatch/resetGame`);
       console.log(`Game ${gameId} ended. All players subbed out and analysis type set to Post Analysis.`);
       setIsPlaying(false); // stop the timer locally
       navigate(`/coach/game-details/${gameId}?teamId=${teamId}`);
@@ -265,7 +267,7 @@ function CLiveRecord() {
     const fetchGameData = async () => {
       try {
         // Fetch the game data
-        await api.post(`/stopwatch/reset`);
+        await api.post(`/stopwatch/resetGame`);
         const gameRes = await api.get(`/games/get/${gameId}`);
         console.log("Fetched Game:", gameRes.data);
 
@@ -286,7 +288,7 @@ function CLiveRecord() {
         console.log("Fetched Opponent Stats:", opponentRes.data);
 
         // Set the opponent stats
-        setOpponenetStats(opponentRes.data);
+        setOpponentStats(opponentRes.data);
 
       } catch (err) {
         console.error("Failed to fetch game data:", err);
@@ -300,7 +302,7 @@ function CLiveRecord() {
   // Compute Team B score dynamically based on opponentStats
   const teamBScore = Array.isArray(opponentStats)
     ? opponentStats.reduce((sum, stat) => sum + (stat.gamePoints || 0), 0)
-    : (opponentStats?.gamePoints || 0);
+    : opponentStats?.[0]?.gamePoints || 0;
 
 
   useEffect(() => {
@@ -309,7 +311,7 @@ function CLiveRecord() {
     const interval = setInterval(async () => {
       try {
         const res = await api.get(`/basic-stats-var/get/by-game/${gameId}`);
-        setOpponenetStats(res.data);
+        setOpponentStats(res.data);
       } catch (err) {
         console.error("Failed to auto-refresh opponent stats:", err);
       }
@@ -668,7 +670,7 @@ function CLiveRecord() {
   };
 
   const handleReset = async () => {
-    await api.post("/stopwatch/reset");
+    await api.post("/stopwatch/resetGame");
     setElapsedTime(0);
     setRunning(false);
   };

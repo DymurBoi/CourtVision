@@ -73,4 +73,12 @@ public class GameController {
         if (updatedType == null) return ResponseEntity.notFound().build();
         return ResponseEntity.ok("Game analysis type updated to " + updatedType);
     }
+
+    @PutMapping("/update-final-score/{gameId}")
+    public ResponseEntity<?> updateFinalScore(@PathVariable Long gameId, @RequestBody Map<String, String> payload) {
+        String finalScore = payload.get("finalScore");
+        String updatedFinalScore = service.updateFinalScore(gameId, finalScore);
+        if (updatedFinalScore == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok("Game final score: " + updatedFinalScore);
+    }
 }

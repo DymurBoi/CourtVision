@@ -155,4 +155,23 @@ public class GameService {
         return type;
     }
 
+    public String updateFinalScore(Long gameId, String score) {
+        Game game = gameRepo.findById(gameId).orElse(null);
+        if (game == null) return null;
+        String[] scores = score.split("-");
+        if (scores.length == 2) {
+            int teamScore = Integer.parseInt(scores[0].trim());
+                int opponentScore = Integer.parseInt(scores[1].trim());
+
+                // Set the game result based on the score comparison
+                if (teamScore > opponentScore) {
+                    game.setGameResult("W");  // Win
+                } else if (teamScore < opponentScore) {
+                    game.setGameResult("L");  // Loss
+                }
+        }
+        game.setFinalScore(score);
+        gameRepo.save(game);
+        return score;
+    }
 }
