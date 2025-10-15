@@ -94,6 +94,16 @@
   background-color: #e74c3c; /* Red for losses */
 }
 
+.result.tie {
+  background-color: #8a91a0;
+}
+
+/* LIVE = Blue */
+.result.live {
+  background-color: #0c50aa;
+  animation: pulse 1.5s infinite;
+}
+
 .points {
   font-weight: 600;
   color: var(--dark-blue);
@@ -174,3 +184,4 @@
     width: 90%;
   }
 }
+

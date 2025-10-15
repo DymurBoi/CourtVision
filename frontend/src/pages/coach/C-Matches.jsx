@@ -141,8 +141,18 @@ function CMatches({ teamId }) {
                 <div className="teams">
                   {match.homeTeam} vs {match.awayTeam}
                 </div>
-                <div className={`result ${match.result === "W" ? "win" : "loss"}`}>
-                  {match.result}
+                <div
+                  className={`result ${(() => {
+                    if (match.recordingType === "Live") return "live";
+                    if (match.result === "W") return "win";
+                    if (match.result === "L") return "loss";
+                    if (match.result === "T") return "tie";
+                    return "";
+                  })()}`}
+                >
+                  {match.recordingType === "Live"
+                    ? "..."
+                    : match.result || "-"}
                 </div>
                 <div className="score">{match.score}</div>
                 <div className="date">{match.date}</div>
