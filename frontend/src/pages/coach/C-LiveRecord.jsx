@@ -14,6 +14,7 @@ function CLiveRecord() {
   const navigate = useNavigate();
   const [gameDetails, setGameDetails] = useState();
   const [opponentStats, setOpponentStats] = useState();
+  
   const [showModal, setShowModal] = useState(false)
   const [isAddMode, setIsAddMode] = useState(true) // true = add, false = subtract
   // Track which team and which player index is selected to always read fresh state
@@ -28,6 +29,10 @@ function CLiveRecord() {
   //BasicStats Update
   const [selectedBasicStat, setSelectedBasicStat] = useState(null);
   const [formStats, setFormStats] = useState(null);
+
+  //Scores
+  const [teamAScoreLive, setTeamAScoreLive] = useState(0);
+  const [teamBScoreLive, setTeamBScoreLive] = useState(0);
 
   //getting the teamid and gameid from the query string
   const location = useLocation();
@@ -181,6 +186,9 @@ function CLiveRecord() {
       };
 
       await api.put(`/basic-stats-var/put/${formStats.basicStatVarId}`, payload);
+      const updatedOpponent = await api.get(`/basic-stats-var/get/by-game/${gameId}`);
+      setOpponentStats(updatedOpponent.data);
+
       setShowModal(false);
     } catch (err) {
       console.error("Error updating enemy stats:", err);
@@ -267,7 +275,6 @@ function CLiveRecord() {
     const fetchGameData = async () => {
       try {
         // Fetch the game data
-        await api.post(`/stopwatch/resetGame`);
         const gameRes = await api.get(`/games/get/${gameId}`);
         console.log("Fetched Game:", gameRes.data);
 
@@ -504,33 +511,56 @@ function CLiveRecord() {
     const delta = (isAddMode ? 1 : -1) * amount;
 
     // Team A (BasicStats)
-   if (formStats?.playerId) {
+if (formStats?.playerId) {
   setFormStats((prev) => {
     const updated = { ...prev };
+
     if (statType === "points") {
       updated.points = Math.max(0, (updated.points || 0) + delta);
     } else {
       updated[statType] = Math.max(0, (updated[statType] || 0) + delta);
     }
-    // Update gamePoints instantly for Team A
+
+    // 🔹 Recompute player's gamePoints
     updated.gamePoints =
       (Number(updated.twoPtMade) * 2) +
       (Number(updated.threePtMade) * 3) +
       Number(updated.ftMade);
+
     return updated;
+  });
+
+  // 🔹 Immediately recompute and update Team A’s total score
+  setTeamAScoreLive((prev) => {
+    const newTotal = teamABasicStats.reduce((sum, stat) => {
+      // if this is the player being edited, use updated values
+      if (stat.playerId === formStats.playerId) {
+        return sum + ((Number(formStats.twoPtMade) * 2) +
+                      (Number(formStats.threePtMade) * 3) +
+                      Number(formStats.ftMade));
+      }
+      return sum + ((Number(stat.twoPtMade) * 2) +
+                    (Number(stat.threePtMade) * 3) +
+                    Number(stat.ftMade));
+    }, 0);
+    return newTotal;
   });
   return;
 }
 
     // Team B (BasicStatsVariationDTO)
     if (formStats?.basicStatVarId) {
-      setFormStats((prev) => {
-        const updated = { ...prev };
-        updated[statType] = Math.max(0, (updated[statType] || 0) + delta);
-        return updated;
-      });
-      return;
+  setFormStats((prev) => {
+    const updated = { ...prev };
+    if (statType === "bPoints") {
+      updated[statType] = Math.max(0, (updated[statType] || 0) + delta);
+    } else {
+      updated[statType] = Math.max(0, (updated[statType] || 0) + delta);
     }
+    return updated;
+  });
+  return;
+}
   };
 
 
@@ -696,9 +726,9 @@ function CLiveRecord() {
           {/* Center: Score */}
           <div className="game-info-center">
             <div className="score-display">
-              <span className="team-score">{teamAScore}</span>
+              <span className="team-score">{teamAScoreLive || teamAScore}</span>
               <span className="score-separator">-</span>
-              <span className="team-score">{teamBScore}</span>
+              <span className="team-score">{teamBScoreLive||teamBScore}</span>
             </div>
           </div>
 

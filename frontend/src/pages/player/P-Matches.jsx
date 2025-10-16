@@ -11,8 +11,7 @@ function PMatches() {
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const params = new URLSearchParams(location.search);
-  const teamIdFromParams = params.get("teamId");
+  const [teamId, setTeamId] = useState(null);
 
   useEffect(() => {
     const fetchPlayerTeamMatches = async () => {
@@ -31,16 +30,18 @@ function PMatches() {
         // ✅ STEP 1: Get player info
         const playerRes = await api.get(`/players/get/${playerId}`);
         const player = playerRes.data;
-        const teamId = player.team?.teamId || teamIdFromParams;
+        const resolvedTeamId = player.team?.teamId;
 
-        if (!teamId) {
+        if (!resolvedTeamId) {
           setError("You are not assigned to any team. Please contact your coach.");
           setLoading(false);
           return;
         }
 
+        setTeamId(resolvedTeamId);
+
         // ✅ STEP 2: Fetch matches for team
-        const res = await api.get(`/games/get/team/${teamId}`);
+        const res = await api.get(`/games/get/team/${resolvedTeamId}`);
         const games = res.data;
 
         const transformed = games.map((game) => ({
@@ -85,7 +86,7 @@ function PMatches() {
   }
 
   // ✅ Handles View Game navigation
-  const handleViewGame = (match, teamId) => {
+  const handleViewGame = (match) => {
     navigate(`/player/game-details/${match.id}?teamId=${teamId}`);
   };
 
@@ -95,11 +96,13 @@ function PMatches() {
         <h1>My Matches</h1>
         <p>View all matches for your team</p>
       </div>
+
       <div className="back-navigation">
         <Link to="/player/home" className="back-link">
           Back to Home
         </Link>
       </div>
+
       <div className="matches-container">
         {matches.length === 0 ? (
           <div className="no-matches">
@@ -114,6 +117,7 @@ function PMatches() {
               <div className="date-header">Date</div>
               <div className="action-header">Action</div>
             </div>
+
             {matches.map((match) => (
               <div className="match-item" key={match.id}>
                 <div className="teams">
@@ -135,7 +139,7 @@ function PMatches() {
                 <div className="actions">
                   <button
                     className="view-button"
-                    onClick={() => handleViewGame(match, teamIdFromParams)}
+                    onClick={() => handleViewGame(match)}
                   >
                     View Game
                   </button>
@@ -145,8 +149,6 @@ function PMatches() {
           </div>
         )}
       </div>
-
-
     </main>
   );
 }

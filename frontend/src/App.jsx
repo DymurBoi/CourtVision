@@ -284,7 +284,7 @@ function AppRoutes() {
           element={
             <>
               <PlayerNavbar />
-              <PGameDetails />
+              <PMatchDetails />
             </>
           }
         />
