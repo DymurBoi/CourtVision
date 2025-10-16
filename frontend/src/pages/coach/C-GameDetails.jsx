@@ -279,7 +279,7 @@ function CGameDetails() {
     <main className="main-content">
       <div className="game-header">
         <div className="game-title">
-          <h1>{gameDetails.gameName}</h1>
+          <h1  style={{color: "white"}}>{gameDetails.gameName}</h1>
           <span className="game-date">{gameDetails.gameDate} {gameDetails.gameType}</span>
         </div>
         <div className="game-score">
