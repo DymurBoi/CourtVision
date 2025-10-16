@@ -286,7 +286,7 @@ function CGameDetails() {
           <span className={`game-result ${gameDetails.gameResult === "W" ? "win" : "loss"}`}>
             {gameDetails.gameResult === "W" ? "Win" : "Loss"}
           </span>
-          <span className="score-display">{gameDetails.finalScore}</span>
+          <span className="score-display"  style={{color: "white"}}>{gameDetails.finalScore}</span>
         </div>
       </div>
 
