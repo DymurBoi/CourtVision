@@ -31,7 +31,13 @@ function PlayerRegistration() {
   const navigate = useNavigate()
   const [showPassword, setShowPassword] = useState(false)
   const handleClickShowPassword = () => setShowPassword((prev) => !prev)
+  const [confirmShowPassword, setConfirmShowPassword] = useState(false)
+  const handleConfirmClickShowPassword = () => setConfirmShowPassword((prev) => !prev)
   const handleMouseDownPassword = (event) => {
+    event.preventDefault()
+  }
+
+  const handleConfirmMouseDownPassword = (event) => {
     event.preventDefault()
   }
 
@@ -177,7 +183,7 @@ function PlayerRegistration() {
               <InputLabel htmlFor="confirmPassword">Confirm Password</InputLabel>
               <OutlinedInput
                 id="confirmPassword"
-                type={showPassword ? "text" : "password"}
+                type={confirmShowPassword ? "text" : "password"}
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleChange}
@@ -186,11 +192,11 @@ function PlayerRegistration() {
                 endAdornment={
                   <InputAdornment position="end">
                     <IconButton
-                      onClick={handleClickShowPassword}
+                      onClick={handleConfirmClickShowPassword}
                       onMouseDown={handleMouseDownPassword}
                       edge="end"
                     >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                      {confirmShowPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
                 }
