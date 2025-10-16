@@ -14,7 +14,8 @@ function CLiveRecord() {
   const navigate = useNavigate();
   const [gameDetails, setGameDetails] = useState();
   const [opponentStats, setOpponentStats] = useState();
-  
+
+
   const [showModal, setShowModal] = useState(false)
   const [isAddMode, setIsAddMode] = useState(true) // true = add, false = subtract
   // Track which team and which player index is selected to always read fresh state
@@ -24,7 +25,7 @@ function CLiveRecord() {
   const [showFirstFiveModal, setShowFirstFiveModal] = useState(false);
   const [selectedPlayers, setSelectedPlayers] = useState([]);
   const [teamPlayers, setTeamPlayers] = useState([]);
-  const [confirmedFirstFive, setConfirmedFirstFive] = useState([]);
+
 
   //BasicStats Update
   const [selectedBasicStat, setSelectedBasicStat] = useState(null);
@@ -51,17 +52,22 @@ function CLiveRecord() {
     name: "",
     players: []  // always exists
   });
-  const [teamB, setTeamB] = useState({
-    name: "USJR",
-    players: [
-      {
-        id: 6,
-        jerseyNum: 100,
-        lastName: "Opponent Player",
 
-      },
-    ],
-  })
+  //UseEffect to control the Add First Five button visibility
+  // Load confirmed first five from localStorage on mount
+  const initialConfirmedFirstFive =
+  JSON.parse(localStorage.getItem("confirmedFirstFive")) || [];
+
+const [confirmedFirstFive, setConfirmedFirstFive] = useState(initialConfirmedFirstFive);
+const [showAddFirstFiveButton, setShowAddFirstFiveButton] = useState(
+  initialConfirmedFirstFive.length !== 5
+);
+
+  // Watch for changes and store in localStorage
+useEffect(() => {
+  localStorage.setItem("confirmedFirstFive", JSON.stringify(confirmedFirstFive));
+  setShowAddFirstFiveButton(confirmedFirstFive.length !== 5);
+}, [confirmedFirstFive]);
 
   //Timer 
   const [isPlaying, setIsPlaying] = useState(false);
@@ -151,7 +157,6 @@ function CLiveRecord() {
         selectedPlayers.includes(p.playerId)
       );
       setConfirmedFirstFive(confirmedPlayers);
-
       // Close modal
       setShowFirstFiveModal(false);
     } catch (err) {
@@ -241,7 +246,7 @@ function CLiveRecord() {
     try {
       await api.post(`/stopwatch/subout/${gameId}`);
       await api.put(`/games/update-analysis-type/${gameId}`, { type: "Post" });// Update game type/status
-      await api.put (`/games/update-final-score/${gameId}`,{finalScore:`${teamAScore}-${teamBScore}`});
+      await api.put(`/games/update-final-score/${gameId}`, { finalScore: `${teamAScore}-${teamBScore}` });
       await api.post(`/stopwatch/resetGame`);
       console.log(`Game ${gameId} ended. All players subbed out and analysis type set to Post Analysis.`);
       setIsPlaying(false); // stop the timer locally
@@ -269,7 +274,7 @@ function CLiveRecord() {
       });
   }, [teamId]);
 
-  useEffect (() => {
+  useEffect(() => {
     if (!gameId) return;
 
     const fetchGameData = async () => {
@@ -511,56 +516,56 @@ function CLiveRecord() {
     const delta = (isAddMode ? 1 : -1) * amount;
 
     // Team A (BasicStats)
-if (formStats?.playerId) {
-  setFormStats((prev) => {
-    const updated = { ...prev };
+    if (formStats?.playerId) {
+      setFormStats((prev) => {
+        const updated = { ...prev };
 
-    if (statType === "points") {
-      updated.points = Math.max(0, (updated.points || 0) + delta);
-    } else {
-      updated[statType] = Math.max(0, (updated[statType] || 0) + delta);
+        if (statType === "points") {
+          updated.points = Math.max(0, (updated.points || 0) + delta);
+        } else {
+          updated[statType] = Math.max(0, (updated[statType] || 0) + delta);
+        }
+
+        // 🔹 Recompute player's gamePoints
+        updated.gamePoints =
+          (Number(updated.twoPtMade) * 2) +
+          (Number(updated.threePtMade) * 3) +
+          Number(updated.ftMade);
+
+        return updated;
+      });
+
+      // 🔹 Immediately recompute and update Team A’s total score
+      setTeamAScoreLive((prev) => {
+        const newTotal = teamABasicStats.reduce((sum, stat) => {
+          // if this is the player being edited, use updated values
+          if (stat.playerId === formStats.playerId) {
+            return sum + ((Number(formStats.twoPtMade) * 2) +
+              (Number(formStats.threePtMade) * 3) +
+              Number(formStats.ftMade));
+          }
+          return sum + ((Number(stat.twoPtMade) * 2) +
+            (Number(stat.threePtMade) * 3) +
+            Number(stat.ftMade));
+        }, 0);
+        return newTotal;
+      });
+      return;
     }
-
-    // 🔹 Recompute player's gamePoints
-    updated.gamePoints =
-      (Number(updated.twoPtMade) * 2) +
-      (Number(updated.threePtMade) * 3) +
-      Number(updated.ftMade);
-
-    return updated;
-  });
-
-  // 🔹 Immediately recompute and update Team A’s total score
-  setTeamAScoreLive((prev) => {
-    const newTotal = teamABasicStats.reduce((sum, stat) => {
-      // if this is the player being edited, use updated values
-      if (stat.playerId === formStats.playerId) {
-        return sum + ((Number(formStats.twoPtMade) * 2) +
-                      (Number(formStats.threePtMade) * 3) +
-                      Number(formStats.ftMade));
-      }
-      return sum + ((Number(stat.twoPtMade) * 2) +
-                    (Number(stat.threePtMade) * 3) +
-                    Number(stat.ftMade));
-    }, 0);
-    return newTotal;
-  });
-  return;
-}
 
     // Team B (BasicStatsVariationDTO)
     if (formStats?.basicStatVarId) {
-  setFormStats((prev) => {
-    const updated = { ...prev };
-    if (statType === "bPoints") {
-      updated[statType] = Math.max(0, (updated[statType] || 0) + delta);
-    } else {
-      updated[statType] = Math.max(0, (updated[statType] || 0) + delta);
+      setFormStats((prev) => {
+        const updated = { ...prev };
+        if (statType === "bPoints") {
+          updated[statType] = Math.max(0, (updated[statType] || 0) + delta);
+        } else {
+          updated[statType] = Math.max(0, (updated[statType] || 0) + delta);
+        }
+        return updated;
+      });
+      return;
     }
-    return updated;
-  });
-  return;
-}
   };
 
 
@@ -646,15 +651,15 @@ if (formStats?.playerId) {
   };
 
   // GEt Points
- const getPoints = (stats) => {
-  if (!stats) return 0;
-  // Always use calculated gamePoints for both teams
-  return (
-    (Number(stats.twoPtMade) * 2) +
-    (Number(stats.threePtMade) * 3) +
-    Number(stats.ftMade)
-  );
-};
+  const getPoints = (stats) => {
+    if (!stats) return 0;
+    // Always use calculated gamePoints for both teams
+    return (
+      (Number(stats.twoPtMade) * 2) +
+      (Number(stats.threePtMade) * 3) +
+      Number(stats.ftMade)
+    );
+  };
 
   const getStat = (stats, key) => {
     if (!stats) return 0;
@@ -728,7 +733,7 @@ if (formStats?.playerId) {
             <div className="score-display">
               <span className="team-score">{teamAScoreLive || teamAScore}</span>
               <span className="score-separator">-</span>
-              <span className="team-score">{teamBScoreLive||teamBScore}</span>
+              <span className="team-score">{teamBScoreLive || teamBScore}</span>
             </div>
           </div>
 
@@ -811,9 +816,17 @@ if (formStats?.playerId) {
           </div>
         </div>
         <div style={{ paddingTop: "2rem" }}>
-          <button className="stat-btn" onClick={() => setShowFirstFiveModal(true)}>
-            Add First Five
-          </button>
+          {showAddFirstFiveButton && (
+            <Button
+              className="stat-btn"
+              variant="contained"
+              color="primary"
+              onClick={() => setShowFirstFiveModal(true)}
+            >
+              Add First Five
+            </Button>
+          )}
+
         </div>
       </div>
 
