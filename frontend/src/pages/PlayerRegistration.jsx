@@ -39,6 +39,8 @@ function PlayerRegistration() {
   const handleMouseDownPassword = (event) => {
     event.preventDefault()
   }
+  const [birthDateError, setBirthDateError] = useState("");
+
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -47,7 +49,7 @@ function PlayerRegistration() {
       [name]: value
     })
 
-    // 👇 Real-time password validation
+    // Password match validation
     if (name === "confirmPassword" || name === "password") {
       if (
         (name === "confirmPassword" && value !== formData.password) ||
@@ -56,6 +58,16 @@ function PlayerRegistration() {
         setPasswordError("Passwords do not match")
       } else {
         setPasswordError("")
+      }
+    }
+
+    if (name === "birthDate") {
+      const selectedYear = new Date(value).getFullYear();
+      const currentYear = new Date().getFullYear();
+      if (selectedYear >= currentYear) {
+        setBirthDateError("Birth year cannot be this year or in the future");
+      } else {
+        setBirthDateError("");
       }
     }
   }
@@ -74,6 +86,10 @@ function PlayerRegistration() {
       return
     }
 
+    if (birthDateError) {
+      alert("Please correct your birth date before submitting.");
+      return;
+    }
     const { confirmPassword, ...payload } = formData
 
     try {
@@ -195,10 +211,13 @@ function PlayerRegistration() {
               {passwordError && <FormHelperText>{passwordError}</FormHelperText>}
             </FormControl>
 
-            <FormControl sx={{ m: 1, width: "100%", maxWidth: 400 }} variant="outlined" required>
-              <InputLabel shrink htmlFor="birthDate">
-                Birth Date
-              </InputLabel>
+            <FormControl
+              sx={{ m: 1, width: "100%", maxWidth: 400 }}
+              variant="outlined"
+              required
+              error={Boolean(birthDateError)}
+            >
+              <InputLabel shrink htmlFor="birthDate">Birth Date</InputLabel>
               <OutlinedInput
                 id="birthDate"
                 type="date"
@@ -207,6 +226,7 @@ function PlayerRegistration() {
                 onChange={handleChange}
                 sx={{ bgcolor: "#F5F5F5", width: "100%" }}
               />
+              {birthDateError && <FormHelperText>{birthDateError}</FormHelperText>}
             </FormControl>
 
             <FormControl sx={{ m: 1, width: "100%", maxWidth: 400 }} variant="outlined" required>

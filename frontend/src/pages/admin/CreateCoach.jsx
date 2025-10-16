@@ -19,7 +19,8 @@ import axios from "axios"
 function CreateCoach() {
   const [showPassword, setShowPassword] = useState(false)
   const [confirmShowPassword, setConfirmShowPassword] = useState(false)
-  const [passwordError, setPasswordError] = useState("") 
+  const [passwordError, setPasswordError] = useState("")
+  const [birthDateError, setBirthDateError] = useState("");
 
   const navigate = useNavigate()
 
@@ -51,6 +52,16 @@ function CreateCoach() {
         setPasswordError("Passwords do not match")
       } else {
         setPasswordError("")
+      }
+    }
+
+    if (name === "birthDate") {
+      const selectedYear = new Date(value).getFullYear();
+      const currentYear = new Date().getFullYear();
+      if (selectedYear >= currentYear) {
+        setBirthDateError("Birth year cannot be this year or in the future");
+      } else {
+        setBirthDateError("");
       }
     }
   }
@@ -147,26 +158,28 @@ function CreateCoach() {
               </div>
 
               <div className="form-row">
-                <FormControl sx={{ width: "25ch" }} variant="outlined" required>
-                  <TextField
+                <FormControl
+                  sx={{ width: "25ch" }}
+                  variant="outlined"
+                  required
+                  error={Boolean(birthDateError)}
+                >
+                  <InputLabel shrink htmlFor="birthDate">Birth Date</InputLabel>
+                  <OutlinedInput
                     id="birthDate"
-                    name="birthDate"
-                    label="Birth Date"
                     type="date"
+                    name="birthDate"
                     value={formData.birthDate}
                     onChange={handleChange}
-                    sx={{ bgcolor: "#ffffffff", width: 440 }}
-                    InputLabelProps={{
-                      shrink: true
-                    }}
+                    sx={{ bgcolor: "#F5F5F5", width: 440 }}
                   />
+                  {birthDateError && <FormHelperText>{birthDateError}</FormHelperText>}
                 </FormControl>
-
                 <FormControl
                   sx={{ marginLeft: 25, width: "25ch" }}
                   variant="outlined"
                   required
-                  error={Boolean(passwordError)} 
+                  error={Boolean(passwordError)}
                 >
                   <InputLabel htmlFor="confirmPassword">Confirm Password</InputLabel>
                   <OutlinedInput
