@@ -10,22 +10,30 @@ import {
   InputAdornment,
   IconButton,
   TextField,
+  FormHelperText
 } from "@mui/material"
 import { Visibility, VisibilityOff } from "@mui/icons-material"
 import "../../styles/admin/UserForm.css"
 import axios from "axios"
 
 function CreateCoach() {
-  const handleClickShowPassword = () => setShowPassword((prev) => !prev)
   const [showPassword, setShowPassword] = useState(false)
+  const [confirmShowPassword, setConfirmShowPassword] = useState(false)
+  const [passwordError, setPasswordError] = useState("") 
+
   const navigate = useNavigate()
+
   const [formData, setFormData] = useState({
     fname: "",
     lname: "",
     email: "",
     password: "",
+    confirmPassword: "",
     birthDate: ""
   })
+
+  const handleClickShowPassword = () => setShowPassword((prev) => !prev)
+  const handleConfirmClickShowPassword = () => setConfirmShowPassword((prev) => !prev)
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -33,10 +41,27 @@ function CreateCoach() {
       ...formData,
       [name]: value
     })
+
+    // 👇 Real-time validation
+    if (name === "confirmPassword" || name === "password") {
+      if (
+        (name === "confirmPassword" && value !== formData.password) ||
+        (name === "password" && formData.confirmPassword && value !== formData.confirmPassword)
+      ) {
+        setPasswordError("Passwords do not match")
+      } else {
+        setPasswordError("")
+      }
+    }
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+
+    if (formData.password !== formData.confirmPassword) {
+      setPasswordError("Passwords do not match")
+      return
+    }
 
     try {
       const response = await axios.post("http://localhost:8080/api/coaches/post", formData)
@@ -61,29 +86,28 @@ function CreateCoach() {
           <form onSubmit={handleSubmit} className="user-form">
             <div className="form-section">
               <h2>Basic Information</h2>
-              <div className="form-row">
 
+              <div className="form-row">
                 <FormControl sx={{ width: "15ch" }} variant="outlined" required>
                   <InputLabel htmlFor="fname">First Name</InputLabel>
                   <OutlinedInput
                     id="fname"
-                    name="fname" // Added name attribute
+                    name="fname"
                     type="text"
                     value={formData.fname}
-                    onChange={handleChange}  // Ensure handleChange is used
+                    onChange={handleChange}
                     sx={{ bgcolor: "#ffffffff", width: 440 }}
                   />
                 </FormControl>
-
 
                 <FormControl sx={{ marginLeft: 25, width: "15ch" }} variant="outlined" required>
                   <InputLabel htmlFor="lname">Last Name</InputLabel>
                   <OutlinedInput
                     id="lname"
-                    name="lname" // Added name attribute
+                    name="lname"
                     type="text"
                     value={formData.lname}
-                    onChange={handleChange}  // Ensure handleChange is used
+                    onChange={handleChange}
                     sx={{ bgcolor: "#ffffffff", width: 440 }}
                   />
                 </FormControl>
@@ -107,7 +131,7 @@ function CreateCoach() {
                   <OutlinedInput
                     id="password"
                     name="password"
-                    type={showPassword ? "text" : "password"} // Toggle between text and password
+                    type={showPassword ? "text" : "password"}
                     value={formData.password}
                     onChange={handleChange}
                     sx={{ bgcolor: "#ffffffff", width: 440 }}
@@ -120,7 +144,6 @@ function CreateCoach() {
                     }
                   />
                 </FormControl>
-
               </div>
 
               <div className="form-row">
@@ -134,11 +157,37 @@ function CreateCoach() {
                     onChange={handleChange}
                     sx={{ bgcolor: "#ffffffff", width: 440 }}
                     InputLabelProps={{
-                      shrink: true, // Ensures the label stays above the input when the date is selected
+                      shrink: true
                     }}
                   />
                 </FormControl>
 
+                <FormControl
+                  sx={{ marginLeft: 25, width: "25ch" }}
+                  variant="outlined"
+                  required
+                  error={Boolean(passwordError)} 
+                >
+                  <InputLabel htmlFor="confirmPassword">Confirm Password</InputLabel>
+                  <OutlinedInput
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type={confirmShowPassword ? "text" : "password"}
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    sx={{ bgcolor: "#ffffffff", width: 440 }}
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton onClick={handleConfirmClickShowPassword} edge="end">
+                          {confirmShowPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                  />
+                  {passwordError && (
+                    <FormHelperText>{passwordError}</FormHelperText>
+                  )}
+                </FormControl>
               </div>
             </div>
 

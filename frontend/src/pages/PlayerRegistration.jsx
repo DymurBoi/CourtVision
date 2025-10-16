@@ -17,6 +17,7 @@ import {
   FormHelperText,
 } from "@mui/material"
 import { Visibility, VisibilityOff } from "@mui/icons-material"
+
 function PlayerRegistration() {
   const [formData, setFormData] = useState({
     fname: "",
@@ -28,16 +29,14 @@ function PlayerRegistration() {
     position: ""
   })
 
+  const [passwordError, setPasswordError] = useState("") // 👈 Add this line
   const navigate = useNavigate()
+
   const [showPassword, setShowPassword] = useState(false)
   const handleClickShowPassword = () => setShowPassword((prev) => !prev)
   const [confirmShowPassword, setConfirmShowPassword] = useState(false)
   const handleConfirmClickShowPassword = () => setConfirmShowPassword((prev) => !prev)
   const handleMouseDownPassword = (event) => {
-    event.preventDefault()
-  }
-
-  const handleConfirmMouseDownPassword = (event) => {
     event.preventDefault()
   }
 
@@ -47,14 +46,26 @@ function PlayerRegistration() {
       ...formData,
       [name]: value
     })
+
+    // 👇 Real-time password validation
+    if (name === "confirmPassword" || name === "password") {
+      if (
+        (name === "confirmPassword" && value !== formData.password) ||
+        (name === "password" && formData.confirmPassword && value !== formData.confirmPassword)
+      ) {
+        setPasswordError("Passwords do not match")
+      } else {
+        setPasswordError("")
+      }
+    }
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
- 
+
     // client-side validations
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match. Please confirm your password.")
+      setPasswordError("Passwords do not match")
       return
     }
 
@@ -63,12 +74,10 @@ function PlayerRegistration() {
       return
     }
 
-    // prepare payload (remove confirmPassword)
     const { confirmPassword, ...payload } = formData
 
     try {
       const response = await axios.post("http://localhost:8080/api/players/post", payload)
-
       console.log("Registration successful:", response.data)
       alert("Registration successful! Please log in.")
       navigate("/login")
@@ -77,7 +86,6 @@ function PlayerRegistration() {
       alert("Registration failed. Please try again.")
     }
   }
-
 
   return (
     <div className="auth-container">
@@ -95,11 +103,7 @@ function PlayerRegistration() {
           <p className="auth-subtitle">Join CourtVision as a player</p>
 
           <form className="auth-form" onSubmit={handleSubmit}>
-            <FormControl
-              sx={{ m: 1, width: "100%", maxWidth: 400 }}
-              variant="outlined"
-              required
-            >
+            <FormControl sx={{ m: 1, width: "100%", maxWidth: 400 }} variant="outlined" required>
               <InputLabel shrink htmlFor="fname">First Name</InputLabel>
               <OutlinedInput
                 id="fname"
@@ -111,11 +115,7 @@ function PlayerRegistration() {
               />
             </FormControl>
 
-            <FormControl
-              sx={{ m: 1, width: "100%", maxWidth: 400 }}
-              variant="outlined"
-              required
-            >
+            <FormControl sx={{ m: 1, width: "100%", maxWidth: 400 }} variant="outlined" required>
               <InputLabel shrink htmlFor="lname">Last Name</InputLabel>
               <OutlinedInput
                 id="lname"
@@ -127,13 +127,7 @@ function PlayerRegistration() {
               />
             </FormControl>
 
-
-
-            <FormControl
-              sx={{ m: 1, width: "100%", maxWidth: 400 }}
-              variant="outlined"
-              required
-            >
+            <FormControl sx={{ m: 1, width: "100%", maxWidth: 400 }} variant="outlined" required>
               <InputLabel shrink htmlFor="email">Email</InputLabel>
               <OutlinedInput
                 id="email"
@@ -146,39 +140,36 @@ function PlayerRegistration() {
               />
             </FormControl>
 
+            <FormControl sx={{ m: 1, width: "100%", maxWidth: 400 }} variant="outlined" required>
+              <InputLabel htmlFor="password">Password</InputLabel>
+              <OutlinedInput
+                id="password"
+                type={showPassword ? "text" : "password"}
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Create a password"
+                sx={{ bgcolor: "#F5F5F5", width: "100%" }}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={handleClickShowPassword}
+                      onMouseDown={handleMouseDownPassword}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+              />
+            </FormControl>
 
-          <FormControl
-            sx={{ m: 1, width: "100%", maxWidth: 400 }}
-            variant="outlined"
-            required
-          >
-            <InputLabel htmlFor="password">Password</InputLabel>
-            <OutlinedInput
-              id="password"
-              type={showPassword ? "text" : "password"}
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Create a password"
-              sx={{ bgcolor: "#F5F5F5", width: "100%" }}
-              endAdornment={
-                <InputAdornment position="end">
-                  <IconButton
-                    onClick={handleClickShowPassword}
-                    onMouseDown={handleMouseDownPassword}
-                    edge="end"
-                  >
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              }
-            />
-          </FormControl>
-
+            {/* ✅ Confirm Password with inline error */}
             <FormControl
               sx={{ m: 1, width: "100%", maxWidth: 400 }}
               variant="outlined"
               required
+              error={Boolean(passwordError)}
             >
               <InputLabel htmlFor="confirmPassword">Confirm Password</InputLabel>
               <OutlinedInput
@@ -201,13 +192,10 @@ function PlayerRegistration() {
                   </InputAdornment>
                 }
               />
+              {passwordError && <FormHelperText>{passwordError}</FormHelperText>}
             </FormControl>
 
-            <FormControl
-              sx={{ m: 1, width: "100%", maxWidth: 400 }}
-              variant="outlined"
-              required
-            >
+            <FormControl sx={{ m: 1, width: "100%", maxWidth: 400 }} variant="outlined" required>
               <InputLabel shrink htmlFor="birthDate">
                 Birth Date
               </InputLabel>
@@ -221,11 +209,7 @@ function PlayerRegistration() {
               />
             </FormControl>
 
-            <FormControl
-              sx={{ m: 1, width: "100%", maxWidth: 400 }}
-              variant="outlined"
-              required
-            >
+            <FormControl sx={{ m: 1, width: "100%", maxWidth: 400 }} variant="outlined" required>
               <InputLabel id="position-label">Position</InputLabel>
               <Select
                 labelId="position-label"
@@ -244,7 +228,7 @@ function PlayerRegistration() {
               </Select>
               <FormHelperText>Select your primary playing position</FormHelperText>
             </FormControl>
- 
+
             <button type="submit" className="auth-button">
               Register
             </button>
