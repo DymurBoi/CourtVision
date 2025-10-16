@@ -1,45 +1,47 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Link, useLocation } from "react-router-dom"
-import { api } from "../../utils/axiosConfig"
-import "../../styles/player/P-Matches.css"
+import { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { api } from "../../utils/axiosConfig";
+import "../../styles/coach/C-Matches.css"; // ✅ Use same styling as Coach version
 
 function PMatches() {
+  const navigate = useNavigate();
   const location = useLocation();
-  const [matches, setMatches] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [matches, setMatches] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const params = new URLSearchParams(location.search);
-  const teamId = params.get("teamId");
-
+  const teamIdFromParams = params.get("teamId");
 
   useEffect(() => {
     const fetchPlayerTeamMatches = async () => {
       try {
-        const userId = localStorage.getItem("userId")
+        const userId = localStorage.getItem("userId");
         if (!userId) {
-          setError("No player ID found. Please log in again.")
-          setLoading(false)
-          return
+          setError("No player ID found. Please log in again.");
+          setLoading(false);
+          return;
         }
 
-        const playerId = userId.startsWith("PLAYER_") ? userId.split("_")[1] : userId
+        const playerId = userId.startsWith("PLAYER_")
+          ? userId.split("_")[1]
+          : userId;
 
-        // STEP 1: Get player details to extract teamId
-        const playerRes = await api.get(`/players/get/${playerId}`)
-        const player = playerRes.data
-        const teamId = player.team?.teamId
+        // ✅ STEP 1: Get player info
+        const playerRes = await api.get(`/players/get/${playerId}`);
+        const player = playerRes.data;
+        const teamId = player.team?.teamId || teamIdFromParams;
 
         if (!teamId) {
-          setError("You are not assigned to any team. Please contact your coach.")
-          setLoading(false)
-          return
+          setError("You are not assigned to any team. Please contact your coach.");
+          setLoading(false);
+          return;
         }
 
-        // STEP 2: Fetch games by teamId
-        const res = await api.get(`/games/get/team/${teamId}`)
-        const games = res.data
+        // ✅ STEP 2: Fetch matches for team
+        const res = await api.get(`/games/get/team/${teamId}`);
+        const games = res.data;
 
         const transformed = games.map((game) => ({
           id: game.gameId,
@@ -48,26 +50,27 @@ function PMatches() {
           result: game.gameResult,
           score: game.finalScore,
           date: new Date(game.gameDate).toLocaleDateString(),
-        }))
+          recordingType: game.recordingType,
+        }));
 
-        setMatches(transformed)
+        setMatches(transformed);
       } catch (err) {
-        console.error("Error fetching team matches:", err)
-        setError("Failed to load matches. Please try again.")
+        console.error("Error fetching team matches:", err);
+        setError("Failed to load matches. Please try again.");
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchPlayerTeamMatches()
-  }, [])
+    fetchPlayerTeamMatches();
+  }, []);
 
   if (loading) {
     return (
       <div className="loading-container">
         <p>Loading matches...</p>
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -78,8 +81,13 @@ function PMatches() {
           Back to Home
         </Link>
       </div>
-    )
+    );
   }
+
+  // ✅ Handles View Game navigation
+  const handleViewGame = (match, teamId) => {
+    navigate(`/player/game-details/${match.id}?teamId=${teamId}`);
+  };
 
   return (
     <main className="main-content">
@@ -87,18 +95,22 @@ function PMatches() {
         <h1>My Matches</h1>
         <p>View all matches for your team</p>
       </div>
-
+      <div className="back-navigation">
+        <Link to="/player/home" className="back-link">
+          Back to Home
+        </Link>
+      </div>
       <div className="matches-container">
         {matches.length === 0 ? (
           <div className="no-matches">
-            <p>No matches found.</p>
+            <p>No matches found for your team.</p>
           </div>
         ) : (
           <div className="matches-list">
             <div className="match-header">
               <div className="teams-header">Teams</div>
               <div className="result-header">W/L</div>
-              <div className="score-header">Score</div>
+              <div className="points-header">Points</div>
               <div className="date-header">Date</div>
               <div className="action-header">Action</div>
             </div>
@@ -107,15 +119,26 @@ function PMatches() {
                 <div className="teams">
                   {match.homeTeam} vs {match.awayTeam}
                 </div>
-                <div className={`result ${match.result === "W" ? "win" : "loss"}`}>
-                  {match.result}
+                <div
+                  className={`result ${(() => {
+                    if (match.recordingType === "Live") return "live";
+                    if (match.result === "W") return "win";
+                    if (match.result === "L") return "loss";
+                    if (match.result === "T") return "tie";
+                    return "";
+                  })()}`}
+                >
+                  {match.recordingType === "Live" ? "..." : match.result || "-"}
                 </div>
                 <div className="score">{match.score}</div>
                 <div className="date">{match.date}</div>
                 <div className="actions">
-                  <Link to={`/player/game-details/${match.id}?teamId=${teamId}`} className="view-button">
-                    View Details
-                  </Link>
+                  <button
+                    className="view-button"
+                    onClick={() => handleViewGame(match, teamIdFromParams)}
+                  >
+                    View Game
+                  </button>
                 </div>
               </div>
             ))}
@@ -123,13 +146,9 @@ function PMatches() {
         )}
       </div>
 
-      <div className="back-navigation">
-        <Link to="/player/home" className="back-link">
-          Back to Home
-        </Link>
-      </div>
+
     </main>
-  )
+  );
 }
 
-export default PMatches
+export default PMatches;
