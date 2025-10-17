@@ -56,18 +56,18 @@ function CLiveRecord() {
   //UseEffect to control the Add First Five button visibility
   // Load confirmed first five from localStorage on mount
   const initialConfirmedFirstFive =
-  JSON.parse(localStorage.getItem("confirmedFirstFive")) || [];
+    JSON.parse(localStorage.getItem("confirmedFirstFive")) || [];
 
-const [confirmedFirstFive, setConfirmedFirstFive] = useState(initialConfirmedFirstFive);
-const [showAddFirstFiveButton, setShowAddFirstFiveButton] = useState(
-  initialConfirmedFirstFive.length !== 5
-);
+  const [confirmedFirstFive, setConfirmedFirstFive] = useState(initialConfirmedFirstFive);
+  const [showAddFirstFiveButton, setShowAddFirstFiveButton] = useState(
+    initialConfirmedFirstFive.length !== 5
+  );
 
   // Watch for changes and store in localStorage
-useEffect(() => {
-  localStorage.setItem("confirmedFirstFive", JSON.stringify(confirmedFirstFive));
-  setShowAddFirstFiveButton(confirmedFirstFive.length !== 5);
-}, [confirmedFirstFive]);
+  useEffect(() => {
+    localStorage.setItem("confirmedFirstFive", JSON.stringify(confirmedFirstFive));
+    setShowAddFirstFiveButton(confirmedFirstFive.length !== 5);
+  }, [confirmedFirstFive]);
 
   //Timer 
   const [isPlaying, setIsPlaying] = useState(false);
@@ -249,6 +249,9 @@ useEffect(() => {
       await api.put(`/games/update-final-score/${gameId}`, { finalScore: `${teamAScore}-${teamBScore}` });
       await api.post(`/stopwatch/resetGame`);
       console.log(`Game ${gameId} ended. All players subbed out and analysis type set to Post Analysis.`);
+      setConfirmedFirstFive([]);
+      setShowAddFirstFiveButton(true);
+      localStorage.removeItem("confirmedFirstFive");
       setIsPlaying(false); // stop the timer locally
       navigate(`/coach/game-details/${gameId}?teamId=${teamId}`);
     } catch (err) {
