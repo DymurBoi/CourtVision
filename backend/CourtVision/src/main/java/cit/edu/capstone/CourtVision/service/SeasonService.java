@@ -125,12 +125,7 @@ public class SeasonService {
     }
 
     public List<Game> getGamesBySeason(Long seasonId) {
-        // Fetch the season to determine its team, then fetch games for that season and team only.
-        Season season = seasonRepository.findById(seasonId).orElseThrow(() -> new RuntimeException("Season not found"));
-        if (season.getTeam() != null && season.getTeam().getTeamId() != null) {
-            return gameRepository.findBySeason_IdAndTeam_TeamId(seasonId, season.getTeam().getTeamId());
-        }
-        // Fallback: if no team on season, return all games for the season
+        // Return all games that belong to the given season regardless of team
         return gameRepository.findBySeason_Id(seasonId);
     }
 }

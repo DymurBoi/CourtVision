@@ -47,7 +47,7 @@ function CreateMatchModal({ onClose, onSave, teamId }) {
       // use the date input value (YYYY-MM-DD) to match backend LocalDate expected format
       const formattedDate = formData.gameDate; // already in YYYY-MM-DD
 
-      // Ensure there is an active season and include it in the game payload
+      // Ensure there is an active season (global) and include it in the game payload
       const seasonsRes = await api.get("/seasons/active");
       const active = seasonsRes.data;
       if (!active || active.length === 0) {

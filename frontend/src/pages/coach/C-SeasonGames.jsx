@@ -53,7 +53,15 @@ function CSeasonGames() {
                   <td style={{ padding: 8 }}>{game.gameName}</td>
                   <td style={{ padding: 8 }}>{game.gameDate || '-'}</td>
                   <td style={{ padding: 8 }}>{game.gameType || '-'}</td>
-                  <td style={{ padding: 8 }}>{game.recordingType || '-'}</td>
+                  <td style={{ padding: 8 }}>
+                    {(() => {
+                      const rt = (game.recordingType || '').toString();
+                      const lower = rt.toLowerCase();
+                      if (lower.includes('live')) return 'Live';
+                      if (lower.includes('post')) return 'Post';
+                      return rt || '-';
+                    })()}
+                  </td>
                   <td style={{ padding: 8 }}>
                     <button
                       className="apply-button"
