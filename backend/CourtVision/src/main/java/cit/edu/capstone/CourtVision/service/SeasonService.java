@@ -1,8 +1,8 @@
 package cit.edu.capstone.CourtVision.service;
 
-import cit.edu.capstone.CourtVision.entity.Coach;
+import cit.edu.capstone.CourtVision.entity.Team;
 import cit.edu.capstone.CourtVision.entity.Season;
-import cit.edu.capstone.CourtVision.repository.CoachRepository;
+import cit.edu.capstone.CourtVision.repository.TeamRepository;
 import cit.edu.capstone.CourtVision.entity.Game;
 import cit.edu.capstone.CourtVision.repository.GameRepository;
 import cit.edu.capstone.CourtVision.repository.SeasonRepository;
@@ -21,30 +21,30 @@ public class SeasonService {
     private final SeasonRepository seasonRepository;
     private final BasicStatsRepository basicStatsRepository;
     private final GameRepository gameRepository;
-    private final CoachRepository coachRepository; // add this
+    private final TeamRepository teamRepository;
 
     public SeasonService(
             SeasonRepository seasonRepository,
             BasicStatsRepository basicStatsRepository,
-            CoachRepository coachRepository, // include in constructor
+            TeamRepository teamRepository,
             GameRepository gameRepository
     ) {
         this.seasonRepository = seasonRepository;
         this.basicStatsRepository = basicStatsRepository;
-        this.coachRepository = coachRepository;
+        this.teamRepository = teamRepository;
         this.gameRepository = gameRepository;
     }
 
-    public Season startSeason(String name, Integer coachId) {
+    public Season startSeason(String name, Long teamId) {
         Season season = new Season();
         season.setSeasonName(name);
         season.setStartDate(LocalDate.now());
         season.setActive(true);
 
-        // fetch coach and set
-        Coach coach = coachRepository.findById(coachId)
-                .orElseThrow(() -> new RuntimeException("Coach not found with id: " + coachId));
-        season.setCoach(coach);
+        // fetch team and set
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new RuntimeException("Team not found with id: " + teamId));
+        season.setTeam(team);
 
         return seasonRepository.save(season);
     }
@@ -55,8 +55,8 @@ public class SeasonService {
         return seasonRepository.save(season);
     }
 
-    public List<Season> getSeasonsByCoach(Long coachId) {
-        return seasonRepository.findByCoach_CoachId(coachId);
+    public List<Season> getSeasonsByTeam(Long teamId) {
+        return seasonRepository.findByTeam_TeamId(teamId);
     }
 
     public List<Season> getActiveSeasons() {
@@ -69,6 +69,23 @@ public class SeasonService {
     if (statsList == null || statsList.isEmpty()) {
         statsList = basicStatsRepository.findByPlayer_PlayerIdAndSeason_Id(playerId, seasonId);
     }
+        
+            // Prefer Game -> Season -> Team lookup to ensure stats are from this season's team
+            Season season = seasonRepository.findById(seasonId).orElseThrow(() -> new RuntimeException("Season not found"));
+            Long teamId = season.getTeam() != null ? season.getTeam().getTeamId() : null;
+            if (teamId != null) {
+                List<BasicStats> teamStatsList = basicStatsRepository.findByPlayer_PlayerIdAndGame_Season_IdAndGame_Team_TeamId(playerId, seasonId, teamId);
+                if (teamStatsList != null && !teamStatsList.isEmpty()) {
+                    statsList = teamStatsList;
+                }
+            }
+            if (statsList == null || statsList.isEmpty()) {
+                // Fallbacks
+                statsList = basicStatsRepository.findByPlayer_PlayerIdAndGame_Season_Id(playerId, seasonId);
+            }
+            if (statsList == null || statsList.isEmpty()) {
+                statsList = basicStatsRepository.findByPlayer_PlayerIdAndSeason_Id(playerId, seasonId);
+            }
 
         if (statsList.isEmpty()) {
             return new PlayerSeasonAveragesDTO(playerId, seasonId, 0, 0, 0, 0, 0, 0);
@@ -108,7 +125,12 @@ public class SeasonService {
     }
 
     public List<Game> getGamesBySeason(Long seasonId) {
-        // Fetch games directly from repository using season id. This avoids relying on Season.games
+        // Fetch the season to determine its team, then fetch games for that season and team only.
+        Season season = seasonRepository.findById(seasonId).orElseThrow(() -> new RuntimeException("Season not found"));
+        if (season.getTeam() != null && season.getTeam().getTeamId() != null) {
+            return gameRepository.findBySeason_IdAndTeam_TeamId(seasonId, season.getTeam().getTeamId());
+        }
+        // Fallback: if no team on season, return all games for the season
         return gameRepository.findBySeason_Id(seasonId);
     }
 }

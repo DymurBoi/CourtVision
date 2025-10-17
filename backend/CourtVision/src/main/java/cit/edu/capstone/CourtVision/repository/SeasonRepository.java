@@ -8,7 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface SeasonRepository extends JpaRepository<Season, Long> {
-    List<Season> findByCoach_CoachId(Long coachId);
+    List<Season> findByTeam_TeamId(Long teamId);
     List<Season> findByActiveTrue();
+    List<Season> findByActiveTrueAndTeam_TeamId(Long teamId);
 }
 

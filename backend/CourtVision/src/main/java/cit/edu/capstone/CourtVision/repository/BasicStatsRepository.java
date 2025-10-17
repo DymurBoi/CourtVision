@@ -16,6 +16,7 @@ public interface BasicStatsRepository extends JpaRepository<BasicStats, Long> {
     // and prefer the Game -> Season variant in seasonal aggregations to be robust.
     List<BasicStats> findByPlayer_PlayerIdAndSeason_Id(Long playerId, Long seasonId);
     List<BasicStats> findByPlayer_PlayerIdAndGame_Season_Id(Long playerId, Long seasonId);
+    List<BasicStats> findByPlayer_PlayerIdAndGame_Season_IdAndGame_Team_TeamId(Long playerId, Long seasonId, Long teamId);
     List<BasicStats> findByGame_GameIdAndSubbedInTrue(Long gameId);
     List<BasicStats> findByGame_GameIdAndSubbedInFalse(Long gameId);
     List<BasicStats> findByGame_GameIdAndPlayer_Team_TeamId(Long gameId, Long teamId);

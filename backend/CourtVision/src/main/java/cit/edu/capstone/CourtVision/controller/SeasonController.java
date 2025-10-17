@@ -20,8 +20,8 @@ public class SeasonController {
     }
 
     @PostMapping("/start")
-    public Season startSeason(@RequestParam String name, @RequestParam Integer coachId) {
-        return seasonService.startSeason(name, coachId);
+    public Season startSeason(@RequestParam String name, @RequestParam Long teamId) {
+        return seasonService.startSeason(name, teamId);
     }
 
     @PostMapping("/{seasonId}/stop")
@@ -29,9 +29,9 @@ public class SeasonController {
         return seasonService.stopSeason(seasonId);
     }
 
-    @GetMapping("/coach/{coachId}")
-    public List<Season> getSeasonsByCoach(@PathVariable Long coachId) {
-        return seasonService.getSeasonsByCoach(coachId);
+    @GetMapping("/team/{teamId}")
+    public List<Season> getSeasonsByTeam(@PathVariable Long teamId) {
+        return seasonService.getSeasonsByTeam(teamId);
     }
 
     @GetMapping("/active")

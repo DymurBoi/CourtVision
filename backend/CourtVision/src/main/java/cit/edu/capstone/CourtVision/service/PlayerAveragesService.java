@@ -170,11 +170,15 @@ public class PlayerAveragesService {
             // allow minor variations: compare normalized strings
             if (!ppos.equals(want)) continue;
 
-            // fetch basic stats for this player in the season.
-            // Some flows set season on BasicStats directly; others only set the Game->Season relationship.
-            // Prefer querying through Game->Season, fall back to BasicStats.season if the former returns empty.
-            List<BasicStats> statsList = basicStatsRepo.findByPlayer_PlayerIdAndGame_Season_Id(p.getPlayerId(), seasonId);
+            // fetch basic stats for this player in the season for the given team.
+            // Use Game->Season->Team join to strictly ensure stats belong to that team in that season.
+            List<BasicStats> statsList = basicStatsRepo.findByPlayer_PlayerIdAndGame_Season_IdAndGame_Team_TeamId(p.getPlayerId(), seasonId, teamId);
             if (statsList == null || statsList.isEmpty()) {
+                // fallback to Game->Season without team filter
+                statsList = basicStatsRepo.findByPlayer_PlayerIdAndGame_Season_Id(p.getPlayerId(), seasonId);
+            }
+            if (statsList == null || statsList.isEmpty()) {
+                // last fallback: BasicStats.season field
                 statsList = basicStatsRepo.findByPlayer_PlayerIdAndSeason_Id(p.getPlayerId(), seasonId);
             }
             if (statsList == null || statsList.isEmpty()) continue;

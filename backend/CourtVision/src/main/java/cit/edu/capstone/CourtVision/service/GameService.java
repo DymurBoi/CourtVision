@@ -53,12 +53,21 @@ public class GameService {
             if (!season.isActive()) {
                 throw new RuntimeException("Cannot add game to an inactive season");
             }
+            // If the season has an associated team, make sure it matches the game's team
+            if (season.getTeam() != null && game.getTeam() != null && game.getTeam().getTeamId() != null) {
+                if (!season.getTeam().getTeamId().equals(game.getTeam().getTeamId())) {
+                    throw new RuntimeException("Cannot add a game for a different team into this season");
+                }
+            }
             game.setSeason(season);
         } else {
-            // find any active season
-            var active = seasonRepository.findByActiveTrue();
+            // find any active season for this game's team
+            if (game.getTeam() == null || game.getTeam().getTeamId() == null) {
+                throw new RuntimeException("Game must have a team when no season is specified.");
+            }
+            var active = seasonRepository.findByActiveTrueAndTeam_TeamId(game.getTeam().getTeamId());
             if (active == null || active.isEmpty()) {
-                throw new RuntimeException("No active season found. Start a season before creating games.");
+                throw new RuntimeException("No active season found for this team. Start a season before creating games.");
             }
             game.setSeason(active.get(0));
         }

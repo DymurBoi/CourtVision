@@ -12,6 +12,10 @@ function PStats() {
   const { user } = useAuth()
   const [refreshTrigger, setRefreshTrigger] = useState(0)
 
+  const [seasons, setSeasons] = useState([])
+  const [selectedSeasonId, setSelectedSeasonId] = useState("")
+  const [seasonAverages, setSeasonAverages] = useState(null)
+
   const [physicalRecords, setPhysicalRecords] = useState({
     height: 0,
     weight: 0,
@@ -142,8 +146,8 @@ function PStats() {
           })
         }
 
-        // Fetch player performance averages (UNCHANGED)
-        const averagesResponse = await api.get(`/averages/get/by-player/${playerId}`)
+  // Fetch player performance averages (UNCHANGED)
+  const averagesResponse = await api.get(`/averages/get/by-player/${playerId}`)
         const avg = averagesResponse.data
 
         if (avg) {
@@ -159,6 +163,27 @@ function PStats() {
             offensiveRating: avg.offensiveRating || 0,
             defensiveRating: avg.defensiveRating || 0,
           })
+        }
+
+        // Fetch player profile to determine teamId and then fetch seasons for that team
+        try {
+          const playerRes = await api.get(`/players/get/${playerId}`)
+          const playerData = playerRes.data
+          const teamId = playerData?.teamId || (playerData?.team ? playerData.team.teamId : null)
+          if (teamId) {
+            const seasonsRes = await api.get(`/seasons/team/${teamId}`)
+            setSeasons(seasonsRes.data || [])
+            if (seasonsRes.data && seasonsRes.data.length > 0) {
+              // default to first season
+              setSelectedSeasonId(seasonsRes.data[0].id)
+              // fetch season averages for player
+              const seasonIdToLoad = seasonsRes.data[0].id
+              const seasonAvgRes = await api.get(`/averages/season/player/${playerId}/${seasonIdToLoad}`)
+              setSeasonAverages(seasonAvgRes.data)
+            }
+          }
+        } catch (err) {
+          console.debug('No seasons available for player team or failed to fetch player/team info', err)
         }
       } catch (error) {
         console.error("Error fetching player data:", error)
@@ -180,7 +205,7 @@ function PStats() {
       <h1 className="page-title">My Statistics</h1>
       <p className="page-subtitle">View your physical records and performance averages</p>
 
-     
+
       <div className="stats-card">
         <div className="stats-card-header">
           <h2>Physical Records</h2>
@@ -327,6 +352,58 @@ function PStats() {
             </button>
           </div>
         )}
+      </div>
+
+      {/* Season selector placed above Season Averages */}
+      <div className="season-select-container" style={{ marginTop: 16 }}>
+        <label htmlFor="season-select" className="season-select-label">Season</label>
+        <select
+          id="season-select"
+          className="season-select"
+          value={selectedSeasonId}
+          onChange={async (e) => {
+            const sid = e.target.value
+            setSelectedSeasonId(sid)
+            if (!sid) { setSeasonAverages(null); return }
+            try {
+              let playerId = user.id
+              if (typeof playerId === 'string' && playerId.startsWith('PLAYER_')) playerId = playerId.substring(7)
+              const res = await api.get(`/averages/season/player/${playerId}/${sid}`)
+              setSeasonAverages(res.data)
+            } catch (err) {
+              console.error('Failed to fetch season averages', err)
+              setSeasonAverages(null)
+            }
+          }}
+        >
+          <option value="">All seasons</option>
+          {seasons.map(s => (<option key={s.id} value={s.id}>{s.seasonName}</option>))}
+        </select>
+      </div>
+
+
+      <div className="stats-card" style={{ marginTop: 16 }}>
+        <div className="stats-card-header">
+          <h2>Season Averages</h2>
+        </div>
+        <div style={{ padding: 24 }}>
+          {selectedSeasonId && !seasonAverages && (
+            <div>Loading season averages...</div>
+          )}
+          {!selectedSeasonId && (
+            <div>Select a season to view season-specific stats.</div>
+          )}
+          {seasonAverages && (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12 }}>
+              <div>Points: {seasonAverages.avgPoints?.toFixed(1) ?? '-'}</div>
+              <div>Rebounds: {seasonAverages.avgRebounds?.toFixed(1) ?? '-'}</div>
+              <div>Assists: {seasonAverages.avgAssists?.toFixed(1) ?? '-'}</div>
+              <div>Steals: {seasonAverages.avgSteals?.toFixed(1) ?? '-'}</div>
+              <div>Blocks: {seasonAverages.avgBlocks?.toFixed(1) ?? '-'}</div>
+              <div>Turnovers: {seasonAverages.avgTurnovers?.toFixed(1) ?? '-'}</div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* PERFORMANCE AVERAGES (ALWAYS SHOW, EVEN IF EMPTY) */}

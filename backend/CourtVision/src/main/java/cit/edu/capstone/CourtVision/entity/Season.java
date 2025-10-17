@@ -18,9 +18,9 @@ public class Season {
     private boolean active; // true if ongoing
 
     @ManyToOne
-    @JoinColumn(name = "coach_id")
+    @JoinColumn(name = "team_id")
     @JsonIgnore
-    private Coach coach;
+    private Team team;
 
     @OneToMany(mappedBy = "season", cascade = CascadeType.ALL)
     private List<BasicStats> basicStats;
@@ -45,8 +45,8 @@ public class Season {
     public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }
 
-    public Coach getCoach() { return coach; }
-    public void setCoach(Coach coach) { this.coach = coach; }
+    public Team getTeam() { return team; }
+    public void setTeam(Team team) { this.team = team; }
 
     public List<BasicStats> getBasicStats() { return basicStats; }
     public void setBasicStats(List<BasicStats> basicStats) { this.basicStats = basicStats; }

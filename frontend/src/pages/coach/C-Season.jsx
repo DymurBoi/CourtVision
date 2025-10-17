@@ -10,22 +10,40 @@ function CSeason() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [coachId, setCoachId] = useState(null);
+  const [teamId, setTeamId] = useState(null);
 
   useEffect(() => {
-    if (user && user.id) {
-      let id = user.id;
-      if (typeof id === "string" && id.startsWith("COACH_")) {
-        id = id.substring(6);
+    const init = async () => {
+      if (user && user.id) {
+        let id = user.id;
+        if (typeof id === "string" && id.startsWith("COACH_")) {
+          id = id.substring(6);
+        }
+        setCoachId(id);
+        try {
+          const teamsRes = await api.get(`/teams/get/by-coach/${id}`);
+          const teams = teamsRes.data || [];
+          if (teams.length > 0) {
+            const tId = teams[0].teamId;
+            setTeamId(tId);
+            fetchSeasons(tId);
+          } else {
+            setSeasons([]);
+            setLoading(false);
+          }
+        } catch (err) {
+          setError('Failed to fetch teams for coach');
+          setLoading(false);
+        }
       }
-      setCoachId(id);
-      fetchSeasons(id);
-    }
+    };
+    init();
   }, [user]);
 
   const fetchSeasons = async (id) => {
     setLoading(true);
     try {
-      const res = await api.get(`/seasons/coach/${id}`);
+      const res = await api.get(`/seasons/team/${id}`);
       setSeasons(res.data || []);
       setError("");
     } catch (err) {
@@ -37,11 +55,11 @@ function CSeason() {
 
   const handleStartSeason = async (e) => {
     e.preventDefault();
-    if (!seasonName.trim() || !coachId) return;
+    if (!seasonName.trim() || !teamId) return;
     try {
-      await api.post(`/seasons/start?name=${encodeURIComponent(seasonName)}&coachId=${coachId}`);
+      await api.post(`/seasons/start?name=${encodeURIComponent(seasonName)}&teamId=${teamId}`);
       setSeasonName("");
-      fetchSeasons(coachId);
+      fetchSeasons(teamId);
     } catch (err) {
       setError("Failed to start season.");
     }
@@ -50,7 +68,7 @@ function CSeason() {
   const handleEndSeason = async (seasonId) => {
     try {
       await api.post(`/seasons/${seasonId}/stop`);
-      fetchSeasons(coachId);
+      if (teamId) fetchSeasons(teamId);
     } catch (err) {
       setError("Failed to end season.");
     }

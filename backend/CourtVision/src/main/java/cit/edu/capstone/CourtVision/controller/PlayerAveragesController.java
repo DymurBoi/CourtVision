@@ -18,6 +18,8 @@ public class PlayerAveragesController {
 
     @Autowired
     private PlayerAveragesService avgService;
+    @Autowired
+    private cit.edu.capstone.CourtVision.service.SeasonService seasonService;
 /* 
     @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
     @PostMapping("/calculate/{playerId}")
@@ -146,5 +148,11 @@ public class PlayerAveragesController {
         List<PlayerAveragesDTO> result = new ArrayList<>();
         for (PlayerAverages p : players) result.add(PlayerAveragesMapper.toDTO(p));
         return result;
+    }
+
+    // Get a single player's aggregated basic stats for a season
+    @GetMapping("/season/player/{playerId}/{seasonId}")
+    public cit.edu.capstone.CourtVision.dto.PlayerSeasonAveragesDTO getPlayerSeasonAverages(@PathVariable Long playerId, @PathVariable Long seasonId) {
+        return seasonService.calculatePlayerSeasonAverages(playerId, seasonId);
     }
 }
