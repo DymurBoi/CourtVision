@@ -8,6 +8,7 @@ import "../../styles/coach/C-Team.css"
 import "../../styles/coach/C-Home.css"
 import CMatches from './C-Matches';
 import CRequests from './C-Requests';
+import CSeason from "./C-Season";
 
 function CHome() {
   const { user } = useAuth()
@@ -395,10 +396,10 @@ function CHome() {
             Matches
           </button>
           <button
-            className={`tab-button ${activeTab === "requests" ? "active" : ""}`}
-            onClick={() => handleTabChange("requests")}
+            className={`tab-button ${activeTab === "seasons" ? "active" : ""}`}
+            onClick={() => handleTabChange("seasons")}
           >
-            Requests
+            Seasons
           </button>
         </div>
 
@@ -436,7 +437,7 @@ function CHome() {
         )}
 
         {activeTab === "matches" && <CMatches teamId={selectedTeamId} />}
-        {activeTab === "requests" && <CRequests />}
+        {activeTab === "seasons" && <CSeason teamId={selectedTeamId} />}
       </>
     )}
     {showCreateModal && (

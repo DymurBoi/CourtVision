@@ -45,7 +45,7 @@ public class GameService {
     }
 
     //Create a new game
-    public Game save(Game game) {
+    public Game save(Game game, Long teamId) {
         // Assign a season to the game: prefer explicit season in request, otherwise pick an active season
         if (game.getSeason() != null && game.getSeason().getId() != null) {
             Long sid = game.getSeason().getId();
@@ -57,7 +57,7 @@ public class GameService {
             game.setSeason(season);
         } else {
             // If no season was provided, pick any globally active season.
-            var activeSeasons = seasonRepository.findByActiveTrue();
+            var activeSeasons = seasonRepository.findByActiveTrueAndTeam_TeamId(teamId);
             if (activeSeasons == null || activeSeasons.isEmpty()) {
                 throw new RuntimeException("No active season found. Start a season before creating games.");
             }

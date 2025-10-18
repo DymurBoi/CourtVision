@@ -45,9 +45,9 @@ public class GameController {
     }
 
     @PostMapping("/post")
-    public ResponseEntity<?> create(@RequestBody Game game) {
+    public ResponseEntity<?> create(@RequestBody Game game, @PathVariable Long teamId) {
         try {
-            Game saved = service.save(game);
+            Game saved = service.save(game, teamId);
             return ResponseEntity.ok(GameMapper.toDTO(saved));
         } catch (Exception e) {
             // Return a meaningful error message to client
