@@ -3,14 +3,14 @@ import { useAuth } from "../../components/AuthContext";
 import { api } from "../../utils/axiosConfig";
 import "../../styles/player/P-Stats.css";
 
-function CSeason({teamId}) {
+function CSeason() {
   const { user } = useAuth();
   const [seasons, setSeasons] = useState([]);
   const [seasonName, setSeasonName] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [coachId, setCoachId] = useState(null);
-
+  const [teamId, setTeamId] = useState(null);
 
   useEffect(() => {
     const init = async () => {
@@ -25,6 +25,7 @@ function CSeason({teamId}) {
           const teams = teamsRes.data || [];
           if (teams.length > 0) {
             const tId = teams[0].teamId;
+            setTeamId(tId);
             fetchSeasons(tId);
           } else {
             setSeasons([]);

@@ -70,7 +70,7 @@ function CreateMatchModal({ onClose, onSave, teamId }) {
         season: { id: seasonId }
       };
 
-      const gameRes = await api.post(`/games/post/${teamId}`, gamePayload);
+      const gameRes = await api.post(`/games/post`, gamePayload);
       const savedGame = gameRes.data;
 
       console.log("✅ Game created:", savedGame);
