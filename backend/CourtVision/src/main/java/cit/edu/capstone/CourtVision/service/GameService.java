@@ -45,43 +45,35 @@ public class GameService {
     }
 
     //Create a new game
-   public Game save(Game game) {
-        // Assign a season to the game: prefer explicit season in request, otherwise pick an active season
-        if (game.getSeason() != null && game.getSeason().getId() != null) {
-            Long sid = game.getSeason().getId();
-            Season season = seasonRepository.findById(sid).orElseThrow(() -> new RuntimeException("Season not found"));
-            if (!season.isActive()) {
-                throw new RuntimeException("Cannot add game to an inactive season");
-            }
-            // If the season has an associated team, make sure it matches the game's team
-            if (season.getTeam() != null && game.getTeam() != null && game.getTeam().getTeamId() != null) {
-                if (!season.getTeam().getTeamId().equals(game.getTeam().getTeamId())) {
-                    throw new RuntimeException("Cannot add a game for a different team into this season");
+    public Game save(Game game) {
+            // Assign a season to the game: prefer explicit season in request, otherwise pick an active season
+            if (game.getSeason() != null && game.getSeason().getId() != null) {
+                Long sid = game.getSeason().getId();
+                Season season = seasonRepository.findById(sid).orElseThrow(() -> new RuntimeException("Season not found"));
+                if (!season.isActive()) {
+                    throw new RuntimeException("Cannot add game to an inactive season");
                 }
+                // Allow any team to create games inside an active season.
+                game.setSeason(season);
+            } else {
+                // If no season was provided, pick any globally active season.
+                var activeSeasons = seasonRepository.findByActiveTrue();
+                if (activeSeasons == null || activeSeasons.isEmpty()) {
+                    throw new RuntimeException("No active season found. Start a season before creating games.");
+                }
+                game.setSeason(activeSeasons.get(0));
             }
-            game.setSeason(season);
-        } else {
-            // find any active season for this game's team
-            if (game.getTeam() == null || game.getTeam().getTeamId() == null) {
-                throw new RuntimeException("Game must have a team when no season is specified.");
-            }
-            var active = seasonRepository.findByActiveTrueAndTeam_TeamId(game.getTeam().getTeamId());
-            if (active == null || active.isEmpty()) {
-                throw new RuntimeException("No active season found for this team. Start a season before creating games.");
-            }
-            game.setSeason(active.get(0));
+
+            Game savedGame = gameRepo.save(game);
+
+        if ("Live".equalsIgnoreCase(savedGame.getRecordingType())) {
+            BasicStatsVariation stats = new BasicStatsVariation();
+            stats = setStats(stats, savedGame);
+            basicStats.save(stats);
         }
- 
-        Game savedGame = gameRepo.save(game);
- 
-    if ("Live".equalsIgnoreCase(savedGame.getRecordingType())) {
-        BasicStatsVariation stats = new BasicStatsVariation();
-        stats = setStats(stats, savedGame);
-        basicStats.save(stats);
+
+        return savedGame;
     }
- 
-    return savedGame;
-}
 
 
     //Update existing game (partial update style)
