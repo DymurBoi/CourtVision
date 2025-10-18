@@ -44,7 +44,7 @@ public class GameController {
         return ResponseEntity.ok(dtos);
     }
 
-    @PostMapping("/post")
+    @PostMapping("/post/{teamId}")
     public ResponseEntity<?> create(@RequestBody Game game, @PathVariable Long teamId) {
         try {
             Game saved = service.save(game, teamId);
