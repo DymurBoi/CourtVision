@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../components/AuthContext";
 import { api } from "../../utils/axiosConfig";
+import {Button} from "@mui/material"
 import "../../styles/coach/C-Profile.css";
 
 function CProfile() {
@@ -263,21 +264,19 @@ function CProfile() {
             <div className="profile-actions">
               {isEditing ? (
                 <>
-                  <button className="save-button" onClick={handleEditToggle}>
+                  <Button variant="contained" onClick={handleEditToggle}>
                     Save Changes
-                  </button>
-                  <button className="cancel-button" onClick={handleCancel}>
+                  </Button>
+                  <Button variant="contained" color="error" onClick={handleCancel}>
                     Cancel
-                  </button>
+                  </Button>
                 </>
               ) : (
                 <>
-                  <button className="edit-button" onClick={handleEditToggle}>
+                  <Button variant="contained" onClick={handleEditToggle}>
                     Edit Profile
-                  </button>
-                  <button className="logout-button" onClick={handleLogout}>
-                    Logout
-                  </button>
+                  </Button>
+                  
                 </>
               )}
             </div>

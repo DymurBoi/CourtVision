@@ -469,7 +469,7 @@ function CHome() {
                 <button type="submit" className="confirm-button">
                   Create Team
                 </button>
-                <button type="button" className="cancel-button" onClick={() => setShowCreateModal(false)}>
+                <button type="button" className="reject-button" onClick={() => setShowCreateModal(false)}>
                   Cancel
                 </button>
               </div>
@@ -521,7 +521,7 @@ function CHome() {
                 >
                   Add Coach
                 </button>
-                <button type="button" className="cancel-button" onClick={() => setShowAddCoachModal(false)}>
+                <button type="button" className="reject-button" onClick={() => setShowAddCoachModal(false)}>
                   Cancel
                 </button>
               </div>
