@@ -10,7 +10,7 @@ import { StopCircle } from "lucide-react"
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-function CLiveRecord() {
+function CLivePracticeMatch() {
   const navigate = useNavigate();
   const [gameDetails, setGameDetails] = useState();
   const [opponentStats, setOpponentStats] = useState();
@@ -804,6 +804,7 @@ function CLiveRecord() {
 
         {/* Players Display */}
         <div className="teams-container">
+          {/* TEAM A */}
           <div className="team-section">
             <h3 className="team-title">{teamA?.name || "Team A"}</h3>
             <div className="players-grid">
@@ -814,41 +815,70 @@ function CLiveRecord() {
                   <div
                     key={stat.playerId}
                     className="player-card selected"
-                    onClick={() =>
-                      handlePlayersClick(stat.playerId)
-                    }
+                    onClick={() => handlePlayersClick(stat.playerId)}
                   >
                     <div className="jersey-number">#{stat.jerseyNum}</div>
-                    <div className="player-name">{stat.fname} {stat.lname}</div>
+                    <div className="player-name">
+                      {stat.fname} {stat.lname}
+                    </div>
                   </div>
                 ))
               )}
             </div>
+
+            {/* Add First Five Button for TEAM A */}
+            <div style={{ paddingTop: "1.5rem" }}>
+              {showAddFirstFiveButton && (
+                <Button
+                  className="stat-btn"
+                  variant="contained"
+                  color="primary"
+                  onClick={() => setShowFirstFiveModal(true)}
+                >
+                  Add First Five (Team A)
+                </Button>
+              )}
+            </div>
           </div>
 
+          {/* TEAM B */}
           <div className="team-section">
-            <h3 className="team-title">{gameDetails?.opponentName}</h3>
+            <h3 className="team-title">{teamA?.name || "Team B"}</h3>
             <div className="players-grid">
-              <div key={opponentStats?.basicStatVarId} className="player-card" onClick={() => handlePlayerClick('B', 0)}>
-                <div className="jersey-number">Opponent Stats</div>
-                <div className="player-name">sample</div>
-              </div>
+              {teamABasicStats.length === 0 ? (
+                <div className="player-card no-players">No players subbed in</div>
+              ) : (
+                teamABasicStats.map((stat) => (
+                  <div
+                    key={stat.playerId}
+                    className="player-card selected"
+                    onClick={() => handlePlayersClick(stat.playerId)}
+                  >
+                    <div className="jersey-number">#{stat.jerseyNum}</div>
+                    <div className="player-name">
+                      {stat.fname} {stat.lname}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Add First Five Button for TEAM B */}
+            <div style={{ paddingTop: "1.5rem" }}>
+              {showAddFirstFiveButton && (
+                <Button
+                  className="stat-btn"
+                  variant="contained"
+                  color="primary"
+                  onClick={() => setShowFirstFiveModal(true)}
+                >
+                  Add First Five (Team B)
+                </Button>
+              )}
             </div>
           </div>
         </div>
-        <div style={{ paddingTop: "2rem" }}>
-          {showAddFirstFiveButton && (
-            <Button
-              className="stat-btn"
-              variant="contained"
-              color="primary"
-              onClick={() => setShowFirstFiveModal(true)}
-            >
-              Add First Five
-            </Button>
-          )}
 
-        </div>
       </div>
 
       {/* Player Stats Modal */}
@@ -1115,4 +1145,4 @@ function CLiveRecord() {
   )
 }
 
-export default CLiveRecord
+export default CLivePracticeMatch

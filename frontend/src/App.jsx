@@ -39,6 +39,7 @@ import CPlayerRanking from "./pages/coach/C-PlayerRanking";
 import CLiveRecord from "./pages/coach/C-LiveRecord"
 import CSeasonGames from "./pages/coach/C-SeasonGames";
 import CSeasonRanking from "./pages/coach/C-SeasonRanking";
+import CLivePracticeMatch from "./pages/coach/C-LivePracticeMatch";
 
 
 // Create a wrapper component that forces re-render on location change
@@ -158,6 +159,16 @@ function AppRoutes() {
       {/* Coach Routes */}
       <Route element={<CoachOnlyRoute key="coach" />}>
       <Route path="/coach/live-record/:id" element={<CLiveRecord />} />
+        <Route
+          path="/coach/game-details/:id"
+          element={
+            <>
+              <CoachNavbar />
+              <CGameDetails />
+            </>
+          }
+        />
+        <Route path="/coach/practive-live-record/:id" element={<CLivePracticeMatch />} />
         <Route
           path="/coach/game-details/:id"
           element={
