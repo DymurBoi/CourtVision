@@ -988,13 +988,13 @@ function CLivePracticeMatch() {
                   <button className="stat-btn" onClick={() => handleStatUpdate("twoPtAttempts")}>
                     {isAddMode ? "+" : "-"} 2PA
                   </button>
-                  <button className="stat-btn" onClick={() => handleStatUpdate("twoPtMade")}>
+                  <button className="stat-btn" onClick={() => {handleStatUpdate("twoPtMade"); handleStatUpdate("twoPtAttempts")}}>
                     {isAddMode ? "+" : "-"} 2PM
                   </button>
                   <button className="stat-btn" onClick={() => handleStatUpdate("ftAttempts")}>
                     {isAddMode ? "+" : "-"} FTA
                   </button>
-                  <button className="stat-btn" onClick={() => handleStatUpdate("ftMade")}>
+                  <button className="stat-btn" onClick={() => {handleStatUpdate("ftMade"); handleStatUpdate("ftAttempts")}}>
                     {isAddMode ? "+" : "-"} FTM
                   </button>
                   <button className="stat-btn" onClick={() => handleStatUpdate("assists")}>

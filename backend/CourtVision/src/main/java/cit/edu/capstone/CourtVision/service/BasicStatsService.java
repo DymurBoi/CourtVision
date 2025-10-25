@@ -143,13 +143,14 @@ public class BasicStatsService {
             advancedStatsRepository.save(updatedAdvanced);
 
             // Recalculate and update PhysicalBasedMetricsStats
-            PhysicalBasedMetricsStats updatedMetrics = physicalBasedMetricsStatsService.createFrom(savedBasic);
             PhysicalBasedMetricsStats existingMetrics = physicalMetricsRepo.findByBasicStats(savedBasic);
-            if (existingMetrics != null && updatedMetrics != null) {
-                updatedMetrics.setPhysicalBasedMetricsStatsId(existingMetrics.getPhysicalBasedMetricsStatsId());
-                updatedMetrics.setBasicStats(savedBasic);
-                updatedMetrics.setGame(game);
-                physicalMetricsRepo.save(updatedMetrics);
+
+            if (existingMetrics != null) {
+                PhysicalBasedMetricsStats recalculated =
+                        physicalBasedMetricsStatsService.recompute(existingMetrics, savedBasic);
+                physicalMetricsRepo.save(recalculated);
+            } else {
+                physicalBasedMetricsStatsService.createFrom(savedBasic);
             }
 
             return savedBasic;
