@@ -36,6 +36,7 @@ public class BasicStats {
     private int plusMinus;
     private Time minutes;
     private int gamePoints;
+    private boolean opponent = false;
     private boolean subbedIn = false;
 
     @Transient
@@ -258,4 +259,12 @@ public Season getSeason() {
     public void setSeason(Season season) {
         this.season = season;
 }
+
+    public boolean isOpponent() {
+        return opponent;
+    }
+
+    public void setOpponent(boolean opponent) {
+        this.opponent = opponent;
+    }
 }

@@ -159,7 +159,81 @@ public class BasicStatsService {
     }
 
 
+public BasicStats updatePractice(Long id, BasicStats updatedStats) {
+        BasicStats existing = getById(id);  // Get the current stats from the database
+        if (existing != null) {
+            // Create a temporary copy of the existing stats to calculate the difference
+            BasicStats tempStat = new BasicStats(existing);
+            // Update the fields with the new values
+            existing.setTwoPtAttempts(updatedStats.getTwoPtAttempts());
+            existing.setTwoPtMade(updatedStats.getTwoPtMade());
+            existing.setThreePtAttempts(updatedStats.getThreePtAttempts());
+            existing.setThreePtMade(updatedStats.getThreePtMade());
+            existing.setFtAttempts(updatedStats.getFtAttempts());
+            existing.setFtMade(updatedStats.getFtMade());
+            existing.setAssists(updatedStats.getAssists());
+            existing.setoFRebounds(updatedStats.getoFRebounds());
+            existing.setdFRebounds(updatedStats.getdFRebounds());
+            existing.setBlocks(updatedStats.getBlocks());
+            existing.setSteals(updatedStats.getSteals());
+            existing.setTurnovers(updatedStats.getTurnovers());
+            existing.setpFouls(updatedStats.getpFouls());
+            existing.setdFouls(updatedStats.getdFouls());
+            existing.setPlusMinus(updatedStats.getPlusMinus());
+            existing.setMinutes(updatedStats.getMinutes());
+            existing.setGamePoints(updatedStats.getGamePoints());
 
+            int points = (existing.getTwoPtMade() * 2)
+                   + (existing.getThreePtMade() * 3)
+                   + existing.getFtMade();
+            existing.setGamePoints(points);
+            // Update the player and game if present
+            if (updatedStats.getPlayer() != null) {
+                existing.setPlayer(updatedStats.getPlayer());
+            }
+            if (updatedStats.getGame() != null) {
+                existing.setGame(updatedStats.getGame());
+            }
+
+            // Calculate the difference between the existing and updated stats for point values
+            tempStat = differenceChecker(tempStat, updatedStats);
+
+            
+
+            // If the player was subbed in, update the PlusMinus for subbed-in players
+
+            updatePracticeSubbedInPlusMinus(tempStat, tempStat.getGamePoints());
+            
+
+            // Save the updated BasicStats back to the repository
+            BasicStats savedBasic = basicStatsRepository.save(existing);
+
+            // Recalculate and update AdvancedStats
+            Game game = savedBasic.getGame();
+            AdvancedStats updatedAdvanced = calculateAdvancedStats(savedBasic);
+            AdvancedStats existingAdvanced = advancedStatsRepository.findByBasicStats(savedBasic);
+            if (existingAdvanced != null) {
+                updatedAdvanced.setAdvancedStatsId(existingAdvanced.getAdvancedStatsId());
+            }
+            updatedAdvanced.setBasicStats(savedBasic);
+            updatedAdvanced.setGame(game);
+            advancedStatsRepository.save(updatedAdvanced);
+
+            // Recalculate and update PhysicalBasedMetricsStats
+            PhysicalBasedMetricsStats existingMetrics = physicalMetricsRepo.findByBasicStats(savedBasic);
+
+            if (existingMetrics != null) {
+                PhysicalBasedMetricsStats recalculated =
+                        physicalBasedMetricsStatsService.recompute(existingMetrics, savedBasic);
+                physicalMetricsRepo.save(recalculated);
+            } else {
+                physicalBasedMetricsStatsService.createFrom(savedBasic);
+            }
+
+            return savedBasic;
+        }
+        return null;
+    }
 
 
     public void delete(Long id) {
@@ -340,7 +414,7 @@ public List<BasicStatsDTO> getSubbedOutStats(Long gameId) {
         ).isEmpty())
         .map(this::create)
         .collect(Collectors.toList());
-}
+    }
 
     private void updateSubbedInPlusMinus(BasicStats sourcePlayer, int pointDelta) {
         if (pointDelta == 0) return;
@@ -367,4 +441,34 @@ public List<BasicStatsDTO> getSubbedOutStats(Long gameId) {
                 .collect(Collectors.toList());
     }
 
+    private void updatePracticeSubbedInPlusMinus(BasicStats variation, int pointDelta) {
+        if (variation.getGame() == null || pointDelta == 0) return;
+
+        // Get all subbed-in players for the game
+        List<BasicStats> subbedInPlayers = basicStatsRepository
+                .findByGame_GameIdAndSubbedInTrue(variation.getGame().getGameId());
+
+        // Iterate through each subbed-in player
+        for (BasicStats stats : subbedInPlayers) {
+            // Calculate the point difference
+            int previousPoints = stats.getPlusMinus();  // This is the previous gamePoints value
+            int currentPoints = variation.getGamePoints();  // This is the updated gamePoints value
+
+            // Calculate the point difference (delta)
+            int pointDifference =  previousPoints-currentPoints;
+
+            // Log the pointDifference for debugging
+            System.out.println("Point Difference for player " + stats.getBasicStatId() + ": " + pointDifference);
+
+            // Update the PlusMinus by subtracting the pointDifference from the current PlusMinus
+            int newPlusMinus = pointDifference;
+            stats.setPlusMinus(newPlusMinus);
+
+            // Log the new PlusMinus value for debugging
+            System.out.println("Updated PlusMinus for player " + stats.getBasicStatId() + ": " + newPlusMinus);
+        }
+
+        // Save all subbed-in players after the update
+        basicStatsRepository.saveAll(subbedInPlayers);
+    }
 }

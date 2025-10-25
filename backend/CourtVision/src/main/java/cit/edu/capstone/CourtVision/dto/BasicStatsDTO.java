@@ -25,7 +25,7 @@ public class BasicStatsDTO {
     private String playerName;
     private GameDTO gameDTO;
     private boolean subbedIn;
-    
+    private boolean opponent;
     
 
     // Player details
@@ -224,5 +224,13 @@ public class BasicStatsDTO {
     public int getPoints() {
     return (twoPtMade * 2) + (threePtMade * 3) + ftMade;
 }
+
+    public boolean isOpponent() {
+        return opponent;
+    }
+
+    public void setOpponent(boolean opponent) {
+        this.opponent = opponent;
+    }
 }
 
