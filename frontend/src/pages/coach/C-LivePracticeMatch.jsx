@@ -15,13 +15,23 @@ function CLivePracticeMatch() {
   const [gameDetails, setGameDetails] = useState();
   const [opponentStats, setOpponentStats] = useState();
 
-  // Practice match player selection
-  const [selectedTeamAPlayers, setSelectedTeamAPlayers] = useState([]);
-  const [selectedTeamBPlayers, setSelectedTeamBPlayers] = useState([]);
 
-  // For modals
+  // Team A
+  const [teamAPlayers, setTeamAPlayers] = useState([]);
   const [showSelectTeamAModal, setShowSelectTeamAModal] = useState(false);
+  const [showAddFirstFiveA, setShowAddFirstFiveA] = useState(true);
+  const [showFirstFiveModalA, setShowFirstFiveModalA] = useState(false);
+
+  // Team B
+  const [teamBPlayers, setTeamBPlayers] = useState([]);
   const [showSelectTeamBModal, setShowSelectTeamBModal] = useState(false);
+  const [showAddFirstFiveB, setShowAddFirstFiveB] = useState(true);
+  const [showFirstFiveModalB, setShowFirstFiveModalB] = useState(false);
+
+  // Selected first 5
+  const [firstFiveA, setFirstFiveA] = useState([]);
+  const [firstFiveB, setFirstFiveB] = useState([]);
+
 
   const [showModal, setShowModal] = useState(false)
   const [isAddMode, setIsAddMode] = useState(true) // true = add, false = subtract
@@ -32,6 +42,8 @@ function CLivePracticeMatch() {
   const [showFirstFiveModal, setShowFirstFiveModal] = useState(false);
   const [selectedPlayers, setSelectedPlayers] = useState([]);
   const [teamPlayers, setTeamPlayers] = useState([]);
+
+
   //BasicStats Update
   const [selectedBasicStat, setSelectedBasicStat] = useState(null);
   const [formStats, setFormStats] = useState(null);
@@ -63,10 +75,7 @@ function CLivePracticeMatch() {
   const initialConfirmedFirstFive =
     JSON.parse(localStorage.getItem("confirmedFirstFive")) || [];
 
-  const [confirmedFirstFive, setConfirmedFirstFive] = useState(initialConfirmedFirstFive);
-  const [showAddFirstFiveButton, setShowAddFirstFiveButton] = useState(
-    initialConfirmedFirstFive.length !== 5
-  );
+
 
   // Watch for changes and store in localStorage
   useEffect(() => {
@@ -88,28 +97,37 @@ function CLivePracticeMatch() {
       .padStart(2, '0')}.${Math.floor(millis / 100)}`;
   }
 
-  // TEAM A selection logic
-  const handleTeamASelectChange = (playerId) => {
-    setSelectedTeamAPlayers((prev) =>
-      prev.includes(playerId)
-        ? prev.filter((id) => id !== playerId)
-        : [...prev, playerId]
-    );
+  // ----- TEAM A -----
+  const handleConfirmTeamAPlayers = (selected) => {
+    setTeamAPlayers(selected);
+    setShowSelectTeamAModal(false);
+    setShowAddFirstFiveA(true);
   };
 
-  // TEAM B selection logic
-  const handleTeamBSelectChange = (playerId) => {
-    setSelectedTeamBPlayers((prev) =>
-      prev.includes(playerId)
-        ? prev.filter((id) => id !== playerId)
-        : [...prev, playerId]
-    );
+  const handleConfirmFirstFiveA = (selected) => {
+    setFirstFiveA(selected);
+    setShowFirstFiveModalA(false);
+    setShowAddFirstFiveA(false);
   };
 
-  // Filter players not in Team A for Team B modal
-  const availableForTeamB = teamPlayers.filter(
-    (player) => !selectedTeamAPlayers.includes(player.playerId)
-  );
+  // ----- TEAM B -----
+  const handleConfirmTeamBPlayers = (selected) => {
+    setTeamBPlayers(selected);
+    setShowSelectTeamBModal(false);
+    setShowAddFirstFiveB(true);
+  };
+
+  const handleConfirmFirstFiveB = (selected) => {
+    setFirstFiveB(selected);
+    setShowFirstFiveModalB(false);
+    setShowAddFirstFiveB(false);
+  };
+
+
+
+  // Track the 5 on-court players as indices for each team
+  const [teamAOnCourt, setTeamAOnCourt] = useState([])
+  const [teamBOnCourt, setTeamBOnCourt] = useState([0])
 
 
   //UseEffect for getting basicStats by game
@@ -489,17 +507,6 @@ function CLivePracticeMatch() {
     setSelectedRef(null)
   }
 
-  //MODAL FUNCTIONS FOR FIRST FIVE
-  const openFirstFiveModalTeamA = () => {
-    setTeamPlayers(teamPlayers.filter((p) => selectedTeamAPlayers.includes(p.playerId)));
-    setShowFirstFiveModal(true);
-  };
-
-  const openFirstFiveModalTeamB = () => {
-    setTeamPlayers(teamPlayers.filter((p) => selectedTeamBPlayers.includes(p.playerId)));
-    setShowFirstFiveModal(true);
-  };
-
   //BasicStats Update
   useEffect(() => {
     if (selectedBasicStat) {
@@ -621,14 +628,13 @@ function CLivePracticeMatch() {
   };
 
 
-  const handleSubstitute = async (isTeamA) => {
+  const handleSubstitute = async () => {
     try {
-      const res = await api.get(`/basic-stats/get/subbed-out/${gameId}`);
-      const allOut = res.data;
-
-      // Filter based on team
-      const filtered = allOut.filter((stat) => stat.opponent === !isTeamA);
-      setSubbedOutPlayers(filtered);
+      if (gameId) {
+        const res = await api.get(`/basic-stats/get/subbed-out/${gameId}`);
+        console.log("Subbed-out players:", res.data);
+        setSubbedOutPlayers(res.data);
+      }
       setShowSubModal(true);
     } catch (err) {
       console.error("Failed to fetch subbed-out players:", err);
@@ -859,21 +865,27 @@ function CLivePracticeMatch() {
             </div>
 
             {/* Add First Five Button for TEAM A */}
-            <div style={{ paddingTop: "1.5rem" }}>
-              {showAddFirstFiveButton && (
-                <Button
-                  className="stat-btn"
-                  variant="contained"
-                  color="primary"
-                  onClick={openFirstFiveModalTeamA}
-                >
-                  Add First Five (Team A)
-                </Button>
-              )}
-              <Button variant="contained" color="primary" onClick={() => setShowSelectTeamAModal(true)}>
+            <div className="team-control" style={marginTop = "1.5rem"}>
+              <h3>Team A Controls</h3>
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={() => setShowSelectTeamAModal(true)}
+              >
                 Select Team A Players
               </Button>
-            </div>
+
+              {showAddFirstFiveA && (
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={() => setShowFirstFiveModalA(true)}
+                  style={{ marginLeft: "10px" }}
+                >
+                  Add First 5 (Team A)
+                </Button>
+              )}
+            </div>F
           </div>
 
           {/* TEAM B */}
@@ -899,20 +911,26 @@ function CLivePracticeMatch() {
             </div>
 
             {/* Add First Five Button for TEAM B */}
-            <div style={{ paddingTop: "1.5rem" }}>
-              {showAddFirstFiveButton && (
-                <Button
-                  className="stat-btn"
-                  variant="contained"
-                  color="primary"
-                  onClick={openFirstFiveModalTeamB}
-                >
-                  Add First Five (Team B)
-                </Button>
-              )}
-              <Button variant="contained" color="secondary" onClick={() => setShowSelectTeamBModal(true)}>
+            <div className="team-control" style={{ marginTop: "1rem" }}>
+              <h3>Team B Controls</h3>
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={() => setShowSelectTeamBModal(true)}
+              >
                 Select Team B Players
               </Button>
+
+              {showAddFirstFiveB && (
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={() => setShowFirstFiveModalB(true)}
+                  style={{ marginLeft: "10px" }}
+                >
+                  Add First 5 (Team B)
+                </Button>
+              )}
             </div>
           </div>
         </div>
@@ -1064,11 +1082,7 @@ function CLivePracticeMatch() {
                 </div>
 
                 <div style={{ textAlign: "center", marginTop: "1rem" }}>
-                  <button className="stat-btn" onClick={() => {
-                    handleSaveStats();
-                    setShowModal(false);
-
-                  }}>
+                  <button className="stat-btn" onClick={handleSaveStats}>
                     Save
                   </button>
                   <button
@@ -1182,56 +1196,108 @@ function CLivePracticeMatch() {
             </div>
           </div>
         </div>
-
-
       )}
-
+      {/* --- TEAM A SELECT MODAL --- */}
       {showSelectTeamAModal && (
-        <div className="modal-backdrop">
-          <div className="modal">
-            <h2>Select Team A Players</h2>
-            <div className="player-list">
-              {teamPlayers.map((p) => (
-                <label key={p.playerId} className="player-checkbox">
-                  <input
-                    type="checkbox"
-                    checked={selectedTeamAPlayers.includes(p.playerId)}
-                    onChange={() => handleTeamASelectChange(p.playerId)}
-                  />
-                  {p.fname} {p.lname} #{p.jerseyNum}
-                </label>
-              ))}
+        <div className="modal">
+          <h3>Select Players for Team A</h3>
+          {teamPlayers.map((p) => (
+            <div key={p.id}>
+              <input
+                type="checkbox"
+                onChange={(e) =>
+                  e.target.checked
+                    ? setTeamAPlayers((prev) => [...prev, p])
+                    : setTeamAPlayers((prev) => prev.filter((x) => x.id !== p.id))
+                }
+              />
+              {p.fname} {p.lname}
             </div>
-            <div className="modal-actions">
-              <Button variant="contained" color="primary" onClick={() => setShowSelectTeamAModal(false)}>
-                Save
-              </Button>
-            </div>
-          </div>
+          ))}
+          <Button
+            variant="contained"
+            onClick={() => handleConfirmTeamAPlayers(teamAPlayers)}
+          >
+            Confirm Team A
+          </Button>
         </div>
       )}
+
+      {/* --- TEAM A FIRST 5 MODAL --- */}
+      {showFirstFiveModalA && (
+        <div className="modal">
+          <h3>Select First 5 (Team A)</h3>
+          {teamAPlayers.map((p) => (
+            <div key={p.id}>
+              <input
+                type="checkbox"
+                onChange={(e) =>
+                  e.target.checked
+                    ? setFirstFiveA((prev) => [...prev, p])
+                    : setFirstFiveA((prev) => prev.filter((x) => x.id !== p.id))
+                }
+              />
+              {p.fname} {p.lname}
+            </div>
+          ))}
+          <Button
+            variant="contained"
+            onClick={() => handleConfirmFirstFiveA(firstFiveA)}
+          >
+            Confirm First 5
+          </Button>
+        </div>
+      )}
+
+      {/* --- TEAM B SELECT MODAL --- */}
       {showSelectTeamBModal && (
-        <div className="modal-backdrop">
-          <div className="modal">
-            <h2>Select Team B Players</h2>
-            <div className="player-list">
-              {availableForTeamB.map((p) => (
-                <label key={p.playerId} className="player-checkbox">
-                  <input
-                    type="checkbox"
-                    checked={selectedTeamBPlayers.includes(p.playerId)}
-                    onChange={() => handleTeamBSelectChange(p.playerId)}
-                  />
-                  {p.fname} {p.lname} #{p.jerseyNum}
-                </label>
-              ))}
+        <div className="modal">
+          <h3>Select Players for Team B</h3>
+          {teamPlayers.map((p) => (
+            <div key={p.id}>
+              <input
+                type="checkbox"
+                onChange={(e) =>
+                  e.target.checked
+                    ? setTeamBPlayers((prev) => [...prev, p])
+                    : setTeamBPlayers((prev) => prev.filter((x) => x.id !== p.id))
+                }
+              />
+              {p.fname} {p.lname}
             </div>
-            <div className="modal-actions">
-              <Button variant="contained" color="primary" onClick={() => setShowSelectTeamBModal(false)}>
-                Save
-              </Button>
+          ))}
+          <Button
+            variant="contained"
+            onClick={() => handleConfirmTeamBPlayers(teamBPlayers)}
+          >
+            Confirm Team B
+          </Button>
+        </div>
+      )}
+
+      {/* --- TEAM B FIRST 5 MODAL --- */}
+      {showFirstFiveModalB && (
+        <div className="modal">
+          <h3>Select First 5 (Team B)</h3>
+          {teamBPlayers.map((p) => (
+            <div key={p.id}>
+              <input
+                type="checkbox"
+                onChange={(e) =>
+                  e.target.checked
+                    ? setFirstFiveB((prev) => [...prev, p])
+                    : setFirstFiveB((prev) => prev.filter((x) => x.id !== p.id))
+                }
+              />
+              {p.fname} {p.lname}
             </div>
-          </div>
+          ))}
+          <Button
+            variant="contained"
+            onClick={() => handleConfirmFirstFiveB(firstFiveB)}
+          >
+            Confirm First 5
+          </Button>
         </div>
       )}
 
