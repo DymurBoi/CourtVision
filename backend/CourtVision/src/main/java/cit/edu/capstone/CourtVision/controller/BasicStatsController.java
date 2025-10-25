@@ -78,6 +78,26 @@ public class BasicStatsController {
         return service.getSubbedOutStats(gameId);
     }
 
+    @GetMapping("/get/subbed-in/opp-true/{gameId}")
+    public List<BasicStatsDTO> getSubbedInStatsOpp(@PathVariable Long gameId) {
+        return service.getSubbedInStatsOpp(gameId);
+    }
+
+    @GetMapping("/get/subbed-out/opp-true/{gameId}")
+    public List<BasicStatsDTO> getSubbedOutStatsOpp(@PathVariable Long gameId) {
+        return service.getSubbedOutStatsOpp(gameId);
+    }
+
+    @GetMapping("/get/subbed-in/opp-false/{gameId}")
+    public List<BasicStatsDTO> getSubbedInStatsOppFalse(@PathVariable Long gameId) {
+        return service.getSubbedInStatsOppFalse(gameId);
+    }
+
+    @GetMapping("/get/subbed-out/opp-false/{gameId}")
+    public List<BasicStatsDTO> getSubbedOutStatsOppFalse(@PathVariable Long gameId) {
+        return service.getSubbedOutStatsOppFalse(gameId);
+    }
+
     @PostMapping("/post/batch")
     public ResponseEntity<List<BasicStatsDTO>> createBatch(@RequestBody List<BasicStats> statsList) {
         List<BasicStats> createdList = service.createBatch(statsList);

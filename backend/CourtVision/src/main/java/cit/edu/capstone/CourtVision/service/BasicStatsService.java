@@ -394,18 +394,46 @@ public BasicStats updatePractice(Long id, BasicStats updatedStats) {
                     .collect(Collectors.toList());
     }
     public List<BasicStatsDTO> getSubbedInStats(Long gameId) {
-    List<BasicStats> stats = basicStatsRepository.findByGame_GameIdAndSubbedInTrue(gameId);
-    return stats.stream()
-                .map(BasicStatsMapper::toDTO)
-                .collect(Collectors.toList());
-}
+        List<BasicStats> stats = basicStatsRepository.findByGame_GameIdAndSubbedInTrue(gameId);
+        return stats.stream()
+                    .map(BasicStatsMapper::toDTO)
+                    .collect(Collectors.toList());
+    }
 
-public List<BasicStatsDTO> getSubbedOutStats(Long gameId) {
-    List<BasicStats> stats = basicStatsRepository.findByGame_GameIdAndSubbedInFalse(gameId);
-    return stats.stream()
-                .map(BasicStatsMapper::toDTO)
-                .collect(Collectors.toList());
-}
+    public List<BasicStatsDTO> getSubbedOutStats(Long gameId) {
+        List<BasicStats> stats = basicStatsRepository.findByGame_GameIdAndSubbedInFalse(gameId);
+        return stats.stream()
+                    .map(BasicStatsMapper::toDTO)
+                    .collect(Collectors.toList());
+    }
+
+    public List<BasicStatsDTO> getSubbedInStatsOpp(Long gameId) {
+        List<BasicStats> stats = basicStatsRepository.findByGame_GameIdAndSubbedInTrueAndOpponentTrue(gameId);
+        return stats.stream()
+                    .map(BasicStatsMapper::toDTO)
+                    .collect(Collectors.toList());
+    }
+
+    public List<BasicStatsDTO> getSubbedOutStatsOpp(Long gameId) {
+        List<BasicStats> stats = basicStatsRepository.findByGame_GameIdAndSubbedInFalseAndOpponentTrue(gameId);
+        return stats.stream()
+                    .map(BasicStatsMapper::toDTO)
+                    .collect(Collectors.toList());
+    }
+
+    public List<BasicStatsDTO> getSubbedInStatsOppFalse(Long gameId) {
+        List<BasicStats> stats = basicStatsRepository.findByGame_GameIdAndSubbedInTrueAndOpponentFalse(gameId);
+        return stats.stream()
+                    .map(BasicStatsMapper::toDTO)
+                    .collect(Collectors.toList());
+    }
+
+    public List<BasicStatsDTO> getSubbedOutStatsOppFalse(Long gameId) {
+        List<BasicStats> stats = basicStatsRepository.findByGame_GameIdAndSubbedInFalseAndOpponentFalse(gameId);
+        return stats.stream()
+                    .map(BasicStatsMapper::toDTO)
+                    .collect(Collectors.toList());
+    }
 
     public List<BasicStats> createBatch(List<BasicStats> statsList) {
     return statsList.stream()
