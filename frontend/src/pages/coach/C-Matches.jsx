@@ -36,6 +36,7 @@ function CMatches({ teamId }) {
           score: game.finalScore,
           date: new Date(game.gameDate).toLocaleDateString(),
           recordingType: game.recordingType,
+          gameType: game.gameType,
         }));
 
         setMatches(transformed);
@@ -71,15 +72,21 @@ function CMatches({ teamId }) {
 
   //Handles View Game Button
   const handleViewGame = (match) => {
-    if(match.gameType === "Practice" || match.gameType === "Scrimmage" && match.recordingType === "Live"){
-      navigate(`/coach/practive-live-record/${match.id}?teamId=${teamId}`);
-    }
-    else if (match.gameType === "Official Match"&&match.recordingType === "Live") {
-      navigate(`/coach/live-record/${match.id}?teamId=${teamId}`);
-    } else {
-      navigate(`/coach/game-details/${match.id}?teamId=${teamId}`);
-    }
-  };
+  if (
+    (match.gameType === "Practice" || match.gameType === "Scrimmage") &&
+    match.recordingType === "Live"
+  ) {
+    navigate(`/coach/practice-live-record/${match.id}?teamId=${teamId}`);
+  } else if (
+    match.gameType === "Official Match" &&
+    match.recordingType === "Live"
+  ) {
+    navigate(`/coach/live-record/${match.id}?teamId=${teamId}`);
+  } else {
+    navigate(`/coach/game-details/${match.id}?teamId=${teamId}`);
+  }
+};
+
 
 
   const handleCreateMatch = (savedGame) => {
@@ -92,6 +99,7 @@ function CMatches({ teamId }) {
         score: savedGame.finalScore,
         date: new Date(savedGame.gameDate).toLocaleDateString(),
         recordingType: savedGame.recordingType,
+        gameType: savedGame.gameType,
       };
 
       setMatches((prev) => [...prev, newMatchData]);
