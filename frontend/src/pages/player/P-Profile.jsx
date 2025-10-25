@@ -11,6 +11,7 @@ import {
   InputAdornment,
   IconButton,
   TextField,
+  FormHelperText,
   Select,
   MenuItem,
   Button,
@@ -255,23 +256,38 @@ function PProfile() {
                 )}
               </FormControl>
 
-              <FormControl fullWidth sx={{ mb: 2 }}>
+              <FormControl
+                sx={{ width: "100%", maxWidth: 400 }}
+                variant="outlined"
+                required
+              >
+                <InputLabel id="position-label">Position</InputLabel>
                 {isEditing ? (
-                  <select name="position" value={editedData.position} onChange={handleInputChange}>
-                    <option value="">Select position</option>
-                    <option value={"Point Guard"}>Point Guard</option>
-                    <option value={"Shooting Guard"}>Shooting Guard</option>
-                    <option value={"Small Forward"}>Small Forward</option>
-                    <option value={"Power Forward"}>Power Forward</option>
-                    <option value={"Center"}>Center</option>
-                  </select>
-                ) : (
-                  <TextField
+                  <Select
+                    labelId="position-label"
+                    id="position"
+                    name="position"
+                    value={editedData.position}
                     label="Position"
-                    value={playerData.position || "Not assigned"}
-                    InputProps={{ readOnly: true }}
+                    onChange={handleInputChange}
+                    sx={{ bgcolor: "#F5F5F5", width: "100%" }}
+                  >
+                    <MenuItem value={"Point Guard"}>Point Guard</MenuItem>
+                    <MenuItem value={"Shooting Guard"}>Shooting Guard</MenuItem>
+                    <MenuItem value={"Small Forward"}>Small Forward</MenuItem>
+                    <MenuItem value={"Power Forward"}>Power Forward</MenuItem>
+                    <MenuItem value={"Center"}>Center</MenuItem>
+                  </Select>
+                ) : (
+                  <OutlinedInput
+                    id="position"
+                    name="position"
+                    value={playerData.position || "Not Assigned"}
+                    readOnly
+                    sx={{ bgcolor: "#ffffffff", width: "100%" }}
                   />
                 )}
+                <FormHelperText>Select your primary playing position</FormHelperText>
               </FormControl>
 
               <FormControl fullWidth sx={{ mb: 2 }}>
