@@ -443,32 +443,75 @@ public List<BasicStatsDTO> getSubbedOutStats(Long gameId) {
 
     private void updatePracticeSubbedInPlusMinus(BasicStats variation, int pointDelta) {
         if (variation.getGame() == null || pointDelta == 0) return;
+        if(variation.isOpponent()==true){
+            List<BasicStats> subbedInTeam = basicStatsRepository
+                .findByGame_GameIdAndSubbedInTrueAndOpponentFalse(variation.getGame().getGameId());
+            List<BasicStats> subbedInOpponent = basicStatsRepository
+                .findByGame_GameIdAndSubbedInTrueAndOpponentTrue(variation.getGame().getGameId());
+            
+            for (BasicStats stats : subbedInOpponent) {
+                // Calculate the point difference
+                int previousPoints = stats.getPlusMinus();  // This is the previous gamePoints value
+                int currentPoints = variation.getGamePoints();  // This is the updated gamePoints value
 
-        // Get all subbed-in players for the game
-        List<BasicStats> subbedInPlayers = basicStatsRepository
-                .findByGame_GameIdAndSubbedInTrue(variation.getGame().getGameId());
+                // Calculate the point difference (delta)
+                int pointDifference =  previousPoints-currentPoints;
 
-        // Iterate through each subbed-in player
-        for (BasicStats stats : subbedInPlayers) {
-            // Calculate the point difference
-            int previousPoints = stats.getPlusMinus();  // This is the previous gamePoints value
-            int currentPoints = variation.getGamePoints();  // This is the updated gamePoints value
+                // Log the pointDifference for debugging
+                System.out.println("Point Difference for player " + stats.getBasicStatId() + ": " + pointDifference);
 
-            // Calculate the point difference (delta)
-            int pointDifference =  previousPoints-currentPoints;
+                // Update the PlusMinus by subtracting the pointDifference from the current PlusMinus
+                int newPlusMinus = pointDifference;
+                stats.setPlusMinus(newPlusMinus);
 
-            // Log the pointDifference for debugging
-            System.out.println("Point Difference for player " + stats.getBasicStatId() + ": " + pointDifference);
+                // Log the new PlusMinus value for debugging
+                System.out.println("Updated PlusMinus for player " + stats.getBasicStatId() + ": " + newPlusMinus);
+            }
+            for (BasicStats stats : subbedInTeam) {
+                int updatedPlusMinus = stats.getPlusMinus() + pointDelta;
+                stats.setPlusMinus(updatedPlusMinus);
 
-            // Update the PlusMinus by subtracting the pointDifference from the current PlusMinus
-            int newPlusMinus = pointDifference;
-            stats.setPlusMinus(newPlusMinus);
+                System.out.println("Updated PlusMinus for Player " + stats.getPlayer().getPlayerId()
+                        + ": " + updatedPlusMinus);
+            }
 
-            // Log the new PlusMinus value for debugging
-            System.out.println("Updated PlusMinus for player " + stats.getBasicStatId() + ": " + newPlusMinus);
+            basicStatsRepository.saveAll(subbedInOpponent);
+            basicStatsRepository.saveAll(subbedInTeam);
         }
+        else if (variation.isOpponent()==false){
+            List<BasicStats> subbedInTeam = basicStatsRepository
+                .findByGame_GameIdAndSubbedInTrueAndOpponentTrue(variation.getGame().getGameId());
+            List<BasicStats> subbedInOpponent = basicStatsRepository
+                .findByGame_GameIdAndSubbedInTrueAndOpponentFalse(variation.getGame().getGameId());
+            
+            for (BasicStats stats : subbedInOpponent) {
+                    // Calculate the point difference
+                    int previousPoints = stats.getPlusMinus();  // This is the previous gamePoints value
+                    int currentPoints = variation.getGamePoints();  // This is the updated gamePoints value
 
-        // Save all subbed-in players after the update
-        basicStatsRepository.saveAll(subbedInPlayers);
+                    // Calculate the point difference (delta)
+                    int pointDifference =  previousPoints-currentPoints;
+
+                    // Log the pointDifference for debugging
+                    System.out.println("Point Difference for player " + stats.getBasicStatId() + ": " + pointDifference);
+
+                    // Update the PlusMinus by subtracting the pointDifference from the current PlusMinus
+                    int newPlusMinus = pointDifference;
+                    stats.setPlusMinus(newPlusMinus);
+
+                    // Log the new PlusMinus value for debugging
+                    System.out.println("Updated PlusMinus for player " + stats.getBasicStatId() + ": " + newPlusMinus);
+            }
+            for (BasicStats stats : subbedInTeam) {
+                int updatedPlusMinus = stats.getPlusMinus() + pointDelta;
+                stats.setPlusMinus(updatedPlusMinus);
+
+                System.out.println("Updated PlusMinus for Player " + stats.getPlayer().getPlayerId()
+                        + ": " + updatedPlusMinus);
+            }
+
+            basicStatsRepository.saveAll(subbedInOpponent);
+            basicStatsRepository.saveAll(subbedInTeam);
+        }
     }
 }
