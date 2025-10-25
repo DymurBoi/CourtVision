@@ -54,6 +54,14 @@ public class BasicStatsController {
                 : ResponseEntity.notFound().build();
     }
 
+    @PutMapping("/put-practice/{id}")
+    public ResponseEntity<BasicStatsDTO> updatePractice(@PathVariable Long id, @RequestBody BasicStats stats) {
+        BasicStats updated = service.updatePractice(id, stats);
+        return updated != null
+                ? ResponseEntity.ok(BasicStatsMapper.toDTO(updated))
+                : ResponseEntity.notFound().build();
+    }
+
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
