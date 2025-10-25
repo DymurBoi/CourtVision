@@ -15,6 +15,7 @@ public class Player {
 
     private String fname;
     private String lname;
+    @Column(unique = true)
     private String email;
     private String password;
     private LocalDate birthDate;
