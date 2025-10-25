@@ -544,25 +544,34 @@ function CLiveRecord() {
 
     const delta = (isAddMode ? 1 : -1) * amount;
 
-    // Team A (BasicStats)
+    // 🏀 TEAM A — BasicStats
     if (formStats?.playerId) {
-      // Build the updated player stat locally (apply the delta immediately)
       const updatedPlayer = { ...formStats };
-      if (statType === "points") {
-        updatedPlayer.points = Math.max(0, (updatedPlayer.points || 0) + delta);
+
+      // Handle linked stats (made + attempt)
+      if (statType === "threePtMade") {
+        updatedPlayer.threePtMade = Math.max(0, (updatedPlayer.threePtMade || 0) + delta);
+        if (isAddMode) updatedPlayer.threePtAttempts = (updatedPlayer.threePtAttempts || 0) + 1;
+      } else if (statType === "twoPtMade") {
+        updatedPlayer.twoPtMade = Math.max(0, (updatedPlayer.twoPtMade || 0) + delta);
+        if (isAddMode) updatedPlayer.twoPtAttempts = (updatedPlayer.twoPtAttempts || 0) + 1;
+      } else if (statType === "ftMade") {
+        updatedPlayer.ftMade = Math.max(0, (updatedPlayer.ftMade || 0) + delta);
+        if (isAddMode) updatedPlayer.ftAttempts = (updatedPlayer.ftAttempts || 0) + 1;
       } else {
+        // other stats like rebounds, assists, etc.
         updatedPlayer[statType] = Math.max(0, (updatedPlayer[statType] || 0) + delta);
       }
-      // Recompute computed fields
+
+      // 🔁 Recalculate gamePoints
       updatedPlayer.gamePoints =
         (Number(updatedPlayer.twoPtMade) * 2) +
         (Number(updatedPlayer.threePtMade) * 3) +
         Number(updatedPlayer.ftMade);
 
-      // Update form state immediately with the derived values
       setFormStats(updatedPlayer);
 
-      // Recompute team total by substituting the updated player into the teamABasicStats array
+      // 💯 Update Team A live score
       const newTotal = teamABasicStats.reduce((sum, stat) => {
         if (stat.playerId === updatedPlayer.playerId) {
           return sum + (Number(updatedPlayer.gamePoints) || 0);
@@ -574,20 +583,48 @@ function CLiveRecord() {
       return;
     }
 
-    // Team B (BasicStatsVariationDTO)
+    // 🏀 TEAM B — BasicStatsVariationDTO
     if (formStats?.basicStatVarId) {
       setFormStats((prev) => {
         const updated = { ...prev };
-        if (statType === "bPoints") {
-          updated[statType] = Math.max(0, (updated[statType] || 0) + delta);
+
+        // Handle linked stats (made + attempt)
+        if (statType === "threePtMade") {
+          updated.threePtMade = Math.max(0, (updated.threePtMade || 0) + delta);
+          if (isAddMode) updated.threePtAttempts = (updated.threePtAttempts || 0) + 1;
+        } else if (statType === "twoPtMade") {
+          updated.twoPtMade = Math.max(0, (updated.twoPtMade || 0) + delta);
+          if (isAddMode) updated.twoPtAttempts = (updated.twoPtAttempts || 0) + 1;
+        } else if (statType === "ftMade") {
+          updated.ftMade = Math.max(0, (updated.ftMade || 0) + delta);
+          if (isAddMode) updated.ftAttempts = (updated.ftAttempts || 0) + 1;
         } else {
           updated[statType] = Math.max(0, (updated[statType] || 0) + delta);
         }
+
+
+        // 🔁 Recalculate gamePoints
+        updated.gamePoints =
+          (Number(updated.twoPtMade) * 2) +
+          (Number(updated.threePtMade) * 3) +
+          Number(updated.ftMade);
+
         return updated;
       });
+
+      // 💯 Update Team B live score
+      setTeamBScoreLive((prevScore) => {
+        const newScore =
+          (Number(formStats.twoPtMade) * 2) +
+          (Number(formStats.threePtMade) * 3) +
+          (Number(formStats.ftMade));
+        return newScore;
+      });
+
       return;
     }
   };
+
 
 
   const handleSubstitute = async () => {
@@ -952,7 +989,7 @@ function CLiveRecord() {
                   <button className="stat-btn" onClick={() => handleStatUpdate("threePtAttempts")}>
                     {isAddMode ? "+" : "-"} 3PA
                   </button>
-                  <button className="stat-btn" onClick={() => { handleStatUpdate("threePtMade"); handleStatUpdate("threePtAttempts") }}>
+                  <button className="stat-btn" onClick={() => handleStatUpdate("threePtMade")}>
                     {isAddMode ? "+" : "-"} 3PM
                   </button>
                   <button className="stat-btn" onClick={() => handleStatUpdate("twoPtAttempts")}>
@@ -996,7 +1033,11 @@ function CLiveRecord() {
                 </div>
 
                 <div style={{ textAlign: "center", marginTop: "1rem" }}>
-                  <button className="stat-btn" onClick={handleSaveStats}>
+                  <button className="stat-btn" onClick={() => {
+                    handleSaveStats();
+                    setShowModal(false);
+
+                  }}>
                     Save
                   </button>
                   <button

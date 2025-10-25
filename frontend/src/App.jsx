@@ -168,7 +168,7 @@ function AppRoutes() {
             </>
           }
         />
-        <Route path="/coach/practive-live-record/:id" element={<CLivePracticeMatch />} />
+        <Route path="/coach/practice-live-record/:id" element={<CLivePracticeMatch />} />
         <Route
           path="/coach/game-details/:id"
           element={

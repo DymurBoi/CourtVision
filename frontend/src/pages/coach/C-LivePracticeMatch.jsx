@@ -982,19 +982,19 @@ function CLivePracticeMatch() {
                   <button className="stat-btn" onClick={() => handleStatUpdate("threePtAttempts")}>
                     {isAddMode ? "+" : "-"} 3PA
                   </button>
-                  <button className="stat-btn" onClick={() => { handleStatUpdate("threePtMade"); handleStatUpdate("threePtAttempts") }}>
+                  <button className="stat-btn" onClick={() =>  handleStatUpdate("threePtMade")}>
                     {isAddMode ? "+" : "-"} 3PM
                   </button>
                   <button className="stat-btn" onClick={() => handleStatUpdate("twoPtAttempts")}>
                     {isAddMode ? "+" : "-"} 2PA
                   </button>
-                  <button className="stat-btn" onClick={() => {handleStatUpdate("twoPtMade"); handleStatUpdate("twoPtAttempts")}}>
+                  <button className="stat-btn" onClick={() => handleStatUpdate("twoPtMade")}>
                     {isAddMode ? "+" : "-"} 2PM
                   </button>
                   <button className="stat-btn" onClick={() => handleStatUpdate("ftAttempts")}>
                     {isAddMode ? "+" : "-"} FTA
                   </button>
-                  <button className="stat-btn" onClick={() => {handleStatUpdate("ftMade"); handleStatUpdate("ftAttempts")}}>
+                  <button className="stat-btn" onClick={() => handleStatUpdate("ftMade")}>
                     {isAddMode ? "+" : "-"} FTM
                   </button>
                   <button className="stat-btn" onClick={() => handleStatUpdate("assists")}>
@@ -1026,7 +1026,11 @@ function CLivePracticeMatch() {
                 </div>
 
                 <div style={{ textAlign: "center", marginTop: "1rem" }}>
-                  <button className="stat-btn" onClick={handleSaveStats}>
+                  <button className="stat-btn" onClick={() => {
+                      handleSaveStats();
+                      setShowModal(false);
+                    
+                    }}>
                     Save
                   </button>
                   <button
