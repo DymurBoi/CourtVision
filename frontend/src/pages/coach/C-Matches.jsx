@@ -73,12 +73,12 @@ function CMatches({ teamId }) {
   //Handles View Game Button
   const handleViewGame = (match) => {
   if (
-    (match.gameType === "Practice" || match.gameType === "Scrimmage") &&
+    match.gameType === "Practice" &&
     match.recordingType === "Live"
   ) {
     navigate(`/coach/practice-live-record/${match.id}?teamId=${teamId}`);
   } else if (
-    match.gameType === "Official Match" &&
+    (match.gameType === "Official Match" || match.gameType === "Scrimmage")&&
     match.recordingType === "Live"
   ) {
     navigate(`/coach/live-record/${match.id}?teamId=${teamId}`);
