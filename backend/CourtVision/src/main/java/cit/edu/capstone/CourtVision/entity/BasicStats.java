@@ -17,7 +17,7 @@ public class BasicStats {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long basicStatId;
-
+//try pushing
 
     private int twoPtAttempts;
     private int twoPtMade;
