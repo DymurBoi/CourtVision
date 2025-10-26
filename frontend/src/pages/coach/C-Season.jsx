@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../../components/AuthContext";
 import { api } from "../../utils/axiosConfig";
-import "../../styles/player/P-Stats.css";
+import "../../styles/coach/C-Season.css";
 
 function CSeason() {
   const { user } = useAuth();
@@ -32,7 +32,7 @@ function CSeason() {
             setLoading(false);
           }
         } catch (err) {
-          setError('Failed to fetch teams for coach');
+          setError("Failed to fetch teams for coach");
           setLoading(false);
         }
       }
@@ -57,7 +57,9 @@ function CSeason() {
     e.preventDefault();
     if (!seasonName.trim() || !teamId) return;
     try {
-      await api.post(`/seasons/start?name=${encodeURIComponent(seasonName)}&teamId=${teamId}`);
+      await api.post(
+        `/seasons/start?name=${encodeURIComponent(seasonName)}&teamId=${teamId}`
+      );
       setSeasonName("");
       fetchSeasons(teamId);
     } catch (err) {
@@ -75,63 +77,79 @@ function CSeason() {
   };
 
   return (
-    <div className="stats-container">
+    <div className="season-page stats-container">
       <h1 className="page-title">Season Management</h1>
       <p className="page-subtitle">Start or end a season for your team</p>
-      <form onSubmit={handleStartSeason} style={{ marginBottom: 24 }}>
+
+      <form className = "season-page form"onSubmit={handleStartSeason}>
         <input
           type="text"
           value={seasonName}
-          onChange={e => setSeasonName(e.target.value)}
+          onChange={(e) => setSeasonName(e.target.value)}
           placeholder="Season Name"
-          style={{ padding: 8, borderRadius: 6, border: '1px solid #ccc', marginRight: 8 }}
           required
         />
-        <button className="apply-button" type="submit">Start New Season</button>
+        <button className="apply-button" type="submit">
+          Start New Season
+        </button>
       </form>
+
       {loading ? (
         <div>Loading seasons...</div>
       ) : error ? (
-        <div style={{ color: 'red' }}>{error}</div>
+        <div className="error-message">{error}</div>
       ) : (
-        <div className="stats-card">
-          <div className="stats-card-header">
+        <div className="season-page stats-card">
+          <div className="season-page stats-card-header">
             <h2>All Seasons</h2>
           </div>
-          <div style={{ padding: 24 }}>
+          <div className="stats-card-body">
             {seasons.length === 0 ? (
-              <div>No seasons found.</div>
+              <div className="no-data">No seasons found.</div>
             ) : (
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <table>
                 <thead>
-                  <tr style={{ background: 'var(--light-purple)' }}>
-                    <th style={{ padding: 8 }}>Name</th>
-                    <th style={{ padding: 8 }}>Start Date</th>
-                    <th style={{ padding: 8 }}>End Date</th>
-                    <th style={{ padding: 8 }}>Status</th>
-                    <th style={{ padding: 8 }}>Action</th>
+                  <tr>
+                    <th>Name</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {seasons.map(season => (
-                    <tr key={season.id} style={{ borderBottom: '1px solid #eee' }}>
-                      <td style={{ padding: 8 }}>{season.seasonName}</td>
-                      <td style={{ padding: 8 }}>{season.startDate || '-'}</td>
-                      <td style={{ padding: 8 }}>{season.endDate || '-'}</td>
-                      <td style={{ padding: 8 }}>
-                        {season.active ? <span style={{ color: 'green' }}>Active</span> : 'Ended'}
+                  {seasons.map((season) => (
+                    <tr key={season.id}>
+                      <td data-label="Name">{season.seasonName}</td>
+                      <td data-label="Start Date">{season.startDate || "-"}</td>
+                      <td data-label="End Date">{season.endDate || "-"}</td>
+                      <td data-label="Status">
+                        {season.active ? (
+                          <span className="status-active">Active</span>
+                        ) : (
+                          <span className="status-ended">Ended</span>
+                        )}
                       </td>
-                      <td style={{ padding: 8 }}>
-                        <div style={{ display: 'flex', gap: 8 }}>
+                      <td data-label="Action">
+                        <div className="actions">
                           {season.active && (
-                            <button className="apply-button" style={{ padding: '4px 12px', fontSize: 14 }} onClick={() => handleEndSeason(season.id)}>
+                            <button
+                              className="apply-button"
+                              onClick={() => handleEndSeason(season.id)}
+                            >
                               End Season
                             </button>
                           )}
-                          <a href={`/coach/season/${season.id}/games`} className="apply-button" style={{ padding: '4px 12px', fontSize: 14, textDecoration: 'none' }}>
+                          <a
+                            href={`/coach/season/${season.id}/games`}
+                            className="apply-button"
+                          >
                             View Games
                           </a>
-                          <a href={`/coach/season/${season.id}/ranking`} className="apply-button" style={{ padding: '4px 12px', fontSize: 14, textDecoration: 'none' }}>
+                          <a
+                            href={`/coach/season/${season.id}/ranking`}
+                            className="apply-button"
+                          >
                             View Player Ranking
                           </a>
                         </div>

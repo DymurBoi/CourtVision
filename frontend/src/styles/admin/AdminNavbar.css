@@ -1,212 +1,169 @@
 .admin-navbar {
-    background-color: var(--dark-blue);
+  background-color: var(--dark-blue);
   color: var(--light-purple);
   padding: 1rem 0;
   position: sticky;
   top: 0;
   z-index: 100;
-  }
-  
-  .admin-navbar-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 2rem;
-  }
-  
-  .admin-logo a {
-    color: var(--light-purple);
+}
+
+.admin-navbar-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+}
+
+/* Logo */
+.admin-logo a {
+  color: var(--light-purple);
   font-size: 1.5rem;
   font-weight: bold;
   text-decoration: none;
+}
+
+/* Desktop nav links */
+.admin-nav-links {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.admin-nav-item {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: color 0.3s ease;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0;
+}
+
+.admin-nav-item:hover {
+  color: white;
+}
+
+.admin-user-actions {
+  display: flex;
+  align-items: center;
+}
+
+.admin-logout-btn {
+  background-color: transparent;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 4px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.admin-logout-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: white;
+}
+
+/* Mobile menu button */
+.admin-mobile-menu-btn {
+  display: none;
+  cursor: pointer;
+  z-index: 150; /* ensures it's clickable over dropdown */
+}
+
+.menu-icon {
+  width: 28px;
+  height: 20px;
+  position: relative;
+}
+
+.menu-icon span {
+  display: block;
+  position: absolute;
+  height: 3px;
+  width: 100%;
+  background: white;
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
+.menu-icon span:nth-child(1) {
+  top: 0;
+}
+
+.menu-icon span:nth-child(2) {
+  top: 8px;
+}
+
+.menu-icon span:nth-child(3) {
+  top: 16px;
+}
+
+/* Hamburger animation when open */
+.menu-icon.open span:nth-child(1) {
+  transform: rotate(45deg);
+  top: 8px;
+}
+
+.menu-icon.open span:nth-child(2) {
+  opacity: 0;
+}
+
+.menu-icon.open span:nth-child(3) {
+  transform: rotate(-45deg);
+  top: 8px;
+}
+
+/* ========== MOBILE RESPONSIVE NAVIGATION ========== */
+@media (max-width: 768px) {
+  .admin-navbar-container {
+    padding: 0 1rem;
   }
-  
-  .logo-text {
-    margin-right: 0.5rem;
+
+  .admin-mobile-menu-btn {
+    display: block;
   }
-  
-  .admin-badge {
-    background-color: var(--bright-purple);
-    color: white;
-    padding: 0.2rem 0.5rem;
-    border-radius: 4px;
-    font-size: 0.7rem;
-    text-transform: uppercase;
-  }
-  
+
+  /* Hide links by default on mobile */
   .admin-nav-links {
-    display: flex;
-    gap: 1.5rem;
-  }
-  
-  .admin-nav-item {
-    color: rgba(255, 255, 255, 0.8);
-    text-decoration: none;
-    font-size: 0.95rem;
-    transition: color 0.3s ease;
-    display: flex;
-    align-items: center;
-    padding: 0.5rem 0;
-  }
-  
-  .admin-nav-item:hover {
-    color: white;
-  }
-  
-  .admin-nav-item.active {
-    color: white;
-    position: relative;
-  }
-  
-  .admin-nav-item.active:after {
-    content: "";
     position: absolute;
-    bottom: 0;
+    top: 65px;
     left: 0;
     right: 0;
-    height: 2px;
-    background-color: var(--bright-purple);
-  }
-  
-  .nav-icon {
-    width: 18px;
-    height: 18px;
-    margin-right: 0.5rem;
-  }
-  
-  .admin-user-actions {
-    margin-left: auto;
-    display: flex;
+    background-color: var(--dark-blue);
+    flex-direction: column;
     align-items: center;
-  }
-  
-  .view-site-link {
-    color: rgba(255, 255, 255, 0.8);
-    text-decoration: none;
-    font-size: 0.9rem;
-    transition: color 0.3s ease;
-    padding: 0.4rem 0.8rem;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 4px;
-  }
-  
-  .view-site-link:hover {
-    color: white;
-    border-color: white;
-  }
-  
-  .admin-profile {
-    display: flex;
-    align-items: center;
-  }
-  
-  .admin-profile-icon {
-    width: 35px;
-    height: 35px;
-    background-color: var(--bright-purple);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-  }
-  
-  .admin-mobile-menu-btn {
-    display: none;
-    cursor: pointer;
-  }
-  
-  .menu-icon {
-    width: 30px;
-    height: 20px;
-    position: relative;
-  }
-  
-  .menu-icon span {
-    display: block;
-    position: absolute;
-    height: 3px;
-    width: 100%;
-    background: white;
-    border-radius: 3px;
-    transition: all 0.3s ease;
-  }
-  
-  .menu-icon span:nth-child(1) {
-    top: 0;
-  }
-  
-  .menu-icon span:nth-child(2) {
-    top: 8px;
-  }
-  
-  .menu-icon span:nth-child(3) {
-    top: 16px;
-  }
-  
-  .menu-icon.open span:nth-child(1) {
-    transform: rotate(45deg);
-    top: 8px;
-  }
-  
-  .menu-icon.open span:nth-child(2) {
+    gap: 1rem;
+    padding: 1rem 0;
+    transform: translateY(-100%);
     opacity: 0;
+    pointer-events: none;
+    transition: all 0.35s ease-in-out;
   }
-  
-  .menu-icon.open span:nth-child(3) {
-    transform: rotate(-45deg);
-    top: 8px;
+
+  /* Show when active */
+  .admin-nav-links.active {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
   }
-  
+
+  .admin-nav-item {
+    font-size: 1rem;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    width: 100%;
+    text-align: center;
+  }
+
+  .admin-user-actions {
+    margin-top: 0.5rem;
+  }
+
   .admin-logout-btn {
-    background-color: transparent;
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    border-radius: 4px;
-    padding: 6px 14px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 14px;
+    width: 100%;
   }
-  
-  .admin-logout-btn:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-color: white;
-  }
-  
-  @media (max-width: 768px) {
-    .admin-navbar-container {
-      padding: 0 1rem;
-    }
-  
-    .admin-nav-links {
-      display: flex;
-  gap: 2rem;
-    }
-  
-    .admin-nav-links.active {
-      transform: translateY(0);
-    }
-  
-    .admin-nav-item {
-      padding: 1rem 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-  
-    .admin-nav-item:last-child {
-      border-bottom: none;
-    }
-  
-    .admin-mobile-menu-btn {
-      display: block;
-    }
-  
-    .view-site-link {
-      display: none;
-    }
-  }
-  
+}

@@ -10,7 +10,6 @@ function CMatches({ teamId }) {
   const location = useLocation();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [matches, setMatches] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   // Get teamId from query string
@@ -20,7 +19,6 @@ function CMatches({ teamId }) {
     const fetchMatches = async () => {
       if (!teamId) {
         setError("No team selected. Please go back and select a team.");
-        setLoading(false);
         return;
       }
 
@@ -44,20 +42,12 @@ function CMatches({ teamId }) {
         console.error("Error fetching matches:", err);
         setError("Failed to load matches. Please try again.");
       } finally {
-        setLoading(false);
+
       }
     };
 
     fetchMatches();
   }, [teamId]);
-
-  if (loading) {
-    return (
-      <div className="loading-container">
-        <p>Loading matches...</p>
-      </div>
-    );
-  }
 
   if (error) {
     return (

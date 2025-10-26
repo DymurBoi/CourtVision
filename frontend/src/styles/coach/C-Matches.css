@@ -12,9 +12,6 @@
   background: linear-gradient(to right, var(--medium-purple), var(--bright-purple));
   color: white;
   border: none;
-  padding: 0.8rem var(--medium-purple), var(--bright-purple);
-  color: white;
-  border: none;
   padding: 0.8rem 1.5rem;
   border-radius: 6px;
   font-weight: 600;
@@ -56,10 +53,10 @@
 .match-item {
   display: grid;
   grid-template-columns: 2fr 0.5fr 1fr 1fr 1fr;
+  align-items: center;
   padding: 1rem 1.5rem;
   border-bottom: 1px solid rgba(123, 123, 243, 0.2);
   transition: background-color 0.2s ease;
-  align-items: center;
 }
 
 .match-item:last-child {
@@ -87,24 +84,28 @@
 }
 
 .result.win {
-  background-color: #2ecc71; /* Green for wins */
+  background-color: #2ecc71;
 }
 
 .result.loss {
-  background-color: #e74c3c; /* Red for losses */
+  background-color: #e74c3c;
 }
 
 .result.tie {
   background-color: #8a91a0;
 }
 
-/* LIVE = Blue */
 .result.live {
   background-color: #0c50aa;
   animation: pulse 1.5s infinite;
 }
 
-.points {
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.score {
   font-weight: 600;
   color: var(--dark-blue);
 }
@@ -113,7 +114,7 @@
   color: var(--medium-purple);
 }
 
-.view-game-button {
+.view-button {
   background: linear-gradient(to right, var(--medium-purple), var(--bright-purple));
   color: white;
   border: none;
@@ -123,65 +124,100 @@
   transition: all 0.3s ease;
   font-weight: 500;
   font-size: 0.9rem;
-  text-decoration: none;
-  display: inline-block;
 }
 
-.view-game-button:hover {
+.view-button:hover {
   background: linear-gradient(to right, var(--bright-purple), var(--medium-purple));
   box-shadow: 0 4px 8px rgba(65, 65, 252, 0.3);
   transform: translateY(-2px);
 }
 
-/* Responsive styles */
+/* ============================================================
+   📱 TABLET (≤768px)
+   ============================================================ */
 @media (max-width: 768px) {
-  .match-header,
-  .match-item {
-    grid-template-columns: 2fr 0.5fr 1fr 1fr;
-    font-size: 0.9rem;
-    padding: 1rem;
+  .matches-actions {
+    justify-content: center;
   }
 
-  .action-header {
-    display: none;
+  .create-match-button {
+    width: 90%;
+    justify-content: center;
+    font-size: 0.95rem;
   }
 
-  .match-action {
-    grid-column: 1 / -1;
-    margin-top: 0.5rem;
-    text-align: center;
+  /* Keep table layout but reduce to 3 columns */
+  .match-header {
+    grid-template-columns: 2fr 0.5fr 1fr;
   }
 
   .match-item {
-    grid-template-rows: auto auto;
-  }
-}
-
-@media (max-width: 480px) {
-  .match-header,
-  .match-item {
-    grid-template-columns: 1.5fr 0.5fr 1fr;
+    grid-template-columns: 2fr 0.5fr 1fr;
   }
 
+  /* Hide unwanted columns */
+  .points-header,
   .date-header,
+  .score,
   .date {
     display: none;
   }
 
-  .match-item {
-    position: relative;
-    padding-bottom: 3rem;
-  }
-
-  .match-action {
-    position: absolute;
-    bottom: 0.5rem;
-    left: 0;
-    right: 0;
-  }
-
-  .view-game-button {
-    width: 90%;
+  /* Make View button adjust nicely */
+  .view-button {
+    font-size: 0.85rem;
+    padding: 0.45rem 0.9rem;
   }
 }
 
+/* ============================================================
+   📱 SMALL MOBILE (≤480px)
+   ============================================================ */
+@media (max-width: 480px) {
+  .matches-actions {
+    justify-content: center;
+  }
+
+  .create-match-button {
+    width: 100%;
+    font-size: 0.9rem;
+    padding: 0.7rem;
+  }
+
+  /* Still table-like but more compact */
+  .match-header {
+    grid-template-columns: 1.5fr 0.5fr 1fr;
+    font-size: 0.85rem;
+  }
+
+  .match-item {
+    grid-template-columns: 1.5fr 0.5fr 1fr;
+    padding: 0.8rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  /* Hide unused columns */
+  .points-header,
+  .date-header,
+  .score,
+  .date {
+    display: none;
+  }
+
+  .teams {
+    font-size: 0.9rem;
+  }
+
+  .result {
+    width: 26px;
+    height: 26px;
+    font-size: 0.8rem;
+  }
+
+  .view-button {
+    width: 90%;
+    font-size: 0.8rem;
+    padding: 0.5rem;
+    justify-self: center;
+  }
+}

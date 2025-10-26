@@ -28,7 +28,7 @@ function Login() {
   const [error, setError] = useState("")
   const navigate = useNavigate()
   const location = useLocation()
-  
+
   const [showPassword, setShowPassword] = useState(false)
   const { login, user } = useAuth()
   const handleClickShowPassword = () => setShowPassword((prev) => !prev)
@@ -56,10 +56,10 @@ function Login() {
 
       console.log("Login API response status:", response.status);
       console.log("Login API response data:", response.data);
-      
+
       const { token } = response.data
       const decoded = jwtDecode(token)
-      
+
       console.log("*** LOGIN DEBUG INFO ***");
       console.log("Raw token received:", token);
       console.log("Token decoded contents:", decoded);
@@ -67,14 +67,14 @@ function Login() {
       console.log("Token role:", decoded.role);
       console.log("Role type:", typeof decoded.role);
       console.log("Token expiry:", new Date(decoded.exp * 1000).toLocaleString());
-      
+
       // Extract the correct ID based on the JWT format
       const userId = decoded.sub;
-      
+
       // Store the normalized role (guarantee lowercase without ROLE_ prefix)
       let userRole = decoded.role;
       console.log("Original role from token:", userRole);
-      
+
       // Convert to string and lowercase if not already
       if (typeof userRole === 'string') {
         userRole = userRole.toLowerCase();
@@ -85,21 +85,21 @@ function Login() {
         userRole = role.toLowerCase();
         console.warn("No role found in token, using selected role:", userRole);
       }
-      
+
       // Remove ROLE_ prefix if present
       if (userRole.startsWith("role_")) {
         userRole = userRole.substring(5); // "role_player" -> "player"
       }
-      
+
       console.log("Final normalized role:", userRole);
       console.log(`Login successful as ${userRole}`);
       console.log(`User ID being stored: ${userId}`);
-      
+
       // Explicitly store values in localStorage for debugging
       localStorage.setItem("authToken", token);
       localStorage.setItem("userId", userId);
       localStorage.setItem("userRole", userRole);
-      
+
       console.log("Stored in localStorage:");
       console.log("- authToken:", localStorage.getItem("authToken") ? "Present (length: " + localStorage.getItem("authToken").length + ")" : "Missing");
       console.log("- userId:", localStorage.getItem("userId"));
@@ -109,10 +109,10 @@ function Login() {
       login(token, userRole, userId)
 
       // Get redirect path from location state or use default
-      const from = location.state?.from?.pathname || 
-                  (userRole === "player" ? "/player/home" : 
-                   userRole === "coach" ? "/coach/home" : "/");
-                   
+      const from = location.state?.from?.pathname ||
+        (userRole === "player" ? "/player/home" :
+          userRole === "coach" ? "/coach/home" : "/");
+
       // Redirect based on role with replace to prevent back navigation to login
       navigate(from, { replace: true })
     } catch (error) {
@@ -209,34 +209,42 @@ function Login() {
               </div>
             </div>
 
-            <FormControl sx={{ m: 1, width: "25ch" }} variant="outlined" required>
-                <InputLabel htmlFor="email">Email</InputLabel>
-                <OutlinedInput
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  sx={{ bgcolor: "#F5F5F5", width: 440 }}
-                />
-              </FormControl>
+            <FormControl
+              sx={{ m: 1, width: "95%" }}
+              variant="outlined"
+              required
+            >
+              <InputLabel htmlFor="email">Email</InputLabel>
+              <OutlinedInput
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                sx={{ bgcolor: "#F5F5F5", width: "100%" }}
+              />
+            </FormControl>
 
-            <FormControl sx={{ m: 1, width: "25ch" }} variant="outlined" required>
-                <InputLabel htmlFor="password">Password</InputLabel>
-                <OutlinedInput
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  sx={{ bgcolor: "#F5F5F5", width: 440 }}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton onClick={handleClickShowPassword} edge="end">
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  }
-                />
-              </FormControl>
+            <FormControl
+              sx={{ m: 1, width: "95%" }}
+              variant="outlined"
+              required
+            >
+              <InputLabel htmlFor="password">Password</InputLabel>
+              <OutlinedInput
+                id="password"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                sx={{ bgcolor: "#F5F5F5", width: "100%" }}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton onClick={handleClickShowPassword} edge="end">
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+              />
+            </FormControl>
 
             {error && <div className="error-message">{error}</div>}
 

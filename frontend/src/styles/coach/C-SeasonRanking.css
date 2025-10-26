@@ -1,0 +1,105 @@
+/* ============================================
+   📱 MOBILE & TABLET (≤768px)
+   ============================================ */
+@media (max-width: 768px) {
+  .ranking-page {
+    padding: 1.5rem 1rem;
+    text-align: center;
+  }
+
+  /* Title + Season */
+  .ranking-page .page-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+    color: var(--dark-blue);
+  }
+
+  .ranking-page .page-subtitle {
+    font-size: 1rem;
+    color: var(--medium-purple);
+    margin-bottom: 1.2rem;
+  }
+
+  /* Team Selector */
+  .ranking-page .team-select-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .ranking-page .team-select-wrapper label {
+    font-weight: 600;
+    color: var(--dark-blue);
+  }
+
+  .ranking-page #team-select {
+    width: 85%;
+    max-width: 320px;
+    padding: 0.6rem;
+    border-radius: 8px;
+    border: 1px solid rgba(123, 123, 243, 0.3);
+    background-color: #fff;
+    font-size: 0.95rem;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(123, 123, 243, 0.1);
+  }
+
+  /* Position Tabs – behaves like menu */
+  .ranking-page .position-tabs {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 1.2rem;
+  }
+
+  .ranking-page .tab-button {
+    flex: 1 1 45%;
+    padding: 0.6rem 0.8rem;
+    border-radius: 8px;
+    border: none;
+    background: #f2f2ff;
+    color: var(--dark-blue);
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: 0.3s ease;
+  }
+
+  .ranking-page .tab-button.active {
+    background: linear-gradient(to right, var(--medium-purple), var(--bright-purple));
+    color: #fff;
+    box-shadow: 0 3px 8px rgba(123, 123, 243, 0.3);
+  }
+
+  /* Stats Card */
+  .ranking-page .stats-card {
+    background-color: #fff;
+    border-radius: 14px;
+    box-shadow: 0 6px 12px rgba(36, 36, 62, 0.08);
+    margin-top: 1rem;
+    padding-bottom: 0.5rem;
+    border: 1px solid rgba(123, 123, 243, 0.15);
+  }
+
+  .ranking-page .stats-card-header {
+    background: linear-gradient(to right, var(--medium-purple), var(--bright-purple));
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .ranking-page .stats-card-header h2 {
+    font-size: 1rem;
+    color: white;
+    font-weight: 600;
+  }
+
+  /* Empty message */
+  .ranking-page .empty-message {
+    padding: 1.5rem;
+    font-size: 0.95rem;
+    color: #555;
+  }
+}

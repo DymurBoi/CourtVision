@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../../components/AuthContext";
 import { api } from "../../utils/axiosConfig";
-import "../../styles/player/P-Stats.css";
+import "../../styles/coach/C-SeasonRanking.css"; // ✅ Follows the CSS provided
 
 const POSITIONS = [
   { key: "point-guards", label: "Point Guard" },
@@ -22,6 +22,7 @@ function CSeasonRanking() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Fetch teams by coach ID
   useEffect(() => {
     if (user && user.id) {
       let coachId = user.id;
@@ -39,11 +40,12 @@ function CSeasonRanking() {
       if (res.data && res.data.length > 0) {
         setSelectedTeamId(res.data[0].teamId);
       }
-    } catch (err) {
+    } catch {
       setTeams([]);
     }
   };
 
+  // Fetch rankings based on team + position + season
   useEffect(() => {
     if (selectedTeamId) fetchRankings(selectedTeamId, activePosition);
     // eslint-disable-next-line
@@ -53,18 +55,11 @@ function CSeasonRanking() {
     setLoading(true);
     setError("");
     try {
-      // map positionKey to endpoint path component
-      const endpointMap = {
-        "point-guards": "point-guards",
-        "shooting-guards": "shooting-guards",
-        "small-forwards": "small-forwards",
-        "power-forwards": "power-forwards",
-        "centers": "centers",
-      };
-      const pos = endpointMap[positionKey];
-      const res = await api.get(`/averages/season/rank/${pos}/${teamId}/${seasonId}`);
+      const res = await api.get(
+        `/averages/season/rank/${positionKey}/${teamId}/${seasonId}`
+      );
       setRankings(res.data || []);
-    } catch (err) {
+    } catch {
       setError("Failed to fetch seasonal rankings.");
       setRankings([]);
     }
@@ -73,28 +68,32 @@ function CSeasonRanking() {
 
   return (
     <div className="stats-container">
+      {/* Title Section */}
       <h1 className="page-title">Season Player Rankings</h1>
       <p className="page-subtitle">Season: {seasonId}</p>
-      <div style={{ marginBottom: 24 }}>
-        <label htmlFor="team-select">Select Team: </label>
+
+      {/* Team Selector */}
+      <div className="team-select-wrapper">
+        <label htmlFor="team-select">Select Team:</label>
         <select
           id="team-select"
           value={selectedTeamId}
-          onChange={e => setSelectedTeamId(e.target.value)}
-          style={{ padding: 8, borderRadius: 6, border: '1px solid #ccc', marginRight: 8 }}
+          onChange={(e) => setSelectedTeamId(e.target.value)}
         >
-          {teams.map(team => (
-            <option key={team.teamId} value={team.teamId}>{team.teamName}</option>
+          {teams.map((team) => (
+            <option key={team.teamId} value={team.teamId}>
+              {team.teamName}
+            </option>
           ))}
         </select>
       </div>
 
-      <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
-        {POSITIONS.map(pos => (
+      {/* Position Tabs */}
+      <div className="position-tabs">
+        {POSITIONS.map((pos) => (
           <button
             key={pos.key}
-            className={`tab-button${activePosition === pos.key ? ' active' : ''}`}
-            style={{ padding: '8px 16px', borderRadius: 6, border: 'none', background: activePosition === pos.key ? 'var(--medium-purple)' : 'var(--light-purple)', color: activePosition === pos.key ? 'white' : 'var(--dark-blue)', fontWeight: 600, cursor: 'pointer' }}
+            className={`tab-button${activePosition === pos.key ? " active" : ""}`}
             onClick={() => setActivePosition(pos.key)}
           >
             {pos.label}
@@ -102,52 +101,61 @@ function CSeasonRanking() {
         ))}
       </div>
 
+      {/* Rankings Table */}
       {loading ? (
-        <div style={{ textAlign: 'center', margin: '2rem 0' }}>
-          <div className="loading-spinner" style={{ marginBottom: 12 }} />
+        <div className="loading-section">
+          <div className="loading-spinner" />
           <span>Loading rankings...</span>
         </div>
       ) : error ? (
-        <div style={{ color: 'red' }}>{error}</div>
+        <div className="error-message">{error}</div>
       ) : (
         <div className="stats-card">
           <div className="stats-card-header">
-            <h2>{POSITIONS.find(p => p.key === activePosition)?.label} Rankings (Season)</h2>
+            <h2>
+              {POSITIONS.find((p) => p.key === activePosition)?.label} Rankings
+            </h2>
           </div>
-          <div style={{ padding: 24, overflowX: 'auto' }}>
+          <div className="stats-table-wrapper">
             {rankings.length === 0 ? (
-              <div>No players found for this position in this season.</div>
+              <div className="empty-message">
+                No players found for this position in this season.
+              </div>
             ) : (
-              <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 700 }}>
+              <table className="stats-table">
                 <thead>
-                  <tr style={{ background: 'var(--light-purple)' }}>
-                    <th style={{ padding: 8 }}>Rank</th>
-                    <th style={{ padding: 8 }}>Name</th>
-                    <th style={{ padding: 8 }}>Position</th>
-                    <th style={{ padding: 8 }}>Points</th>
-                    <th style={{ padding: 8 }}>Assists</th>
-                    <th style={{ padding: 8 }}>Rebounds</th>
-                    <th style={{ padding: 8 }}>Blocks</th>
+                  <tr>
+                    <th>Rank</th>
+                    <th>Name</th>
+                    <th>Position</th>
+                    <th>Points</th>
+                    <th>Assists</th>
+                    <th>Rebounds</th>
+                    <th>Blocks</th>
                   </tr>
                 </thead>
                 <tbody>
                   {rankings.map((player, idx) => {
-                    const name = player.player ? `${player.player.fname} ${player.player.lname}` : player.playerName || "-";
-                    const position = player.player ? player.player.position : player.position || "-";
+                    const name = player.player
+                      ? `${player.player.fname} ${player.player.lname}`
+                      : player.playerName || "-";
+                    const position = player.player
+                      ? player.player.position
+                      : player.position || "-";
                     const points = player.pointsPerGame ?? player.averagePoints;
                     const assists = player.assistsPerGame ?? player.averageAssists;
                     const rebounds = player.reboundsPerGame ?? player.averageRebounds;
                     const blocks = player.blocksPerGame ?? player.averageBlocks;
-                    const rowStyle = idx === 0 ? { background: 'rgba(123,123,243,0.08)', fontWeight: 700 } : {};
+
                     return (
-                      <tr key={player.player?.playerId || player.playerId || idx} style={{ borderBottom: '1px solid #eee', ...rowStyle, textAlign: 'center' }}>
-                        <td style={{ padding: 16 }}>{idx + 1}</td>
-                        <td style={{ padding: 16 }}>{name}</td>
-                        <td style={{ padding: 16 }}>{position}</td>
-                        <td style={{ padding: 16 }}>{points?.toFixed(1) ?? '-'}</td>
-                        <td style={{ padding: 16 }}>{assists?.toFixed(1) ?? '-'}</td>
-                        <td style={{ padding: 16 }}>{rebounds?.toFixed(1) ?? '-'}</td>
-                        <td style={{ padding: 16 }}>{blocks?.toFixed(1) ?? '-'}</td>
+                      <tr key={player.player?.playerId || player.playerId || idx}>
+                        <td>{idx + 1}</td>
+                        <td>{name}</td>
+                        <td>{position}</td>
+                        <td>{points?.toFixed(1) ?? "-"}</td>
+                        <td>{assists?.toFixed(1) ?? "-"}</td>
+                        <td>{rebounds?.toFixed(1) ?? "-"}</td>
+                        <td>{blocks?.toFixed(1) ?? "-"}</td>
                       </tr>
                     );
                   })}
