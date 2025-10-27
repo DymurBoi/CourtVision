@@ -24,9 +24,13 @@ function CLivePracticeMatch() {
   //First Five Modal
   const [showFirstFiveModal, setShowFirstFiveModal] = useState(false);
   const [selectedPlayers, setSelectedPlayers] = useState([]);
+  const [selectedPlayersA, setSelectedPlayersA] = useState([]);
+  const [selectedPlayersB, setSelectedPlayersB] = useState([]);
+  const [firstPlayersA, setFirstPlayersA] = useState([]);
+  const [firstPlayersB, setFirstPlayersB] = useState([]);
   const [teamPlayers, setTeamPlayers] = useState([]);
-
-
+  const [showTeamSelectModal, setShowTeamSelectModal] = useState(false);
+  const [teamActive, setTeamActive] = useState('A');
   //BasicStats Update
   const [selectedBasicStat, setSelectedBasicStat] = useState(null);
   const [formStats, setFormStats] = useState(null);
@@ -43,6 +47,7 @@ function CLivePracticeMatch() {
 
   //BasicStats for team A or CITU
   const [teamABasicStats, setTeamABasicStats] = useState([]);
+  const [teamBBasicStats, setTeamBBasicStats] = useState([]);
   //Score
   const [allTeamABasicStats, setAllTeamABasicStats] = useState([]);
   //Subbed Out Players
@@ -57,8 +62,9 @@ function CLivePracticeMatch() {
   // Load confirmed first five from localStorage on mount
   const initialConfirmedFirstFive =
     JSON.parse(localStorage.getItem("confirmedFirstFive")) || [];
-
   const [confirmedFirstFive, setConfirmedFirstFive] = useState(initialConfirmedFirstFive);
+  const [confirmedFirstFiveA, setConfirmedFirstFiveA] = useState(initialConfirmedFirstFive);
+  const [confirmedFirstFiveB, setConfirmedFirstFiveB] = useState(initialConfirmedFirstFive);
   const [showAddFirstFiveButton, setShowAddFirstFiveButton] = useState(
     initialConfirmedFirstFive.length !== 5
   );
@@ -113,57 +119,68 @@ function CLivePracticeMatch() {
     : 0;
 
   //BasicStats Payload and logic for the first five players
-  const handleConfirmFirstFiveModal = async () => {
-    if (selectedPlayers.length !== 5) {
-      console.warn("You must select exactly 5 players.");
-      return;
-    }
+const handleConfirmFirstFiveModal = async () => {
+  const selectedPlayers = teamActive === "A" ? selectedPlayersA : selectedPlayersB;
+  const firstPlayers = teamActive === "A" ? firstPlayersA : firstPlayersB;
 
-    try {
-      console.log("Game Id: ", gameId);
+  if (firstPlayers.length !== 5) {
+    alert("You must select exactly 5 players.");
+    return;
+  }
 
-      // 🟢 Build payload for ALL players
-      const statsList = teamPlayers.map(player => ({
-        twoPtAttempts: 0,
-        twoPtMade: 0,
-        threePtAttempts: 0,
-        threePtMade: 0,
-        ftAttempts: 0,
-        ftMade: 0,
-        assists: 0,
-        oFRebounds: 0,
-        dFRebounds: 0,
-        blocks: 0,
-        steals: 0,
-        turnovers: 0,
-        pFouls: 0,
-        dFouls: 0,
-        plusMinus: 0,
-        minutes: "00:00:00",
-        subbedIn: selectedPlayers.includes(player.playerId), // ✅ starters in
-        player: { playerId: player.playerId },
-        game: { gameId: gameId }
-      }));
+  try {
+    // Build payload
+    const statsList = selectedPlayers.map((player) => ({
+      twoPtAttempts: 0,
+      twoPtMade: 0,
+      threePtAttempts: 0,
+      threePtMade: 0,
+      ftAttempts: 0,
+      ftMade: 0,
+      assists: 0,
+      oFRebounds: 0,
+      dFRebounds: 0,
+      blocks: 0,
+      steals: 0,
+      turnovers: 0,
+      pFouls: 0,
+      dFouls: 0,
+      plusMinus: 0,
+      minutes: "00:00:00",
+      subbedIn: firstPlayers.includes(player.playerId),
+      opponent: teamActive === "B",
+      player: { playerId: player.playerId },
+      game: { gameId: gameId },
+    }));
 
-      console.log("Json Body:\n", statsList);
-      const res = await api.post("/basic-stats/post/batch", statsList);
-      console.log("Created BasicStats:", res.data);
+    // Send to API
+    const res = await api.post("/basic-stats/post/batch", statsList);
+    console.log("Created BasicStats:", res.data);
 
-      // ✅ Immediately fetch and update subbed-in list so UI refreshes automatically
-      const updated = await api.get(`/basic-stats/get/subbed-in/${gameId}`);
+    // Fetch updated stats
+    
+
+    // Update based on teamActive
+    if (teamActive === "A") {
+      const updated = await api.get(`/basic-stats/get/subbed-in/opp-false/${gameId}`);
       setTeamABasicStats(updated.data);
-
-      // Save confirmed first five (full player objects)
-      const confirmedPlayers = teamPlayers.filter(p =>
-        selectedPlayers.includes(p.playerId)
-      );
-      setConfirmedFirstFive(confirmedPlayers);
-      // Close modal
-      setShowFirstFiveModal(false);
-    } catch (err) {
-      console.error("Error creating BasicStats for all players:", err);
+      setConfirmedFirstFiveA(selectedPlayers.filter((p) =>
+        firstPlayers.includes(p.playerId)
+      ));
+    } else {
+      const updated = await api.get(`/basic-stats/get/subbed-in/opp-true/${gameId}`);
+      setTeamBBasicStats(updated.data);
+      setConfirmedFirstFiveB(selectedPlayers.filter((p) =>
+        firstPlayers.includes(p.playerId)
+      ));
     }
-  };
+
+    setShowFirstFiveModal(false);
+  } catch (err) {
+    console.error("Error creating BasicStats:", err);
+  }
+};
+
 
 
   //BasicStatsVariation payload and Logic for the opponent team
@@ -368,8 +385,21 @@ function CLivePracticeMatch() {
           console.error("Failed to fetch team players:", err);
         });
     }
+    else if (showTeamSelectModal && teamId) {
+      console.log("Fetching players for teamId:", teamId);
+      api
+        .get(`/players/get/by-team/${teamId}`)
+        .then((res) => {
+          console.log("Team Players fetched successfully:", res.data);
+          setTeamPlayers(res.data);
+        })
+        .catch((err) => {
+          setTeamPlayers([]);
+          console.error("Failed to fetch team players:", err);
+        });
+    }
     console.log("Game Id: ", gameId);
-  }, [showFirstFiveModal, teamId]);
+  }, [showFirstFiveModal, teamId, showTeamSelectModal]);
 
 
   //Fetch BasicStats for Team A when gameId and teamId are available
@@ -656,20 +686,40 @@ function CLivePracticeMatch() {
     }
   }
 
-  const handleCheckboxChange = (playerId) => {
-    console.log(playerId);
-    console.log(selectedPlayers);
-    setSelectedPlayers((prev) => {
-      if (prev.includes(playerId)) {
-        return prev.filter(id => id !== playerId);
-      } else if (prev.length < 5) {
-        return [...prev, playerId];
+const handleFirstFiveCheckbox = (playerId) => {
+  const setter = teamActive === "A" ? setFirstPlayersA : setFirstPlayersB;
+  const selectedFirst = teamActive === "A" ? firstPlayersA : firstPlayersB;
+
+  setter((prev) => {
+    if (prev.includes(playerId)) {
+      return prev.filter((id) => id !== playerId); // deselect
+    } else if (prev.length < 5) {
+      return [...prev, playerId]; // add
+    } else {
+      alert("You can only select 5 players!");
+      return prev;
+    }
+  });
+};
+
+  const handleCheckBoxTeam = (player) => {
+    const setter = teamActive === "A" ? setSelectedPlayersA : setSelectedPlayersB;
+
+    setter((prev) => {
+      // Check if this player is already selected by comparing playerId
+      const exists = prev.some((p) => p.playerId === player.playerId);
+
+      if (exists) {
+        // Remove player
+        return prev.filter((p) => p.playerId !== player.playerId);
       } else {
-        alert("You can only select 5 players!");
-        return prev;
+        // Add player
+        return [...prev, player];
       }
     });
   };
+
+
 
   // GEt Points
   const getPoints = (stats) => {
@@ -827,15 +877,35 @@ function CLivePracticeMatch() {
             </div>
 
             {/* Add First Five Button for TEAM A */}
-            <div style={{ paddingTop: "1.5rem" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                paddingTop: "1.5rem",
+              }}
+            >
               {showAddFirstFiveButton && (
                 <Button
                   className="stat-btn"
                   variant="contained"
                   color="primary"
-                  onClick={() => setShowFirstFiveModal(true)}
-                >
+                  onClick={() => {setShowFirstFiveModal(true);
+                                  setTeamActive('A');
+                  }}>
                   Add First Five (Team A)
+                </Button>
+              )}
+
+              {showAddFirstFiveButton && (
+                <Button
+                  className="stat-btn"
+                  variant="contained"
+                  color="primary"
+                  onClick={() => {setShowTeamSelectModal(true);
+                                  setTeamActive('A');
+                  }}>
+                  Select Players (Team A)
                 </Button>
               )}
             </div>
@@ -845,10 +915,10 @@ function CLivePracticeMatch() {
           <div className="team-section">
             <h3 className="team-title">{teamA?.name || "Team B"}</h3>
             <div className="players-grid">
-              {teamABasicStats.length === 0 ? (
+              {teamBBasicStats.length === 0 ? (
                 <div className="player-card no-players">No players subbed in</div>
               ) : (
-                teamABasicStats.map((stat) => (
+                teamBBasicStats.map((stat) => (
                   <div
                     key={stat.playerId}
                     className="player-card selected"
@@ -864,15 +934,35 @@ function CLivePracticeMatch() {
             </div>
 
             {/* Add First Five Button for TEAM B */}
-            <div style={{ paddingTop: "1.5rem" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                paddingTop: "1.5rem",
+              }}
+            >
               {showAddFirstFiveButton && (
                 <Button
                   className="stat-btn"
                   variant="contained"
                   color="primary"
-                  onClick={() => setShowFirstFiveModal(true)}
-                >
+                  onClick={() => {setShowFirstFiveModal(true);
+                                  setTeamActive('B');
+                  }}>
                   Add First Five (Team B)
+                </Button>
+              )}
+
+              {showAddFirstFiveButton && (
+                <Button
+                  className="stat-btn"
+                  variant="contained"
+                  color="primary"
+                  onClick={() => {setShowTeamSelectModal(true);
+                                  setTeamActive('B');
+                  }}>
+                  Select Players (Team B)
                 </Button>
               )}
             </div>
@@ -1089,58 +1179,153 @@ function CLivePracticeMatch() {
         </div>
       )}
 
-      {showFirstFiveModal && (
-        <div className="modal-overlay" onClick={() => setShowFirstFiveModal(false)}>
-          <div className="modal-container player-stats-modal wide-modal" onClick={(e) => e.stopPropagation()}>
+{showFirstFiveModal && (
+  <div className="modal-overlay" onClick={() => setShowFirstFiveModal(false)}>
+    <div
+      className="modal-container player-stats-modal wide-modal"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className="modal-header">
+        <h2>Select First Five Players (Team {teamActive})</h2>
+        <button
+          className="close-button"
+          onClick={() => setShowFirstFiveModal(false)}
+        >
+          &times;
+        </button>
+      </div>
+
+      <div className="team-section">
+        {((teamActive === "A" ? selectedPlayersA : selectedPlayersB).length === 0) ? (
+          <p>No players selected yet for Team {teamActive}.</p>
+        ) : (
+          <div className="players-grid">
+            {(teamActive === "A" ? selectedPlayersA : selectedPlayersB).map(
+              (player) => {
+                const selectedFirstPlayers =
+                  teamActive === "A" ? firstPlayersA : firstPlayersB;
+                const isChecked = selectedFirstPlayers.includes(player.playerId);
+
+                return (
+                  <div
+                    key={player.playerId}
+                    className={`player-card ${isChecked ? "selected" : ""}`}
+                    onClick={() => handleFirstFiveCheckbox(player.playerId)}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isChecked}
+                      readOnly
+                    />
+                    <div className="player-info">
+                      #{player.jerseyNum} {player.fname} {player.lname}
+                    </div>
+                  </div>
+                );
+              }
+            )}
+          </div>
+        )}
+      </div>
+
+      <div className="modal-actions">
+        <button
+          className="stat-btn"
+          onClick={handleConfirmFirstFiveModal}
+        >
+          Confirm First Five
+        </button>
+        <button
+          className="close-modal-btn"
+          onClick={() => setShowFirstFiveModal(false)}
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+      {showTeamSelectModal && (
+        <div className="modal-overlay" onClick={() => setShowTeamSelectModal(false)}>
+          <div
+            className="modal-container player-stats-modal wide-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="modal-header">
-              <h2>Select First Five Players</h2>
-              <button className="close-button" onClick={() => setShowFirstFiveModal(false)}>&times;</button>
+              <h2>RAH</h2>
+              <button
+                className="close-button"
+                onClick={() => setShowTeamSelectModal(false)}
+              >
+                &times;
+              </button>
             </div>
+
             <div className="team-section">
               {/* Check if players are loading or empty */}
               {teamPlayers.length === 0 && teamId ? (
                 <p>Loading players or no players found for team ID: {teamId}</p>
               ) : teamPlayers.length === 0 && !teamId ? (
-                <p>Error: Team ID is missing from the URL. Please ensure the URL contains `?teamId=...`.</p>
+                <p>
+                  Error: Team ID is missing from the URL. Please ensure the URL
+                  contains `?teamId=...`.
+                </p>
               ) : (
                 <div className="players-grid">
-                  {/* Assuming API response uses playerId and lname */}
                   {teamPlayers.map((player) => {
+                    // Decide which team’s selectedPlayers to use
+                    const selectedPlayers =
+                      teamActive === "A" ? selectedPlayersA : selectedPlayersB;
                     const isSelected = selectedPlayers.includes(player.playerId);
+
                     return (
                       <div
                         key={player.playerId}
-                        className={`player-card ${isSelected ? "selected" : ""}`}
-                        onClick={() => handleCheckboxChange(player.playerId)}
+                        className={`player-card ${
+                          (teamActive === "A"
+                            ? selectedPlayersA
+                            : selectedPlayersB
+                          ).some((p) => p.playerId === player.playerId)
+                            ? "selected"
+                            : ""
+                        }`}
+                        onClick={() => handleCheckBoxTeam(player)} // Pass full player object
                       >
                         <input
                           type="checkbox"
-                          checked={isSelected}
-                          onChange={() => handleCheckboxChange(player.playerId)}
-                          onClick={(e) => e.stopPropagation()} // prevent double toggling
+                          checked={
+                            (teamActive === "A"
+                              ? selectedPlayersA
+                              : selectedPlayersB
+                            ).some((p) => p.playerId === player.playerId)
+                          }
+                          readOnly
                         />
-
-                        <div className="jersey-numnber">#{player.jerseyNum}</div>
+                        <div className="jersey-number">#{player.jerseyNum}</div>
                         <div className="player-name">{player.fname} {player.lname}</div>
-
                       </div>
                     );
                   })}
-
                 </div>
               )}
             </div>
+
             <div className="modal-actions">
               <button
                 className="stat-btn"
                 onClick={() => {
-                  handleConfirmFirstFiveModal();
-                  setShowFirstFiveModal(false);
+                  setShowTeamSelectModal(false);
                 }}
               >
-                Confirm First Five
+                Confirm Selection
               </button>
-              <button className="close-modal-btn" onClick={() => setShowFirstFiveModal(false)}>Cancel</button>
+              <button
+                className="close-modal-btn"
+                onClick={() => setShowTeamSelectModal(false)}
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </div>
