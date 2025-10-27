@@ -74,6 +74,7 @@
 
 .role-button {
   flex: 1;
+  min-width: 205px;
   padding: 0.8rem;
   border: 1px solid rgba(123, 123, 243, 0.3);
   border-radius: 6px;
@@ -168,6 +169,10 @@
   }
 
   .role-button {
+    min-width: 10px;
+    max-width: 165px; 
+    font-size: 0.85rem;
+    padding: 0.8rem;
     font-size: 0.85rem;
     padding: 0.7rem;
   }
