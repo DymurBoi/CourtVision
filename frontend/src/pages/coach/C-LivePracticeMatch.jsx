@@ -631,7 +631,7 @@ const handleSaveStats = async () => {
     await handleUpdateBasicStats();
   } else if (selectedRef?.team === "B") {
     console.log("Calling handleUpdateBasicStatsVariation");
-    await handleUpdateBasicStatsVariation();
+    await handleUpdateBasicStats();
   } else {
     console.log("No team selected!");
   }
