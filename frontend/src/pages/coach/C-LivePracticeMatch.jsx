@@ -534,17 +534,30 @@ const handlePlayerClick = async (team, index) => {
 
 
 const handlePlayersClick = (playerId) => {
-  const stat = teamABasicStats.find(s => s.playerId === playerId);
-  if (stat) {
-    setSelectedRef({ team: "A", index: teamABasicStats.indexOf(stat) }); // <-- Add this line!
-    setSelectedBasicStat(stat);
+  const statA = teamABasicStats.find(s => s.playerId === playerId);
+  const statB = teamBBasicStats.find(s => s.playerId === playerId);
+  if (statA) {
+    setSelectedRef({ team: "A", index: teamABasicStats.indexOf(statA) }); // <-- Add this line!
+    setSelectedBasicStat(statA);
     setFormStats({
-      ...stat,
-      basicStatId: stat.basicStatId,
-      fname: stat.fname,
-      lname: stat.lname,
-      jerseyNum: stat.jerseyNum,
-      playerId: stat.playerId
+      ...statA,
+      basicStatId: statA.basicStatId,
+      fname: statA.fname,
+      lname: statA.lname,
+      jerseyNum: statA.jerseyNum,
+      playerId: statA.playerId
+    });
+    setShowModal(true);
+  }else if (statB) {
+    setSelectedRef({ team: "B", index: teamBBasicStats.indexOf(statB) });
+    setSelectedBasicStat(statB);
+    setFormStats({
+      ...statB,
+      basicStatId: statB.basicStatId,
+      fname: statB.fname,
+      lname: statB.lname,
+      jerseyNum: statB.jerseyNum,
+      playerId: statB.playerId
     });
     setShowModal(true);
   }
