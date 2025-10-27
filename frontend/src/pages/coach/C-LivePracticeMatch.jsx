@@ -69,6 +69,8 @@ const initialConfirmedFirstFiveB =
 const [confirmedFirstFiveA, setConfirmedFirstFiveA] = useState([]);
 const [confirmedFirstFiveB, setConfirmedFirstFiveB] = useState([]);
 
+const [showAddFirstFiveButtonA, setShowAddFirstFiveButtonA] = useState(true);
+const [showAddFirstFiveButtonB, setShowAddFirstFiveButtonB] = useState(true);
 // ✅ Also track the combined "confirmedFirstFive" if needed
 const initialConfirmedFirstFive =
   JSON.parse(localStorage.getItem("confirmedFirstFive")) || [];
@@ -83,8 +85,7 @@ useEffect(() => {
   setShowAddFirstFiveButton(confirmedFirstFive.length !== 5);
 }, [confirmedFirstFive]);
   // show/hide Add First Five buttons per team
-  const [showAddFirstFiveButtonA, setShowAddFirstFiveButtonA] = useState(true);
-  const [showAddFirstFiveButtonB, setShowAddFirstFiveButtonB] = useState(true);
+  
 
 
   //Timer
@@ -200,61 +201,28 @@ try {
 
   // Update based on teamActive
   if (teamActive === "A") {
+    setShowAddFirstFiveButtonA(false);
     const updated = await api.get(`/basic-stats/get/subbed-in/opp-false/${gameId}`);
     setTeamABasicStats(updated.data);
     setConfirmedFirstFiveA(selectedPlayers.filter((p) =>
       firstPlayers.includes(p.playerId)
     ));
   } else {
+    setShowAddFirstFiveButtonB(false);
     const updated = await api.get(`/basic-stats/get/subbed-in/opp-true/${gameId}`);
     setTeamBBasicStats(updated.data);
     setConfirmedFirstFiveB(selectedPlayers.filter((p) =>
       firstPlayers.includes(p.playerId)
     ));
   }
-
+  
+  
   setShowFirstFiveModal(false);
 } catch (err) {
   console.error("Error creating BasicStats:", err);
 }
   };
 
-
-
-//BasicStatsVariation payload and Logic for the opponent team
-const handleUpdateBasicStatsVariation = async () => {
-  try {
-    const payload = {
-      basicStatVarId: formStats.basicStatVarId,
-      twoPtAttempts: Number(formStats.twoPtAttempts),
-      twoPtMade: Number(formStats.twoPtMade),
-      threePtAttempts: Number(formStats.threePtAttempts),
-      threePtMade: Number(formStats.threePtMade),
-      ftAttempts: Number(formStats.ftAttempts),
-      ftMade: Number(formStats.ftMade),
-      assists: Number(formStats.assists),
-      oFRebounds: Number(formStats.oFRebounds),
-      dFRebounds: Number(formStats.dFRebounds),
-      blocks: Number(formStats.blocks),
-      steals: Number(formStats.steals),
-      turnovers: Number(formStats.turnovers),
-      pFouls: Number(formStats.pFouls),
-      dFouls: Number(formStats.dFouls),
-      plusMinus: Number(formStats.plusMinus),
-      minutes: formStats.minutes || "00:00:00",
-      gamePoints: Number(formStats.gamePoints),
-      gameId: gameId
-    };
-
-    await api.put(`/basic-stats-var/put/${formStats.basicStatVarId}`, payload);
-    const updatedOpponent = await api.get(`/basic-stats-var/get/by-game/${gameId}`);
-    setOpponentStats(updatedOpponent.data);
-
-    setShowModal(false);
-  } catch (err) {
-    console.error("Error updating enemy stats:", err);
-  }
-};
 
 //Timer useEffect
 // --- On mount: restore timer state ---
@@ -317,7 +285,7 @@ const handleEndGame = async () => {
 
     // Update the analysis type and final score using latest computed values
     await api.put(`/games/update-analysis-type/${gameId}`, { type: "Post" });// Update game type/status
-    await api.put(`/games/update-final-score/${gameId}`, { finalScore: `${latestTeamAScore}-${latestTeamBScore}` });
+    await api.put(`/games/update-final-score/${gameId}`, { finalScore: `${teamAScoreLive}-${teamBScoreLive}` });
 
     await api.post(`/stopwatch/resetGame`);
     console.log(`Game ${gameId} ended. All players subbed out and analysis type set to Post Analysis.`);
@@ -616,9 +584,12 @@ const handleUpdateBasicStats = async () => {
     const res = await api.put(`/basic-stats/put/${formStats.basicStatId}`, payload);
     console.log("Updated BasicStats:", res.data);
 
-    // Refresh subbed-in list and the full basic-stats list so score sums are accurate
-    const updated = await api.get(`/basic-stats/get/subbed-in/${gameId}`);
-    setTeamABasicStats(updated.data);
+    const updatedA = await api.get(`/basic-stats/get/subbed-in/opp-false/${gameId}`);
+    setTeamABasicStats(updatedA.data);
+   
+    const updatedB = await api.get(`/basic-stats/get/subbed-in/opp-true/${gameId}`);
+    setTeamBBasicStats(updatedB.data);
+  
     try {
       const all = await api.get(`/basic-stats/get/by-game/${gameId}`);
       setAllTeamABasicStats(all.data);
@@ -631,6 +602,7 @@ const handleUpdateBasicStats = async () => {
     console.error("Error updating stats:", err);
   }
 };
+
 const handleSaveStats = async () => {
   console.log("handleSaveStats called, selectedRef:", selectedRef);
   if (selectedRef?.team === "A") {
@@ -669,16 +641,25 @@ const handleStatUpdate = (statType, amount = 1) => {
     setFormStats(updatedPlayer);
 
     // Recompute team total by substituting the updated player into the teamABasicStats array
-    const newTotal = teamABasicStats.reduce((sum, stat) => {
+    const newTotalA = teamABasicStats.reduce((sum, stat) => {
       if (stat.playerId === updatedPlayer.playerId) {
         return sum + (Number(updatedPlayer.gamePoints) || 0);
       }
       return sum + (Number(stat.gamePoints) || 0);
     }, 0);
 
-    setTeamAScoreLive(newTotal);
+    const newTotalB = teamBBasicStats.reduce((sum, stat) => {
+      if (stat.playerId === updatedPlayer.playerId) {
+        return sum + (Number(updatedPlayer.gamePoints) || 0);
+      }
+      return sum + (Number(stat.gamePoints) || 0);
+    }, 0);
+
+    setTeamAScoreLive(newTotalA);
+    setTeamBScoreLive(newTotalB);
     return;
   }
+    
 
   // Team B (BasicStatsVariationDTO)
   if (formStats?.basicStatVarId) {
