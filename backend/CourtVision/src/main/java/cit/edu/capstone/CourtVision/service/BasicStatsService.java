@@ -435,6 +435,20 @@ public BasicStats updatePractice(Long id, BasicStats updatedStats) {
                     .collect(Collectors.toList());
     }
 
+    public List<BasicStatsDTO> getOppFalse(Long gameId) {
+        List<BasicStats> stats = basicStatsRepository.findByGame_GameIdAndOpponentFalse(gameId);
+        return stats.stream()
+                    .map(BasicStatsMapper::toDTO)
+                    .collect(Collectors.toList());
+    }
+
+    public List<BasicStatsDTO> getOppTrue(Long gameId) {
+        List<BasicStats> stats = basicStatsRepository.findByGame_GameIdAndOpponentTrue(gameId);
+        return stats.stream()
+                    .map(BasicStatsMapper::toDTO)
+                    .collect(Collectors.toList());
+    }
+
     public List<BasicStats> createBatch(List<BasicStats> statsList) {
     return statsList.stream()
         .filter(stat -> basicStatsRepository.findByGame_GameIdAndPlayer_PlayerId(

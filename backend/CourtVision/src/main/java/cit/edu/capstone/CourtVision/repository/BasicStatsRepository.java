@@ -25,4 +25,6 @@ public interface BasicStatsRepository extends JpaRepository<BasicStats, Long> {
     List<BasicStats> findByGame_GameIdAndSubbedInTrueAndOpponentFalse(Long gameId);
     List<BasicStats> findByGame_GameIdAndSubbedInFalseAndOpponentTrue(Long gameId);
     List<BasicStats> findByGame_GameIdAndSubbedInFalseAndOpponentFalse(Long gameId);
+    List<BasicStats> findByGame_GameIdAndOpponentFalse(Long gameId);
+    List<BasicStats> findByGame_GameIdAndOpponentTrue(Long gameId);
 }

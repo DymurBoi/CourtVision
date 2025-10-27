@@ -66,8 +66,8 @@ const initialConfirmedFirstFiveA =
 const initialConfirmedFirstFiveB =
   JSON.parse(localStorage.getItem("confirmedFirstFiveB")) || [];
 
-const [confirmedFirstFiveA, setConfirmedFirstFiveA] = useState(initialConfirmedFirstFiveA);
-const [confirmedFirstFiveB, setConfirmedFirstFiveB] = useState(initialConfirmedFirstFiveB);
+const [confirmedFirstFiveA, setConfirmedFirstFiveA] = useState([]);
+const [confirmedFirstFiveB, setConfirmedFirstFiveB] = useState([]);
 
 // ✅ Also track the combined "confirmedFirstFive" if needed
 const initialConfirmedFirstFive =
@@ -83,22 +83,9 @@ useEffect(() => {
   setShowAddFirstFiveButton(confirmedFirstFive.length !== 5);
 }, [confirmedFirstFive]);
   // show/hide Add First Five buttons per team
-  const [showAddFirstFiveButtonA, setShowAddFirstFiveButtonA] = useState(
-    initialConfirmedFirstFiveA.length !== 5
-  );
-  const [showAddFirstFiveButtonB, setShowAddFirstFiveButtonB] = useState(
-    initialConfirmedFirstFiveB.length !== 5
-  );
+  const [showAddFirstFiveButtonA, setShowAddFirstFiveButtonA] = useState(true);
+  const [showAddFirstFiveButtonB, setShowAddFirstFiveButtonB] = useState(true);
 
-  useEffect(() => {
-    localStorage.setItem("confirmedFirstFiveA", JSON.stringify(confirmedFirstFiveA));
-    setShowAddFirstFiveButtonA(confirmedFirstFiveA.length !== 5);
-  }, [confirmedFirstFiveA]);
-
-  useEffect(() => {
-    localStorage.setItem("confirmedFirstFiveB", JSON.stringify(confirmedFirstFiveB));
-    setShowAddFirstFiveButtonB(confirmedFirstFiveB.length !== 5);
-  }, [confirmedFirstFiveB]);
 
   //Timer
   const [isPlaying, setIsPlaying] = useState(false);
@@ -125,18 +112,25 @@ useEffect(() => {
 
   //UseEffect for getting basicStats by game
   useEffect(() => {
-    if (gameId) {
-      api
-        .get(`/basic-stats/get/by-game/${gameId}`)
-        .then((res) => {
-          setAllTeamABasicStats(res.data);
-        })
-        .catch((err) => {
-          setAllTeamABasicStats([]);
-          console.error("Failed to fetch all BasicStats:", err);
-        });
-    }
-  }, [gameId]);
+  if (!gameId) return;
+
+  const fetchStats = async () => {
+  try {
+    const teamARes = api.get(`/basic-stats/get/opp-false/${gameId}`),
+          teamBRes = api.get(`/basic-stats/get/opp-true/${gameId}`);
+
+    setTeamABasicStats(teamARes.data || []);
+    setTeamBBasicStats(teamBRes.data || []);
+  } catch (err) {
+    console.error("Failed to fetch team basic stats:", err);
+    setTeamABasicStats([]);
+    setTeamBBasicStats([]);
+  }
+};
+
+fetchStats();
+}, [gameId]);
+
 
   // Total team A score computed from all basic stats for the game
   const teamAScore = Array.isArray(allTeamABasicStats)
@@ -455,19 +449,30 @@ useEffect(() => {
 
 //Fetch BasicStats for Team A when gameId and teamId are available
 useEffect(() => {
-  if (gameId) {
-    api
-      .get(`/basic-stats/get/subbed-in/${gameId}`)
-      .then((res) => {
-        console.log("Subbed-in stats:", res.data);
-        setTeamABasicStats(res.data); // Each has player info
-      })
-      .catch((err) => {
-        console.error("Failed to fetch Subbed-In BasicStats:", err);
-        setTeamABasicStats([]);
-      });
-  }
+  if (!gameId) return;
+
+  const fetchData = async () => {
+    try {
+      const [teamARes, teamBRes] = await Promise.all([
+        api.get(`/basic-stats/get/subbed-in/opp-false/${gameId}`),
+        api.get(`/basic-stats/get/subbed-in/opp-true/${gameId}`)
+      ]);
+
+      setTeamABasicStats(teamARes.data || []);
+      setTeamBBasicStats(teamBRes.data || []);
+      setShowAddFirstFiveButtonA(false);
+      setShowAddFirstFiveButtonB(false);
+      console.log("team a:", teamARes.data);
+      console.log("team b:", teamBRes.data);
+
+    } catch (err) {
+      console.error("Failed to fetch team basic stats:", err);
+    }
+  };
+
+  fetchData();
 }, [gameId]);
+
 // Format time to MM:SS
 {/*const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60)

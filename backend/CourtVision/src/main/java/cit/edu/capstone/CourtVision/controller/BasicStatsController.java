@@ -98,6 +98,16 @@ public class BasicStatsController {
         return service.getSubbedOutStatsOppFalse(gameId);
     }
 
+    @GetMapping("/get/opp-false/{gameId}")
+    public List<BasicStatsDTO> getOppFalse(@PathVariable Long gameId) {
+        return service.getOppFalse(gameId);
+    }
+
+    @GetMapping("/get/opp-true/{gameId}")
+    public List<BasicStatsDTO> getOppTrue(@PathVariable Long gameId) {
+        return service.getOppTrue(gameId);
+    }
+
     @PostMapping("/post/batch")
     public ResponseEntity<List<BasicStatsDTO>> createBatch(@RequestBody List<BasicStats> statsList) {
         List<BasicStats> createdList = service.createBatch(statsList);
