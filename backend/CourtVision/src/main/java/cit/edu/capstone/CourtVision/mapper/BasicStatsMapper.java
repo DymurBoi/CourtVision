@@ -29,6 +29,7 @@ public class BasicStatsMapper {
         dto.setFname(stat.getPlayer().getFname());
         dto.setLname(stat.getPlayer().getLname());
         dto.setOpponent(stat.isOpponent());
+        dto.setSubbedIn(stat.isSubbedIn());
         dto.setJerseyNum(stat.getPlayer().getJerseyNum());
 
         if (stat.getPlayer() != null) {

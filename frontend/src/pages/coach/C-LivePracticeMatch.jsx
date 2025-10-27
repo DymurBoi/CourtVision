@@ -458,12 +458,18 @@ useEffect(() => {
         api.get(`/basic-stats/get/subbed-in/opp-true/${gameId}`)
       ]);
 
-      setTeamABasicStats(teamARes.data || []);
-      setTeamBBasicStats(teamBRes.data || []);
-      setShowAddFirstFiveButtonA(false);
-      setShowAddFirstFiveButtonB(false);
-      console.log("team a:", teamARes.data);
-      console.log("team b:", teamBRes.data);
+      const teamAData = teamARes.data || [];
+      const teamBData = teamBRes.data || [];
+
+      setTeamABasicStats(teamAData);
+      setTeamBBasicStats(teamBData);
+
+      // ✅ Show the "Add First Five" button if no data
+      setShowAddFirstFiveButtonA(teamAData.length === 0);
+      setShowAddFirstFiveButtonB(teamBData.length === 0);
+
+      console.log("team a:", teamAData);
+      console.log("team b:", teamBData);
 
     } catch (err) {
       console.error("Failed to fetch team basic stats:", err);
@@ -472,6 +478,7 @@ useEffect(() => {
 
   fetchData();
 }, [gameId]);
+
 
 // Format time to MM:SS
 {/*const formatTime = (seconds) => {
