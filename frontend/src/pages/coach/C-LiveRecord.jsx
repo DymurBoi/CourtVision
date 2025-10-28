@@ -753,22 +753,14 @@ function CLiveRecord() {
   }, [running]);
 
   const handleStart = async () => {
-    await api.post(`/stopwatch/start/${gameId}`);
+    await api.post(`/stopwatch/sub-in/${gameId}`);
     setRunning(true);
   };
 
   const handleStop = async () => {
-    await api.post(`/stopwatch/stop/${gameId}`);
+    await api.post(`/stopwatch/timeout/${gameId}`);
     setRunning(false);
   };
-
-  const handleReset = async () => {
-    await api.post("/stopwatch/resetGame");
-    setElapsedTime(0);
-    setRunning(false);
-  };
-
-
 
 
   return (

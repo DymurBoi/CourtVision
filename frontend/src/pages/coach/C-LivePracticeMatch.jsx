@@ -50,6 +50,7 @@ function CLivePracticeMatch() {
   const [teamBBasicStats, setTeamBBasicStats] = useState([]);
   //Score
   const [allTeamABasicStats, setAllTeamABasicStats] = useState([]);
+  const [allTeamBBasicStats, setAllTeamBBasicStats] = useState([]);
   //Subbed Out Players
   const [subbedOutPlayers, setSubbedOutPlayers] = useState([]);
   // Sample team data - you can replace this with actual data from props or API
@@ -132,11 +133,6 @@ useEffect(() => {
 fetchStats();
 }, [gameId]);
 
-
-  // Total team A score computed from all basic stats for the game
-  const teamAScore = Array.isArray(allTeamABasicStats)
-    ? allTeamABasicStats.reduce((sum, stat) => sum + (Number(stat.gamePoints) || 0), 0)
-    : 0;
 
   //BasicStats Payload and logic for the first five players
   const handleConfirmFirstFiveModal = async () => {
@@ -421,16 +417,22 @@ useEffect(() => {
 
   const fetchData = async () => {
     try {
-      const [teamARes, teamBRes] = await Promise.all([
+      const [teamASubRes, teamBSubRes, teamARes,teamBRes] = await Promise.all([
         api.get(`/basic-stats/get/subbed-in/opp-false/${gameId}`),
-        api.get(`/basic-stats/get/subbed-in/opp-true/${gameId}`)
+        api.get(`/basic-stats/get/subbed-in/opp-true/${gameId}`),
+        api.get(`/basic-stats/get/opp-false/${gameId}`),
+        api.get(`/basic-stats/get/opp-true/${gameId}`)
       ]);
 
       const teamAData = teamARes.data || [];
       const teamBData = teamBRes.data || [];
+      const teamASubData = teamASubRes.data || [];
+      const teamBSubData = teamBSubRes.data || [];
 
-      setTeamABasicStats(teamAData);
-      setTeamBBasicStats(teamBData);
+      setTeamABasicStats(teamASubData);
+      setTeamBBasicStats(teamBSubData);
+      setAllTeamABasicStats(teamAData);
+      setAllTeamBBasicStats(teamBData);
 
       // ✅ Show the "Add First Five" button if no data
       setShowAddFirstFiveButtonA(teamAData.length === 0);
@@ -559,8 +561,10 @@ const handleUpdateBasicStats = async () => {
     setTeamBBasicStats(updatedB.data);
   
     try {
-      const all = await api.get(`/basic-stats/get/by-game/${gameId}`);
-      setAllTeamABasicStats(all.data);
+      const A = await api.get(`/basic-stats/get/opp-false/${gameId}`);
+      const B = await api.get(`/basic-stats/get/opp-true/${gameId}`);
+      setAllTeamABasicStats(A.data);
+      setAllTeamBBasicStats(B.data);
     } catch (e) {
       console.warn("Could not refresh all basic stats after update:", e);
     }
@@ -629,22 +633,22 @@ const handleStatUpdate = (statType, amount = 1) => {
 // Automatically refresh Team A total every 0.5 seconds
 useEffect(() => {
   const intervalA = setInterval(() => {
-    const totalA = teamABasicStats.reduce((sum, stat) => sum + (Number(stat.gamePoints) || 0), 0);
+    const totalA = allTeamABasicStats.reduce((sum, stat) => sum + (Number(stat.gamePoints) || 0), 0);
     setTeamAScoreLive(totalA);
   }, 500);
 
   return () => clearInterval(intervalA);
-}, [teamABasicStats]);
+}, [allTeamABasicStats]);
 
 // Automatically refresh Team B total every 0.5 seconds
 useEffect(() => {
   const intervalB = setInterval(() => {
-    const totalB = teamBBasicStats.reduce((sum, stat) => sum + (Number(stat.gamePoints) || 0), 0);
+    const totalB = allTeamBBasicStats.reduce((sum, stat) => sum + (Number(stat.gamePoints) || 0), 0);
     setTeamBScoreLive(totalB);
   }, 500);
 
   return () => clearInterval(intervalB);
-}, [teamBBasicStats]);
+}, [allTeamBBasicStats]);
 
 const handleSubstitute = async () => {
   try {
@@ -806,22 +810,14 @@ useEffect(() => {
 }, [running]);
 
 const handleStart = async () => {
-  await api.post(`/stopwatch/start/${gameId}`);
-  setRunning(true);
-};
+    await api.post(`/stopwatch/sub-in/${gameId}`);
+    setRunning(true);
+  };
 
-const handleStop = async () => {
-  await api.post(`/stopwatch/stop/${gameId}`);
-  setRunning(false);
-};
-
-const handleReset = async () => {
-  await api.post("/stopwatch/resetGame");
-  setElapsedTime(0);
-  setRunning(false);
-};
-
-
+  const handleStop = async () => {
+    await api.post(`/stopwatch/timeout/${gameId}`);
+    setRunning(false);
+  };
 
 
 return (
@@ -842,9 +838,9 @@ return (
         {/* Center: Score */}
         <div className="game-info-center">
           <div className="score-display">
-            <span className="team-score">{teamAScoreLive || teamAScore}</span>
+            <span className="team-score">{teamAScoreLive}</span>
             <span className="score-separator">-</span>
-            <span className="team-score">{teamBScoreLive || teamBScore}</span>
+            <span className="team-score">{teamBScoreLive}</span>
           </div>
         </div>
 
