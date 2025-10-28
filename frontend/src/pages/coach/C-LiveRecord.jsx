@@ -243,38 +243,47 @@ function CLiveRecord() {
   }, [isPlaying]);
 
   //EndGame
-  const handleEndGame = async () => {
-    try {
-      // Sub out all players first
-      await api.post(`/stopwatch/subout/${gameId}`);
+const handleEndGame = async () => {
+  try {
+    // Sub out all players first
+    await api.post(`/stopwatch/subout/${gameId}`);
 
-      // Recompute latest scores from the backend to avoid stale client state
-      const [teamARes, teamBRes] = await Promise.all([
-        api.get(`/basic-stats/get/by-game/${gameId}`),
-        api.get(`/basic-stats-var/get/by-game/${gameId}`)
-      ]);
+    // Recompute latest scores from the backend to avoid stale client state
+    const [teamARes, teamBRes] = await Promise.all([
+      api.get(`/basic-stats/get/by-game/${gameId}`),
+      api.get(`/basic-stats-var/get/by-game/${gameId}`)
+    ]);
 
-      const latestTeamAStats = Array.isArray(teamARes.data) ? teamARes.data : [];
-      const latestTeamBStats = Array.isArray(teamBRes.data) ? teamBRes.data : [teamBRes.data].filter(Boolean);
+    const latestTeamAStats = Array.isArray(teamARes.data) ? teamARes.data : [];
+    const latestTeamBStats = Array.isArray(teamBRes.data) ? teamBRes.data : [teamBRes.data].filter(Boolean);
 
-      const latestTeamAScore = latestTeamAStats.reduce((sum, s) => sum + (Number(s.gamePoints) || 0), 0);
-      const latestTeamBScore = latestTeamBStats.reduce((sum, s) => sum + (Number(s.gamePoints) || Number(s.gamePoints) || 0), 0);
+    const latestTeamAScore = latestTeamAStats.reduce((sum, s) => sum + (Number(s.gamePoints) || 0), 0);
+    const latestTeamBScore = latestTeamBStats.reduce((sum, s) => sum + (Number(s.gamePoints) || 0), 0);
 
-      // Update the analysis type and final score using latest computed values
-      await api.put(`/games/update-analysis-type/${gameId}`, { type: "Post" });// Update game type/status
-      await api.put(`/games/update-final-score/${gameId}`, { finalScore: `${latestTeamAScore}-${latestTeamBScore}` });
-
-      await api.post(`/stopwatch/resetGame`);
-      console.log(`Game ${gameId} ended. All players subbed out and analysis type set to Post Analysis.`);
-      setConfirmedFirstFive([]);
-      setShowAddFirstFiveButton(true);
-      localStorage.removeItem("confirmedFirstFive");
-      setIsPlaying(false); // stop the timer locally
-      navigate(`/coach/game-details/${gameId}?teamId=${teamId}`);
-    } catch (err) {
-      console.error("Failed to end game:", err);
+    // ✅ Prevent ending the game if the scores are tied
+    if (latestTeamAScore === latestTeamBScore) {
+      alert("The game cannot end in a tie. Please resolve the score before ending the game.");
+      return;
     }
-  };
+
+    // Update the analysis type and final score using latest computed values
+    await api.put(`/games/update-analysis-type/${gameId}`, { type: "Post" }); // Update game type/status
+    await api.put(`/games/update-final-score/${gameId}`, { finalScore: `${latestTeamAScore}-${latestTeamBScore}` });
+
+    await api.post(`/stopwatch/resetGame`);
+    console.log(`Game ${gameId} ended. All players subbed out and analysis type set to Post Analysis.`);
+
+    // Reset local states
+    setConfirmedFirstFive([]);
+    setShowAddFirstFiveButton(true);
+    localStorage.removeItem("confirmedFirstFive");
+    setIsPlaying(false); // stop the timer locally
+    navigate(`/coach/game-details/${gameId}?teamId=${teamId}`);
+  } catch (err) {
+    console.error("Failed to end game:", err);
+  }
+};
+
 
 
   //fetch team A info with teamId
