@@ -99,7 +99,7 @@ function CreateCoach() {
               <h2>Basic Information</h2>
 
               <div className="form-row">
-                <FormControl sx={{ width: "15ch" }} variant="outlined" required>
+                <FormControl fullWidth variant="outlined" required>
                   <InputLabel htmlFor="fname">First Name</InputLabel>
                   <OutlinedInput
                     id="fname"
@@ -107,11 +107,11 @@ function CreateCoach() {
                     type="text"
                     value={formData.fname}
                     onChange={handleChange}
-                    sx={{ bgcolor: "#ffffffff", width: 440 }}
+                    sx={{ bgcolor: "#fff" }}
                   />
                 </FormControl>
 
-                <FormControl sx={{ marginLeft: 25, width: "15ch" }} variant="outlined" required>
+                <FormControl fullWidth variant="outlined" required>
                   <InputLabel htmlFor="lname">Last Name</InputLabel>
                   <OutlinedInput
                     id="lname"
@@ -119,13 +119,13 @@ function CreateCoach() {
                     type="text"
                     value={formData.lname}
                     onChange={handleChange}
-                    sx={{ bgcolor: "#ffffffff", width: 440 }}
+                    sx={{ bgcolor: "#fff" }}
                   />
                 </FormControl>
               </div>
 
               <div className="form-row">
-                <FormControl sx={{ width: "25ch" }} variant="outlined" required>
+                <FormControl fullWidth variant="outlined" required>
                   <InputLabel htmlFor="email">Email</InputLabel>
                   <OutlinedInput
                     id="email"
@@ -133,11 +133,11 @@ function CreateCoach() {
                     type="email"
                     value={formData.email}
                     onChange={handleChange}
-                    sx={{ bgcolor: "#ffffffff", width: 440 }}
+                    sx={{ bgcolor: "#fff" }}
                   />
                 </FormControl>
 
-                <FormControl sx={{ marginLeft: 25, width: "25ch" }} variant="outlined" required>
+                <FormControl fullWidth variant="outlined" required>
                   <InputLabel htmlFor="password">Password</InputLabel>
                   <OutlinedInput
                     id="password"
@@ -145,7 +145,7 @@ function CreateCoach() {
                     type={showPassword ? "text" : "password"}
                     value={formData.password}
                     onChange={handleChange}
-                    sx={{ bgcolor: "#ffffffff", width: 440 }}
+                    sx={{ bgcolor: "#fff" }}
                     endAdornment={
                       <InputAdornment position="end">
                         <IconButton onClick={handleClickShowPassword} edge="end">
@@ -158,12 +158,7 @@ function CreateCoach() {
               </div>
 
               <div className="form-row">
-                <FormControl
-                  sx={{ width: "25ch" }}
-                  variant="outlined"
-                  required
-                  error={Boolean(birthDateError)}
-                >
+                <FormControl fullWidth variant="outlined" required error={Boolean(birthDateError)}>
                   <InputLabel shrink htmlFor="birthDate">Birth Date</InputLabel>
                   <OutlinedInput
                     id="birthDate"
@@ -171,16 +166,12 @@ function CreateCoach() {
                     name="birthDate"
                     value={formData.birthDate}
                     onChange={handleChange}
-                    sx={{ bgcolor: "#F5F5F5", width: 440 }}
+                    sx={{ bgcolor: "#F5F5F5" }}
                   />
                   {birthDateError && <FormHelperText>{birthDateError}</FormHelperText>}
                 </FormControl>
-                <FormControl
-                  sx={{ marginLeft: 25, width: "25ch" }}
-                  variant="outlined"
-                  required
-                  error={Boolean(passwordError)}
-                >
+
+                <FormControl fullWidth variant="outlined" required error={Boolean(passwordError)}>
                   <InputLabel htmlFor="confirmPassword">Confirm Password</InputLabel>
                   <OutlinedInput
                     id="confirmPassword"
@@ -188,7 +179,7 @@ function CreateCoach() {
                     type={confirmShowPassword ? "text" : "password"}
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    sx={{ bgcolor: "#ffffffff", width: 440 }}
+                    sx={{ bgcolor: "#fff" }}
                     endAdornment={
                       <InputAdornment position="end">
                         <IconButton onClick={handleConfirmClickShowPassword} edge="end">
@@ -197,11 +188,10 @@ function CreateCoach() {
                       </InputAdornment>
                     }
                   />
-                  {passwordError && (
-                    <FormHelperText>{passwordError}</FormHelperText>
-                  )}
+                  {passwordError && <FormHelperText>{passwordError}</FormHelperText>}
                 </FormControl>
               </div>
+
             </div>
 
             <div className="form-actions">

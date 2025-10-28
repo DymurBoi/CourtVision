@@ -81,40 +81,45 @@ function AdminLogin() {
           <p className="auth-subtitle">Enter your administrator credentials</p>
 
           <form className="auth-form" onSubmit={handleLogin}>
-            <div className="form-group">
-              <FormControl fullWidth variant="outlined" required sx={{ marginBottom: 2 }}>
-                <InputLabel htmlFor="email">Email</InputLabel>
-                <OutlinedInput
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  label="Email"
-                  sx={{ bgcolor: "#fff" }}
-                />
-              </FormControl>
-            </div>
+            
+              
+            <FormControl
+              sx={{ m: 1, width: "95%" }}
+              variant="outlined"
+              required
+            >
+              <InputLabel htmlFor="email">Email</InputLabel>
+              <OutlinedInput
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                sx={{ bgcolor: "#F5F5F5", width: "100%" }}
+              />
+            </FormControl>
 
-            <div className="form-group">
-              <FormControl fullWidth variant="outlined" required sx={{ marginBottom: 2 }}>
-                <InputLabel htmlFor="password">Password</InputLabel>
-                <OutlinedInput
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  label="Password"
-                  sx={{ bgcolor: "#fff" }}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton onClick={handleClickShowPassword} edge="end">
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  }
-                />
-              </FormControl>
-            </div>
+            <FormControl
+              sx={{ m: 1, width: "95%" }}
+              variant="outlined"
+              required
+            >
+              <InputLabel htmlFor="password">Password</InputLabel>
+              <OutlinedInput
+                id="password"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                sx={{ bgcolor: "#F5F5F5", width: "100%" }}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton onClick={handleClickShowPassword} edge="end">
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+              />
+            </FormControl>
+
 
             {error && <div className="error-message">{error}</div>}
 
