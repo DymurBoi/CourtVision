@@ -149,9 +149,62 @@ function CHome() {
     }
     fetchCoachData();
   }, [user]);
-  const handleTeamChange = (e) => {
-    setSelectedTeamId(Number(e.target.value))
-  }
+   const handleTeamChange = (e) => {
+  const teamId = Number(e.target.value);
+  setSelectedTeamId(teamId);
+  localStorage.setItem("selectedTeamId", teamId);
+};
+
+useEffect(() => {
+  const fetchCoachData = async () => {
+    if (!user || !user.id) {
+      console.log("No user data available for fetching coach info");
+      return;
+    }
+
+    try {
+      let coachId = user.id;
+      if (typeof coachId === "string" && coachId.startsWith("COACH_")) {
+        coachId = coachId.substring(6);
+      }
+      coachId = Number(coachId);
+
+      const coachRes = await api.get(`/coaches/get/${coachId}`);
+      const data = coachRes.data;
+      setCoachData(data);
+
+      const teamsRes = await api.get(`/teams/get/by-coach/${coachId}`);
+      const teamsData = teamsRes.data || [];
+
+      const mappedTeams = teamsData.map(team => ({
+        id: team.teamId,
+        teamId: team.teamId,
+        name: team.teamName,
+        description: team.description || `Team coached by ${data.fname} ${data.lname}`,
+        players: team.players || []
+      }));
+
+      setTeams(mappedTeams);
+
+      // ✅ restore from localStorage if available
+      const savedTeamId = localStorage.getItem("selectedTeamId");
+      if (savedTeamId && mappedTeams.some(t => t.teamId === Number(savedTeamId))) {
+        setSelectedTeamId(Number(savedTeamId));
+      } else if (mappedTeams.length > 0) {
+        setSelectedTeamId(mappedTeams[0].teamId);
+        localStorage.setItem("selectedTeamId", mappedTeams[0].teamId);
+      }
+
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching coach or teams data:", error);
+      setTeams([]);
+      setLoading(false);
+    }
+  };
+
+  fetchCoachData();
+}, [user]);
 
   const handleRemovePlayer = async (playerId) => {
     if (!window.confirm("Are you sure you want to remove this player?")) {
