@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { api } from "../utils/axiosConfig";
-import "../styles/Modal.css";
-import "../styles/MatchModal.css";
+import "../styles/CreateMatchModal.css";
 
 function CreateMatchModal({ onClose, onSave, teamId }) {
   const [formData, setFormData] = useState({
@@ -98,9 +97,8 @@ function CreateMatchModal({ onClose, onSave, teamId }) {
         </div>
 
         <form onSubmit={handleSubmit}>
-          <div className="modal-content">
-            <div className="match-form-section">
               <h3>Match Details</h3>
+              {/*First Row*/}
               <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="homeTeam">Home Team</label>
@@ -111,7 +109,7 @@ function CreateMatchModal({ onClose, onSave, teamId }) {
                     onChange={handleChange}
                     placeholder="Home Team"
                     required
-                    style={{ width: "150px" }}
+                    
                   />
                 </div>
                 <div className="form-group">
@@ -123,7 +121,7 @@ function CreateMatchModal({ onClose, onSave, teamId }) {
                     onChange={handleChange}
                     placeholder="Away Team"
                     required
-                    style={{ width: "150px" }}
+                    
                   />
                 </div>
 
@@ -139,10 +137,11 @@ function CreateMatchModal({ onClose, onSave, teamId }) {
                     <option value="Official Match">Official Match</option>
                   </select>
                 </div>
-
-
-
               </div>
+
+
+              {/*Second Row*/}
+
               <div className="form-row">
                 <div className="form-group">
                   <label>Game Date</label>
@@ -197,11 +196,11 @@ function CreateMatchModal({ onClose, onSave, teamId }) {
 
 
               </div>
-            </div>
-          </div>
+          
+          
 
           <div className="modal-actions">
-            <button type="submit" className="save-button-create" disabled={isSubmitting} onClick={(e) => e.stopPropagation()}>
+            <button type="submit"className="save-button-create" disabled={isSubmitting} onClick={(e) => e.stopPropagation()}>
               {isSubmitting ? "Saving..." : "Save Match"}
             </button>
           </div>
