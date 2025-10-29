@@ -124,16 +124,17 @@ public class SeasonService {
         return seasonRepository.findById(seasonId).orElseThrow(() -> new RuntimeException("Season not found"));
     }
 
-    public List<Game> getGamesBySeason(Long seasonId) {
-         List<Game> allGames = gameRepository.findBySeason_Id(seasonId);
+   public List<Game> getGamesBySeason(Long seasonId) {
+    // Fetch all games for the given season
+    List<Game> allGames = gameRepository.findBySeason_Id(seasonId);
 
-    // Filter out practice or scrimmage games
+    // Filter out Scrimmage and Practice Match
     return allGames.stream()
-            .filter(game -> {
-                String type = game.getGameType() != null ? game.getGameType().toLowerCase() : "";
-                return !(type.contains("practice") || type.contains("scrimmage"));
-            })
+            .filter(game -> game.getGameType() != null &&
+                    !game.getGameType().equalsIgnoreCase("Scrimmage") &&
+                    !game.getGameType().equalsIgnoreCase("Practice Match"))
             .toList();
-    }
+}
+
 }
 
