@@ -79,6 +79,7 @@ function CSeasonRanking() {
           id="team-select"
           value={selectedTeamId}
           onChange={(e) => setSelectedTeamId(e.target.value)}
+          style={{ padding: 8, borderRadius: 6, border: '1px solid #ccc', marginRight: 8 }}
         >
           {teams.map((team) => (
             <option key={team.teamId} value={team.teamId}>
