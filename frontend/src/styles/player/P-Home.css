@@ -76,11 +76,11 @@
 }
 
 .modal-actions2 {
-    display: flex;
-    gap: 1rem;
-    padding: 1.5rem;
-    border-top: 1px solid rgba(123, 123, 243, 0.2);
-  }
+  display: flex;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-top: 1px solid rgba(123, 123, 243, 0.2);
+}
 
 .team-content h2,
 .team-content h3 {
@@ -325,10 +325,28 @@
   .available-teams-grid {
     grid-template-columns: 1fr;
   }
+
+  .player-avatar {
+    width: 60px;
+    height: 60px;
+    font-size: 2rem;
+  }
 }
 
 @media (max-width: 480px) {
   .team-members-grid {
     grid-template-columns: 1fr;
+  }
+
+  .player-avatar {
+    width: 50px;
+    height: 50px;
+    font-size: 1.8rem;
+  }
+
+  .player-welcome {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
   }
 }

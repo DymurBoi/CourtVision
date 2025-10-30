@@ -285,7 +285,7 @@ function PProfile() {
                 <Button variant="contained" onClick={handleEditToggle}>
                   Edit Profile
                 </Button>
-                <Button variant="outlined" color="error" onClick={handleLogout} sx={{ ml: 2 }}>
+                <Button variant="outlined" color="error" onClick={handleLogout} >
                   Logout
                 </Button>
               </>

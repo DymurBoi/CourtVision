@@ -104,6 +104,25 @@
   transform: rotate(-45deg);
   top: 8px;
 }
+.player-navbar .mobile-user-actions {
+  display: none;
+}
+.logout-btn {
+  background-color: transparent;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 4px;
+  padding: 5px 12px;
+  margin-left: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.logout-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: white;
+}
 
 /* Responsive styles */
 @media (max-width: 768px) {
@@ -132,23 +151,44 @@
   .mobile-menu-btn {
     display: block;
   }
+    .player-navbar .user-profile {
+    display: none;
+  }
+
+  .player-navbar .mobile-user-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+ .player-navbar .mobile-user-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+ .player-navbar .mobile-user-actions .profile-icon {
+  margin-top: 0;
 }
 
-/* Add the following CSS for the logout button */
-.logout-btn {
+.player-navbar .mobile-user-actions .logout-btn {
+  width: 70%;
+  max-width: 180px;
+  text-align: center;
+  padding: 8px 0;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  margin: 0 auto; 
   background-color: transparent;
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: 4px;
-  padding: 5px 12px;
-  margin-left: 15px;
-  cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 14px;
 }
 
-.logout-btn:hover {
+.player-navbar .mobile-user-actions .logout-btn:hover {
   background-color: rgba(255, 255, 255, 0.1);
   border-color: white;
 }
+}
+
 
