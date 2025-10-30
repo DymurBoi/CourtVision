@@ -75,6 +75,13 @@
   padding: 1.5rem;
 }
 
+.modal-actions2 {
+    display: flex;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-top: 1px solid rgba(123, 123, 243, 0.2);
+  }
+
 .team-content h2,
 .team-content h3 {
   color: var(--dark-blue);

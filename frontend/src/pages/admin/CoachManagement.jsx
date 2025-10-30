@@ -31,7 +31,6 @@ function CoachManagement() {
             firstName: coach.fname,
             lastName: coach.lname,
             email: coach.email,
-            team: coach.teams?.[0]?.teamName || "Unassigned",
             status: "active",
             createdAt: coach.birthDate,
             type: "coach"
@@ -73,8 +72,7 @@ function CoachManagement() {
         user =>
           user.firstName.toLowerCase().includes(term) ||
           user.lastName.toLowerCase().includes(term) ||
-          user.email.toLowerCase().includes(term) ||
-          user.team.toLowerCase().includes(term)
+          user.email.toLowerCase().includes(term)
       )
     }
 
@@ -132,7 +130,6 @@ function CoachManagement() {
               <th>Name</th>
               <th>Email</th>
               <th>Type</th>
-              <th>Team</th>
               <th>Status</th>
               <th>Created</th>
               <th>Actions</th>
@@ -145,7 +142,6 @@ function CoachManagement() {
                   <td>{user.firstName} {user.lastName}</td>
                   <td>{user.email}</td>
                   <td><span className={`user-type ${user.type}`}>{user.type}</span></td>
-                  <td>{user.team}</td>
                   <td><span className={`user-status ${user.status}`}>{user.status}</span></td>
                   <td>{user.createdAt}</td>
                   <td className="action-buttons">

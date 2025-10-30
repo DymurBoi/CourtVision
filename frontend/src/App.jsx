@@ -34,6 +34,13 @@ import CoachManagement from "./pages/admin/CoachManagement"
 import { AuthProvider } from "./components/AuthContext"
 import { useEffect } from "react"
 import "./styles/App.css"
+import CSeason from "./pages/coach/C-Season";
+import CPlayerRanking from "./pages/coach/C-PlayerRanking";
+import CLiveRecord from "./pages/coach/C-LiveRecord"
+import CSeasonGames from "./pages/coach/C-SeasonGames";
+import CSeasonRanking from "./pages/coach/C-SeasonRanking";
+import CLivePracticeMatch from "./pages/coach/C-LivePracticeMatch";
+
 
 // Create a wrapper component that forces re-render on location change
 function AppRoutes() {
@@ -51,6 +58,8 @@ function AppRoutes() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<PlayerRegistration />} />
       <Route path="/admin/login" element={<AdminLogin />} />
+      {/* Demo route to view Live Record page without auth */}
+      
 
       {/* Admin Routes */}
       <Route element={<AdminOnlyRoute key="admin" />}>
@@ -149,6 +158,17 @@ function AppRoutes() {
 
       {/* Coach Routes */}
       <Route element={<CoachOnlyRoute key="coach" />}>
+      <Route path="/coach/live-record/:id" element={<CLiveRecord />} />
+        <Route
+          path="/coach/game-details/:id"
+          element={
+            <>
+              <CoachNavbar />
+              <CGameDetails />
+            </>
+          }
+        />
+        <Route path="/coach/practice-live-record/:id" element={<CLivePracticeMatch />} />
         <Route
           path="/coach/game-details/:id"
           element={
@@ -191,6 +211,42 @@ function AppRoutes() {
             <>
               <CoachNavbar />
               <CHome />
+            </>
+          }
+        />
+        <Route
+          path="/coach/season"
+          element={
+            <>
+              <CoachNavbar />
+              <CSeason />
+            </>
+          }
+        />
+        <Route
+          path="/coach/season/:id/games"
+          element={
+            <>
+              <CoachNavbar />
+              <CSeasonGames />
+            </>
+          }
+        />
+        <Route
+          path="/coach/season/:id/ranking"
+          element={
+            <>
+              <CoachNavbar />
+              <CSeasonRanking />
+            </>
+          }
+        />
+        <Route
+          path="/coach/ranking"
+          element={
+            <>
+              <CoachNavbar />
+              <CPlayerRanking />
             </>
           }
         />
@@ -239,7 +295,7 @@ function AppRoutes() {
           element={
             <>
               <PlayerNavbar />
-              <PGameDetails />
+              <PMatchDetails />
             </>
           }
         />

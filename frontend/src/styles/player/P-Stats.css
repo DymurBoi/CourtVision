@@ -334,4 +334,37 @@
     margin-bottom: 2rem;
     font-size: 1rem;
   }
+
+  /* Season selector styles */
+  .season-select-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .season-select-label {
+    font-weight: 600;
+    color: var(--dark-blue);
+    margin-right: 6px;
+  }
+
+  .season-select {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(123, 123, 243, 0.3);
+    background: white;
+    min-width: 220px;
+    font-size: 0.95rem;
+    color: var(--dark-blue);
+    box-shadow: 0 4px 10px rgba(81,81,255,0.06);
+    transition: box-shadow 0.2s ease, transform 0.08s ease;
+  }
+
+  .season-select:focus {
+    outline: none;
+    box-shadow: 0 6px 18px rgba(81,81,255,0.12);
+    transform: translateY(-1px);
+  }
   

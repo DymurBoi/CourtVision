@@ -28,7 +28,6 @@ function PlayerManagement() {
           firstName: player.fname,
           lastName: player.lname,
           email: player.email,
-          team: player.team?.teamName || "Unassigned",
           status: "active",
           createdAt: player.birthDate,
           type: "player"
@@ -72,8 +71,7 @@ function PlayerManagement() {
         user =>
           user.firstName.toLowerCase().includes(term) ||
           user.lastName.toLowerCase().includes(term) ||
-          user.email.toLowerCase().includes(term) ||
-          user.team.toLowerCase().includes(term)
+          user.email.toLowerCase().includes(term)
       )
     }
 
@@ -98,7 +96,7 @@ function PlayerManagement() {
           <div className="search-container">
             <input
               type="text"
-              placeholder="Search users..."
+              placeholder="Search players..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="search-input"
@@ -120,10 +118,6 @@ function PlayerManagement() {
 
        
         </div>
-
-        <button className="create-coach-button" onClick={() => navigate("/admin/users/new-coach")}>
-          Create Coach Account
-        </button>
       </div>
 
       <div className="users-table-container">
@@ -133,7 +127,6 @@ function PlayerManagement() {
               <th>Name</th>
               <th>Email</th>
               <th>Type</th>
-              <th>Team</th>
               <th>Status</th>
               <th>Created</th>
               <th>Actions</th>
@@ -146,7 +139,6 @@ function PlayerManagement() {
                   <td>{user.firstName} {user.lastName}</td>
                   <td>{user.email}</td>
                   <td><span className={`user-type ${user.type}`}>{user.type}</span></td>
-                  <td>{user.team}</td>
                   <td><span className={`user-status ${user.status}`}>{user.status}</span></td>
                   <td>{user.createdAt}</td>
                   <td className="action-buttons">

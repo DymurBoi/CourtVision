@@ -1,15 +1,15 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { api } from "../../utils/axiosConfig";
 import "../../styles/coach/C-Matches.css";
 import CreateMatchModal from '../../components/CreateMatchModal';
 import gameService from '../../services/gameService';
 
-function CMatches({teamId}) {
+function CMatches({ teamId }) {
+  const navigate = useNavigate();
   const location = useLocation();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [matches, setMatches] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   // Get teamId from query string
@@ -19,7 +19,6 @@ function CMatches({teamId}) {
     const fetchMatches = async () => {
       if (!teamId) {
         setError("No team selected. Please go back and select a team.");
-        setLoading(false);
         return;
       }
 
@@ -34,6 +33,8 @@ function CMatches({teamId}) {
           result: game.gameResult,
           score: game.finalScore,
           date: new Date(game.gameDate).toLocaleDateString(),
+          recordingType: game.recordingType,
+          gameType: game.gameType,
         }));
 
         setMatches(transformed);
@@ -41,20 +42,12 @@ function CMatches({teamId}) {
         console.error("Error fetching matches:", err);
         setError("Failed to load matches. Please try again.");
       } finally {
-        setLoading(false);
+
       }
     };
 
     fetchMatches();
   }, [teamId]);
-
-  if (loading) {
-    return (
-      <div className="loading-container">
-        <p>Loading matches...</p>
-      </div>
-    );
-  }
 
   if (error) {
     return (
@@ -67,51 +60,47 @@ function CMatches({teamId}) {
     );
   }
 
-  const handleCreateMatch = async (newMatch) => {
-    try {
-      const savedGame = await gameService.createGame(newMatch);
+  //Handles View Game Button
+  const handleViewGame = (match) => {
+  if (
+    match.gameType === "Practice" &&
+    match.recordingType === "Live"
+  ) {
+    navigate(`/coach/practice-live-record/${match.id}?teamId=${teamId}`);
+  } else if (
+    (match.gameType === "Official Match" || match.gameType === "Scrimmage")&&
+    match.recordingType === "Live"
+  ) {
+    navigate(`/coach/live-record/${match.id}?teamId=${teamId}`);
+  } else {
+    navigate(`/coach/game-details/${match.id}?teamId=${teamId}`);
+  }
+};
 
+
+
+  const handleCreateMatch = (savedGame) => {
+    try {
       const newMatchData = {
         id: savedGame.gameId,
         homeTeam: savedGame.gameName.split(' vs ')[0],
         awayTeam: savedGame.gameName.split(' vs ')[1],
         result: savedGame.gameResult,
         score: savedGame.finalScore,
-        date: new Date(savedGame.gameDate).toLocaleDateString()
+        date: new Date(savedGame.gameDate).toLocaleDateString(),
+        recordingType: savedGame.recordingType,
+        gameType: savedGame.gameType,
       };
 
-      setMatches([...matches, newMatchData]);
+      setMatches((prev) => [...prev, newMatchData]);
       setShowCreateModal(false);
-       // Consider removing this for smoother UX
     } catch (err) {
-      console.error('Error creating match:', err);
-      setError('Failed to create match');
+      console.error('Error handling created match:', err);
+      setError('Failed to add match to list');
     }
-    window.location.reload();
   };
 
-  const handle = async (newMatch) => {
-    try {
-      const savedGame = await gameService.createGame(newMatch);
 
-      const newMatchData = {
-        id: savedGame.gameId,
-        homeTeam: savedGame.gameName.split(' vs ')[0],
-        awayTeam: savedGame.gameName.split(' vs ')[1],
-        result: savedGame.gameResult,
-        score: savedGame.finalScore,
-        date: new Date(savedGame.gameDate).toLocaleDateString()
-      };
-
-      setMatches([...matches, newMatchData]);
-      setShowCreateModal(false);
-       // Consider removing this for smoother UX
-    } catch (err) {
-      console.error('Error creating match:', err);
-      setError('Failed to create match');
-    }
-    window.location.reload();
-  };
 
   return (
     <main className="main-content">
@@ -153,15 +142,28 @@ function CMatches({teamId}) {
                 <div className="teams">
                   {match.homeTeam} vs {match.awayTeam}
                 </div>
-                <div className={`result ${match.result === "W" ? "win" : "loss"}`}>
-                  {match.result}
+                <div
+                  className={`result ${(() => {
+                    if (match.recordingType === "Live") return "live";
+                    if (match.result === "W") return "win";
+                    if (match.result === "L") return "loss";
+                    if (match.result === "T") return "tie";
+                    return "";
+                  })()}`}
+                >
+                  {match.recordingType === "Live"
+                    ? "..."
+                    : match.result || "-"}
                 </div>
                 <div className="score">{match.score}</div>
                 <div className="date">{match.date}</div>
                 <div className="actions">
-                  <Link to={`/coach/game-details/${match.id}?teamId=${teamId}`} className="view-button">
+                  <button
+                    className="view-button"
+                    onClick={() => handleViewGame(match)}
+                  >
                     View Game
-                  </Link>
+                  </button>
                 </div>
               </div>
             ))}
@@ -176,7 +178,7 @@ function CMatches({teamId}) {
           teamId={teamId}
         />
       )}
-    
+
     </main>
   );
 }

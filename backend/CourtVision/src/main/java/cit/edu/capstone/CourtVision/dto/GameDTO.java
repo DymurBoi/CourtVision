@@ -1,24 +1,45 @@
 package cit.edu.capstone.CourtVision.dto;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
 
 public class GameDTO {
     private Long gameId;
     private String gameName;
+    private String gameType;
+    private String recordingType;
     private LocalDate gameDate;
     private String gameResult;
     private String finalScore;
     private String comments;
     private Long teamId;
+    private Long seasonId;
     private List<Long> basicStatIds; // List of BasicStats IDs
     private Long advancedStatId;
     private Long adjustedStatId;
+    private Long gameDuration;
 
     // Constructors
     public GameDTO() {}
 
     // Getters and Setters
+    public String getRecordingType() {
+        return recordingType;
+    }
+    
+    public void setRecordingType(String recordingType) {
+        this.recordingType = recordingType;
+    }
+    
+    public String getGameType() {
+        return gameType;
+    }
+
+    public void setGameType(String gameType) {
+        this.gameType = gameType;
+    }
+
     public Long getGameId() {
         return gameId;
     }
@@ -75,6 +96,14 @@ public class GameDTO {
         this.teamId = teamId;
     }
 
+    public Long getSeasonId() {
+        return seasonId;
+    }
+
+    public void setSeasonId(Long seasonId) {
+        this.seasonId = seasonId;
+    }
+
     public List<Long> getBasicStatIds() {
         return basicStatIds;
     }
@@ -97,5 +126,12 @@ public class GameDTO {
 
     public void setAdjustedStatId(Long adjustedStatId) {
         this.adjustedStatId = adjustedStatId;
+    }
+
+    public Long getGameDuration() {
+        return gameDuration;
+    }
+    public void setGameDuration(Long gameDuration) {
+        this.gameDuration = gameDuration;
     }
 }

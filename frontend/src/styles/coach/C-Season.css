@@ -1,0 +1,306 @@
+/* ============================================
+   🎯 GENERAL LAYOUT
+   ============================================ */
+.stats-container {
+  padding: 2rem;
+  max-width: 1200px; /* ⬆️ Wider from 1000px */
+  margin: 0 auto;
+}
+
+.page-title {
+  font-size: 2.2rem; /* slightly larger */
+  color: var(--dark-blue);
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.page-subtitle {
+  font-size: 1.05rem;
+  color: #555;
+  text-align: center;
+  margin-bottom: 1.8rem;
+}
+
+/* ============================================
+   🎯 FORM STYLING
+   ============================================ */
+form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.8rem; /* more breathing space */
+  margin-bottom: 1.8rem;
+}
+
+form input {
+  flex: 1;
+  min-width: 260px; /* wider input box */
+  padding: 0.7rem 1.1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1.05rem;
+}
+
+.apply-button {
+  background: linear-gradient(to right, var(--medium-purple), var(--bright-purple));
+  color: white;
+  border: none;
+  padding: 0.7rem 1.4rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.apply-button:hover {
+  background: linear-gradient(to right, var(--bright-purple), var(--medium-purple));
+  transform: translateY(-2px);
+  box-shadow: 0 3px 6px rgba(65, 65, 252, 0.3);
+}
+
+/* ============================================
+   🧾 CARD + TABLE STYLING
+   ============================================ */
+.stats-card {
+  background-color: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 16px rgba(36, 36, 62, 0.08);
+  border: 1px solid rgba(123, 123, 243, 0.2);
+  padding-bottom: 0.5rem; /* subtle breathing space at bottom */
+}
+
+.stats-card-header {
+  background: var(--dark-blue);
+  color: var(--light-purple);
+  padding: 1.2rem 2rem;
+  border-bottom: 1px solid rgba(123, 123, 243, 0.2);
+}
+
+.stats-card-header h2 {
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  text-align: center;
+  padding: 1rem; /* wider cells */
+}
+
+th {
+  background-color: var(--light-purple);
+  color: var(--dark-blue);
+  font-weight: 700;
+}
+
+tr:nth-child(even) {
+  background-color: #f9f9ff;
+}
+
+tr:hover {
+  background-color: #f1efff;
+}
+
+/* Action buttons inside table */
+td div {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* ----- Action Buttons Group in Table ------ */
+.action-group {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.end-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  background: linear-gradient(90deg, #ff3860 0%, #770e37 100%);
+  color: white;
+  border: none;
+  font-weight: 700;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  padding: 0.55rem 1.1rem;
+  box-shadow: 0 2px 10px rgba(255,56,96,0.09);
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.end-btn:hover {
+  background: linear-gradient(90deg, #770e37 0%, #fd5c63 100%);
+  box-shadow: 0 4px 16px rgba(255,56,96,0.16);
+}
+.view-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  background: linear-gradient(90deg, #f8f9ff 0%, #edf0ff 100%);
+  color: #3c317a;
+  border: 1px solid #b9b4f7;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.55rem 1.1rem;
+  min-width: 90px;
+  box-shadow: 0 2px 6px rgba(170, 170, 250, 0.08);
+  text-decoration: none;
+  transition: background 0.19s, border 0.18s, color 0.22s;
+  cursor: pointer;
+}
+.view-btn:hover {
+  background: linear-gradient(90deg, #d6d5f7 0%, #f0eeff 100%);
+  border: 1.5px solid #9e96f5;
+  color: #6a1fc2;
+}
+@media (max-width: 768px) {
+  .action-group {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.4rem;
+  }
+}
+
+/* ============================================
+   📱 TABLET & MOBILE (≤768px)
+   ============================================ */
+@media (max-width: 768px) {
+  .stats-container {
+    padding: 1.4rem;
+    max-width: 95%;
+  }
+
+  form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  form input {
+    width: 100%;
+  }
+
+  .apply-button {
+    width: 100%;
+    font-size: 0.95rem;
+  }
+
+  .stats-card-header {
+    text-align: center;
+    padding: 1rem;
+  }
+
+  /* Hide table header and convert rows into cards */
+  table thead {
+    display: none;
+  }
+
+  table,
+  tbody,
+  tr,
+  td {
+    display: block;
+    width: 100%;
+  }
+
+  tr {
+    background: #fff;
+    border: 1px solid rgba(123, 123, 243, 0.2);
+    border-radius: 12px;
+    margin-bottom: 1.2rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    padding: 1rem 1.4rem;
+  }
+
+  /* Hide all table cells by default, only show Name/Season Name, Status, Action */
+  td {
+    display: none;
+  }
+
+  /* Accept both "Name" and "Season Name" data-labels so JSX doesn't need changing */
+  td[data-label="Name"],
+  td[data-label="Season Name"] {
+    display: block;
+    padding: 0;
+    margin-bottom: 0.4rem;
+  }
+
+  /* Season name styling — big and prominent */
+  td[data-label="Name"]::before,
+  td[data-label="Season Name"]::before {
+    content: attr(data-label);
+    display: block;
+    font-weight: 600;
+    color: var(--dark-blue);
+    margin-bottom: 0.25rem;
+    font-size: 0.95rem;
+  }
+
+  td[data-label="Name"] > *,
+  td[data-label="Season Name"] > * {
+    display: block;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--dark-blue);
+  }
+
+  /* Status row */
+  td[data-label="Status"] {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.35rem 0;
+    margin-bottom: 0.4rem;
+  }
+
+  td[data-label="Status"]::before {
+    content: "Status";
+    font-weight: 600;
+    color: var(--dark-blue);
+    margin-right: 0.5rem;
+  }
+
+  /* Action label above buttons and buttons stacked below */
+  td[data-label="Action"] {
+    display: block;
+    padding: 0;
+  }
+
+  td[data-label="Action"]::before {
+    content: "Action";
+    display: block;
+    font-weight: 700;
+    color: var(--dark-blue);
+    margin-bottom: 0.35rem;
+  }
+
+  td[data-label="Action"] .actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  td[data-label="Action"] .actions a,
+  td[data-label="Action"] .actions button {
+    padding: 0.45rem 0.9rem;
+    font-size: 0.9rem;
+  }
+
+  .apply-button {
+    padding: 0.45rem 0.8rem;
+    font-size: 0.9rem;
+  }
+}

@@ -39,14 +39,16 @@ public class PhysicalBasedMetricsStatsService {
     public PhysicalBasedMetricsStats createFrom(BasicStats basicStats) {
         if (basicStats == null || basicStats.getGame() == null) return null;
 
-        Game game = basicStats.getGame();
-        Team team = game.getTeam();
-        if (team == null || team.getPlayers() == null || team.getPlayers().isEmpty()) return null;
+       Game game = basicStats.getGame();
+       Player player = basicStats.getPlayer(); 
 
-        Player player = team.getPlayers().get(0);  // TODO: Adjust to match correct player
+         if (player == null) return null;
 
-        PhysicalRecords record = physicalRepo.findByPlayer(player);
-        if (record == null) return null;
+       PhysicalRecords record = physicalRepo.findByPlayer(player);
+            if (record == null) {
+                System.out.println("No physical record found for player ID: " + player.getPlayerId());
+                return null;
+            }
 
         PhysicalBasedMetricsStats stats = computeMetrics(record, basicStats);
         stats.setBasicStats(basicStats);
@@ -141,4 +143,27 @@ public class PhysicalBasedMetricsStatsService {
             metricsRepo.delete(stats);
         }
     }
+
+    public PhysicalBasedMetricsStats recompute(PhysicalBasedMetricsStats existing, BasicStats basicStats) {
+    if (basicStats == null || basicStats.getGame() == null || basicStats.getPlayer() == null) {
+        return existing;
+    }
+
+    PhysicalRecords record = physicalRepo.findByPlayer(basicStats.getPlayer());
+    if (record == null) {
+        System.out.println("[PhysicalMetrics] No record for player ID " + basicStats.getPlayer().getPlayerId());
+        return existing;
+    }
+
+    PhysicalBasedMetricsStats updated = computeMetrics(record, basicStats);
+
+    // keep the same ID and relationships
+    existing.setFinishingEfficiency(updated.getFinishingEfficiency());
+    existing.setReboundingEfficiency(updated.getReboundingEfficiency());
+    existing.setDefensiveActivityIndex(updated.getDefensiveActivityIndex());
+    existing.setPhysicalEfficiencyRating(updated.getPhysicalEfficiencyRating());
+
+    return metricsRepo.save(existing);
+}
+
 }

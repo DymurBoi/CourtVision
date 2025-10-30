@@ -290,10 +290,10 @@ function PHome() {
 
               <div className="modal-actions">
                 <button className="confirm-button" onClick={handleApplyConfirm}>
-                  Yes, Apply
+                  Apply
                 </button>
-                <button className="cancel-button" onClick={() => setShowApplyModal(false)}>
-                  No, Cancel
+                <button className="reject-button" onClick={() => setShowApplyModal(false)}>
+                  Cancel
                 </button>
               </div>
             </div>

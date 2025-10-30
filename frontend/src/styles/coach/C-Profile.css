@@ -114,7 +114,6 @@
 
 .edit-button,
 .save-button,
-.logout-button,
 .cancel-button {
   padding: 0.8rem 1.8rem;
   border-radius: 50px;
@@ -123,6 +122,17 @@
   transition: all 0.3s ease;
   font-size: 0.95rem;
 }
+.log-button
+   {
+    margin-top: 13px;
+    height: 45px;
+    padding: 0.8rem 1.8rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+  }
 
 .edit-button,
 .save-button {
@@ -138,13 +148,13 @@
   transform: translateY(-2px);
 }
 
-.logout-button {
+.log-button {
   background: white;
   color: #e74c3c;
   border: 1px solid #e74c3c;
 }
 
-.logout-button:hover {
+.log-button:hover {
   background-color: #fee;
   color: #e74c3c;
   transform: translateY(-2px);

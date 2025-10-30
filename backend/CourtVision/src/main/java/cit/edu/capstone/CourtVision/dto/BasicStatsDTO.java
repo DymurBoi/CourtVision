@@ -24,8 +24,20 @@ public class BasicStatsDTO {
     private Long playerId;
     private String playerName;
     private GameDTO gameDTO;
+    private boolean subbedIn;
+    private boolean opponent;
     
 
+    // Player details
+    private String fname;
+    private String lname;
+    private Integer jerseyNum;
+    public boolean isSubbedIn() {
+        return subbedIn;
+    }
+    public void setSubbedIn(boolean subbedIn) {
+        this.subbedIn = subbedIn;
+    }
     // Getters and Setters
     public Long getPlayerId() {
         return playerId;
@@ -34,7 +46,7 @@ public class BasicStatsDTO {
         this.playerId = playerId;
     }
     public int getGamePoints() {
-        return gamePoints;
+        return (twoPtMade * 2) + (threePtMade * 3) + ftMade;
     }
     public void setGamePoints(int gamePoints) {
         this.gamePoints = gamePoints;
@@ -189,6 +201,36 @@ public class BasicStatsDTO {
 
     public void setMinutes(Time minutes) {
         this.minutes = minutes;
+    }
+    public String getFname() {
+        return fname;
+    }
+    public void setFname(String fname) {
+        this.fname = fname;
+    }
+    public String getLname() {
+        return lname;
+    }
+    public void setLname(String lname) {
+        this.lname = lname;
+    }
+    public Integer getJerseyNum() {
+        return jerseyNum;
+    }
+    public void setJerseyNum(Integer jerseyNum) {
+        this.jerseyNum = jerseyNum;
+    }
+
+    public int getPoints() {
+    return (twoPtMade * 2) + (threePtMade * 3) + ftMade;
+}
+
+    public boolean isOpponent() {
+        return opponent;
+    }
+
+    public void setOpponent(boolean opponent) {
+        this.opponent = opponent;
     }
 }
 

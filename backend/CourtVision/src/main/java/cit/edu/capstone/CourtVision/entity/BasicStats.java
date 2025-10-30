@@ -10,12 +10,14 @@ import java.sql.Time;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name = "basic_stats",
+    uniqueConstraints = @UniqueConstraint(columnNames = {"player_id", "game_id"}))
 public class BasicStats {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long basicStatId;
-
+//try pushing
 
     private int twoPtAttempts;
     private int twoPtMade;
@@ -34,6 +36,11 @@ public class BasicStats {
     private int plusMinus;
     private Time minutes;
     private int gamePoints;
+    private boolean opponent = false;
+    private boolean subbedIn = false;
+
+    @Transient
+    private long lastCheckInMillis; // timestamp when player was last subbed in
 
     //Relationship
     @ManyToOne
@@ -49,7 +56,27 @@ public class BasicStats {
     private PlayerAverages playerAverages;
 
 
-    //Getters and Setters
+    @ManyToOne
+    @JoinColumn(name = "season_id")
+    private Season season;
+
+
+
+    //Getter
+
+    public BasicStats(BasicStats basicStats) {
+    this.twoPtMade = basicStats.getTwoPtMade();
+    this.threePtMade = basicStats.getThreePtMade();
+    this.ftMade = basicStats.getFtMade();
+    this.gamePoints = basicStats.getGamePoints();
+    this.game = basicStats.getGame();
+    this.player = basicStats.getPlayer();
+    this.basicStatId = basicStats.getBasicStatId();
+    this.subbedIn = basicStats.isSubbedIn();
+    this.plusMinus = basicStats.getPlusMinus();
+
+    }
+
     public int getGamePoints() {
         return gamePoints;
     }
@@ -218,5 +245,26 @@ public class BasicStats {
         this.minutes = minutes;
     }
 
+    public boolean isSubbedIn() {
+    return subbedIn;
+}
 
+    public void setSubbedIn(boolean subbedIn) {
+        this.subbedIn = subbedIn;
+    }
+public Season getSeason() {
+        return season;
+    }
+
+    public void setSeason(Season season) {
+        this.season = season;
+}
+
+    public boolean isOpponent() {
+        return opponent;
+    }
+
+    public void setOpponent(boolean opponent) {
+        this.opponent = opponent;
+    }
 }

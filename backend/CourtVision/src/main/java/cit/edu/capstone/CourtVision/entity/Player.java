@@ -15,6 +15,7 @@ public class Player {
 
     private String fname;
     private String lname;
+    @Column(unique = true)
     private String email;
     private String password;
     private LocalDate birthDate;
@@ -35,6 +36,10 @@ public class Player {
     @OneToMany(mappedBy = "player", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<BasicStats> basicStatsList;
+
+    @OneToMany(mappedBy = "player", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<PlayerAverages> playerAverages;
 
     // Getters and Setters
 

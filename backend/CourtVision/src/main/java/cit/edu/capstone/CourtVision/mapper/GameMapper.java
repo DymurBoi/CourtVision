@@ -12,13 +12,20 @@ public class GameMapper {
         GameDTO dto = new GameDTO();
         dto.setGameId(game.getGameId());
         dto.setGameName(game.getGameName());
+        dto.setGameType(game.getGameType());
+        dto.setRecordingType(game.getRecordingType());
         dto.setGameDate(game.getGameDate());
         dto.setGameResult(game.getGameResult());
         dto.setFinalScore(game.getFinalScore());
+        dto.setGameDuration(game.getGameDuration());
         dto.setComments(game.getComments());
 
         if (game.getTeam() != null) {
             dto.setTeamId(game.getTeam().getTeamId());
+        }
+
+        if (game.getSeason() != null) {
+            dto.setSeasonId(game.getSeason().getId());
         }
 
         // Populate the list of BasicStats IDs

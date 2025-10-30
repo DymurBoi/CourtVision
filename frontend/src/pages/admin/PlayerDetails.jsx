@@ -5,6 +5,8 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import AdminNavbar from "../../components/AdminNavbar";
 import { api } from "../../utils/axiosConfig";
 import "../../styles/admin/UserDetails.css";
+import "../../styles/player/P-Stats.css";
+
 
 function PlayerDetails() {
   const { id } = useParams();
@@ -137,55 +139,45 @@ function PlayerDetails() {
             </div>
           </div>
 
-          <div className="user-details-card">
-            <h2>Player Averages</h2>
+          <div className="stats-card">
+            <div className="stats-card-header">
+              <h2>Performance Averages</h2>
+              <div className="header-actions">
+                <span className="games-played">
+                  Minutes Per Game: {averages ? averages.minutesPerGame.toFixed(1) : "0.0"}
+                </span>
+              </div>
+            </div>
+
             {averages ? (
-              <div className="stats-grid">
-                <div className="stat-item">
-                  <span className="stat-value">{averages.pointsPerGame.toFixed(1)}</span>
-                  <span className="stat-label">Points Per Game</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-value">{averages.assistsPerGame.toFixed(1)}</span>
-                  <span className="stat-label">Assists Per Game</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-value">{averages.reboundsPerGame.toFixed(1)}</span>
-                  <span className="stat-label">Rebounds Per Game</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-value">{averages.stealsPerGame.toFixed(1)}</span>
-                  <span className="stat-label">Steals Per Game</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-value">{averages.blocksPerGame.toFixed(1)}</span>
-                  <span className="stat-label">Blocks Per Game</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-value">{averages.minutesPerGame.toFixed(1)}</span>
-                  <span className="stat-label">Minutes Per Game</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-value">{(averages.trueShootingPercentage * 100).toFixed(1)}%</span>
-                  <span className="stat-label">TS%</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-value">{(averages.usagePercentage * 100).toFixed(1)}%</span>
-                  <span className="stat-label">USG%</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-value">{averages.offensiveRating.toFixed(1)}</span>
-                  <span className="stat-label">Offensive Rating</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-value">{averages.defensiveRating.toFixed(1)}</span>
-                  <span className="stat-label">Defensive Rating</span>
-                </div>
+              <div className="performance-stats-grid">
+                {[
+                  { label: "Points Per Game", value: averages.pointsPerGame },
+                  { label: "Rebounds Per Game", value: averages.reboundsPerGame },
+                  { label: "Assists Per Game", value: averages.assistsPerGame },
+                  { label: "Steals Per Game", value: averages.stealsPerGame },
+                  { label: "Blocks Per Game", value: averages.blocksPerGame },
+                  { label: "True Shooting %", value: (averages.trueShootingPercentage), suffix: "%" },
+                  { label: "Usage %", value: (averages.usagePercentage), suffix: "%" },
+                  { label: "Offensive Rating", value: averages.offensiveRating },
+                  { label: "Defensive Rating", value: averages.defensiveRating },
+                ].map((item) => (
+                  <div className="stat-box" key={item.label}>
+                    <div className="stat-value">
+                      {item.value !== null && item.value !== undefined
+                        ? item.value.toFixed(1)
+                        : "0"}
+                      {item.suffix || ""}
+                    </div>
+                    <div className="stat-label">{item.label}</div>
+                  </div>
+                ))}
               </div>
             ) : (
-              <p>This player has no average statistics yet.</p>
+              <p className="no-stats">This player has no average statistics yet.</p>
             )}
           </div>
+
         </div>
 
         <div className="back-navigation">

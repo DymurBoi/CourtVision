@@ -20,6 +20,7 @@ function CreateBasicStatsModal({ onClose, onSave, playersList }) {
     turnovers: 0,
     pFouls: 0,
     dFouls: 0,
+    plusMinus: 0,
   });
 
   const handleChange = (e) => {
