@@ -1,3 +1,150 @@
+/* Base styles — align with player ranking page (P-Stats.css) */
+:root {
+  --light-purple: #f8f9ff;
+  --dark-blue: #24243e;
+  --medium-purple: #7b7bf3;
+  --bright-purple: #5151ff;
+}
+
+.stats-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  max-width: 1200px;
+}
+
+.page-title {
+  text-align: center;
+  color: var(--dark-blue);
+  margin-bottom: 0.5rem;
+}
+
+.page-subtitle {
+  text-align: center;
+  color: #666;
+  margin-bottom: 2rem;
+  font-size: 1rem;
+}
+
+.team-select-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  justify-content: center;
+}
+
+.team-select-wrapper label {
+  font-weight: 600;
+  color: var(--dark-blue);
+}
+
+.team-select-wrapper select {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(123, 123, 243, 0.3);
+  background: white;
+  min-width: 220px;
+  font-size: 0.95rem;
+  color: var(--dark-blue);
+  box-shadow: 0 4px 10px rgba(81,81,255,0.06);
+}
+
+.position-tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  justify-content: center;
+}
+
+.tab-button {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  background: var(--light-purple);
+  color: var(--dark-blue);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-button.active {
+  background: linear-gradient(to right, var(--medium-purple), var(--bright-purple));
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(123,123,243,0.12);
+}
+
+.stats-card {
+  background-color: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 16px rgba(36, 36, 62, 0.08);
+  border: 1px solid rgba(123, 123, 243, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  width: 100%;
+}
+
+.stats-card:hover { transform: translateY(-5px); box-shadow: 0 12px 24px rgba(36,36,62,0.12); }
+
+.stats-card-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(123, 123, 243, 0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(to right, var(--dark-blue), var(--bright-purple));
+  color: white;
+}
+
+.stats-card-header h2 { color: white; margin: 0; font-size: 1.3rem; }
+
+.stats-table-wrapper { padding: 1.5rem; overflow-x: auto; }
+
+.stats-table { width: 100%; border-collapse: collapse; min-width: 700px; }
+
+.stats-table thead th { background: var(--light-purple); color: var(--dark-blue); padding: 12px; font-weight: 700; }
+.stats-table tbody td { padding: 12px; border-bottom: 1px solid #eee; text-align: center; }
+
+.empty-message { padding: 1.5rem; font-size: 0.95rem; color: #555; }
+
+/* Responsive tweaks for smaller screens */
+@media (max-width: 1024px) {
+  .stats-card-header { padding: 1rem; }
+  .stats-table { min-width: 600px; }
+}
+
+@media (max-width: 768px) {
+  .ranking-page, .stats-container { padding: 1.5rem 1rem; text-align: center; }
+
+  .page-title { font-size: 1.6rem; font-weight: 700; margin-bottom: 0.3rem; color: var(--dark-blue); }
+
+  .page-subtitle { font-size: 1rem; color: var(--medium-purple); margin-bottom: 1.2rem; }
+
+  .team-select-wrapper { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; margin-bottom: 1.5rem; }
+
+  .team-select-wrapper label { font-weight: 600; color: var(--dark-blue); }
+
+  #team-select { width: 85%; max-width: 320px; padding: 0.6rem; border-radius: 8px; border: 1px solid rgba(123, 123, 243, 0.3); background-color: #fff; font-size: 0.95rem; text-align: center; box-shadow: 0 2px 6px rgba(123, 123, 243, 0.1); }
+
+  .position-tabs { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-bottom: 1.2rem; }
+
+  .tab-button { flex: 1 1 45%; padding: 0.6rem 0.8rem; border-radius: 8px; background: #f2f2ff; font-size: 0.9rem; }
+
+  .tab-button.active { box-shadow: 0 3px 8px rgba(123, 123, 243, 0.3); }
+
+  .stats-card { border-radius: 14px; margin-top: 1rem; padding-bottom: 0.5rem; }
+
+  .stats-card-header { background: linear-gradient(to right, var(--medium-purple), var(--bright-purple)); padding: 1rem; text-align: center; }
+
+  .stats-card-header h2 { font-size: 1rem; color: white; font-weight: 600; }
+
+  .empty-message { padding: 1.5rem; font-size: 0.95rem; color: #555; }
+}
+
+/* End base styles */
+
 /* ============================================
    📱 MOBILE & TABLET (≤768px)
    ============================================ */

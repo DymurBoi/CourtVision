@@ -61,6 +61,43 @@ form input {
 }
 
 /* ============================================
+   🔴 End Season button (isolated & dangerous)
+   ============================================ */
+.apply-button.end-button {
+  background: linear-gradient(90deg,#e74c3c,#e63946);
+  color: #fff;
+  box-shadow: 0 6px 12px rgba(230, 70, 70, 0.12);
+  padding: 0.45rem 0.9rem;
+  border: none;
+}
+.apply-button.end-button:hover {
+  /* nicer hover: slight lift, tiny scale, stronger shadow, darker gradient */
+  transform: translateY(-4px) scale(1.02);
+  background: linear-gradient(90deg,#d6453b,#da2b2b);
+  box-shadow: 0 12px 28px rgba(214, 69, 69, 0.22);
+}
+
+
+/* ============================================
+   🔧 Small anchor buttons (View Games / Ranking)
+   ============================================ */
+a.apply-button.small-button {
+  text-decoration: none;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.85rem;
+  border-radius: 6px;
+}
+a.apply-button.small-button:hover {
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+
+/* ensure anchors don't show default underline anywhere */
+a.apply-button {
+  text-decoration: none;
+}
+
+/* ============================================
    🧾 CARD + TABLE STYLING
    ============================================ */
 .stats-card {
@@ -69,7 +106,8 @@ form input {
   overflow: hidden;
   box-shadow: 0 8px 16px rgba(36, 36, 62, 0.08);
   border: 1px solid rgba(123, 123, 243, 0.2);
-  padding-bottom: 0.5rem; /* subtle breathing space at bottom */
+  /* keep padding to a minimum on the card itself so header/body padding align consistently */
+  padding: 0;
 }
 
 .stats-card-header {
@@ -87,12 +125,30 @@ form input {
 table {
   width: 100%;
   border-collapse: collapse;
+  /* allow table to fit the card; keep a reasonable minimum so very small screens still allow scrolling */
+  min-width: 640px;
 }
 
 th,
 td {
   text-align: center;
   padding: 1rem; /* wider cells */
+}
+
+/* sensible column width distribution to avoid Action column being squeezed */
+thead th:nth-child(1), tbody td:nth-child(1) {
+  text-align: left;
+  width: 15%;
+}
+thead th:nth-child(2), tbody td:nth-child(2),
+thead th:nth-child(3), tbody td:nth-child(3) {
+  width: 13%;
+}
+thead th:nth-child(4), tbody td:nth-child(4) {
+  width: 12%;
+}
+thead th:nth-child(5), tbody td:nth-child(5) {
+  width: 20%;
 }
 
 th {
@@ -115,6 +171,25 @@ td div {
   justify-content: center;
   flex-wrap: wrap;
   gap: 0.5rem;
+}
+
+/* Make buttons compact and prevent vertical stretching/wrapping */
+.actions a,
+.actions button,
+.apply-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  padding: 0.5rem 0.95rem;
+  font-size: 0.95rem;
+}
+
+/* Allow the table to scroll horizontally on very small viewports rather than compress */
+.stats-card .stats-card-body {
+  /* match the header's horizontal padding so content lines up with other cards */
+  padding: 1rem 2rem 1.6rem 2rem;
+  overflow-x: auto;
 }
 
 /* ============================================

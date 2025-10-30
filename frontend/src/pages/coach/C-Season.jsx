@@ -76,12 +76,22 @@ function CSeason() {
     }
   };
 
+  // Ask user for confirmation before ending a season
+  const confirmEndSeason = (seasonId) => {
+    const ok = window.confirm(
+      "Are you sure you want to end this season? This action cannot be undone."
+    );
+    if (ok) {
+      handleEndSeason(seasonId);
+    }
+  };
+
   return (
     <div className="season-page stats-container">
       <h1 className="page-title">Season Management</h1>
       <p className="page-subtitle">Start or end a season for your team</p>
 
-      <form className = "season-page form"onSubmit={handleStartSeason}>
+  <form className="season-page form" onSubmit={handleStartSeason}>
         <input
           type="text"
           value={seasonName}
@@ -134,21 +144,21 @@ function CSeason() {
                         <div className="actions">
                           {season.active && (
                             <button
-                              className="apply-button"
-                              onClick={() => handleEndSeason(season.id)}
+                              className="apply-button end-button"
+                              onClick={() => confirmEndSeason(season.id)}
                             >
                               End Season
                             </button>
                           )}
                           <a
                             href={`/coach/season/${season.id}/games`}
-                            className="apply-button"
+                            className="apply-button small-button"
                           >
                             View Games
                           </a>
                           <a
                             href={`/coach/season/${season.id}/ranking`}
-                            className="apply-button"
+                            className="apply-button small-button"
                           >
                             View Player Ranking
                           </a>
