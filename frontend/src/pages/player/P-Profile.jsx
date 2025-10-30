@@ -26,11 +26,9 @@ function PProfile() {
 
   const [playerData, setPlayerData] = useState()
   const [isEditing, setIsEditing] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
   const [editedData, setEditedData] = useState({ ...playerData })
 
-  const handleClickShowPassword = () => setShowPassword((prev) => !prev)
-  const handleMouseDownPassword = (event) => event.preventDefault()
+ 
 
   useEffect(() => {
     const fetchPlayerData = async () => {
@@ -61,7 +59,7 @@ function PProfile() {
           firstName: data.fname || "",
           lastName: data.lname || "",
           email: data.email || "",
-          password: "••••••••",
+          password: "",
           birthDate: data.birthDate || "",
           jerseyNumber: data.jerseyNum ? data.jerseyNum : "",
           position: data.position || "",
@@ -72,7 +70,7 @@ function PProfile() {
           firstName: data.fname || "",
           lastName: data.lname || "",
           email: data.email || "",
-          password: "••••••••",
+          password: "",
           birthDate: data.birthDate || "",
           jerseyNumber: data.jerseyNum || "",
           position: data.position || "",
@@ -191,34 +189,6 @@ function PProfile() {
                 />
               </FormControl>
 
-              <FormControl
-                sx={{ mb: 2, width: "100%" }}
-                variant="outlined"
-              >
-                <InputLabel htmlFor="password">Password</InputLabel>
-                <OutlinedInput
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={isEditing ? editedData.password : playerData.password}
-                  onChange={handleInputChange}
-                  readOnly={!isEditing}
-                  endAdornment={
-                    isEditing && (
-                      <InputAdornment position="end">
-                        <IconButton
-                          onClick={handleClickShowPassword}
-                          onMouseDown={handleMouseDownPassword}
-                          edge="end"
-                        >
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    )
-                  }
-                  label="Password"
-                />
-              </FormControl>
 
               <FormControl fullWidth sx={{ mb: 2 }}>
                 <TextField
