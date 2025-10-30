@@ -1,221 +1,227 @@
-
 .live-record-page {
-    min-height: 100vh;
-    background-color: var(--light-purple);
-  }
-  
-  .live-record-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-  }
-  
-  
-  .game-header {
-    background: linear-gradient(135deg, var(--dark-blue), var(--medium-purple));
-    color: var(--light-purple);
-    padding: 2rem;
-    border-radius: 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-    box-shadow: 0 4px 12px rgba(36, 36, 62, 0.3);
-  }
-  
-  .game-info-left {
-    flex: 1;
-  }
-  
-  .team-names {
-    font-size: 1.8rem;
-    font-weight: bold;
-    margin-bottom: 0.5rem;
-  }
-  
-  .game-date {
-    font-size: 1rem;
-    opacity: 0.9;
-  }
-  
-  .game-info-center {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-  }
-  
-  .score-display {
-    font-size: 3rem;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-  
-  .team-score {
-    color: var(--light-purple);
-  }
-  
-  .score-separator {
-    color: var(--medium-purple);
-    font-size: 2.5rem;
-  }
-  
-  .game-info-right {
-    flex: 1;
-    display: flex;
-    justify-content: flex-end;
-  }
-  
-  .timer-controls {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  
-  .play-pause-btn {
-    background-color: var(--bright-purple);
-    border: none;
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    color: white;
-  }
-  
-  .play-pause-btn:hover {
-    background-color: var(--medium-purple);
-    transform: scale(1.05);
-  }
-  
-  .play-pause-btn svg {
-    width: 24px;
-    height: 24px;
-  }
-  
-  .timer-display {
-    font-size: 1.5rem;
-    font-weight: bold;
-    font-family: "Courier New", monospace;
-  }
-  
-  /* Teams Container */
-  .teams-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 3rem;
-  }
-  
-  .team-section {
-    background-color: white;
-    border-radius: 12px;
-    padding: 1.5rem;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .team-title {
-    text-align: center;
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: var(--dark-blue);
-    margin-bottom: 1.5rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 2px solid var(--medium-purple);
-  }
-  
-  .players-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 1rem;
-  }
-  
-  .player-card {
-    background: linear-gradient(135deg, var(--light-purple), white);
-    border: 2px solid var(--medium-purple);
-    border-radius: 8px;
-    padding: 1rem;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-  
-  .player-card:hover {
-    background: linear-gradient(135deg, var(--medium-purple), var(--bright-purple));
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(123, 123, 243, 0.3);
-  }
-  
-  .jersey-number {
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin-bottom: 0.5rem;
-  }
-  
-  .player-name {
-    font-size: 0.9rem;
-    font-weight: 500;
-  }
-  
-  /* Player Stats Modal */
-  .player-stats-modal {
-    max-width: 700px;
-  }
-  
-  .current-stats {
-    margin-bottom: 2rem;
-  }
-  
-  .current-stats h4 {
-    color: var(--dark-blue);
-    margin-bottom: 1rem;
-    text-align: center;
-    font-size: 1.2rem;
-  }
-  
+  min-height: 100vh;
+  background-color: var(--light-purple);
+}
+
+.live-record-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+
+.game-header {
+  background: linear-gradient(135deg, var(--dark-blue), var(--medium-purple));
+  color: var(--light-purple);
+  padding: 2rem;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 12px rgba(36, 36, 62, 0.3);
+}
+
+.game-info-left {
+  flex: 1;
+}
+
+.team-names {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.game-date {
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+.game-info-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.score-display {
+  font-size: 3rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.team-score {
+  color: var(--light-purple);
+}
+
+.score-separator {
+  color: var(--medium-purple);
+  font-size: 2.5rem;
+}
+
+.game-info-right {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.timer-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.play-pause-btn {
+  background-color: var(--bright-purple);
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: white;
+}
+
+.play-pause-btn:hover {
+  background-color: var(--medium-purple);
+  transform: scale(1.05);
+}
+
+.play-pause-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
+.timer-display {
+  font-size: 1.5rem;
+  font-weight: bold;
+  font-family: "Courier New", monospace;
+}
+
+/* Teams Container */
+.teams-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+}
+
+.team-section {
+  background-color: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.team-title {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--dark-blue);
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--medium-purple);
+}
+
+.players-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+}
+
+.player-card {
+  background: linear-gradient(135deg, var(--light-purple), white);
+  border: 2px solid var(--medium-purple);
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.player-card:hover {
+  background: linear-gradient(135deg, var(--medium-purple), var(--bright-purple));
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(123, 123, 243, 0.3);
+}
+
+.jersey-number {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.player-name {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Player Stats Modal */
+.player-stats-modal {
+  max-width: 700px;
+}
+
+.current-stats {
+  margin-bottom: 2rem;
+}
+
+.current-stats h4 {
+  color: var(--dark-blue);
+  margin-bottom: 1rem;
+  text-align: center;
+  font-size: 1.2rem;
+}
+
 .stats-display {
-    display: grid;
-    grid-template-columns: 1fr;
-    row-gap: 0.5rem;
-    background-color: var(--light-purple);
-    padding: 1rem;
-    border-radius: 8px;
+  display: grid;
+  grid-template-columns: 1fr;
+  row-gap: 0.5rem;
+  background-color: var(--light-purple);
+  padding: 1rem;
+  border-radius: 8px;
 }
 
 .stats-display.three-col {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  column-gap: 0.5rem;
+  grid-template-columns: repeat(2, 1fr);
+  column-gap: 0.25rem;
   row-gap: 0.5rem;
 }
 
 .stats-display.three-col .stat-item {
-  grid-template-columns: 100px 1fr;
+    display: grid;
+    grid-template-columns: auto 1fr; /* label and value side by side */
+    align-items: center;
+    justify-content: space-between;
+    text-align: left;
+    background-color: rgba(255, 255, 255, 0.4);
+    border-radius: 6px;
+    padding: 0.4rem 0.6rem;
 }
 
 .stat-item {
-    display: grid;
-    grid-template-columns: 140px 1fr;
-    align-items: center;
-    padding: 0.25rem 0;
-}
-  
-.stat-label {
+ font-size: 0.85rem;
     font-weight: 500;
     color: var(--dark-blue);
-    justify-self: start;
 }
-  
+
+.stat-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--dark-blue);
+  justify-self: start;
+}
+
 .stat-value {
+    font-size: 0.9rem;
     font-weight: bold;
     color: var(--bright-purple);
-    justify-self: end;
-    font-variant-numeric: tabular-nums;
+    text-align: right;
 }
 
 /* Two-column layout for stats */
@@ -229,183 +235,281 @@
 }
 
 .stats-display.two-col .ast {
-  grid-column: 1 / 2; /* keep AST in the left column */
+  grid-column: 1 / 2;
+  /* keep AST in the left column */
 }
-  
-  .stat-controls {
-    margin-bottom: 1rem;
-  }
-  
-  .stat-controls h4 {
-    color: var(--dark-blue);
-    margin-bottom: 1rem;
-    text-align: center;
-    font-size: 1.2rem;
-  }
-  
-  .stat-buttons {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.5rem;
-  }
-  .stat-buttons.four-col {
+
+.stat-controls {
+  margin-bottom: 1rem;
+}
+
+.stat-controls h4 {
+  color: var(--dark-blue);
+  margin-bottom: 1rem;
+  text-align: center;
+  font-size: 1.2rem;
+}
+
+.stat-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.stat-buttons.four-col {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 0.5rem;
 }
-  .stat-btn {
-    background: linear-gradient(135deg, var(--medium-purple), var(--bright-purple));
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 0.75rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-  
-  .stat-btn:hover {
-    background: linear-gradient(135deg, var(--bright-purple), var(--medium-purple));
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(65, 65, 252, 0.3);
-  }
-  
-  .substitute-btn {
-    background: linear-gradient(135deg, #ff6b6b, #ff5252);
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 0.8rem 2rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-  
-  .substitute-btn:hover {
-    background: linear-gradient(135deg, #ff5252, #ff6b6b);
-    box-shadow: 0 4px 8px rgba(255, 82, 82, 0.3);
-  }
-  
-  .close-modal-btn {
-    background: white;
-    color: var(--dark-blue);
-    border: 1px solid var(--dark-blue);
-    border-radius: 6px;
-    padding: 0.8rem 2rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-  
-  .close-modal-btn:hover {
-    background-color: #f8f8f8;
-  }
-  
-  /* Responsive Design */
-  @media (max-width: 768px) {
-    .live-record-container {
-      padding: 1rem;
-    }
-  
-    .game-header {
-      flex-direction: column;
-      gap: 1.5rem;
-      text-align: center;
-    }
-  
-    .game-info-left,
-    .game-info-center,
-    .game-info-right {
-      flex: none;
-    }
-  
-    .team-names {
-      font-size: 1.5rem;
-    }
-  
-    .score-display {
-      font-size: 2.5rem;
-    }
-  
-    .teams-container {
-      grid-template-columns: 1fr;
-      gap: 2rem;
-    }
-  
-    .players-grid {
-      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    }
-  
-    .stat-buttons {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  
-    .modal-actions {
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-  
-    .substitute-btn,
-    .close-modal-btn {
-      width: 100%;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .game-header {
-      padding: 1.5rem;
-    }
-  
-    .team-names {
-      font-size: 1.3rem;
-    }
-  
-    .score-display {
-      font-size: 2rem;
-    }
-  
-    .players-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  
-    .player-card {
-      padding: 0.75rem;
-    }
-  
-    .jersey-number {
-      font-size: 1.2rem;
-    }
-  
-    .player-name {
-      font-size: 0.8rem;
-    }
 
-    .end-game-btn {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  border: none;
-  background-color: #e53935; /* Red */
+.stat-btn {
+  background: linear-gradient(135deg, var(--medium-purple), var(--bright-purple));
   color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: 1rem;
+  border: none;
+  border-radius: 6px;
+  padding: 0.75rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: all 0.3s ease;
 }
 
-.end-game-btn:hover {
-  background-color: #c62828; /* Darker red on hover */
+.stat-btn:hover {
+  background: linear-gradient(135deg, var(--bright-purple), var(--medium-purple));
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(65, 65, 252, 0.3);
 }
 
-.end-game-btn svg {
-  width: 24px;
-  height: 24px;
+.substitute-btn {
+  background: linear-gradient(135deg, #ff6b6b, #ff5252);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.8rem 2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
+.substitute-btn:hover {
+  background: linear-gradient(135deg, #ff5252, #ff6b6b);
+  box-shadow: 0 4px 8px rgba(255, 82, 82, 0.3);
+}
+
+.close-modal-btn {
+  align-items: center;
+  background: white;
+  color: var(--dark-blue);
+  border: 1px solid var(--dark-blue);
+  border-radius: 6px;
+  padding: 0.8rem 2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.close-modal-btn:hover {
+  background-color: #f8f8f8;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .live-record-container {
+    padding: 1rem;
   }
-  
+
+  .game-header {
+    flex-direction: column;
+    gap: 1.5rem;
+    text-align: center;
+  }
+
+  .game-info-left,
+  .game-info-center,
+  .game-info-right {
+    flex: none;
+  }
+
+  .team-names {
+    font-size: 1.5rem;
+  }
+
+  .score-display {
+    font-size: 2.5rem;
+  }
+
+  .teams-container {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .players-grid {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  }
+
+  .stat-buttons {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .modal-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .player-stats-modal {
+    width: 90%;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 1rem;
+    border-radius: 12px;
+    text-align: center;
+  }
+
+  .current-stats h4,
+  .stat-controls h4 {
+    font-size: 1.1rem;
+  }
+
+  .stats-display {
+    grid-template-columns: 1fr 1fr;
+    padding: 0.75rem;
+    gap: 0.5rem;
+  }
+
+  .stat-item {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .stat-label {
+    font-size: 0.9rem;
+  }
+
+  .stat-value {
+    font-size: 1rem;
+  }
+
+  .stat-buttons {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+
+  .stat-btn {
+    padding: 0.6rem;
+    font-size: 0.9rem;
+    border-radius: 8px;
+  }
+
+  .modal-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  .substitute-btn {
+    margin-left: 60px;
+    width: 100%;
+    padding: 0.8rem;
+  }
+  .stat-btn.save{
+  width: 200%;
+  padding-bottom: 50px;
+  padding: 0.8rem;
+  }
+   .close-modal-btn {
+    margin-top:20px;
+    width: 100%;
+    padding: 0.8rem;
+  }
+}
+
+
+@media (max-width: 480px) {
+  .player-stats-modal {
+    width: 95%;
+    padding: 0.8rem;
+  }
+
+  .stat-buttons {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .stat-btn {
+    font-size: 0.85rem;
+    padding: 0.55rem;
+  }
+
+  .stats-display {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-item {
+    text-align: center;
+  }
+
+  .stat-label,
+  .stat-value {
+    font-size: 0.9rem;
+  }
+
+  .game-header {
+    padding: 1.5rem;
+  }
+
+  .team-names {
+    font-size: 1.3rem;
+  }
+
+  .score-display {
+    font-size: 2rem;
+  }
+
+  .players-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .player-card {
+    padding: 0.75rem;
+  }
+
+  .jersey-number {
+    font-size: 1.2rem;
+  }
+
+  .player-name {
+    font-size: 0.8rem;
+  }
+
+  .end-game-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: none;
+    background-color: #e53935;
+    /* Red */
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 1rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .end-game-btn:hover {
+    background-color: #c62828;
+    /* Darker red on hover */
+  }
+
+  .end-game-btn svg {
+    width: 24px;
+    height: 24px;
+  }
+
+}
+
 .player-select-card {
   display: flex;
   align-items: center;
