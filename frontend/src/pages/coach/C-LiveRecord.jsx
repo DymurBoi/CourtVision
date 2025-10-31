@@ -1033,17 +1033,15 @@ const handleEndGame = async () => {
                   </button>
                 </div>
 
-                <div style={{ textAlign: "center", marginTop: "1rem" }}>
-                  <button className="stat-btn" onClick={() => {
+                <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "1rem" }}>
+                  <button className="save-modal-btn" onClick={() => {
                     handleSaveStats();
                     setShowModal(false);
-
                   }}>
                     Save
                   </button>
                   <button
                     className="close-modal-btn"
-                    style={{ marginLeft: "1rem" }}
                     onClick={() => {
                       setShowModal(false);
                       setSelectedBasicStat(null);
@@ -1090,8 +1088,8 @@ const handleEndGame = async () => {
                 )}
               </div>
             </div>
-            <div className="modal-actions">
-              <button className="close-modal-btn" onClick={() => setShowSubModal(false)}>Cancel</button>
+            <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "1rem" }}>
+              <button className="close-modal-btn single" onClick={() => setShowSubModal(false)}>Cancel</button>
             </div>
           </div>
         </div>
@@ -1138,9 +1136,9 @@ const handleEndGame = async () => {
                 </div>
               )}
             </div>
-            <div className="modal-actions">
+            <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "1rem" }}>
               <button
-                className="stat-btn"
+                className="save-modal-btn"
                 onClick={() => {
                   handleConfirmFirstFiveModal();
                   setShowFirstFiveModal(false);

@@ -295,20 +295,77 @@
   box-shadow: 0 4px 8px rgba(255, 82, 82, 0.3);
 }
 
+.save-modal-btn,
 .close-modal-btn {
-  align-items: center;
+  flex: 1; /* Both buttons will take equal width */
+  min-width: 120px;  /* Prevent buttons from becoming too small */
+  padding: 0.8rem 1.5rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  margin: 20px;
+}
+
+.close-modal-btn.single {
+  flex: 1;
+  min-width: 120px;  /* Prevent buttons from becoming too small */
+  max-width: 200px;
+  padding: 0.8rem 1.5rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  margin: 20px;
+}
+
+
+.save-modal-btn {
+  background: linear-gradient(135deg, var(--medium-purple), var(--bright-purple));
+  color: white;
+  border: none; /* or border consistent with close */
+}
+
+.close-modal-btn {
   background: white;
   color: var(--dark-blue);
   border: 1px solid var(--dark-blue);
-  border-radius: 6px;
-  padding: 0.8rem 2rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
+}
+
+.save-modal-btn:hover {
+  background: linear-gradient(135deg, var(--bright-purple), var(--medium-purple));
 }
 
 .close-modal-btn:hover {
   background-color: #f8f8f8;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem; /* space between buttons */
+    margin-top: 1rem;
+  }
+
+.modal-actions.even-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.modal-actions.even-buttons .save-modal-btn,
+.modal-actions.even-buttons .close-modal-btn {
+  flex: 1;               /* Equal width */
+  min-width: 120px;      /* Prevent shrinking too much */
+  padding: 0.8rem 1.5rem;
+  font-weight: 600;
+  border-radius: 6px;
+  text-align: center;
+  margin: 0;             /* Remove outer spacing */
 }
 
 /* Responsive Design */
@@ -348,11 +405,6 @@
 
   .stat-buttons {
     grid-template-columns: repeat(2, 1fr);
-  }
-
-  .modal-actions {
-    flex-direction: column;
-    gap: 0.5rem;
   }
 
   .player-stats-modal {
@@ -403,8 +455,8 @@
 
   .modal-actions {
     display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+    justify-content: center;
+    gap: 1rem; /* space between buttons */
     margin-top: 1rem;
   }
 
@@ -418,15 +470,38 @@
   padding-bottom: 50px;
   padding: 0.8rem;
   }
-   .close-modal-btn {
-    margin-top:20px;
-    width: 100%;
-    padding: 0.8rem;
+
+  .modal-actions {
+    gap: 1rem; /* Keep some space between the buttons */
+    margin-top: 1rem;
+  }
+
+  .save-modal-btn,
+  .close-modal-btn {
+    flex: 1; /* Ensures both buttons are of equal width */
+    min-width: 100px; /* Prevents buttons from shrinking too much */
+    padding: 0.8rem 1.5rem;
+    margin:0px;
   }
 }
 
 
 @media (max-width: 480px) {
+
+  .modal-actions.even-buttons {
+    flex-direction: column;
+  }
+
+  .modal-actions.even-buttons .save-modal-btn,
+  .modal-actions.even-buttons .close-modal-btn {
+    width: 100%;
+  }
+
+  .modal-actions {
+    flex-direction: column; /* Stack buttons vertically */
+    gap: 1rem; /* Space between buttons */
+  }
+
   .player-stats-modal {
     width: 95%;
     padding: 0.8rem;
@@ -508,6 +583,12 @@
     height: 24px;
   }
 
+  .save-modal-btn,
+  .close-modal-btn {
+    width: 100%; /* Ensure buttons take the full width */
+    padding: 0.8rem; /* Adjust padding for small screens */
+    min-width: unset; /* Ensure no minimum width restrictions */
+  }
 }
 
 .player-select-card {
