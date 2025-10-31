@@ -122,6 +122,7 @@
    2. Basic Stats Modal Specific Overrides
    (Class: .stat-modal)
    ======================================= */
+
 .stat-modal {
   /* Overrides for wider modal to fit the stat table */
   width: 95% !important; 
@@ -136,11 +137,10 @@
   display: flex;
   flex-direction: column;
   gap: 0; /* Let internal elements handle spacing */
-  /* Crucial for overall scrollability, already set but confirmed */
-  max-height: 90vh; 
+  max-height: 90vh;
   overflow-y: auto; 
   box-sizing: border-box;
-  padding: 0; 
+  padding: 0; /* Remove padding from container, use inner elements */
 }
 
 /* Ensure content fills the space and respects the modal structure */
@@ -151,19 +151,10 @@
 }
 
 .stat-modal .modal-content {
+    /* Padding is only applied vertically for the content area */
     padding: 1.5rem 1.5rem 0 1.5rem; /* Top padding for player select area */
-    flex-grow: 1; 
-    /* IMPORTANT: Allow content area to scroll if modal height is constrained */
-    overflow-y: auto; 
-}
-
-
-/* --- Stats Table --- */
-.players-table-container {
-  /* Crucial: Allows the wide table to scroll horizontally on its own layer */
-  overflow-x: auto; 
-  margin-bottom: 0; 
-  padding-bottom: 1.5rem; 
+    flex-grow: 1; /* Allow content to fill vertical space */
+    overflow-y: auto; /* Allow content to scroll if needed */
 }
 
 
@@ -270,26 +261,21 @@
    ======================================= */
 
 @media (max-width: 768px) {
- .stat-modal {
-    /* Ensures the modal fits the screen width and is not too big */
-    max-width: 95% !important; 
+  .stat-modal {
+    max-width: 95% !important; /* Re-constrain for smaller screens */
     width: 95% !important;
   }
   
-  /* --- Button Adjustments (Stacking) --- */
   .modal-actions {
-    /* This makes the 'Save Changes' and 'Cancel' buttons stack vertically */
-    flex-direction: column; 
-    justify-content: flex-start; /* Adjust alignment for stacked buttons */
+    flex-direction: column;
   }
 
   .save-button,
   .cancel-button {
-    /* This makes the buttons take the full width when stacked */
-    width: 100%; 
+    width: 100%;
   }
 
-  /* --- Input/Table Adjustments (for touch targets) --- */
+  /* Increase input/select size for better touch usability on mobile */
   .form-group input,
   .form-group select {
     padding: 1rem;
