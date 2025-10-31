@@ -107,7 +107,7 @@ function CSeason() {
             {seasons.length === 0 ? (
               <div className="no-data">No seasons found.</div>
             ) : (
-              <table>
+              <table className="season-table">
                 <thead>
                   <tr>
                     <th>Name</th>

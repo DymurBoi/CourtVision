@@ -83,34 +83,37 @@ form input {
   font-size: 1.4rem;
   font-weight: 600;
 }
+.season-table{
 
-table {
+}
+
+.season-table table {
   width: 100%;
   border-collapse: collapse;
 }
 
-th,
-td {
+.season-table th,
+.season-table td {
   text-align: center;
   padding: 1rem; /* wider cells */
 }
 
-th {
+.season-table th {
   background-color: var(--light-purple);
   color: var(--dark-blue);
   font-weight: 700;
 }
 
-tr:nth-child(even) {
+.season-table tr:nth-child(even) {
   background-color: #f9f9ff;
 }
 
-tr:hover {
+.season-table tr:hover {
   background-color: #f1efff;
 }
 
 /* Action buttons inside table */
-td div {
+.season-table td div {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
@@ -203,19 +206,19 @@ td div {
   }
 
   /* Hide table header and convert rows into cards */
-  table thead {
+  .season-table table thead {
     display: none;
   }
 
-  table,
-  tbody,
-  tr,
-  td {
+  .season-table table,
+  .season-table tbody,
+  .season-table tr,
+  .season-table td {
     display: block;
     width: 100%;
   }
 
-  tr {
+  .season-table tr {
     background: #fff;
     border: 1px solid rgba(123, 123, 243, 0.2);
     border-radius: 12px;
@@ -225,21 +228,21 @@ td div {
   }
 
   /* Hide all table cells by default, only show Name/Season Name, Status, Action */
-  td {
+  .season-table td {
     display: none;
   }
 
   /* Accept both "Name" and "Season Name" data-labels so JSX doesn't need changing */
-  td[data-label="Name"],
-  td[data-label="Season Name"] {
+  .season-table td[data-label="Name"],
+  .season-table td[data-label="Season Name"] {
     display: block;
     padding: 0;
     margin-bottom: 0.4rem;
   }
 
   /* Season name styling — big and prominent */
-  td[data-label="Name"]::before,
-  td[data-label="Season Name"]::before {
+  .season-table td[data-label="Name"]::before,
+  .season-table td[data-label="Season Name"]::before {
     content: attr(data-label);
     display: block;
     font-weight: 600;
@@ -248,8 +251,8 @@ td div {
     font-size: 0.95rem;
   }
 
-  td[data-label="Name"] > *,
-  td[data-label="Season Name"] > * {
+  .season-table td[data-label="Name"] > *,
+  .season-table td[data-label="Season Name"] > * {
     display: block;
     font-size: 1.05rem;
     font-weight: 700;
@@ -257,7 +260,7 @@ td div {
   }
 
   /* Status row */
-  td[data-label="Status"] {
+  .season-table td[data-label="Status"] {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -265,7 +268,7 @@ td div {
     margin-bottom: 0.4rem;
   }
 
-  td[data-label="Status"]::before {
+  .season-table td[data-label="Status"]::before {
     content: "Status";
     font-weight: 600;
     color: var(--dark-blue);
@@ -273,12 +276,12 @@ td div {
   }
 
   /* Action label above buttons and buttons stacked below */
-  td[data-label="Action"] {
+  .season-table td[data-label="Action"] {
     display: block;
     padding: 0;
   }
 
-  td[data-label="Action"]::before {
+  .season-table td[data-label="Action"]::before {
     content: "Action";
     display: block;
     font-weight: 700;
@@ -286,15 +289,15 @@ td div {
     margin-bottom: 0.35rem;
   }
 
-  td[data-label="Action"] .actions {
+  .season-table td[data-label="Action"] .actions {
     display: flex;
     gap: 0.5rem;
     flex-wrap: wrap;
     align-items: center;
   }
 
-  td[data-label="Action"] .actions a,
-  td[data-label="Action"] .actions button {
+  .season-table td[data-label="Action"] .actions a,
+  .season-table td[data-label="Action"] .actions button {
     padding: 0.45rem 0.9rem;
     font-size: 0.9rem;
   }

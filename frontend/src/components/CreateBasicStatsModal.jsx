@@ -44,7 +44,7 @@ function CreateBasicStatsModal({ onClose, onSave, playersList }) {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-container match-modal" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-container stat-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>Add Basic Stats</h2>
           <button className="close-button" onClick={onClose}>
@@ -77,7 +77,7 @@ function CreateBasicStatsModal({ onClose, onSave, playersList }) {
             </div>
             <div className="players-table-container">
               <table className="players-table">
-                <thead>
+                <tbody>
                   <tr>
                     <th>MIN</th>
                     <th>2PTM</th>
@@ -95,8 +95,8 @@ function CreateBasicStatsModal({ onClose, onSave, playersList }) {
                     <th>PF</th>
                     <th>DF</th>
                   </tr>
-                </thead>
-                <tbody>
+                
+                
                   <tr>
                     <td>
                       <input

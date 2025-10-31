@@ -1,7 +1,18 @@
-.match-modal {
-  width: 95%;
-  max-width: 1000px;
+.stat-modal {
+  width: 55%;
+  max-width: 7000px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(36, 36, 62, 0.12);
+  padding: 2rem 1.6rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+  transition: all 0.3s ease-in-out;
   max-height: 90vh;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .save-button-create {
@@ -238,14 +249,23 @@
     grid-template-columns: 1fr;
   }
 
-  .players-table th,
-  .players-table td {
-    padding: 0.5rem 0.3rem;
-    font-size: 0.8rem;
+  /* Adjust the input fields inside the players table */
+  .players-table input {
+    padding: 0.8rem; /* Increase padding */
+    font-size: 1rem; /* Increase font size for better readability */
   }
 
-  .players-table input {
-    padding: 0.4rem;
-    font-size: 0.8rem;
+  /* Adjust the table headers and table cells for mobile */
+  .players-table th,
+  .players-table td {
+    padding: 0.8rem; /* Increase padding */
+    font-size: 1rem; /* Increase font size for better readability */
+  }
+
+  /* Ensure inputs in other form fields also have larger padding */
+  .form-group input,
+  .form-group select {
+    padding: 1rem; /* Make the input fields bigger */
+    font-size: 1rem; /* Increase font size for readability */
   }
 }
