@@ -1,6 +1,5 @@
 import { useState } from "react";
-import "../styles/Modal.css";
-import "../styles/MatchModal.css";
+import "../styles/CreateBasicStats.css";
 
 function CreateBasicStatsModal({ onClose, onSave, playersList }) {
   const [formData, setFormData] = useState({
@@ -241,7 +240,7 @@ function CreateBasicStatsModal({ onClose, onSave, playersList }) {
             </div>
           </div>
 
-          <div className="modal-actions">
+          <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "1rem" }}>
             <button type="submit" className="save-button">
               Save Changes
             </button>
