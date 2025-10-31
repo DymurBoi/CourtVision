@@ -87,7 +87,7 @@ public class PlayerController {
 
 
     @PostMapping("/post")
-    public Player createPlayer(@RequestBody Player player) {
+    public Player createPlayer(@jakarta.validation.Valid @RequestBody Player player) {
         return playerService.createPlayer(player);
     }
 
