@@ -128,12 +128,7 @@
   transition: all 0.3s ease;
 }
 
-/* Main button */
-.save-button {
-  background: linear-gradient(90deg, #5e2df0 20%, #c67ef9 90%);
-  color: white;
-  border: none;
-}
+
 
 .save-button:hover {
   transform: translateY(-1px);
