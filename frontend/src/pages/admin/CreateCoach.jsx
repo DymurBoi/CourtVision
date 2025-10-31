@@ -1,57 +1,76 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useNavigate, Link } from "react-router-dom"
-import AdminNavbar from "../../components/AdminNavbar"
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import {
   FormControl,
   InputLabel,
   OutlinedInput,
   InputAdornment,
   IconButton,
-  TextField,
-  FormHelperText
-} from "@mui/material"
-import { Visibility, VisibilityOff } from "@mui/icons-material"
-import "../../styles/admin/UserForm.css"
-import axios from "axios"
+  FormHelperText,
+  Snackbar,
+  Alert as MuiAlert,
+} from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+import "../../styles/admin/UserForm.css";
+import axios from "axios";
+
+const Alert = (props) => <MuiAlert elevation={6} variant="filled" {...props} />;
 
 function CreateCoach() {
-  const [showPassword, setShowPassword] = useState(false)
-  const [confirmShowPassword, setConfirmShowPassword] = useState(false)
-  const [passwordError, setPasswordError] = useState("")
-  const [birthDateError, setBirthDateError] = useState("");
+  const navigate = useNavigate();
 
-  const navigate = useNavigate()
-
+  // 🔹 Form state
   const [formData, setFormData] = useState({
     fname: "",
     lname: "",
     email: "",
     password: "",
     confirmPassword: "",
-    birthDate: ""
-  })
+    birthDate: "",
+  });
 
-  const handleClickShowPassword = () => setShowPassword((prev) => !prev)
-  const handleConfirmClickShowPassword = () => setConfirmShowPassword((prev) => !prev)
+  // UI + validation states
+  const [showPassword, setShowPassword] = useState(false);
+  const [confirmShowPassword, setConfirmShowPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
+  const [birthDateError, setBirthDateError] = useState("");
 
+  //Snackbar state
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
+
+  //Handlers
+  const handleClickShowPassword = () => setShowPassword((prev) => !prev);
+  const handleConfirmClickShowPassword = () =>
+    setConfirmShowPassword((prev) => !prev);
+
+  const handleSnackbarClose = () => {
+    setSnackbar((prev) => ({ ...prev, open: false }));
+  };
+
+  //Real-time validation
   const handleChange = (e) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value
-    })
+      [name]: value,
+    });
 
-    // 👇 Real-time validation
     if (name === "confirmPassword" || name === "password") {
       if (
         (name === "confirmPassword" && value !== formData.password) ||
-        (name === "password" && formData.confirmPassword && value !== formData.confirmPassword)
+        (name === "password" &&
+          formData.confirmPassword &&
+          value !== formData.confirmPassword)
       ) {
-        setPasswordError("Passwords do not match")
+        setPasswordError("Passwords do not match");
       } else {
-        setPasswordError("")
+        setPasswordError("");
       }
     }
 
@@ -64,26 +83,42 @@ function CreateCoach() {
         setBirthDateError("");
       }
     }
-  }
+  };
 
+  // 🧾 Form submission
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
-      setPasswordError("Passwords do not match")
-      return
+      setPasswordError("Passwords do not match");
+      return;
     }
 
     try {
-      const response = await axios.post("http://localhost:8080/api/coaches/post", formData)
-      console.log("Coach created:", response.data)
-      alert("Coach created successfully!")
-      navigate("/admin/users?type=coach")
+      const response = await axios.post(
+        "http://localhost:8080/api/coaches/post",
+        formData
+      );
+
+      console.log("Coach created:", response.data);
+
+      setSnackbar({
+        open: true,
+        message: "Coach created successfully!",
+        severity: "success",
+      });
+
+      //Navigate after short delay
+      setTimeout(() => navigate("/admin/users?type=coach"), 1500);
     } catch (error) {
-      console.error("Error creating coach:", error)
-      alert("Failed to create coach. Please check your input.")
+      console.error("Error creating coach:", error);
+      setSnackbar({
+        open: true,
+        message: "Failed to create coach. Please check your input.",
+        severity: "error",
+      });
     }
-  }
+  };
 
   return (
     <div className="admin-layout">
@@ -156,7 +191,10 @@ function CreateCoach() {
                     sx={{ bgcolor: "#fff" }}
                     endAdornment={
                       <InputAdornment position="end">
-                        <IconButton onClick={handleClickShowPassword} edge="end">
+                        <IconButton
+                          onClick={handleClickShowPassword}
+                          edge="end"
+                        >
                           {showPassword ? <VisibilityOff /> : <Visibility />}
                         </IconButton>
                       </InputAdornment>
@@ -167,8 +205,15 @@ function CreateCoach() {
 
               {/* Confirm Password */}
               <div className="form-input-wrapper">
-                <FormControl fullWidth variant="outlined" required error={Boolean(passwordError)}>
-                  <InputLabel htmlFor="confirmPassword">Confirm Password</InputLabel>
+                <FormControl
+                  fullWidth
+                  variant="outlined"
+                  required
+                  error={Boolean(passwordError)}
+                >
+                  <InputLabel htmlFor="confirmPassword">
+                    Confirm Password
+                  </InputLabel>
                   <OutlinedInput
                     id="confirmPassword"
                     name="confirmPassword"
@@ -178,20 +223,36 @@ function CreateCoach() {
                     sx={{ bgcolor: "#fff" }}
                     endAdornment={
                       <InputAdornment position="end">
-                        <IconButton onClick={handleConfirmClickShowPassword} edge="end">
-                          {confirmShowPassword ? <VisibilityOff /> : <Visibility />}
+                        <IconButton
+                          onClick={handleConfirmClickShowPassword}
+                          edge="end"
+                        >
+                          {confirmShowPassword ? (
+                            <VisibilityOff />
+                          ) : (
+                            <Visibility />
+                          )}
                         </IconButton>
                       </InputAdornment>
                     }
                   />
-                  {passwordError && <FormHelperText>{passwordError}</FormHelperText>}
+                  {passwordError && (
+                    <FormHelperText>{passwordError}</FormHelperText>
+                  )}
                 </FormControl>
               </div>
 
               {/* Birth Date */}
               <div className="form-input-wrapper">
-                <FormControl fullWidth variant="outlined" required error={Boolean(birthDateError)}>
-                  <InputLabel shrink htmlFor="birthDate">Birth Date</InputLabel>
+                <FormControl
+                  fullWidth
+                  variant="outlined"
+                  required
+                  error={Boolean(birthDateError)}
+                >
+                  <InputLabel shrink htmlFor="birthDate">
+                    Birth Date
+                  </InputLabel>
                   <OutlinedInput
                     id="birthDate"
                     type="date"
@@ -200,11 +261,14 @@ function CreateCoach() {
                     onChange={handleChange}
                     sx={{ bgcolor: "#F5F5F5" }}
                   />
-                  {birthDateError && <FormHelperText>{birthDateError}</FormHelperText>}
+                  {birthDateError && (
+                    <FormHelperText>{birthDateError}</FormHelperText>
+                  )}
                 </FormControl>
               </div>
-
             </div>
+
+            {/*  Buttons */}
             <div className="form-actions">
               <button type="submit" className="save-button">
                 Create Coach
@@ -216,8 +280,24 @@ function CreateCoach() {
           </form>
         </div>
       </main>
+
+      {/* Snackbar Notification */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbar.severity}
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </div>
-  )
+  );
 }
 
-export default CreateCoach
+export default CreateCoach;

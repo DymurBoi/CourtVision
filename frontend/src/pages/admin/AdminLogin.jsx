@@ -42,7 +42,7 @@ function AdminLogin() {
       const { token } = response.data
       const decoded = jwtDecode(token)
 
-      console.log("✅ Admin token decoded:", decoded)
+      console.log("Admin token decoded:", decoded)
       console.log("Admin ID from token:", decoded.sub)
 
       const adminId = decoded.sub
@@ -57,7 +57,7 @@ function AdminLogin() {
       const redirectPath = location.state?.from?.pathname || "/admin/dashboard"
       navigate(redirectPath, { replace: true })
     } catch (error) {
-      console.error("❌ Admin login failed:", error)
+      console.error("Admin login failed:", error)
       setError("Invalid email or password. Please try again.")
     } finally {
       setIsLoading(false)

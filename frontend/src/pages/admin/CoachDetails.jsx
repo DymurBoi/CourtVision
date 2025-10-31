@@ -5,6 +5,8 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import AdminNavbar from "../../components/AdminNavbar";
 import { api } from "../../utils/axiosConfig";
 import "../../styles/admin/UserDetails.css";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function CoachDetails() {
   const { id } = useParams();
@@ -23,7 +25,12 @@ function CoachDetails() {
         });
         setCoach(res.data);
       } catch (error) {
-        console.error("❌ Failed to fetch coach:", error);
+        console.error("Failed to fetch coach:", error);
+        const errMsg =
+          error?.response?.data?.message ||
+          error?.response?.data ||
+          "Failed to load coach details.";
+        toast.error(errMsg, { autoClose: 2500 });
       } finally {
         setLoading(false);
       }
@@ -40,10 +47,15 @@ function CoachDetails() {
             Authorization: `Bearer ${localStorage.getItem("authToken")}`,
           },
         });
-        navigate("/admin/users");
+        toast.success("Coach deleted successfully!", { autoClose: 2500 });
+        setTimeout(() => navigate("/admin/users"), 2000); // slight delay for user feedback
       } catch (error) {
-        console.error("❌ Failed to delete coach:", error);
-        alert("Could not delete coach.");
+        console.error("Failed to delete coach:", error);
+        const errMsg =
+          error?.response?.data?.message ||
+          error?.response?.data ||
+          "Could not delete coach.";
+        toast.error(errMsg, { autoClose: 2500 });
       }
     }
   };
@@ -54,23 +66,33 @@ function CoachDetails() {
 
   if (!coach) {
     return (
-      <div className="not-found">
-        Coach not found. <Link to="/admin/users">Back to User Management</Link>
-      </div>
+      <>
+        <ToastContainer position="top-center" theme="colored" />
+        <div className="not-found">
+          Coach not found. <Link to="/admin/users">Back to User Management</Link>
+        </div>
+      </>
     );
   }
 
   return (
     <div className="admin-layout">
+      <ToastContainer position="top-center" theme="colored" />
+
       <main className="admin-content">
         <div className="user-details-header">
           <div>
-            <h1>{coach.fname} {coach.lname}</h1>
+            <h1>
+              {coach.fname} {coach.lname}
+            </h1>
             <span className="user-type coach">coach</span>
             <span className="user-status active">active</span>
           </div>
           <div className="user-actions">
-            <Link to={`/admin/users/${coach.coachId}/edit`} className="edit-user-button">
+            <Link
+              to={`/admin/users/${coach.coachId}/edit`}
+              className="edit-user-button"
+            >
               Edit Coach
             </Link>
             <button className="delete-user-button" onClick={handleDeleteCoach}>
@@ -85,7 +107,9 @@ function CoachDetails() {
             <div className="details-grid">
               <div className="detail-item">
                 <span className="detail-label">Full Name</span>
-                <span className="detail-value">{coach.fname} {coach.lname}</span>
+                <span className="detail-value">
+                  {coach.fname} {coach.lname}
+                </span>
               </div>
               <div className="detail-item">
                 <span className="detail-label">Email</span>
@@ -98,7 +122,8 @@ function CoachDetails() {
               <div className="detail-item">
                 <span className="detail-label">Team(s)</span>
                 <span className="detail-value">
-                  {coach.teams?.map(t => t.teamName).join(", ") || "Unassigned"}
+                  {coach.teams?.map((t) => t.teamName).join(", ") ||
+                    "Unassigned"}
                 </span>
               </div>
             </div>
@@ -106,7 +131,9 @@ function CoachDetails() {
         </div>
 
         <div className="back-navigation">
-          <Link to="/admin/coaches" className="back-link">Back to User Management</Link>
+          <Link to="/admin/coaches" className="back-link">
+            Back to User Management
+          </Link>
         </div>
       </main>
     </div>

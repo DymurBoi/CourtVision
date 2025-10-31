@@ -5,6 +5,8 @@ import { Link } from "react-router-dom";
 import AdminNavbar from "../../components/AdminNavbar";
 import { api } from "../../utils/axiosConfig";
 import "../../styles/admin/AdminDashboard.css";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 
 function AdminDashboard() {
   const [stats, setStats] = useState({
@@ -13,6 +15,11 @@ function AdminDashboard() {
     coaches: 0,
     teams: 0,
   });
+
+  // Snackbar States
+  const [showWarning, setShowWarning] = useState(false);
+  const [warningMessage, setWarningMessage] = useState("");
+  const [severity, setSeverity] = useState("warning"); // "success" | "error" | "info" | "warning"
 
   useEffect(() => {
     const fetchCounts = async () => {
@@ -34,8 +41,10 @@ function AdminDashboard() {
           teams: teams.length,
         });
       } catch (err) {
-        console.error("❌ Failed to fetch dashboard stats:", err);
-        alert("Failed to load dashboard statistics.");
+        console.error("Failed to fetch dashboard stats:", err);
+        setWarningMessage("Failed to load dashboard statistics. Please try again.");
+        setSeverity("error");
+        setShowWarning(true);
       }
     };
 
@@ -53,8 +62,16 @@ function AdminDashboard() {
           </div>
           <div className="header-actions">
             <Link to="/admin/users/new-coach" className="primary-action-button">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="action-icon">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="action-icon"
+              >
                 <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                 <circle cx="8.5" cy="7" r="4"></circle>
                 <line x1="20" y1="8" x2="20" y2="14"></line>
@@ -75,10 +92,26 @@ function AdminDashboard() {
           </div>
         </div>
 
-        {/* ✅ RECENT ACTIVITY */}
-        <div className="dashboard-sections">
-        </div>
+        {/* RECENT ACTIVITY */}
+        <div className="dashboard-sections"></div>
       </main>
+
+      {/*  Snackbar Warning */}
+      <Snackbar
+        open={showWarning}
+        autoHideDuration={4000}
+        onClose={() => setShowWarning(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setShowWarning(false)}
+          severity={severity}
+          variant="filled"
+          sx={{ width: "100%", fontWeight: 500 }}
+        >
+          {warningMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }
