@@ -382,7 +382,7 @@ function PStats() {
       </div>
 
 
-      <div className="stats-card" style={{ marginTop: 16 }}>
+      <div className="stats-card" >
         <div className="stats-card-header">
           <h2>Season Averages</h2>
         </div>

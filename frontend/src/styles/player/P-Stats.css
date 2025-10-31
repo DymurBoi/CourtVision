@@ -3,7 +3,6 @@
   flex-direction: column;
   gap: 2rem;
   margin: 2rem auto;
-  max-width: 70%;
   padding: 0 1rem;
 }
 
@@ -192,6 +191,7 @@
   color: white;
   border: none;
   padding: 0.8rem 2rem;
+  margin-top: 0;
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
@@ -269,52 +269,10 @@
   font-weight: 500;
 }
 
-/* Season Averages Grid */
-.season-averages-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  /* 2 columns */
-  gap: 1rem;
-  padding: 1.5rem;
-}
-
-.season-averages-grid div {
-  background-color: var(--light-purple);
-  padding: 1rem 1.2rem;
-  border-radius: 10px;
-  text-align: center;
-  font-weight: 600;
-  color: var(--dark-blue);
-  transition: all 0.3s ease;
-}
-
-.season-averages-grid div:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 10px rgba(81, 81, 255, 0.1);
-}
-
-/* Make Performance Stats Grid more compact */
-.performance-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.8rem;
-  padding: 1rem;
-}
-
-.stat-box {
-  padding: 1rem;
-  min-height: 100px;
-}
-
 /* Update responsive styles */
 @media (max-width: 1024px) {
   .performance-stats-grid {
     grid-template-columns: repeat(2, 1fr);
-  }
-
-  .season-averages-grid {
-    grid-template-columns: 1fr;
-    /* stack on smaller tablets */
   }
 }
 
@@ -353,20 +311,6 @@
 
   .stat-value {
     font-size: 1.75rem;
-  }
-
-  .performance-stats-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .season-averages-grid {
-    grid-template-columns: 1fr;
-    gap: 0.8rem;
-  }
-
-  .stat-box {
-    padding: 0.8rem;
-    min-height: 90px;
   }
 }
 
@@ -423,4 +367,26 @@
   outline: none;
   box-shadow: 0 6px 18px rgba(81, 81, 255, 0.12);
   transform: translateY(-1px);
+}
+
+.season-averages-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  padding: 1.5rem;
+}
+
+.season-averages-grid div {
+  background-color: var(--light-purple);
+  padding: 1rem 1.2rem;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: 600;
+  color: var(--dark-blue);
+  transition: all 0.3s ease;
+}
+
+.season-averages-grid div:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(81, 81, 255, 0.1);
 }
