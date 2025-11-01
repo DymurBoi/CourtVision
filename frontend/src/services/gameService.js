@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://13.239.65.62:8080/api/games';
+const API_URL = 'http://localhost:8080/api/games';
 
 const gameService = {
     getAllGames: async () => {
