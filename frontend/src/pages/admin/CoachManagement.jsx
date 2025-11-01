@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "../../styles/admin/UserManagement.css";
-import axios from "axios";
+import { api } from "../../utils/axiosConfig";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
@@ -41,7 +41,7 @@ function CoachManagement() {
     const fetchUsers = async () => {
       try {
         const [coachesRes] = await Promise.all([
-          axios.get("http://localhost:8080/api/coaches/get/all"),
+          api.get("/coaches/get/all"),
         ]);
 
         const coaches = coachesRes.data
@@ -120,7 +120,7 @@ function CoachManagement() {
 
     try {
       // Example delete endpoint
-      await axios.delete(`http://localhost:8080/api/coaches/delete/${userToDelete}`);
+      await api.delete(`/coaches/delete/${userToDelete}`);
 
       setUsers((prev) => prev.filter((user) => user.id !== userToDelete));
 
