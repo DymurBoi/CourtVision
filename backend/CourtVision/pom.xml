@@ -95,17 +95,16 @@
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
-<<<<<<< Updated upstream
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
-=======
+
+		<dependency>
 			<groupId>org.mariadb.jdbc</groupId>
 			<artifactId>mariadb-java-client</artifactId>
-			<version>3.3.3</version> <!-- or latest -->
+			<version>3.3.3</version>
 		</dependency>
 
->>>>>>> Stashed changes
 	</dependencies>
 
 	<build>
