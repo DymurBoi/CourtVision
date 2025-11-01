@@ -19,7 +19,7 @@ function PMatchDetails() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // 1️⃣ First, fetch game details
+        //First, fetch game details
         const gameRes = await api.get(`/games/get/${gameId}`);
         setGameDetails(gameRes.data);
 

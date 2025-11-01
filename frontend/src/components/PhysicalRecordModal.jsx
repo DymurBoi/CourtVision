@@ -46,19 +46,19 @@ const PhysicalRecordModal = ({ request, onClose, onApprove, onReject }) => {
               <h4>Old Record</h4>
               <div className="record-item">
                 <span className="label">Height</span>
-                <span className="value">{oldRecord?.height || '-'} cm</span>
+                <span className="value">{(oldRecord?.height || oldRecord?.height === 0) ? oldRecord.height : 0} cm</span>
               </div>
               <div className="record-item">
                 <span className="label">Weight</span>
-                <span className="value">{oldRecord?.weight || '-'} kg</span>
+                <span className="value">{(oldRecord?.weight || oldRecord?.weight === 0) ? oldRecord.weight : 0} kg</span>
               </div>
               <div className="record-item">
                 <span className="label">Wingspan</span>
-                <span className="value">{oldRecord?.wingspan || '-'} cm</span>
+                <span className="value">{(oldRecord?.wingspan || oldRecord?.wingspan === 0) ? oldRecord.wingspan : 0} cm</span>
               </div>
               <div className="record-item">
                 <span className="label">Vertical</span>
-                <span className="value">{oldRecord?.vertical || '-'} cm</span>
+                <span className="value">{(oldRecord?.vertical || oldRecord?.vertical === 0) ? oldRecord.vertical : 0} cm</span>
               </div>
             </div>
 

@@ -15,6 +15,8 @@ import {
   Select,
   MenuItem,
   Button,
+  Snackbar,
+  Alert,
 } from "@mui/material"
 import { Visibility, VisibilityOff } from "@mui/icons-material"
 import "../../styles/player/P-Profile.css"
@@ -28,12 +30,22 @@ function PProfile() {
   const [isEditing, setIsEditing] = useState(false)
   const [editedData, setEditedData] = useState({ ...playerData })
 
- 
+  // Snackbar states
+  const [snackbarOpen, setSnackbarOpen] = useState(false)
+  const [snackbarMessage, setSnackbarMessage] = useState("")
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success")
+
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === "clickaway") return
+    setSnackbarOpen(false)
+  }
 
   useEffect(() => {
     const fetchPlayerData = async () => {
       if (!user || !user.id) {
-        console.log("No user data available, redirecting to login")
+        setSnackbarMessage("No user data found. Redirecting to login.")
+        setSnackbarSeverity("error")
+        setSnackbarOpen(true)
         navigate("/login", { replace: true })
         return
       }
@@ -50,7 +62,9 @@ function PProfile() {
         const response = await api.get(`/players/get/${playerId}`)
         const data = response.data
         if (!data) {
-          console.error("Received empty data from API")
+          setSnackbarMessage("Failed to load player data.")
+          setSnackbarSeverity("error")
+          setSnackbarOpen(true)
           setLoading(false)
           return
         }
@@ -80,6 +94,9 @@ function PProfile() {
         setLoading(false)
       } catch (error) {
         console.error("Error fetching player data:", error)
+        setSnackbarMessage("Error fetching player data.")
+        setSnackbarSeverity("error")
+        setSnackbarOpen(true)
         setLoading(false)
       }
     }
@@ -107,9 +124,15 @@ function PProfile() {
 
         await api.put(`/players/put/${playerId}`, updateData)
         setPlayerData({ ...editedData })
+
+        setSnackbarMessage("Profile updated successfully.")
+        setSnackbarSeverity("success")
+        setSnackbarOpen(true)
       } catch (error) {
         console.error("Error updating player data:", error)
-        alert("Failed to update profile. Please try again.")
+        setSnackbarMessage("Failed to update profile. Please try again.")
+        setSnackbarSeverity("error")
+        setSnackbarOpen(true)
         setEditedData({ ...playerData })
         setIsEditing(false)
         return
@@ -188,7 +211,6 @@ function PProfile() {
                   variant="outlined"
                 />
               </FormControl>
-
 
               <FormControl fullWidth sx={{ mb: 2 }}>
                 <TextField
@@ -285,7 +307,7 @@ function PProfile() {
                 <Button variant="contained" onClick={handleEditToggle}>
                   Edit Profile
                 </Button>
-                <Button variant="outlined" color="error" onClick={handleLogout} sx={{ ml: 2 }}>
+                <Button variant="outlined" color="error" onClick={handleLogout}>
                   Logout
                 </Button>
               </>
@@ -293,6 +315,22 @@ function PProfile() {
           </div>
         </div>
       </div>
+
+      {/* Snackbar Alerts */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={4000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </main>
   )
 }

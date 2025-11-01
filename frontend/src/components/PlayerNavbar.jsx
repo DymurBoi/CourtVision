@@ -1,33 +1,74 @@
-import { Link, useNavigate } from "react-router-dom"
-import "../styles/navbar.css"
-import { useAuth } from "./AuthContext"
-import PersonIcon from '@mui/icons-material/Person';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import "../styles/navbar.css";
+import { useAuth } from "./AuthContext";
+import PersonIcon from "@mui/icons-material/Person";
+
 function PlayerNavbar() {
-  const { logout } = useAuth()
-  const navigate = useNavigate()
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLogout = () => {
-    logout()
-    navigate("/login", { replace: true })
-  }
+    logout();
+    navigate("/login", { replace: true });
+  };
+
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
+
+  const closeMenu = () => {
+    setMenuOpen(false);
+  };
 
   return (
-    <nav className="navbar">
+    <nav className="navbar player-navbar">
       <div className="navbar-container">
+        {/* Logo */}
         <div className="logo">
-          <Link to="/player/home">CourtVision</Link>
+          <Link to="/player/home" onClick={closeMenu}>
+            CourtVision
+          </Link>
         </div>
-        <div className="nav-links">
-          <Link to="/player/stats" className="nav-item">
+
+        {/* Mobile Menu Icon */}
+        <div className="mobile-menu-btn" onClick={toggleMenu}>
+          <div className={`menu-icon ${menuOpen ? "open" : ""}`}>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+
+        {/* Nav Links */}
+        <div className={`nav-links ${menuOpen ? "active" : ""}`}>
+          <Link to="/player/stats" className="nav-item" onClick={closeMenu}>
             My Stats
           </Link>
-          <Link to="/player/matches" className="nav-item">
+          <Link to="/player/matches" className="nav-item" onClick={closeMenu}>
             Matches
           </Link>
+
+          {/* On mobile, show profile and logout in dropdown too */}
+          <div className="mobile-user-actions">
+            <Link
+              to="/player/profile"
+              className="nav-item"
+              onClick={closeMenu}
+            >
+              Profile
+            </Link>
+            <button onClick={handleLogout} className="logout-btn">
+              Logout
+            </button>
+          </div>
         </div>
+
+        {/* Desktop User Profile */}
         <div className="user-profile">
           <Link to="/player/profile" className="profile-icon">
-            <PersonIcon/>
+            <PersonIcon />
           </Link>
           <button onClick={handleLogout} className="logout-btn">
             Logout
@@ -35,7 +76,7 @@ function PlayerNavbar() {
         </div>
       </div>
     </nav>
-  )
+  );
 }
 
-export default PlayerNavbar
+export default PlayerNavbar;

@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 import { api } from "../../utils/axiosConfig";
 import '../../styles/coach/C-GameDetails.css';
 import EditIcon from '@mui/icons-material/Edit';
@@ -14,6 +16,7 @@ function CGameDetails() {
   const teamId = params.get("teamId");
 
   const [isEditingComment, setIsEditingComment] = useState(false);
+  const [showOrientationWarning, setShowOrientationWarning] = useState(false);
   const [players, setPlayers] = useState([]);
   const [gameDetails, setGameDetails] = useState();
   const [basicStats, setBasicStats] = useState([]);
@@ -279,14 +282,14 @@ function CGameDetails() {
     <main className="main-content">
       <div className="game-header">
         <div className="game-title">
-          <h1  style={{color: "white"}}>{gameDetails.gameName}</h1>
+          <h1 style={{ color: "white" }}>{gameDetails.gameName}</h1>
           <span className="game-date">{gameDetails.gameDate} {gameDetails.gameType}</span>
         </div>
         <div className="game-score">
           <span className={`game-result ${gameDetails.gameResult === "W" ? "win" : "loss"}`}>
             {gameDetails.gameResult === "W" ? "Win" : "Loss"}
           </span>
-          <span className="score-display"  style={{color: "white"}}>{gameDetails.finalScore}</span>
+          <span className="score-display" style={{ color: "white" }}>{gameDetails.finalScore}</span>
         </div>
       </div>
 
@@ -308,7 +311,19 @@ function CGameDetails() {
         </button>
         <button
           className="create-team-button"
-          onClick={() => setShowAddModal(true)}
+          onClick={() => {
+            const isMobile = window.innerWidth <= 768;
+            const isPortrait = window.matchMedia("(orientation: portrait)").matches;
+
+            if (isMobile && isPortrait) {
+              setShowOrientationWarning(true); // Show MUI warning
+              // Optionally, delay showing modal for smoother UX
+              setTimeout(() => setShowAddModal(true), 2000);
+            } else {
+              setShowAddModal(true);
+            }
+          }}
+
           disabled={availablePlayers.length === 0}
         >
           Add Row
@@ -453,6 +468,21 @@ function CGameDetails() {
           )}
         </div>
       </div>
+      <Snackbar
+        open={showOrientationWarning}
+        autoHideDuration={4000}
+        onClose={() => setShowOrientationWarning(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setShowOrientationWarning(false)}
+          severity="warning"
+          variant="filled"
+          sx={{ width: "100%", fontWeight: 500 }}
+        >
+          Please rotate your phone horizontally for better viewing.
+        </Alert>
+      </Snackbar>
       {showEditModal && (
         <BasicStatsEditModal
           initialData={selectedStat}

@@ -1,0 +1,297 @@
+/* --- Root Variables (Taken from your provided CSS) --- */
+:root {
+  --light-purple: #f8f9ff;
+  --dark-blue: #24243e;
+  --medium-purple: #7b7bf3;
+  --bright-purple: #5151ff;
+}
+
+/* =======================================
+   1. Base Modal Structure (from Modal.css)
+   ======================================= */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(36, 36, 62, 0.7); /* Dark semi-transparent overlay */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(4px);
+}
+
+.modal-container {
+  background-color: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px; /* Base max-width, will be overridden by .stat-modal */
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+  animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(123, 123, 243, 0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h2 {
+  color: var(--dark-blue);
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--dark-blue);
+  transition: color 0.2s ease;
+}
+
+.close-button:hover {
+  color: #ff3b3b; /* Use a distinct color for hover */
+}
+
+/* NOTE: .modal-content padding is handled separately below for stat-modal */
+
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-top: 1px solid rgba(123, 123, 243, 0.2);
+  justify-content: flex-end; /* Align buttons to the right */
+}
+
+/* Use the original button styles, renaming confirm/reject to save/cancel */
+.save-button {
+  padding: 0.8rem 2rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: linear-gradient(to right, var(--medium-purple), var(--bright-purple));
+  color: white;
+  border: none;
+}
+
+.save-button:hover {
+  background: linear-gradient(to right, var(--bright-purple), var(--medium-purple));
+  box-shadow: 0 4px 8px rgba(65, 65, 252, 0.3);
+}
+
+.cancel-button {
+  padding: 0.8rem 2rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: white;
+  color: var(--dark-blue);
+  border: 1px solid var(--medium-purple); /* Changed from dark-blue for better contrast */
+}
+
+.cancel-button:hover {
+  background-color: var(--light-purple);
+  color: var(--dark-blue);
+  border-color: var(--dark-blue);
+}
+
+
+/* =======================================
+   2. Basic Stats Modal Specific Overrides
+   (Class: .stat-modal)
+   ======================================= */
+
+.stat-modal {
+  /* Overrides for wider modal to fit the stat table */
+  width: 95% !important; 
+  max-width: 1200px !important; /* Allow wide expansion on desktop */
+  
+  /* Retain basic style properties */
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(36, 36, 62, 0.12);
+  
+  /* Structure */
+  display: flex;
+  flex-direction: column;
+  gap: 0; /* Let internal elements handle spacing */
+  max-height: 90vh;
+  overflow-y: auto; 
+  box-sizing: border-box;
+  padding: 0; /* Remove padding from container, use inner elements */
+}
+
+/* Ensure content fills the space and respects the modal structure */
+.stat-modal form {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.stat-modal .modal-content {
+    /* Padding is only applied vertically for the content area */
+    padding: 1.5rem 1.5rem 0 1.5rem; /* Top padding for player select area */
+    flex-grow: 1; /* Allow content to fill vertical space */
+    overflow-y: auto; /* Allow content to scroll if needed */
+}
+
+
+/* --- Player Select Field --- */
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem; /* Add space below the player select */
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-weight: 500;
+  color: var(--dark-blue);
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.form-group input,
+.form-group select {
+  padding: 0.8rem;
+  border: 1px solid rgba(123, 123, 243, 0.3);
+  border-radius: 4px;
+  font-size: 0.95rem;
+  width: 100%; /* Ensure select takes full width */
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--medium-purple);
+  box-shadow: 0 0 0 2px rgba(123, 123, 243, 0.2);
+}
+
+
+/* --- Stats Table --- */
+.players-table-container {
+  overflow-x: auto; /* Crucial for horizontal scrolling on narrow screens */
+  margin-bottom: 0; /* No margin here, use modal-content padding */
+  padding-bottom: 1.5rem; /* Add space between table and action buttons */
+}
+
+.players-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  min-width: 900px; /* Set a minimum width for the table to force scroll if needed */
+}
+
+.players-table th {
+  background-color: var(--dark-blue);
+  color: white;
+  padding: 0.8rem 0.5rem;
+  text-align: center; /* Center align table headers */
+  white-space: nowrap;
+}
+
+.players-table td {
+  padding: 0.5rem;
+  border-bottom: 1px solid rgba(123, 123, 243, 0.2);
+  text-align: center; /* Center align table data */
+}
+
+.players-table tr:last-child td {
+  border-bottom: none;
+}
+
+.players-table input {
+  /* Overwrite the inline styles and provide consistent look */
+  width: 100%; 
+  padding: 0.5rem;
+  border: 1px solid rgba(123, 123, 243, 0.3);
+  border-radius: 4px;
+  font-size: 0.85rem;
+  min-width: 40px; 
+  max-width: 60px; /* Constrain max width for stat inputs */
+  text-align: center;
+  box-sizing: border-box;
+  /* Override inline style properties from JSX */
+  width: 100% !important; 
+  min-width: 45px !important;
+  max-width: 60px !important;
+}
+
+/* Specific adjustment for minutes input to be wider */
+.players-table input[name="minutes"] {
+    max-width: 80px !important;
+    min-width: 70px !important;
+}
+
+.players-table input:focus {
+  outline: none;
+  border-color: var(--medium-purple);
+  box-shadow: 0 0 0 2px rgba(123, 123, 243, 0.2);
+}
+
+/* =======================================
+   3. Responsive Adjustments
+   ======================================= */
+
+@media (max-width: 768px) {
+  .stat-modal {
+    max-width: 95% !important; /* Re-constrain for smaller screens */
+    width: 95% !important;
+  }
+  
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .save-button,
+  .cancel-button {
+    width: 100%;
+  }
+
+  /* Increase input/select size for better touch usability on mobile */
+  .form-group input,
+  .form-group select {
+    padding: 1rem;
+    font-size: 1rem;
+  }
+
+  .players-table th,
+  .players-table td {
+    padding: 0.8rem 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  .players-table input {
+    padding: 0.7rem 0.4rem;
+    font-size: 0.9rem;
+    min-width: 40px !important;
+    max-width: 50px !important;
+  }
+}

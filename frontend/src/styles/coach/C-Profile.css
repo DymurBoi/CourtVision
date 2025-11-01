@@ -203,15 +203,18 @@
     grid-template-columns: 1fr;
   }
   
-  .profile-actions {
-    flex-direction: column;
+
+  
+.profile-actions {
+    flex-direction: column;     
+    align-items: center; 
+    gap: 1rem; 
   }
   
-  .edit-button,
-  .save-button,
-  .logout-button,
-  .cancel-button {
+  .profile-actions button { 
     width: 100%;
+    max-width: 300px; 
+    margin-left: 0 !important;
   }
 }
   

@@ -2,18 +2,38 @@
 
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
+import {
+  Snackbar,
+  Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button,
+} from "@mui/material";
 import AdminNavbar from "../../components/AdminNavbar";
 import { api } from "../../utils/axiosConfig";
 import "../../styles/admin/UserDetails.css";
 import "../../styles/player/P-Stats.css";
 
-
 function PlayerDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
+
   const [player, setPlayer] = useState(null);
   const [averages, setAverages] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // Snackbar state
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
+
+  // Delete confirmation dialog
+  const [openConfirm, setOpenConfirm] = useState(false);
 
   useEffect(() => {
     const fetchPlayerDetails = async () => {
@@ -21,21 +41,22 @@ function PlayerDetails() {
       try {
         const [playerRes, averagesRes] = await Promise.all([
           api.get(`/players/get/${id}`, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-            },
+            headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` },
           }),
           api.get(`/averages/get/by-player/${id}`, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-            },
+            headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` },
           }),
         ]);
 
         setPlayer(playerRes.data);
         setAverages(averagesRes.data);
       } catch (error) {
-        console.error("❌ Failed to fetch player or averages:", error);
+        console.error("Failed to fetch player or averages:", error);
+        setSnackbar({
+          open: true,
+          message: "Failed to load player details.",
+          severity: "error",
+        });
       } finally {
         setLoading(false);
       }
@@ -44,19 +65,29 @@ function PlayerDetails() {
     fetchPlayerDetails();
   }, [id]);
 
+  const handleOpenConfirm = () => setOpenConfirm(true);
+  const handleCloseConfirm = () => setOpenConfirm(false);
+
   const handleDeletePlayer = async () => {
-    if (window.confirm("Are you sure you want to delete this player?")) {
-      try {
-        await api.delete(`/players/delete/${id}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-          },
-        });
-        navigate("/admin/users");
-      } catch (error) {
-        console.error("❌ Failed to delete player:", error);
-        alert("Could not delete player.");
-      }
+    try {
+      await api.delete(`/players/delete/${id}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` },
+      });
+      setSnackbar({
+        open: true,
+        message: "Player deleted successfully!",
+        severity: "success",
+      });
+      setTimeout(() => navigate("/admin/users"), 1500);
+    } catch (error) {
+      console.error("❌ Failed to delete player:", error);
+      setSnackbar({
+        open: true,
+        message: "Failed to delete player. Please try again.",
+        severity: "error",
+      });
+    } finally {
+      handleCloseConfirm();
     }
   };
 
@@ -98,7 +129,7 @@ function PlayerDetails() {
             <Link to={`/admin/users/${player.playerId}/edit`} className="edit-user-button">
               Edit Player
             </Link>
-            <button className="delete-user-button" onClick={handleDeletePlayer}>
+            <button className="delete-user-button" onClick={handleOpenConfirm}>
               Delete Player
             </button>
           </div>
@@ -144,7 +175,8 @@ function PlayerDetails() {
               <h2>Performance Averages</h2>
               <div className="header-actions">
                 <span className="games-played">
-                  Minutes Per Game: {averages ? averages.minutesPerGame.toFixed(1) : "0.0"}
+                  Minutes Per Game:{" "}
+                  {averages ? averages.minutesPerGame.toFixed(1) : "0.0"}
                 </span>
               </div>
             </div>
@@ -157,8 +189,8 @@ function PlayerDetails() {
                   { label: "Assists Per Game", value: averages.assistsPerGame },
                   { label: "Steals Per Game", value: averages.stealsPerGame },
                   { label: "Blocks Per Game", value: averages.blocksPerGame },
-                  { label: "True Shooting %", value: (averages.trueShootingPercentage), suffix: "%" },
-                  { label: "Usage %", value: (averages.usagePercentage), suffix: "%" },
+                  { label: "True Shooting %", value: averages.trueShootingPercentage, suffix: "%" },
+                  { label: "Usage %", value: averages.usagePercentage, suffix: "%" },
                   { label: "Offensive Rating", value: averages.offensiveRating },
                   { label: "Defensive Rating", value: averages.defensiveRating },
                 ].map((item) => (
@@ -177,7 +209,6 @@ function PlayerDetails() {
               <p className="no-stats">This player has no average statistics yet.</p>
             )}
           </div>
-
         </div>
 
         <div className="back-navigation">
@@ -186,6 +217,40 @@ function PlayerDetails() {
           </Link>
         </div>
       </main>
+
+      {/*Snackbar */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          severity={snackbar.severity}
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+
+      {/*Delete Confirmation Dialog */}
+      <Dialog open={openConfirm} onClose={handleCloseConfirm}>
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete this player? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseConfirm} color="inherit">
+            Cancel
+          </Button>
+          <Button onClick={handleDeletePlayer} color="error" variant="contained">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }

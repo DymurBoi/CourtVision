@@ -1,6 +1,5 @@
 import { useState } from "react";
-import "../styles/Modal.css";
-import "../styles/MatchModal.css";
+import "../styles/CreateBasicStats.css";
 
 function CreateBasicStatsModal({ onClose, onSave, playersList }) {
   const [formData, setFormData] = useState({
@@ -44,7 +43,7 @@ function CreateBasicStatsModal({ onClose, onSave, playersList }) {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-container match-modal" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-container stat-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>Add Basic Stats</h2>
           <button className="close-button" onClick={onClose}>
@@ -77,7 +76,7 @@ function CreateBasicStatsModal({ onClose, onSave, playersList }) {
             </div>
             <div className="players-table-container">
               <table className="players-table">
-                <thead>
+                <tbody>
                   <tr>
                     <th>MIN</th>
                     <th>2PTM</th>
@@ -95,8 +94,8 @@ function CreateBasicStatsModal({ onClose, onSave, playersList }) {
                     <th>PF</th>
                     <th>DF</th>
                   </tr>
-                </thead>
-                <tbody>
+                
+                
                   <tr>
                     <td>
                       <input
@@ -241,7 +240,7 @@ function CreateBasicStatsModal({ onClose, onSave, playersList }) {
             </div>
           </div>
 
-          <div className="modal-actions">
+          <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "1rem" }}>
             <button type="submit" className="save-button">
               Save Changes
             </button>

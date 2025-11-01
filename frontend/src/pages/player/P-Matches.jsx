@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { api } from "../../utils/axiosConfig";
-import "../../styles/coach/C-Matches.css"; // ✅ Use same styling as Coach version
+import "../../styles/coach/C-Matches.css"; 
 
 function PMatches() {
   const navigate = useNavigate();
@@ -27,7 +27,7 @@ function PMatches() {
           ? userId.split("_")[1]
           : userId;
 
-        // ✅ STEP 1: Get player info
+        //STEP 1: Get player info
         const playerRes = await api.get(`/players/get/${playerId}`);
         const player = playerRes.data;
         const resolvedTeamId = player.team?.teamId;
@@ -40,7 +40,7 @@ function PMatches() {
 
         setTeamId(resolvedTeamId);
 
-        // ✅ STEP 2: Fetch matches for team
+        //STEP 2: Fetch matches for team
         const res = await api.get(`/games/get/team/${resolvedTeamId}`);
         const games = res.data;
 
@@ -85,7 +85,7 @@ function PMatches() {
     );
   }
 
-  // ✅ Handles View Game navigation
+  //Handles View Game navigation
   const handleViewGame = (match) => {
     navigate(`/player/game-details/${match.id}?teamId=${teamId}`);
   };

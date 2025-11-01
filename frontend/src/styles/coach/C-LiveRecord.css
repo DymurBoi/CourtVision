@@ -194,20 +194,20 @@
 }
 
 .stats-display.three-col .stat-item {
-    display: grid;
-    grid-template-columns: auto 1fr; /* label and value side by side */
-    align-items: center;
-    justify-content: space-between;
-    text-align: left;
-    background-color: rgba(255, 255, 255, 0.4);
-    border-radius: 6px;
-    padding: 0.4rem 0.6rem;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+  background-color: rgba(255, 255, 255, 0.4);
+  border-radius: 6px;
+  padding: 0.4rem 0.6rem;
 }
 
 .stat-item {
- font-size: 0.85rem;
-    font-weight: 500;
-    color: var(--dark-blue);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--dark-blue);
 }
 
 .stat-label {
@@ -218,13 +218,12 @@
 }
 
 .stat-value {
-    font-size: 0.9rem;
-    font-weight: bold;
-    color: var(--bright-purple);
-    text-align: right;
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: var(--bright-purple);
+  text-align: right;
 }
 
-/* Two-column layout for stats */
 .stats-display.two-col {
   grid-template-columns: 1fr 1fr;
   column-gap: 1rem;
@@ -236,7 +235,6 @@
 
 .stats-display.two-col .ast {
   grid-column: 1 / 2;
-  /* keep AST in the left column */
 }
 
 .stat-controls {
@@ -295,24 +293,97 @@
   box-shadow: 0 4px 8px rgba(255, 82, 82, 0.3);
 }
 
+.save-modal-btn,
 .close-modal-btn {
-  align-items: center;
+  flex: 1;
+  min-width: 120px;
+  padding: 0.8rem 1.5rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  margin: 20px;
+}
+
+.close-modal-btn.single {
+  flex: 1;
+  min-width: 120px;
+  max-width: 200px;
+  padding: 0.8rem 1.5rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  margin: 20px;
+}
+
+
+.save-modal-btn {
+  background: linear-gradient(135deg, var(--medium-purple), var(--bright-purple));
+  color: white;
+  border: none;
+}
+
+.close-modal-btn {
   background: white;
   color: var(--dark-blue);
   border: 1px solid var(--dark-blue);
-  border-radius: 6px;
-  padding: 0.8rem 2rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
+}
+
+.save-modal-btn:hover {
+  background: linear-gradient(135deg, var(--bright-purple), var(--medium-purple));
 }
 
 .close-modal-btn:hover {
   background-color: #f8f8f8;
 }
 
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.modal-actions.even-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.modal-actions.even-buttons .save-modal-btn,
+.modal-actions.even-buttons .close-modal-btn {
+  flex: 1;
+  min-width: 120px;
+  padding: 0.8rem 1.5rem;
+  font-weight: 600;
+  border-radius: 6px;
+  text-align: center;
+  margin: 0;
+
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
+  .no-players {
+        grid-column: 1 / -1; 
+        text-align: center;
+    }
+  .opponent-grid {
+        display: flex;
+        justify-content: center; 
+        grid-template-columns: unset; 
+    }
+
+    .opponent-grid .player-card {
+        width: 250px; 
+        max-width: 90%; 
+    }
+
   .live-record-container {
     padding: 1rem;
   }
@@ -348,11 +419,6 @@
 
   .stat-buttons {
     grid-template-columns: repeat(2, 1fr);
-  }
-
-  .modal-actions {
-    flex-direction: column;
-    gap: 0.5rem;
   }
 
   .player-stats-modal {
@@ -403,8 +469,9 @@
 
   .modal-actions {
     display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+    justify-content: center;
+    gap: 1rem;
+    /* space between buttons */
     margin-top: 1rem;
   }
 
@@ -413,20 +480,49 @@
     width: 100%;
     padding: 0.8rem;
   }
-  .stat-btn.save{
-  width: 200%;
-  padding-bottom: 50px;
-  padding: 0.8rem;
-  }
-   .close-modal-btn {
-    margin-top:20px;
-    width: 100%;
+
+  .stat-btn.save {
+    width: 200%;
+    padding-bottom: 50px;
     padding: 0.8rem;
+  }
+
+  .modal-actions {
+    gap: 1rem;
+    /* Keep some space between the buttons */
+    margin-top: 1rem;
+  }
+
+  .save-modal-btn,
+  .close-modal-btn {
+    flex: 1;
+    /* Ensures both buttons are of equal width */
+    min-width: 100px;
+    /* Prevents buttons from shrinking too much */
+    padding: 0.8rem 1.5rem;
+    margin: 0px;
   }
 }
 
 
 @media (max-width: 480px) {
+
+  .modal-actions.even-buttons {
+    flex-direction: column;
+  }
+
+  .modal-actions.even-buttons .save-modal-btn,
+  .modal-actions.even-buttons .close-modal-btn {
+    width: 100%;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+    /* Stack buttons vertically */
+    gap: 1rem;
+    /* Space between buttons */
+  }
+
   .player-stats-modal {
     width: 95%;
     padding: 0.8rem;
@@ -508,6 +604,15 @@
     height: 24px;
   }
 
+  .save-modal-btn,
+  .close-modal-btn {
+    width: 100%;
+    /* Ensure buttons take the full width */
+    padding: 0.8rem;
+    /* Adjust padding for small screens */
+    min-width: unset;
+    /* Ensure no minimum width restrictions */
+  }
 }
 
 .player-select-card {

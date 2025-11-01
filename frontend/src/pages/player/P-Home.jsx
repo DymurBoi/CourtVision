@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
+import { Snackbar, Alert } from "@mui/material"
 import { useAuth } from "../../components/AuthContext"
 import { api } from "../../utils/axiosConfig"
 import "../../styles/player/P-Home.css"
@@ -24,52 +25,48 @@ function PHome() {
   const [selectedTeam, setSelectedTeam] = useState(null)
   const [refreshTrigger, setRefreshTrigger] = useState(0)
 
-  // Simple function to fetch player data - wrapped in useCallback to prevent dependency issues
+  // Snackbar state
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "info"
+  })
+
+  const handleSnackbarClose = () => {
+    setSnackbar(prev => ({ ...prev, open: false }))
+  }
+
+  const showSnackbar = (message, severity = "info") => {
+    setSnackbar({ open: true, message, severity })
+  }
+
+  // Fetch player data
   const fetchPlayerData = useCallback(async () => {
     if (!user || !user.id) {
-      setLoading(false);
-      return;
+      setLoading(false)
+      return
     }
-    
-    setLoading(true);
+
+    setLoading(true)
     try {
-      // Extract the numeric ID from the format "PLAYER_123"
-      let playerId = user.id;
-      
-      if (typeof playerId === 'string' && playerId.startsWith("PLAYER_")) {
-        playerId = playerId.substring(7); // Remove "PLAYER_" prefix
+      let playerId = user.id
+      if (typeof playerId === "string" && playerId.startsWith("PLAYER_")) {
+        playerId = playerId.substring(7)
       }
-      
-      // Make sure ID is a number if the backend expects it
       if (playerId && !isNaN(Number(playerId))) {
-        playerId = Number(playerId);
+        playerId = Number(playerId)
       }
-      
-      console.log(`Fetching data for player ID: ${playerId}`);
-      
-      // Add cache busting for API requests to prevent stale data
-      const timestamp = new Date().getTime();
-      
-      // Log additional debug info about authorization
-      console.log("Authorization debug:");
-      console.log("- User object:", user);
-      console.log("- Auth token exists:", !!localStorage.getItem("authToken"));
-      console.log("- User ID from localStorage:", localStorage.getItem("userId"));
-      
-      // Use api client which was working before
-      const response = await api.get(`/players/get/${playerId}?t=${timestamp}`);
-      const data = response.data;
-      
+
+      const timestamp = new Date().getTime()
+      const response = await api.get(`/players/get/${playerId}?t=${timestamp}`)
+      const data = response.data
+
       if (!data) {
-        console.log("No player data found");
-        setLoading(false);
-        return;
+        setLoading(false)
+        showSnackbar("No player data found", "warning")
+        return
       }
-      
-      console.log("Fetched player data:", data);
-      console.log("Player team data:", data.team);
-      
-      // Update player data state with what came from server
+
       setPlayerData({
         id: data.playerId,
         fname: data.fname || "",
@@ -78,63 +75,63 @@ function PHome() {
         jerseyNum: data.jerseyNum,
         position: data.position || "Not assigned",
         team: data.team
-      });
-      
+      })
+
       // Fetch pending requests
       try {
-        const requestsResponse = await api.get(`/join-requests/by-player/${playerId}?t=${timestamp}`);
+        const requestsResponse = await api.get(`/join-requests/by-player/${playerId}?t=${timestamp}`)
         if (requestsResponse.data && Array.isArray(requestsResponse.data)) {
           const pendingReqs = requestsResponse.data.map(req => ({
             requestId: req.requestId,
             teamId: req.teamId,
             status: req.requestStatus
-          }));
-          setPendingRequests(pendingReqs);
+          }))
+          setPendingRequests(pendingReqs)
         }
       } catch (error) {
-        console.error("Error fetching pending requests:", error);
+        console.error("Error fetching pending requests:", error)
+        showSnackbar("Failed to fetch pending requests", "error")
       }
-      
-      setLoading(false);
+
+      setLoading(false)
     } catch (error) {
-      console.error('Error fetching player data:', error);
-      setLoading(false);
+      console.error("Error fetching player data:", error)
+      showSnackbar("Failed to fetch player data", "error")
+      setLoading(false)
     }
-  }, [user]);
+  }, [user])
 
-  // Fetch data when component mounts or refreshTrigger changes
+  // Initial and refresh fetch
   useEffect(() => {
-    fetchPlayerData();
-  }, [user, refreshTrigger, fetchPlayerData]);
+    fetchPlayerData()
+  }, [user, refreshTrigger, fetchPlayerData])
 
-  // Fetch available teams only when needed
+  // Fetch available teams if player has none
   useEffect(() => {
-    // Only fetch teams if the player doesn't have a team
     if (!playerData.team) {
-      console.log("Player has no team - fetching available teams");
-      
       api.get("/teams/get/all")
         .then(res => {
-          console.log("Teams API response:", res);
           if (res.data && Array.isArray(res.data)) {
             const teams = res.data.map(team => ({
               id: team.teamId,
               name: team.teamName,
-              description: team.teamName + " team", 
-              coach: team.coaches && team.coaches.length > 0
-                ? team.coaches.map(c => c.fname + ' ' + c.lname).join(', ')
-                : "No coach assigned",
-              coachId: team.coaches && team.coaches.length > 0 ? team.coaches[0].coachId : null
-            }));
-            setAvailableTeams(teams);
+              description: team.teamName + " team",
+              coach:
+                team.coaches && team.coaches.length > 0
+                  ? team.coaches.map(c => c.fname + " " + c.lname).join(", ")
+                  : "No coach assigned",
+              coachId:
+                team.coaches && team.coaches.length > 0 ? team.coaches[0].coachId : null
+            }))
+            setAvailableTeams(teams)
           }
         })
-        .catch(err => {
-          console.error("Failed to fetch teams:", err);
-          setAvailableTeams([]);
-        });
+        .catch(() => {
+          showSnackbar("Failed to fetch available teams", "error")
+          setAvailableTeams([])
+        })
     }
-  }, [playerData.team]);
+  }, [playerData.team])
 
   // Fetch team members when player has a team
   useEffect(() => {
@@ -148,73 +145,57 @@ function PHome() {
             jerseyNumber: player.jerseyNum || 0,
             position: player.position || "Unknown",
             avatar: player.fname ? player.fname.charAt(0) : "P"
-          }));
-          setTeamMembers(members);
+          }))
+          setTeamMembers(members)
         })
-        .catch(error => {
-          console.error("Failed to fetch team members:", error);
-          setTeamMembers([]);
-        });
+        .catch(() => {
+          showSnackbar("Failed to fetch team members", "error")
+          setTeamMembers([])
+        })
     }
-  }, [playerData.team]);
+  }, [playerData.team])
 
   const handleManualRefresh = () => {
-    console.log("Manual refresh triggered");
-    setRefreshTrigger(prev => prev + 1);
-  };
+    setRefreshTrigger(prev => prev + 1)
+  }
 
   const handleApplyClick = (team) => {
-    setSelectedTeam(team);
-    setShowApplyModal(true);
-  };
+    setSelectedTeam(team)
+    setShowApplyModal(true)
+  }
 
   const handleApplyConfirm = async () => {
     if (!playerData.id || !selectedTeam.id || !selectedTeam.coachId) {
-      console.error('Missing required data:', { 
-        playerId: playerData.id, 
-        teamId: selectedTeam.id
-      });
-      alert('Missing required data. Please try again.');
-      return;
+      showSnackbar("Missing required data. Please try again.", "warning")
+      return
     }
 
     try {
-      // Log the exact data we're sending
-      console.log("Sending join request with data:", {
+      const response = await api.post("/join-requests/post", {
         playerId: Number(playerData.id),
         teamId: selectedTeam.id
-      });
-      
-      // Revert back to axios API client which was working before
-      const response = await api.post('/join-requests/post', {
-        playerId: Number(playerData.id),
-        teamId: selectedTeam.id
-      });
-      
+      })
+
       if (response.status === 200) {
-        // Add to pending requests
-        setPendingRequests(prev => [...prev, { 
-          teamId: selectedTeam.id,
-          status: 0 // 0 = pending
-        }]);
-        setShowApplyModal(false);
-        alert('Your request has been sent to the coach for approval.');
-        
-        // Refresh data to ensure UI is updated
-        handleManualRefresh();
+        setPendingRequests(prev => [
+          ...prev,
+          { teamId: selectedTeam.id, status: 0 }
+        ])
+        setShowApplyModal(false)
+        showSnackbar("Your request has been sent to the coach for approval.", "success")
+        handleManualRefresh()
       }
     } catch (error) {
-      console.error('Failed to send join request:', error);
-      alert('Failed to send join request. Please try again.');
+      console.error("Failed to send join request:", error)
+      showSnackbar("Failed to send join request. Please try again.", "error")
     }
-  };
+  }
 
-  // Show loading indicator while fetching data
   if (loading) {
     return <div className="loading">Loading player data...</div>
   }
 
-  // DYNAMIC RENDERING: If player has no team, show team selection view
+  // No Team View
   if (!playerData.team) {
     return (
       <main className="main-content">
@@ -230,12 +211,10 @@ function PHome() {
 
         <div className="available-teams-section">
           <h2>Available Teams ({availableTeams.length})</h2>
-          
           {availableTeams.length > 0 ? (
             <div className="available-teams-grid">
               {availableTeams.map((team) => {
-                const isPending = pendingRequests.some(req => req.teamId === team.id);
-                
+                const isPending = pendingRequests.some(req => req.teamId === team.id)
                 return (
                   <div className="available-team-card" key={team.id}>
                     <div className="team-banner college"></div>
@@ -249,10 +228,12 @@ function PHome() {
                         </div>
                       </div>
                       {isPending ? (
-                        <div className="application-status pending">Request pending approval...</div>
+                        <div className="application-status pending">
+                          Request pending approval...
+                        </div>
                       ) : (
-                        <button 
-                          className="apply-button" 
+                        <button
+                          className="apply-button"
                           onClick={() => handleApplyClick(team)}
                         >
                           Apply for this team
@@ -260,7 +241,7 @@ function PHome() {
                       )}
                     </div>
                   </div>
-                );
+                )
               })}
             </div>
           ) : (
@@ -290,20 +271,31 @@ function PHome() {
 
               <div className="modal-actions">
                 <button className="confirm-button" onClick={handleApplyConfirm}>
-                  Yes, Apply
+                  Apply
                 </button>
                 <button className="reject-button" onClick={() => setShowApplyModal(false)}>
-                  No, Cancel
+                  Cancel
                 </button>
               </div>
             </div>
           </div>
         )}
+
+        <Snackbar
+          open={snackbar.open}
+          autoHideDuration={4000}
+          onClose={handleSnackbarClose}
+          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        >
+          <Alert onClose={handleSnackbarClose} severity={snackbar.severity} sx={{ width: "100%" }}>
+            {snackbar.message}
+          </Alert>
+        </Snackbar>
       </main>
-    );
+    )
   }
 
-  // DYNAMIC RENDERING: If player has a team, show player dashboard with team info
+  // Player Dashboard View
   return (
     <main className="main-content">
       <div className="player-dashboard">
@@ -328,12 +320,11 @@ function PHome() {
               <div className="meta-item">
                 <span className="meta-label">Coach:</span>
                 <span className="meta-value">
-                  {playerData.team?.coaches && playerData.team.coaches.length > 0 
-                    ? playerData.team.coaches.map(coach => `${coach.fname} ${coach.lname}`).join(', ')
+                  {playerData.team?.coaches && playerData.team.coaches.length > 0
+                    ? playerData.team.coaches.map(coach => `${coach.fname} ${coach.lname}`).join(", ")
                     : "No coach assigned"}
                 </span>
               </div>
-              
               <div className="meta-item">
                 <span className="meta-label">Team ID:</span>
                 <span className="meta-value">{playerData.team?.teamId || "N/A"}</span>
@@ -353,9 +344,7 @@ function PHome() {
                     <span>{member.avatar}</span>
                   </div>
                   <div className="member-details">
-                    <h3>
-                      {member.firstName} {member.lastName}
-                    </h3>
+                    <h3>{member.firstName} {member.lastName}</h3>
                     <p className="member-jersey">#{member.jerseyNumber}</p>
                     <p className="member-position">{member.position}</p>
                   </div>
@@ -367,8 +356,19 @@ function PHome() {
           </div>
         </div>
       </div>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert onClose={handleSnackbarClose} severity={snackbar.severity} sx={{ width: "100%" }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </main>
-  );
+  )
 }
 
-export default PHome;
+export default PHome

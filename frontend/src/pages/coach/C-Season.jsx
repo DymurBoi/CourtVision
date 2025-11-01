@@ -76,22 +76,12 @@ function CSeason() {
     }
   };
 
-  // Ask user for confirmation before ending a season
-  const confirmEndSeason = (seasonId) => {
-    const ok = window.confirm(
-      "Are you sure you want to end this season? This action cannot be undone."
-    );
-    if (ok) {
-      handleEndSeason(seasonId);
-    }
-  };
-
   return (
     <div className="season-page stats-container">
       <h1 className="page-title">Season Management</h1>
       <p className="page-subtitle">Start or end a season for your team</p>
 
-  <form className="season-page form" onSubmit={handleStartSeason}>
+      <form className = "season-page form"onSubmit={handleStartSeason}>
         <input
           type="text"
           value={seasonName}
@@ -117,7 +107,7 @@ function CSeason() {
             {seasons.length === 0 ? (
               <div className="no-data">No seasons found.</div>
             ) : (
-              <table>
+              <table className="season-table">
                 <thead>
                   <tr>
                     <th>Name</th>
@@ -141,26 +131,29 @@ function CSeason() {
                         )}
                       </td>
                       <td data-label="Action">
-                        <div className="actions">
+                        <div className="action-group">
                           {season.active && (
                             <button
-                              className="apply-button end-button"
-                              onClick={() => confirmEndSeason(season.id)}
+                              className="end-btn"
+                              onClick={() => handleEndSeason(season.id)}
+                              title="End this season"
                             >
-                              End Season
+                              <span role="img" aria-label="End">🔚</span> End
                             </button>
                           )}
                           <a
                             href={`/coach/season/${season.id}/games`}
-                            className="apply-button small-button"
+                            className="view-btn"
+                            title="View games in this season"
                           >
-                            View Games
+                            <span role="img" aria-label="Games">🎮</span> Games
                           </a>
                           <a
                             href={`/coach/season/${season.id}/ranking`}
-                            className="apply-button small-button"
+                            className="view-btn"
+                            title="View player ranking for this season"
                           >
-                            View Player Ranking
+                            <span role="img" aria-label="Ranking">📊</span> Ranking
                           </a>
                         </div>
                       </td>

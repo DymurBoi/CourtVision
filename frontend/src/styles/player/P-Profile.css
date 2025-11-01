@@ -168,6 +168,7 @@
 }
 
 .logout-button {
+  width: 20px;
   background: white;
   color: #e74c3c;
   border: 1px solid #e74c3c;
@@ -195,42 +196,69 @@
   .profile-container {
     margin: 1rem;
   }
-  
+
   .profile-header {
     padding: 1.5rem;
   }
-  
+
   .profile-avatar {
     width: 60px;
     height: 60px;
     font-size: 1.4rem;
   }
-  
+
   .profile-title h1 {
     font-size: 1.6rem;
   }
-  
+
   .profile-content {
     padding: 1.5rem;
   }
-  
+
   .profile-card {
     padding: 1.5rem;
   }
-  
+
   .profile-info {
     grid-template-columns: 1fr;
   }
-  
+
   .profile-actions {
     flex-direction: column;
   }
-  
-  .edit-button,
-  .save-button,
-  .logout-button,
-  .cancel-button {
-    width: 100%;
+
+
+.profile-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
   }
+
+  .profile-actions .MuiButton-root {
+    width: 100%;
+    max-width: 320px; /* keeps it centered and visually balanced */
+    height: 45px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 10px;
+  }
+
+  /* Make both contained and outlined buttons the same width & alignment */
+  .profile-actions .MuiButton-contained,
+  .profile-actions .MuiButton-outlined {
+    box-sizing: border-box;
+  }
+
+  /* Keep avatar circle perfect on mobile */
+  .profile-avatar {
+    width: 55px;
+    height: 55px;
+    min-width: 55px;
+    min-height: 55px;
+    border-radius: 50%;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+  }
+
 }
-  

@@ -77,6 +77,7 @@ function CSeasonRanking() {
         <label htmlFor="team-select">Select Team:</label>
         <select
           id="team-select"
+          className="team-select"
           value={selectedTeamId}
           onChange={(e) => setSelectedTeamId(e.target.value)}
           style={{ padding: 8, borderRadius: 6, border: '1px solid #ccc', marginRight: 8 }}
@@ -126,13 +127,13 @@ function CSeasonRanking() {
               <table className="stats-table">
                 <thead>
                   <tr>
-                    <th>Rank</th>
-                    <th>Name</th>
-                    <th>Position</th>
-                    <th>Points</th>
-                    <th>Assists</th>
-                    <th>Rebounds</th>
-                    <th>Blocks</th>
+                    <th className="stats-table-header col-rank">Rank</th>
+                    <th className="stats-table-header col-name">Name</th>
+                    <th className="stats-table-header col-position">Position</th>
+                    <th className="stats-table-header col-stat">Points</th>
+                    <th className="stats-table-header col-stat">Assists</th>
+                    <th className="stats-table-header col-stat">Rebounds</th>
+                    <th className="stats-table-header col-stat">Blocks</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -150,13 +151,13 @@ function CSeasonRanking() {
 
                     return (
                       <tr key={player.player?.playerId || player.playerId || idx}>
-                        <td>{idx + 1}</td>
-                        <td>{name}</td>
-                        <td>{position}</td>
-                        <td>{points?.toFixed(1) ?? "-"}</td>
-                        <td>{assists?.toFixed(1) ?? "-"}</td>
-                        <td>{rebounds?.toFixed(1) ?? "-"}</td>
-                        <td>{blocks?.toFixed(1) ?? "-"}</td>
+                        <td className="col-rank">{idx + 1}</td>
+                        <td className="col-name">{name}</td>
+                        <td className="col-position">{position}</td>
+                        <td className="col-stat">{points?.toFixed(1) ?? "-"}</td>
+                        <td className="col-stat">{assists?.toFixed(1) ?? "-"}</td>
+                        <td className="col-stat">{rebounds?.toFixed(1) ?? "-"}</td>
+                        <td className="col-stat">{blocks?.toFixed(1) ?? "-"}</td>
                       </tr>
                     );
                   })}

@@ -13,6 +13,7 @@ import {
   InputAdornment,
 } from "@mui/material"
 import { Visibility, VisibilityOff } from "@mui/icons-material"
+import { TextField } from "@mui/material"
 
 function AdminLogin() {
   const [email, setEmail] = useState("")
@@ -41,7 +42,7 @@ function AdminLogin() {
       const { token } = response.data
       const decoded = jwtDecode(token)
 
-      console.log("✅ Admin token decoded:", decoded)
+      console.log("Admin token decoded:", decoded)
       console.log("Admin ID from token:", decoded.sub)
 
       const adminId = decoded.sub
@@ -56,7 +57,7 @@ function AdminLogin() {
       const redirectPath = location.state?.from?.pathname || "/admin/dashboard"
       navigate(redirectPath, { replace: true })
     } catch (error) {
-      console.error("❌ Admin login failed:", error)
+      console.error("Admin login failed:", error)
       setError("Invalid email or password. Please try again.")
     } finally {
       setIsLoading(false)
@@ -81,45 +82,35 @@ function AdminLogin() {
           <p className="auth-subtitle">Enter your administrator credentials</p>
 
           <form className="auth-form" onSubmit={handleLogin}>
-            
-              
-            <FormControl
-              sx={{ m: 1, width: "95%" }}
+            <TextField
+              id="email"
+              label="Email"
               variant="outlined"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
-            >
-              <InputLabel htmlFor="email">Email</InputLabel>
-              <OutlinedInput
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                sx={{ bgcolor: "#F5F5F5", width: "100%" }}
-              />
-            </FormControl>
-
-            <FormControl
-              sx={{ m: 1, width: "95%" }}
+              sx={{ m: 1, width: "95%", bgcolor: "#F5F5F5" }}
+            />
+            <TextField
+              id="password"
+              label="Password"
               variant="outlined"
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required
-            >
-              <InputLabel htmlFor="password">Password</InputLabel>
-              <OutlinedInput
-                id="password"
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                sx={{ bgcolor: "#F5F5F5", width: "100%" }}
-                endAdornment={
+              sx={{ m: 1, width: "95%", bgcolor: "#F5F5F5" }}
+              InputProps={{
+                endAdornment: (
                   <InputAdornment position="end">
                     <IconButton onClick={handleClickShowPassword} edge="end">
                       {showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
-                }
-              />
-            </FormControl>
-
+                ),
+              }}
+            />
 
             {error && <div className="error-message">{error}</div>}
 

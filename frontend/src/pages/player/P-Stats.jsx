@@ -382,7 +382,7 @@ function PStats() {
       </div>
 
 
-      <div className="stats-card" style={{ marginTop: 16 }}>
+      <div className="stats-card" >
         <div className="stats-card-header">
           <h2>Season Averages</h2>
         </div>
@@ -394,7 +394,7 @@ function PStats() {
             <div>Select a season to view season-specific stats.</div>
           )}
           {seasonAverages && (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12 }}>
+            <div className="season-averages-grid">
               <div>Points: {seasonAverages.avgPoints?.toFixed(1) ?? '-'}</div>
               <div>Rebounds: {seasonAverages.avgRebounds?.toFixed(1) ?? '-'}</div>
               <div>Assists: {seasonAverages.avgAssists?.toFixed(1) ?? '-'}</div>

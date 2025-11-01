@@ -38,7 +38,7 @@ public class    CoachController {
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PostMapping("/post")
-    public Coach createCoach(@RequestBody Coach coach) {
+    public Coach createCoach(@jakarta.validation.Valid @RequestBody Coach coach) {
         return coachService.createCoach(coach);
     }
 
