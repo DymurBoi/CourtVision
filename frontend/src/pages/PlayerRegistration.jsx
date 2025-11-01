@@ -76,13 +76,6 @@ function PlayerRegistration() {
     e.preventDefault()
 
     // client-side validations
-    const pwdRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
-
-    if (!pwdRegex.test(formData.password)) {
-      setPasswordError("Password must be at least 8 chars and include uppercase, lowercase, number and special character")
-      return
-    }
-
     if (formData.password !== formData.confirmPassword) {
       setPasswordError("Passwords do not match")
       return
@@ -163,7 +156,7 @@ function PlayerRegistration() {
               />
             </FormControl>
 
-            <FormControl sx={{ m: 1, width: "100%", maxWidth: 400 }} variant="outlined" required error={Boolean(passwordError)}>
+            <FormControl sx={{ m: 1, width: "100%", maxWidth: 400 }} variant="outlined" required>
               <InputLabel htmlFor="password">Password</InputLabel>
               <OutlinedInput
                 id="password"
@@ -185,7 +178,6 @@ function PlayerRegistration() {
                   </InputAdornment>
                 }
               />
-              {passwordError && <FormHelperText>{passwordError}</FormHelperText>}
             </FormControl>
 
             {/* ✅ Confirm Password with inline error */}
