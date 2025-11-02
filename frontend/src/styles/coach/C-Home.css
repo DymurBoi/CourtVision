@@ -105,14 +105,45 @@
   font-size: 0.9rem;
 }
 
-.confirm-button:disabled {
+.confirm-button-home {
+  padding: 0.75rem 2rem;
+  background: var(--bright-purple, #5151ff);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.confirm-button-home:hover {
+  background: var(--medium-purple, #4141cc);
+}
+
+.reject-button-home {
+  padding: 0.75rem 2rem;
+  background: white;
+  color: #666;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.reject-button-home:hover {
+  background: #f5f5f5;
+  border-color: #ccc;
+}
+
+.confirm-button-home:disabled {
   background: linear-gradient(to right, #a8a8a8, #c0c0c0);
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
 }
 
-.confirm-button:disabled:hover {
+.confirm-button-home:disabled:hover {
   background: linear-gradient(to right, #a8a8a8, #c0c0c0);
   transform: none;
   box-shadow: none;
@@ -191,6 +222,12 @@
   .team-action-button {
     flex: 1;
     justify-content: center;
+  }
+  .confirm-button-home,
+  .reject-button-home {
+    width: 100%;
+    margin: 20px;
+    margin-top: 0px;
   }
 }
 
