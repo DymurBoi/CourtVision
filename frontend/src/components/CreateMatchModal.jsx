@@ -27,34 +27,36 @@ function CreateMatchModal({ onClose, onSave, teamId }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (isSubmitting) return;
     setIsSubmitting(true);
 
-    // Basic validation
-    if (!formData.awayTeam || !formData.gameDate) {
+    // Create a local copy of formData (so we can modify it safely)
+    let updatedFormData = { ...formData };
+
+    // If practice, override home/away teams
+    if (updatedFormData.gameType === "Practice") {
+      updatedFormData.homeTeam = "CIT-U Team A";
+      updatedFormData.awayTeam = "CIT-U Team B";
+    }
+
+    // ✅ Now validation uses the *updated* values
+    if (!updatedFormData.awayTeam || !updatedFormData.gameDate) {
       toast.error("Please fill all the required fields.", { autoClose: 2500 });
       setIsSubmitting(false);
       return;
     }
 
-    if (formData.recordingType === "Post" && !formData.finalScore) {
+    if (updatedFormData.recordingType === "Post" && !updatedFormData.finalScore) {
       toast.error("Please fill in the final score for Post Game Analysis.", { autoClose: 2500 });
       setIsSubmitting(false);
       return;
     }
 
     try {
-      const formattedDate = formData.gameDate;
-
-      // Fetch active season
       const seasonsRes = await api.get("/seasons/active");
       const active = seasonsRes.data;
-
       if (!active || active.length === 0) {
-        toast.error("No active season found. Start a season before creating matches.", {
-          autoClose: 3000,
-        });
+        toast.error("No active season found.", { autoClose: 3000 });
         setIsSubmitting(false);
         return;
       }
@@ -62,17 +64,17 @@ function CreateMatchModal({ onClose, onSave, teamId }) {
       const seasonId = active[0].id;
 
       const gamePayload = {
-        gameName: `${formData.homeTeam} vs ${formData.awayTeam}`,
-        gameType: formData.gameType,
-        recordingType: formData.recordingType,
-        gameResult: formData.recordingType === "Live" ? "" : formData.gameResult,
-        finalScore: formData.recordingType === "Live" ? "" : formData.finalScore,
-        gameDate: formattedDate,
-        team: { teamId: teamId },
+        gameName: `${updatedFormData.homeTeam} vs ${updatedFormData.awayTeam}`,
+        gameType: updatedFormData.gameType,
+        recordingType: updatedFormData.recordingType,
+        gameDate: updatedFormData.gameDate,
+        gameResult: updatedFormData.recordingType === "Post" ? updatedFormData.gameResult : "",
+        finalScore: updatedFormData.recordingType === "Post" ? updatedFormData.finalScore : "",
+        team: { teamId },
         season: { id: seasonId },
       };
 
-      const gameRes = await api.post(`/games/post`, gamePayload);
+      const gameRes = await api.post("/games/post", gamePayload);
       const savedGame = gameRes.data;
 
       toast.success("✅ Match created successfully!", { autoClose: 2500 });
@@ -80,17 +82,15 @@ function CreateMatchModal({ onClose, onSave, teamId }) {
       onClose();
     } catch (error) {
       console.error("❌ Failed to save match:", error);
-      const serverMsg =
-        error?.response?.data?.message ||
-        error?.response?.data ||
-        error?.message ||
-        "Failed to save match.";
-
-      toast.error(serverMsg, { autoClose: 3000 });
+      toast.error(
+        error?.response?.data?.message || error?.message || "Failed to save match.",
+        { autoClose: 3000 }
+      );
     } finally {
       setIsSubmitting(false);
     }
   };
+
 
   return (
     <>

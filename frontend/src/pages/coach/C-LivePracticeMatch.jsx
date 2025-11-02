@@ -1128,7 +1128,7 @@ function CLivePracticeMatch() {
 
               <div className="stat-controls">
                 <h4>Record Stats</h4>
-                <div>
+                <div style={{ display: "flex", justifyContent: "center", marginBottom: "0.75rem" }}>
                   <button
                     className="close-modal-btn"
                     onClick={() => setIsAddMode((m) => !m)}
