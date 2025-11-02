@@ -385,7 +385,8 @@ useEffect(() => {
               </option>
             ))}
           </select>
-          <button className="create-team-button" onClick={() => setShowCreateModal(true)}>
+        </div>
+            <button className="create-team-button" onClick={() => setShowCreateModal(true)}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -403,8 +404,6 @@ useEffect(() => {
             </svg>
             Create New Team
           </button>
-        </div>
-
         {/* Team Details */}
         {selectedTeam && (
           <div className="team-details-header">

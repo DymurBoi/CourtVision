@@ -89,7 +89,7 @@ function CSeason() {
           placeholder="Season Name"
           required
         />
-        <button className="apply-button" type="submit">
+        <button className="apply-button-season" type="submit">
           Start New Season
         </button>
       </form>

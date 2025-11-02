@@ -376,7 +376,7 @@ function PStats() {
             }
           }}
         >
-          <option value="">All seasons</option>
+          <option value="">Select season</option>
           {seasons.map(s => (<option key={s.id} value={s.id}>{s.seasonName}</option>))}
         </select>
       </div>
