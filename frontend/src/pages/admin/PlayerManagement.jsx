@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Snackbar, Alert } from "@mui/material";
 import "../../styles/admin/UserManagement.css";
-import { api } from "../../utils/axiosConfig";
+import axios from "axios";
 
 function PlayerManagement() {
   const location = useLocation();
@@ -38,7 +38,7 @@ function PlayerManagement() {
       setLoading(true);
       try {
         const [playersRes] = await Promise.all([
-          api.get("/players/get/all"),
+          axios.get("http://localhost:8080/api/players/get/all"),
         ]);
 
         const players = playersRes.data.map((player) => ({

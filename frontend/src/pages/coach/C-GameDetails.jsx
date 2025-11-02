@@ -480,7 +480,7 @@ function CGameDetails() {
           variant="filled"
           sx={{ width: "100%", fontWeight: 500 }}
         >
-          Please rotate your phone horizontally for better viewing.
+          📱 Please rotate your phone horizontally for better viewing.
         </Alert>
       </Snackbar>
       {showEditModal && (

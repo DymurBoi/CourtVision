@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import "../../styles/admin/UserForm.css";
-import { api } from "../../utils/axiosConfig";
+import axios from "axios";
 
 const Alert = (props) => <MuiAlert elevation={6} variant="filled" {...props} />;
 
@@ -89,21 +89,14 @@ function CreateCoach() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const pwdRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
-
-    if (!pwdRegex.test(formData.password)) {
-      setPasswordError("Password must be at least 8 chars and include uppercase, lowercase, number and special character");
-      return;
-    }
-
     if (formData.password !== formData.confirmPassword) {
       setPasswordError("Passwords do not match");
       return;
     }
 
     try {
-      const response = await api.post(
-        "/coaches/post",
+      const response = await axios.post(
+        "http://localhost:8080/api/coaches/post",
         formData
       );
 
@@ -187,7 +180,7 @@ function CreateCoach() {
 
               {/* Password */}
               <div className="form-input-wrapper">
-                <FormControl fullWidth variant="outlined" required error={Boolean(passwordError)}>
+                <FormControl fullWidth variant="outlined" required>
                   <InputLabel htmlFor="password">Password</InputLabel>
                   <OutlinedInput
                     id="password"
@@ -207,9 +200,6 @@ function CreateCoach() {
                       </InputAdornment>
                     }
                   />
-                  {passwordError && (
-                    <FormHelperText>{passwordError}</FormHelperText>
-                  )}
                 </FormControl>
               </div>
 

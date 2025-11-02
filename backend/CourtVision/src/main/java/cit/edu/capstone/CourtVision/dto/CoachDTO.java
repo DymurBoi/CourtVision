@@ -8,11 +8,6 @@ public class CoachDTO {
     private String fname;
     private String lname;
     private String email;
-    @jakarta.validation.constraints.NotBlank(message = "Password is required")
-    @jakarta.validation.constraints.Pattern(
-        regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).{8,}$",
-        message = "Password must be at least 8 characters and include uppercase, lowercase, number and special character"
-    )
     private String password;
     private LocalDate birthDate;
     private List<Long> teamIds;
