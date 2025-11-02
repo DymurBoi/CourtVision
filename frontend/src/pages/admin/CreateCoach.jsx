@@ -89,6 +89,13 @@ function CreateCoach() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const pwdRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
+
+    if (!pwdRegex.test(formData.password)) {
+      setPasswordError("Password must be at least 8 chars and include uppercase, lowercase, number and special character");
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
       setPasswordError("Passwords do not match");
       return;
@@ -180,7 +187,7 @@ function CreateCoach() {
 
               {/* Password */}
               <div className="form-input-wrapper">
-                <FormControl fullWidth variant="outlined" required>
+                <FormControl fullWidth variant="outlined" required error={Boolean(passwordError)}>
                   <InputLabel htmlFor="password">Password</InputLabel>
                   <OutlinedInput
                     id="password"
@@ -200,6 +207,9 @@ function CreateCoach() {
                       </InputAdornment>
                     }
                   />
+                  {passwordError && (
+                    <FormHelperText>{passwordError}</FormHelperText>
+                  )}
                 </FormControl>
               </div>
 

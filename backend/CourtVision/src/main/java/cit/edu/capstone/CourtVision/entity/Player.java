@@ -2,6 +2,8 @@ package cit.edu.capstone.CourtVision.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -17,6 +19,9 @@ public class Player {
     private String lname;
     @Column(unique = true)
     private String email;
+    @NotBlank(message = "Password is required")
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).{8,}$",
+        message = "Password must be at least 8 characters and include uppercase, lowercase, number and special character")
     private String password;
     private LocalDate birthDate;
     private int jerseyNum;
