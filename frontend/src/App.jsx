@@ -40,7 +40,7 @@ import CLiveRecord from "./pages/coach/C-LiveRecord"
 import CSeasonGames from "./pages/coach/C-SeasonGames";
 import CSeasonRanking from "./pages/coach/C-SeasonRanking";
 import CLivePracticeMatch from "./pages/coach/C-LivePracticeMatch";
-
+import PPlayerRanking from "./pages/player/P-PlayerRanking"
 
 // Create a wrapper component that forces re-render on location change
 function AppRoutes() {
@@ -269,6 +269,15 @@ function AppRoutes() {
             <>
               <PlayerNavbar />
               <PHome />
+            </>
+          }
+        />
+        <Route
+          path="/player/player-ranking"
+          element={
+            <>
+              <PlayerNavbar />
+              <PPlayerRanking />
             </>
           }
         />
