@@ -43,9 +43,6 @@ function CoachNavbar() {
 
         {/* Nav Links */}
         <div className={`nav-links ${menuOpen ? "active" : ""}`}>
-          <Link to="/coach/matches" className="nav-item" onClick={closeMenu}>
-            Matches
-          </Link>
           <Link to="/coach/ranking" className="nav-item" onClick={closeMenu}>
             Player Ranking
           </Link>

@@ -191,7 +191,7 @@ function Login() {
             {/* Role selector buttons */}
             <div className="form-group role-buttons">
               <label>Login as:</label>
-              <div className="role-button-group">
+              <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "1rem" }}>
                 <button
                   type="button"
                   className={`role-button ${role === "player" ? "active" : ""}`}
