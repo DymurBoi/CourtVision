@@ -100,12 +100,26 @@ public class PlayerAveragesService {
     // Usage Percentage (estimated: FGA + TOV + 0.44 * FTA per minute)
     double usageNumerator = totalFGA + totalTurnovers + 0.44 * totalFTA;
     double usage = totalMinutes != 0 ? usageNumerator / totalMinutes : 0;
-    avg.setUsagePercentage(usage * 100);
+    avg.setUsagePercentage(usage);
 
-    // Offensive Rating & Defensive Rating → you **don’t** have team-based or possession-based data,
-    // so we’ll default to 0 or just leave them for future expansion.
-    avg.setOffensiveRating(0);
-    avg.setDefensiveRating(0);
+    // Offensive Rating
+    double pointsPerMinute = totalMinutes != 0 ? totalPoints / totalMinutes : 0;
+    double possessionsUsed = totalFGA + (0.44 * totalFTA) + totalTurnovers;
+    double possessionsPerMinute = totalMinutes != 0 ? possessionsUsed / totalMinutes : 0;
+    double offensiveRating = (possessionsPerMinute != 0)
+            ? (pointsPerMinute / possessionsPerMinute) * 100
+            : 0;
+    if (offensiveRating > 130) offensiveRating = 130;
+    if (offensiveRating < 70) offensiveRating = 70;
+    avg.setOffensiveRating(offensiveRating);
+
+    // Defensive Rating
+    double defensiveImpact = totalSteals + totalBlocks + (totalRebounds * 0.3);
+    double impactPerMinute = totalMinutes != 0 ? defensiveImpact / totalMinutes : 0;
+    double defensiveRating = 110 - (impactPerMinute * 10);
+    if (defensiveRating < 85) defensiveRating = 85;
+    if (defensiveRating > 130) defensiveRating = 130;
+    avg.setDefensiveRating(defensiveRating);
 
     return averagesRepo.save(avg);
 }
