@@ -214,7 +214,7 @@ function PHome() {
           {availableTeams.length > 0 ? (
             <div className="available-teams-grid">
               {availableTeams.map((team) => {
-                const isPending = pendingRequests.some(req => req.teamId === team.id)
+                const isPending = pendingRequests.some(req => req.teamId === team.id && req.status === 0)
                 return (
                   <div className="available-team-card" key={team.id}>
                     <div className="team-banner college"></div>
