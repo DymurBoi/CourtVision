@@ -49,6 +49,9 @@ function PlayerNavbar() {
           <Link to="/player/matches" className="nav-item" onClick={closeMenu}>
             Matches
           </Link>
+           <Link to="/player/player-ranking" className="nav-item" onClick={closeMenu}>
+            Player Rankings
+          </Link>
 
           {/* On mobile, show profile and logout in dropdown too */}
           <div className="mobile-user-actions">
