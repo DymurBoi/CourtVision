@@ -1186,8 +1186,8 @@ function CLivePracticeMatch() {
                   </button>
                 </div>
 
-                <div style={{ textAlign: "center", marginTop: "1rem" }}>
-                  <button className="stat-btn" onClick={() => {
+                <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "1rem" }}>
+                  <button className="save-modal-btn" onClick={() => {
                     handleSaveStats();
                     setShowModal(false);
 
@@ -1298,9 +1298,9 @@ function CLivePracticeMatch() {
               )}
             </div>
 
-            <div className="modal-actions">
+            <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "1rem" }}>
               <button
-                className="stat-btn"
+                className="save-modal-btn"
                 onClick={handleConfirmFirstFiveModal}
               >
                 Confirm First Five
@@ -1323,7 +1323,7 @@ function CLivePracticeMatch() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="modal-header">
-              <h2>RAH</h2>
+              <h2>Select Players (Team {teamActive})</h2>
               <button
                 className="close-button"
                 onClick={() => setShowTeamSelectModal(false)}
@@ -1380,9 +1380,9 @@ function CLivePracticeMatch() {
               )}
             </div>
 
-            <div className="modal-actions">
+            <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "1rem" }}>
               <button
-                className="stat-btn"
+                className="save-modal-btn"
                 onClick={() => {
                   setShowTeamSelectModal(false);
                 }}

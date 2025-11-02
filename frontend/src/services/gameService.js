@@ -1,11 +1,11 @@
-import { api } from '../utils/axiosConfig';
+import axios from 'axios';
 
-const API_URL = '/games';
+const API_URL = 'http://localhost:8080/api/games';
 
 const gameService = {
     getAllGames: async () => {
         try {
-            const response = await api.get(`${API_URL}/get/all`);
+            const response = await axios.get(`${API_URL}/get/all`);
             return response.data;
         } catch (error) {
             console.error('Error fetching games:', error);
@@ -15,7 +15,7 @@ const gameService = {
 
     getGameById: async (id) => {
         try {
-            const response = await api.get(`${API_URL}/get/${id}`);
+            const response = await axios.get(`${API_URL}/get/${id}`);
             return response.data;
         } catch (error) {
             console.error('Error fetching game:', error);
@@ -25,7 +25,7 @@ const gameService = {
 
     getGameByTeam: async (id) => {
         try {
-            const response = await api.get(`${API_URL}/get/team/${id}`);
+            const response = await axios.get(`${API_URL}/get/team/${id}`);
             return response.data;
         } catch (error) {
             console.error('Error fetching game:', error);
@@ -51,7 +51,7 @@ const gameService = {
             };
 
             // Check for duplicate game (same teams, same date)
-            const existingGames = await api.get(`${API_URL}/get/all`);
+            const existingGames = await axios.get(`${API_URL}/get/all`);
             const duplicateGame = existingGames.data.find((game) => {
                 return (
                     game.gameName === gameData.gameName &&
@@ -64,7 +64,7 @@ const gameService = {
                 return null;  // Return null if duplicate found
             }
 
-            const response = await api.post(`${API_URL}/post`, gameData);
+            const response = await axios.post(`${API_URL}/post`, gameData);
             return response.data;
         } catch (error) {
             console.error('Error creating game:', error);
@@ -88,7 +88,7 @@ const gameService = {
                 finalScore: matchData.finalScore,
             };
 
-            const response = await api.put(`${API_URL}/put/${id}`, gameData);
+            const response = await axios.put(`${API_URL}/put/${id}`, gameData);
             return response.data;
         } catch (error) {
             console.error('Error updating game:', error);
@@ -98,7 +98,7 @@ const gameService = {
 
     deleteGame: async (id) => {
         try {
-            await api.delete(`${API_URL}/delete/${id}`);
+            await axios.delete(`${API_URL}/delete/${id}`);
         } catch (error) {
             console.error('Error deleting game:', error);
             throw error;

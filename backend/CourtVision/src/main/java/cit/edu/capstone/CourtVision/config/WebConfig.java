@@ -12,9 +12,9 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins(
-                        "http://localhost:3000",  // local dev
-                        "http://courtvision-frontend.s3-website-ap-southeast-2.amazonaws.com", //s3
-                        "http://13.239.65.62",  // EC2 backend port 80
+                        "http://localhost:3000",  // for local dev
+                        "http://courtvision-frontend.s3-website-ap-southeast-2.amazonaws.com", // your S3 frontend
+                        "http://13.239.65.62",  // your EC2 backend (port 80)
                         "http://13.239.65.62:8080" // if backend runs on 8080
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")

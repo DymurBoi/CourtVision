@@ -218,7 +218,7 @@
 }
 
 .stat-value {
-  font-size: 0.9rem;
+  font-size: 1.4rem;
   font-weight: bold;
   color: var(--bright-purple);
   text-align: right;
@@ -451,7 +451,7 @@
   }
 
   .stat-value {
-    font-size: 1rem;
+    font-size: 5rem;
   }
 
   .stat-buttons {
@@ -547,7 +547,7 @@
 
   .stat-label,
   .stat-value {
-    font-size: 0.9rem;
+    font-size: 1.1rem;
   }
 
   .game-header {
