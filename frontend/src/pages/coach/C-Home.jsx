@@ -518,11 +518,11 @@ useEffect(() => {
                 </div>
               </div>
 
-              <div className="modal-actions">
-                <button type="submit" className="confirm-button">
+              <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "1rem" }}>
+                <button type="submit" className="confirm-button-home">
                   Create Team
                 </button>
-                <button type="button" className="reject-button" onClick={() => setShowCreateModal(false)}>
+                <button type="button" className="reject-button-home" onClick={() => setShowCreateModal(false)}>
                   Cancel
                 </button>
               </div>
@@ -566,15 +566,15 @@ useEffect(() => {
                 </div>
               </div>
 
-              <div className="modal-actions">
+              <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "1rem" }}>
                 <button 
                   type="submit" 
-                  className="confirm-button"
+                  className="confirm-button-home"
                   disabled={!selectedCoachId || availableCoaches.length === 0}
                 >
                   Add Coach
                 </button>
-                <button type="button" className="reject-button" onClick={() => setShowAddCoachModal(false)}>
+                <button type="button" className="reject-button-home" onClick={() => setShowAddCoachModal(false)}>
                   Cancel
                 </button>
               </div>
