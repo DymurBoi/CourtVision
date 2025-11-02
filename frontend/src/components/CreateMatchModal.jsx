@@ -124,17 +124,20 @@ function CreateMatchModal({ onClose, onSave, teamId }) {
                   required
                 />
               </div>
-              <div className="form-group">
-                <label htmlFor="awayTeam">Away Team</label>
-                <input
-                  type="text"
-                  name="awayTeam"
-                  value={formData.awayTeam}
-                  onChange={handleChange}
-                  placeholder="Away Team"
-                  required
-                />
-              </div>
+              {formData.gameType !== "Practice" && (
+                <div className="form-group">
+                  <label htmlFor="awayTeam">Away Team</label>
+                  <input
+                    type="text"
+                    name="awayTeam"
+                    value={formData.awayTeam}
+                    onChange={handleChange}
+                    placeholder="Away Team"
+                    required={formData.gameType !== "Practice"}
+                  />
+                </div>
+              )}
+
               <div className="form-group">
                 <label>Game Type</label>
                 <select
