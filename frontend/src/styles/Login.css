@@ -19,6 +19,11 @@
   object-position: center;
 }
 
+.form-group {
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
 /* Form section */
 .auth-form-container {
   flex: 1;
@@ -31,9 +36,11 @@
 
 .auth-form-wrapper {
   width: 100%;
-  max-width: 450px;
-  background-color: white;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
 }
+
 
 .auth-logo {
   margin-bottom: 2rem;
@@ -64,18 +71,23 @@
 }
 
 .auth-form {
-  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
+
 
 .role-button-group {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.8rem;
+  justify-content: center;
 }
+
 
 .role-button {
   flex: 1;
-  min-width: 205px;
-  max-width: 195px;
+  min-width: 0; /* allow shrinking */
   padding: 0.8rem;
   border: 1px solid rgba(123, 123, 243, 0.3);
   border-radius: 6px;
@@ -86,6 +98,7 @@
   transition: all 0.3s ease;
   font-size: 0.9rem;
 }
+
 
 .role-button.active {
   background: linear-gradient(to right, var(--medium-purple), var(--bright-purple));
@@ -170,8 +183,9 @@
   }
 
   .role-button {
-    min-width: 10px;
-    max-width: 182px; 
+    flex: 1 1 45%;
+    min-width: 120px;
+    max-width: none;
     font-size: 0.85rem;
     padding: 0.8rem;
     font-size: 0.85rem;

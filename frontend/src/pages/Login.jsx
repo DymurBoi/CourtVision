@@ -191,7 +191,7 @@ function Login() {
             {/* Role selector buttons */}
             <div className="form-group role-buttons">
               <label>Login as:</label>
-              <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "1rem" }}>
+              <div className="role-button-group">
                 <button
                   type="button"
                   className={`role-button ${role === "player" ? "active" : ""}`}
@@ -209,11 +209,7 @@ function Login() {
               </div>
             </div>
 
-            <FormControl
-              sx={{ m: 1, width: "95%" }}
-              variant="outlined"
-              required
-            >
+            <FormControl sx={{ width: "100%", marginTop: "1rem" }} variant="outlined" required>
               <InputLabel htmlFor="email">Email</InputLabel>
               <OutlinedInput
                 id="email"
@@ -224,11 +220,8 @@ function Login() {
               />
             </FormControl>
 
-            <FormControl
-              sx={{ m: 1, width: "95%" }}
-              variant="outlined"
-              required
-            >
+            <FormControl sx={{ width: "100%", marginTop: "1rem" }} variant="outlined" required>
+
               <InputLabel htmlFor="password">Password</InputLabel>
               <OutlinedInput
                 id="password"
