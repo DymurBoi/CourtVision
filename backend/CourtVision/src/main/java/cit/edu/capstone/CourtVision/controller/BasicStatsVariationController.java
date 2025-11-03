@@ -8,6 +8,7 @@ import cit.edu.capstone.CourtVision.service.BasicStatsVariationService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class BasicStatsVariationController {
     @Autowired
     private BasicStatsVariationService service;
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
      @GetMapping("/get/all")
     public ResponseEntity<List<BasicStatsVariationDTO>> getAll() {
         List<BasicStatsVariation> statsList = service.getAll();
@@ -29,6 +31,7 @@ public class BasicStatsVariationController {
         return ResponseEntity.ok(dtos);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
     @GetMapping("/get/{id}")
     public ResponseEntity<BasicStatsVariationDTO> getById(@PathVariable Long id) {
         BasicStatsVariation stat = service.getById(id);
@@ -37,6 +40,7 @@ public class BasicStatsVariationController {
                 : ResponseEntity.notFound().build();
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
     @GetMapping("/get/by-game/{gameId}")
     public List<BasicStatsVariationDTO> getBasicStatsByGameId(@PathVariable Long gameId) {
         List<BasicStatsVariation> stats = service.getBasicStatsByGameId(gameId);
@@ -45,6 +49,7 @@ public class BasicStatsVariationController {
                 .collect(Collectors.toList());
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
     @PostMapping("/post")
     public ResponseEntity<BasicStatsVariationDTO> create(@RequestBody BasicStatsVariationDTO dto) {
         BasicStatsVariation entity = BasicStatsVariationMapper.toEntity(dto);
@@ -52,6 +57,7 @@ public class BasicStatsVariationController {
         return ResponseEntity.ok(BasicStatsVariationMapper.toDTO(created));
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
     @PutMapping("/put/{id}")
     public ResponseEntity<BasicStatsVariationDTO> update(@PathVariable Long id, @RequestBody BasicStatsVariationDTO dto) {
         BasicStatsVariation entity = BasicStatsVariationMapper.toEntity(dto);
@@ -61,6 +67,7 @@ public class BasicStatsVariationController {
                 : ResponseEntity.notFound().build();
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
