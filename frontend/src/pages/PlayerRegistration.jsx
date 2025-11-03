@@ -100,7 +100,7 @@ function PlayerRegistration() {
     const { confirmPassword, ...payload } = formData
 
     try {
-      const response = await axios.post("http://localhost:8080/api/players/post", payload)
+      const response = await axios.post("http://13.239.65.62:8080/api/players/post", payload)
       console.log("Registration successful:", response.data)
       alert("Registration successful! Please log in.")
       navigate("/login")

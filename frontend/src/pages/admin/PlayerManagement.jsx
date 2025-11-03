@@ -38,7 +38,7 @@ function PlayerManagement() {
       setLoading(true);
       try {
         const [playersRes] = await Promise.all([
-          axios.get("http://localhost:8080/api/players/get/all"),
+          axios.get("http://13.239.65.62:8080/api/players/get/all"),
         ]);
 
         const players = playersRes.data.map((player) => ({

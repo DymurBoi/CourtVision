@@ -41,7 +41,7 @@ function CoachManagement() {
     const fetchUsers = async () => {
       try {
         const [coachesRes] = await Promise.all([
-          axios.get("http://localhost:8080/api/coaches/get/all"),
+          axios.get("http://13.239.65.62:8080/api/coaches/get/all"),
         ]);
 
         const coaches = coachesRes.data
@@ -120,7 +120,7 @@ function CoachManagement() {
 
     try {
       // Example delete endpoint
-      await axios.delete(`http://localhost:8080/api/coaches/delete/${userToDelete}`);
+      await axios.delete(`http://13.239.65.62:8080/api/coaches/delete/${userToDelete}`);
 
       setUsers((prev) => prev.filter((user) => user.id !== userToDelete));
 
