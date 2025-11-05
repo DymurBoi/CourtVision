@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { API_BASE_URL } from '../utils/axiosConfig';
 
-const API_URL = 'http://13.239.65.62:8080/api/games';
+const API_URL = `${API_BASE_URL}/games`;
 
 const gameService = {
     getAllGames: async () => {

@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import axios from "axios"
+import { API_BASE_URL } from "../utils/axiosConfig"
 import "../styles/Login.css"
 import basketballCourt from "../assets/BasketballCourt.jpg"
 import {
@@ -100,7 +101,7 @@ function PlayerRegistration() {
     const { confirmPassword, ...payload } = formData
 
     try {
-      const response = await axios.post("http://13.239.65.62:8080/api/players/post", payload)
+      const response = await axios.post(`${API_BASE_URL}/players/post`, payload)
       console.log("Registration successful:", response.data)
       alert("Registration successful! Please log in.")
       navigate("/login")
