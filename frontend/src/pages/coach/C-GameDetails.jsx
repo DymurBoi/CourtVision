@@ -456,10 +456,10 @@ function CGameDetails() {
                   {physicalMetrics.map((playerStat) => (
                     <tr key={playerStat.physicalBasedMetricsStatsId}>
                       <td>{playerStat.basicStatsDTO.playerName}</td>
-                      <td>{playerStat.finishingEfficiency}</td>
-                      <td>{playerStat.reboundingEfficiency}</td>
-                      <td>{playerStat.defensiveActivityIndex}</td>
-                      <td>{playerStat.physicalEfficiencyRating}</td>
+                      <td>{Number(playerStat.finishingEfficiency).toFixed(2)}</td>
+                      <td>{Number(playerStat.reboundingEfficiency).toFixed(2)}</td>
+                      <td>{Number(playerStat.defensiveActivityIndex).toFixed(2)}</td>
+                      <td>{Number(playerStat.physicalEfficiencyRating).toFixed(2)}</td>
                     </tr>
                   ))}
                 </tbody>
