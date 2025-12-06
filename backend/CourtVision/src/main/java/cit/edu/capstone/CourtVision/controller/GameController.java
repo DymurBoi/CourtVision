@@ -44,6 +44,7 @@ public class GameController {
         return ResponseEntity.ok(dtos);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
     @PostMapping("/post")
     public ResponseEntity<?> create(@RequestBody Game game) {
         try {

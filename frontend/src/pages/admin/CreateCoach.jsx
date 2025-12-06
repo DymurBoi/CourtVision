@@ -14,8 +14,7 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import "../../styles/admin/UserForm.css";
-import axios from "axios";
-import { API_BASE_URL } from "../../utils/axiosConfig";
+import { api } from "../../utils/axiosConfig";
 
 const Alert = (props) => <MuiAlert elevation={6} variant="filled" {...props} />;
 
@@ -103,7 +102,10 @@ function CreateCoach() {
     }
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/coaches/post`, formData);
+      const response = await api.post(
+        "/coaches/post",
+        formData
+      );
 
       console.log("Coach created:", response.data);
 
