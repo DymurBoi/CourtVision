@@ -139,10 +139,6 @@ function CPlayerRanking() {
                   return (
                     <tr
                       key={player.player?.playerId || player.playerId || idx}
-                      style={{
-                        fontWeight: idx === 0 ? 700 : "normal",
-                        background: idx === 0 ? "rgba(123,123,243,0.08)" : "transparent",
-                      }}
                     >
                       <td>{idx + 1}</td>
                       <td>{name}</td>

@@ -7,7 +7,6 @@ import { api } from "../../utils/axiosConfig";
 import { useLocation } from "react-router-dom";
 import { Button } from "@mui/material"
 import { StopCircle } from "lucide-react"
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 function CLiveRecord() {

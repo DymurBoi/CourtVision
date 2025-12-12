@@ -164,11 +164,6 @@
         background-color: rgba(123, 123, 243, 0.05);
     }
 
-    tbody tr:first-child {
-        background: rgba(123, 123, 243, 0.08);
-        font-weight: 700;
-    }
-
     /* Scrollbar */
     .stats-table-container::-webkit-scrollbar {
         height: 8px;
