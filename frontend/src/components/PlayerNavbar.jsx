@@ -43,6 +43,9 @@ function PlayerNavbar() {
 
         {/* Nav Links */}
         <div className={`nav-links ${menuOpen ? "active" : ""}`}>
+          <Link to="/player/home" className="nav-item" onClick={closeMenu}>
+            Home
+          </Link>
           <Link to="/player/stats" className="nav-item" onClick={closeMenu}>
             My Stats
           </Link>

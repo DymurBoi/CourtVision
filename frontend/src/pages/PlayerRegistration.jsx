@@ -120,10 +120,11 @@ function PlayerRegistration() {
 
           <form className="auth-form" onSubmit={handleSubmit}>
             <FormControl sx={{ m: 1, width: "100%", maxWidth: 400 }} variant="outlined" required>
-              <InputLabel shrink htmlFor="fname">First Name</InputLabel>
+              <InputLabel htmlFor="fname">First Name</InputLabel>
               <OutlinedInput
                 id="fname"
                 name="fname"
+                label="First Name"
                 value={formData.fname}
                 onChange={handleChange}
                 placeholder="Enter your first name"
@@ -132,10 +133,11 @@ function PlayerRegistration() {
             </FormControl>
 
             <FormControl sx={{ m: 1, width: "100%", maxWidth: 400 }} variant="outlined" required>
-              <InputLabel shrink htmlFor="lname">Last Name</InputLabel>
+              <InputLabel htmlFor="lname">Last Name</InputLabel>
               <OutlinedInput
                 id="lname"
                 name="lname"
+                label="Last Name"
                 value={formData.lname}
                 onChange={handleChange}
                 placeholder="Enter your last name"
@@ -144,11 +146,12 @@ function PlayerRegistration() {
             </FormControl>
 
             <FormControl sx={{ m: 1, width: "100%", maxWidth: 400 }} variant="outlined" required>
-              <InputLabel shrink htmlFor="email">Email</InputLabel>
+              <InputLabel htmlFor="email">Email</InputLabel>
               <OutlinedInput
                 id="email"
                 type="email"
                 name="email"
+                label="Email"
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="Enter your email"
@@ -162,6 +165,7 @@ function PlayerRegistration() {
                 id="password"
                 type={showPassword ? "text" : "password"}
                 name="password"
+                label="Password"
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Create a password"
@@ -192,6 +196,7 @@ function PlayerRegistration() {
                 id="confirmPassword"
                 type={confirmShowPassword ? "text" : "password"}
                 name="confirmPassword"
+                label="Confirm Password"
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 placeholder="Confirm your password"
@@ -222,6 +227,7 @@ function PlayerRegistration() {
                 id="birthDate"
                 type="date"
                 name="birthDate"
+                label="Birth Date"
                 value={formData.birthDate}
                 onChange={handleChange}
                 sx={{ bgcolor: "#F5F5F5", width: "100%" }}

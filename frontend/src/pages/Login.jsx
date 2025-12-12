@@ -214,6 +214,7 @@ function Login() {
               <OutlinedInput
                 id="email"
                 type="email"
+                label="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 sx={{ bgcolor: "#F5F5F5", width: "100%" }}
@@ -226,6 +227,7 @@ function Login() {
               <OutlinedInput
                 id="password"
                 type={showPassword ? "text" : "password"}
+                label="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 sx={{ bgcolor: "#F5F5F5", width: "100%" }}
