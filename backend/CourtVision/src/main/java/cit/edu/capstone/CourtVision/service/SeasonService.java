@@ -36,14 +36,18 @@ public class SeasonService {
     }
 
     public Season startSeason(String name, Long teamId) {
+        List<Season> activeSeasons=seasonRepository.findByActiveTrueAndTeam_TeamId(teamId);
+        if (!activeSeasons.isEmpty()) {
+        return null;
+        }
+        // fetch team and set
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new RuntimeException("Team not found with id: " + teamId));
+
         Season season = new Season();
         season.setSeasonName(name);
         season.setStartDate(LocalDate.now());
         season.setActive(true);
-
-        // fetch team and set
-        Team team = teamRepository.findById(teamId)
-                .orElseThrow(() -> new RuntimeException("Team not found with id: " + teamId));
         season.setTeam(team);
 
         return seasonRepository.save(season);

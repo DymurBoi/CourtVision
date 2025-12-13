@@ -57,9 +57,13 @@ function CSeason() {
     e.preventDefault();
     if (!seasonName.trim() || !teamId) return;
     try {
-      await api.post(
+      const res = await api.post(
         `/seasons/start?name=${encodeURIComponent(seasonName)}&teamId=${teamId}`
       );
+      if(!res || !res.data){
+        alert("A season is already running for this team.");
+        return;
+      }
       setSeasonName("");
       fetchSeasons(teamId);
     } catch (err) {

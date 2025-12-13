@@ -177,7 +177,7 @@ function PlayerRegistration() {
                       onMouseDown={handleMouseDownPassword}
                       edge="end"
                     >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                      {showPassword ? <Visibility /> : <VisibilityOff />}
                     </IconButton>
                   </InputAdornment>
                 }
@@ -208,7 +208,7 @@ function PlayerRegistration() {
                       onMouseDown={handleMouseDownPassword}
                       edge="end"
                     >
-                      {confirmShowPassword ? <VisibilityOff /> : <Visibility />}
+                      {confirmShowPassword ? <Visibility /> : <VisibilityOff />}
                     </IconButton>
                   </InputAdornment>
                 }

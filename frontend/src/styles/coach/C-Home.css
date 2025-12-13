@@ -3,15 +3,17 @@
   margin-bottom: 1.5rem;
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1rem; /* Keeps space between dropdown and button */
 }
 
+/* Label style for Select Team dropdown */
 .team-selector label {
   font-weight: 600;
   color: var(--dark-blue);
   font-size: 1.1rem;
 }
 
+/* Team select dropdown style */
 .team-select {
   padding: 0.8rem;
   border: 1px solid rgba(123, 123, 243, 0.3);
@@ -50,11 +52,9 @@
   align-items: center;
   gap: 0.5rem;
   margin-right: 10px;
-  margin-bottom: 10px;
-  /* Push the button to the right */
+  /* Ensures the button stays next to the select dropdown */
   margin-left: auto;
 }
-
 
 .create-team-button:hover {
   background: linear-gradient(to right, var(--bright-purple), var(--medium-purple));
