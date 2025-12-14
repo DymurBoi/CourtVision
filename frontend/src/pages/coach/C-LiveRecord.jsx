@@ -203,7 +203,10 @@ function CLiveRecord() {
       await api.put(`/basic-stats-var/put/${formStats.basicStatVarId}`, payload);
       const updatedOpponent = await api.get(`/basic-stats-var/get/by-game/${gameId}`);
       setOpponentStats(updatedOpponent.data);
-
+      const playByPlayRes = await api.get(`/play-by-play/game/${gameId}`);
+            if (playByPlayRes.status === 200) {
+            console.log('PlayByPlay response:', playByPlayRes);
+            setPlayByPlays(playByPlayRes.data);}
       setShowModal(false);
     } catch (err) {
       console.error("Error updating enemy stats:", err);
