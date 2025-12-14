@@ -697,6 +697,18 @@ function CLivePracticeMatch() {
       // Sub in the new player
       await api.post(`/stopwatch/${benchBasicStatId}/sub-in`);
 
+      const [subbedOut, subbedIn] = await Promise.all([
+        api.get(`/basic-stats/get/${selectedBasicStat.basicStatId}`),
+        api.get(`/basic-stats/get/${benchBasicStatId}`)
+      ]);
+
+      const payload = {
+      gameId: gameId,
+      playerId: selectedUpdatePlayer,
+      message: `${subbedOut.data.fname} ${subbedOut.data.lname} subbed in for ${subbedIn.data.fname} ${subbedIn.data.lname}`,
+      timestamp: new Date().toISOString(),
+    };
+    await api.post('/play-by-play', payload);
       // Refresh based on team
       let res;
       if (selectedRef.team === "A") {
@@ -881,7 +893,7 @@ const handleAssistUpdate = async (basicStatId) => {
     const payload = {
       gameId: gameId,
       playerId: selectedUpdatePlayer,
-      message: `${updatedCurrentStat.fname} ${updatedCurrentStat.lname}'s assist updated ${updatedAssistStat.fname} ${updatedAssistStat.lname}'s ${pointVal}`,
+      message: `${updatedCurrentStat.fname} ${updatedCurrentStat.lname}'s assisted ${updatedAssistStat.fname} ${updatedAssistStat.lname}'s ${pointVal}`,
       timestamp: new Date().toISOString(),
     };
     await api.post('/play-by-play', payload);

@@ -716,6 +716,14 @@ const handleAssistUpdate = async (basicStatId) => {
     const updatedCurrentStatRes = await api.put(`/basic-stats/put/${selectedUpdatePlayer}`, updatedCurrentStat);
     const updatedAssistStatRes = await api.put(`/basic-stats/put/${assistStat.data.basicStatId}`, updatedAssistStat);
 
+      const payload = {
+      gameId: gameId,
+      playerId: selectedUpdatePlayer,
+      message: `${updatedCurrentStat.fname} ${updatedCurrentStat.lname}'s assisted ${updatedAssistStat.fname} ${updatedAssistStat.lname}'s ${pointVal}`,
+      timestamp: new Date().toISOString(),
+    };
+    await api.post('/play-by-play', payload);
+
     console.log("Updated First BasicStat:", updatedCurrentStatRes.data);
     console.log("Updated Second BasicStat:", updatedAssistStatRes.data);
 
@@ -764,6 +772,19 @@ const handleAssistUpdate = async (basicStatId) => {
 
     // Sub in the bench player (must also use basicStatId)
     await api.post(`/stopwatch/${benchBasicStatId}/sub-in`);
+
+    const [subbedOut, subbedIn] = await Promise.all([
+        api.get(`/basic-stats/get/${selectedBasicStat.basicStatId}`),
+        api.get(`/basic-stats/get/${benchBasicStatId}`)
+      ]);
+
+      const payload = {
+      gameId: gameId,
+      playerId: selectedUpdatePlayer,
+      message: `${subbedOut.data.fname} ${subbedOut.data.lname} subbed in for ${subbedIn.data.fname} ${subbedIn.data.lname}`,
+      timestamp: new Date().toISOString(),
+    };
+    await api.post('/play-by-play', payload);
 
     // Refresh subbed-in list
     api.get(`/basic-stats/get/subbed-in/${gameId}`)
