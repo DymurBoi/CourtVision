@@ -14,6 +14,7 @@ function CLiveRecord() {
   const [selectedPoints, setSelectedPoints] = useState(1);
   const [gameDetails, setGameDetails] = useState();
   const [opponentStats, setOpponentStats] = useState();
+  const [playByPlays, setPlayByPlays] = useState([]);
   const [assistModal, setAsssistModal] = useState();
   const [pointModal, setPointModal] = useState();
   const [showModal, setShowModal] = useState(false)
@@ -99,6 +100,18 @@ function CLiveRecord() {
         .catch((err) => {
           setAllTeamABasicStats([]);
           console.error("Failed to fetch all BasicStats:", err);
+        });
+      
+      // Fetch play-by-play data
+      api
+        .get(`/play-by-play/game/${gameId}`)
+        .then((res) => {
+          console.log('PlayByPlay response:', res);
+          setPlayByPlays(res.data);
+        })
+        .catch((err) => {
+          console.error("Failed to fetch play-by-play:", err);
+          setPlayByPlays([]);
         });
     }
   }, [gameId]);
@@ -735,6 +748,12 @@ const handleAssistUpdate = async (basicStatId) => {
     try {
       const allStats = await api.get(`/basic-stats/get/by-game/${gameId}`);
       setAllTeamABasicStats(allStats.data);
+      
+      // Refresh play-by-play
+      const playByPlayRes = await api.get(`/play-by-play/game/${gameId}`);
+      if (playByPlayRes.status === 200) {
+        setPlayByPlays(playByPlayRes.data);
+      }
     } catch (e) {
       console.warn("Could not refresh all basic stats after update:", e);
     }
@@ -1014,6 +1033,40 @@ const handleAssistUpdate = async (basicStatId) => {
             </Button>
           )}
 
+        </div>
+
+        {/* Play-by-Play Section */}
+        <div className="play-by-play-section">
+          <div className="play-by-play-header">
+            <h3>Game Activity Log</h3>
+            <span className="play-count">{playByPlays.length} {playByPlays.length === 1 ? 'event' : 'events'}</span>
+          </div>
+          
+          <div className="play-by-play-container">
+            {playByPlays.length === 0 ? (
+              <div className="no-plays-message">
+                <p>📋 No game activity recorded yet</p>
+                <span>Actions will appear here as the game progresses</span>
+              </div>
+            ) : (
+              <div className="play-by-play-feed">
+                {playByPlays.slice().reverse().map((play, index) => (
+                  <div key={index} className="play-item">
+                    <div className="play-timestamp">
+                      {play.timestamp ? new Date(play.timestamp).toLocaleTimeString('en-US', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                      }) : '--:--:--'}
+                    </div>
+                    <div className="play-content">
+                      <div className="play-message">{play.message}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
