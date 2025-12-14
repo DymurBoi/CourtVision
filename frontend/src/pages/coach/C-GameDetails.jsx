@@ -476,19 +476,44 @@ function CGameDetails() {
             </div>
           )}
           {activeTab === "logs" && (
-  <div>
-    <h2>Play-by-Play for Game {gameId}</h2>
-    {playByPlays.length === 0 ? (
-      <p>No play-by-play data available for this game.</p>
-    ) : (
-      <ul>
-        {playByPlays.map((play, index) => (
-          <li key={index}>{play.message}</li>
-        ))}
-      </ul>
-    )}
-  </div>
-)}
+            <div className="logs-table-wrapper">
+              <div className="logs-header">
+                <h3>Activity Log</h3>
+                <span className="logs-count">{playByPlays.length} entries</span>
+              </div>
+              
+              {playByPlays.length === 0 ? (
+                <div className="logs-empty">
+                  <p>No activity recorded for this game</p>
+                </div>
+              ) : (
+                <div className="logs-table-container">
+                  <table className="logs-table">
+                    <thead>
+                      <tr>
+                        <th>Time</th>
+                        <th>Event</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {playByPlays.slice().reverse().map((play, index) => (
+                        <tr key={index}>
+                          <td className="log-time">
+                            {play.timestamp ? new Date(play.timestamp).toLocaleTimeString('en-US', {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              second: '2-digit'
+                            }) : '--:--:--'}
+                          </td>
+                          <td className="log-message">{play.message}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
       <Snackbar
