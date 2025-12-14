@@ -109,16 +109,12 @@ public class PlayerAveragesService {
     double offensiveRating = (possessionsPerMinute != 0)
             ? (pointsPerMinute / possessionsPerMinute) * 100
             : 0;
-    if (offensiveRating > 130) offensiveRating = 130;
-    if (offensiveRating < 70) offensiveRating = 70;
     avg.setOffensiveRating(offensiveRating);
 
     // Defensive Rating
     double defensiveImpact = totalSteals + totalBlocks + (totalRebounds * 0.3);
     double impactPerMinute = totalMinutes != 0 ? defensiveImpact / totalMinutes : 0;
     double defensiveRating = 110 - (impactPerMinute * 10);
-    if (defensiveRating < 85) defensiveRating = 85;
-    if (defensiveRating > 130) defensiveRating = 130;
     avg.setDefensiveRating(defensiveRating);
 
     return averagesRepo.save(avg);

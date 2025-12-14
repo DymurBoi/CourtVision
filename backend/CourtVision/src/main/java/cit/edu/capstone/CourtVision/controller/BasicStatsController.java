@@ -137,7 +137,20 @@ public class BasicStatsController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
     @GetMapping("/basic-stats/get/by-game/{gameId}/team/{teamId}")
     public List<BasicStatsDTO> getByGameAndTeam(@PathVariable Long gameId, @PathVariable Long teamId) {
-    return service.getByGameAndTeam(gameId, teamId);
-}
+        return service.getByGameAndTeam(gameId, teamId);
+    }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_COACH')")
+    @PostMapping("/put/batch")
+    public ResponseEntity<List<BasicStatsDTO>> updateBatch(@RequestBody List<BasicStatsDTO> statsDTOList) {
+        // Call the service method to update the batch of stats
+        List<BasicStats> updatedStatsList = service.updateBatch(statsDTOList);
+
+        // Convert updated stats to DTOs and return
+        List<BasicStatsDTO> updatedDTOs = updatedStatsList.stream()
+                .map(BasicStatsMapper::toDTO)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(updatedDTOs);
+    }
 }

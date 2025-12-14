@@ -92,7 +92,7 @@ public class SeasonService {
             }
 
         if (statsList.isEmpty()) {
-            return new PlayerSeasonAveragesDTO(playerId, seasonId, 0, 0, 0, 0, 0, 0);
+            return new PlayerSeasonAveragesDTO(playerId, seasonId, 0, 0, 0, 0, 0, 0,0);
         }
 
         double totalPoints = 0, totalRebounds = 0, totalAssists = 0, totalSteals = 0, totalBlocks = 0, totalTurnovers = 0;
@@ -116,7 +116,8 @@ public class SeasonService {
                 totalAssists / gamesPlayed,
                 totalSteals / gamesPlayed,
                 totalBlocks / gamesPlayed,
-                totalTurnovers / gamesPlayed
+                totalTurnovers / gamesPlayed,
+                gamesPlayed
         );
     }
 

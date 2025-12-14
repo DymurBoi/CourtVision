@@ -354,37 +354,40 @@ function PStats() {
         )}
       </div>
 
-      {/* Season selector placed above Season Averages */}
-      <div className="season-select-container" style={{ marginTop: 16 }}>
-        <label htmlFor="season-select" className="season-select-label">Season</label>
-        <select
-          id="season-select"
-          className="season-select"
-          value={selectedSeasonId}
-          onChange={async (e) => {
-            const sid = e.target.value
-            setSelectedSeasonId(sid)
-            if (!sid) { setSeasonAverages(null); return }
-            try {
-              let playerId = user.id
-              if (typeof playerId === 'string' && playerId.startsWith('PLAYER_')) playerId = playerId.substring(7)
-              const res = await api.get(`/averages/season/player/${playerId}/${sid}`)
-              setSeasonAverages(res.data)
-            } catch (err) {
-              console.error('Failed to fetch season averages', err)
-              setSeasonAverages(null)
-            }
-          }}
-        >
-          <option value="">Select season</option>
-          {seasons.map(s => (<option key={s.id} value={s.id}>{s.seasonName}</option>))}
-        </select>
-      </div>
-
-
       <div className="stats-card" >
         <div className="stats-card-header">
           <h2>Season Averages</h2>
+          <select
+            id="season-select"
+            className="season-select"
+            value={selectedSeasonId}
+            onChange={async (e) => {
+              const sid = e.target.value;
+              setSelectedSeasonId(sid);
+              if (!sid) { 
+                setSeasonAverages(null); 
+                return;
+              }
+              try {
+                let playerId = user.id;
+                if (typeof playerId === 'string' && playerId.startsWith('PLAYER_')) {
+                  playerId = playerId.substring(7);
+                }
+                const res = await api.get(`/averages/season/player/${playerId}/${sid}`);
+                setSeasonAverages(res.data);
+              } catch (err) {
+                console.error('Failed to fetch season averages', err);
+                setSeasonAverages(null);
+              }
+            }}
+          >
+            <option value="">Select season</option>
+            {seasons.map(s => (
+              <option key={s.id} value={s.id}>
+                {s.seasonName} {s.active ? "(Active)" : ""}
+              </option>
+            ))}
+          </select>
         </div>
         <div style={{ padding: 24 }}>
           {selectedSeasonId && !seasonAverages && (
@@ -401,6 +404,7 @@ function PStats() {
               <div>Steals: {seasonAverages.avgSteals?.toFixed(1) ?? '-'}</div>
               <div>Blocks: {seasonAverages.avgBlocks?.toFixed(1) ?? '-'}</div>
               <div>Turnovers: {seasonAverages.avgTurnovers?.toFixed(1) ?? '-'}</div>
+              <div>Games Played: {seasonAverages.gamesPlayed ?? '-'}</div>
             </div>
           )}
         </div>

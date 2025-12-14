@@ -4,11 +4,16 @@ import cit.edu.capstone.CourtVision.dto.BasicStatsDTO;
 import cit.edu.capstone.CourtVision.entity.*;
 import cit.edu.capstone.CourtVision.mapper.BasicStatsMapper;
 import cit.edu.capstone.CourtVision.repository.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class BasicStatsService {
@@ -555,5 +560,43 @@ public BasicStats updatePractice(Long id, BasicStats updatedStats) {
             basicStatsRepository.saveAll(subbedInOpponent);
             basicStatsRepository.saveAll(subbedInTeam);
         }
+    }
+     @Transactional
+    public List<BasicStats> updateBatch(List<BasicStatsDTO> statsDTOList) {
+        // List to store updated stats
+        List<BasicStats> updatedStatsList = new ArrayList<>();
+        
+        for (BasicStatsDTO dto : statsDTOList) {
+            Optional<BasicStats> optionalStat = basicStatsRepository.findById(dto.getBasicStatId());
+            
+            if (optionalStat.isPresent()) {
+                BasicStats existingStat = optionalStat.get();
+
+                // Update only the fields that are present in the DTO
+                if (dto.getTwoPtAttempts() != 0) existingStat.setTwoPtAttempts(dto.getTwoPtAttempts());
+                if (dto.getTwoPtMade() != 0) existingStat.setTwoPtMade(dto.getTwoPtMade());
+                if (dto.getThreePtAttempts() != 0) existingStat.setThreePtAttempts(dto.getThreePtAttempts());
+                if (dto.getThreePtMade() != 0) existingStat.setThreePtMade(dto.getThreePtMade());
+                if (dto.getFtAttempts() != 0) existingStat.setFtAttempts(dto.getFtAttempts());
+                if (dto.getFtMade() != 0) existingStat.setFtMade(dto.getFtMade());
+                if (dto.getAssists() != 0) existingStat.setAssists(dto.getAssists());
+                if (dto.getoFRebounds() != 0) existingStat.setoFRebounds(dto.getoFRebounds());
+                if (dto.getdFRebounds() != 0) existingStat.setdFRebounds(dto.getdFRebounds());
+                if (dto.getBlocks() != 0) existingStat.setBlocks(dto.getBlocks());
+                if (dto.getSteals() != 0) existingStat.setSteals(dto.getSteals());
+                if (dto.getTurnovers() != 0) existingStat.setTurnovers(dto.getTurnovers());
+                if (dto.getpFouls() != 0) existingStat.setpFouls(dto.getpFouls());
+                if (dto.getdFouls() != 0) existingStat.setdFouls(dto.getdFouls());
+                if (dto.getPlusMinus() != 0) existingStat.setPlusMinus(dto.getPlusMinus());
+                if (dto.getMinutes() != null) existingStat.setMinutes(dto.getMinutes());
+                if (dto.getGamePoints() != 0) existingStat.setGamePoints(dto.getGamePoints());
+                if (dto.isSubbedIn() != existingStat.isSubbedIn()) existingStat.setSubbedIn(dto.isSubbedIn());
+                if (dto.isOpponent() != existingStat.isOpponent()) existingStat.setOpponent(dto.isOpponent());
+                
+                // Save updated entity
+                updatedStatsList.add(basicStatsRepository.save(existingStat));
+            }
+        }
+        return updatedStatsList;
     }
 }

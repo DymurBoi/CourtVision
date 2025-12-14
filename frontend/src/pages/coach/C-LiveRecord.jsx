@@ -11,10 +11,11 @@ import { useNavigate } from "react-router-dom";
 
 function CLiveRecord() {
   const navigate = useNavigate();
+  const [selectedPoints, setSelectedPoints] = useState(1);
   const [gameDetails, setGameDetails] = useState();
   const [opponentStats, setOpponentStats] = useState();
-
-
+  const [assistModal, setAsssistModal] = useState();
+  const [pointModal, setPointModal] = useState();
   const [showModal, setShowModal] = useState(false)
   const [isAddMode, setIsAddMode] = useState(true) // true = add, false = subtract
   // Track which team and which player index is selected to always read fresh state
@@ -24,8 +25,8 @@ function CLiveRecord() {
   const [showFirstFiveModal, setShowFirstFiveModal] = useState(false);
   const [selectedPlayers, setSelectedPlayers] = useState([]);
   const [teamPlayers, setTeamPlayers] = useState([]);
-
-
+  const [assistPlayers,setAssistPlayers]=useState([]);
+  const [selectedUpdatePlayer, setSelectUpdatePlayer ] = useState();
   //BasicStats Update
   const [selectedBasicStat, setSelectedBasicStat] = useState(null);
   const [formStats, setFormStats] = useState(null);
@@ -652,7 +653,94 @@ function CLiveRecord() {
       return;
     }
   };
+  const handlePointsSelect = (points) => {
+    setSelectedPoints(points);
+  };
 
+  const handleAssist = async (basicStatId) => {
+    try {
+      if (gameId) {
+        const res = await api.get(`/basic-stats/get/subbed-in/${gameId}`);
+        const updatedAssistPlayers = res.data.filter(player => player.basicStatId !== basicStatId);
+        setAssistPlayers(updatedAssistPlayers);
+      }
+      setSelectUpdatePlayer(basicStatId);
+      console.log("find this",selectedUpdatePlayer);
+      setAsssistModal(true);
+    } catch (err) {
+      console.error("Failed to fetch subbed-out players:", err);
+    }
+  };
+
+const handleAssistUpdate = async (basicStatId) => {
+  try {
+    // Fetch the current player's stats and the assist stat in parallel
+    const [currentStat, assistStat] = await Promise.all([
+      api.get(`/basic-stats/get/${selectedUpdatePlayer}`),
+      api.get(`/basic-stats/get/${basicStatId}`)
+    ]);
+
+    console.log("Selected Player ID:", selectedUpdatePlayer);
+
+    // Increment the assist count
+    const updatedCurrentStat = {
+      ...currentStat.data,
+      assists: currentStat.data.assists+1, // Increment assists by 1
+    };
+    console.log("Updated Current Stat Payload:", updatedCurrentStat);
+
+    // Prepare the assist stat update based on selectedPoints
+    let updatedAssistStat = { ...assistStat.data };
+
+    if (selectedPoints === 3) {
+      updatedAssistStat = {
+        ...updatedAssistStat,
+        threePtAttempts: updatedAssistStat.threePtAttempts + 1,
+        threePtMade: updatedAssistStat.threePtMade + 1
+      };
+    } else if (selectedPoints === 2) {
+      updatedAssistStat = {
+        ...updatedAssistStat,
+        twoPtAttempts: updatedAssistStat.twoPtAttempts + 1,
+        twoPtMade: updatedAssistStat.twoPtMade + 1
+      };
+    } else if (selectedPoints === 1) {
+      updatedAssistStat = {
+        ...updatedAssistStat,
+        ftAttempts: updatedAssistStat.ftAttempts + 1,
+        ftMade: updatedAssistStat.ftMade + 1
+      };
+    }
+
+    // Perform both updates in parallel and wait for responses
+    const updatedCurrentStatRes = await api.put(`/basic-stats/put/${selectedUpdatePlayer}`, updatedCurrentStat);
+    const updatedAssistStatRes = await api.put(`/basic-stats/put/${assistStat.data.basicStatId}`, updatedAssistStat);
+
+    console.log("Updated First BasicStat:", updatedCurrentStatRes.data);
+    console.log("Updated Second BasicStat:", updatedAssistStatRes.data);
+
+    // Refresh the subbed-in stats after the update
+    const updatedSubbedIn = await api.get(`/basic-stats/get/subbed-in/${gameId}`);
+    setTeamABasicStats(updatedSubbedIn.data);
+
+    // Refresh all stats for the game
+    try {
+      const allStats = await api.get(`/basic-stats/get/by-game/${gameId}`);
+      setAllTeamABasicStats(allStats.data);
+    } catch (e) {
+      console.warn("Could not refresh all basic stats after update:", e);
+    }
+
+    // Close the modal dialogs
+    setShowModal(false);
+    setAsssistModal(false);
+
+  } catch (err) {
+    console.error("Error updating stats:", err);
+    // Handle any errors that might occur during API requests
+    alert("An error occurred while updating the stats. Please try again.");
+  }
+};
 
 
   const handleSubstitute = async () => {
@@ -956,7 +1044,7 @@ function CLiveRecord() {
                     <span className="stat-label">FTM:</span>
                     <span className="stat-value">{getStat(formStats, "ftMade")}</span>
                   </div>
-                  <div className="stat-item ast" onClick={() => handleStatUpdate("assists")}>
+                  <div className="stat-item ast" onClick={() => isAddMode ? handleAssist(formStats.basicStatId) : handleStatUpdate("assists")}>
                     <span className="stat-label">AST:</span>
                     <span className="stat-value">{getStat(formStats, "assists")}</span>
                   </div>
@@ -1059,6 +1147,53 @@ function CLiveRecord() {
             </div>
             <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "1rem" }}>
               <button className="close-modal-btn single" onClick={() => setShowSubModal(false)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/*Assist Modal */}
+       {showModal && assistModal && (
+        <div className="modal-overlay" onClick={() => setAsssistModal(false)}>
+          <div className="modal-container player-stats-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Choose Player Assisted</h2>
+              <button className="close-button" onClick={() => setAsssistModal(false)}>&times;</button>
+            </div>
+            <div className="modal-content">
+              <div className="points-selection">
+              <p>Select Points for Assist:</p>
+              <div>
+                {[1, 2, 3].map((points) => (
+                  <button
+                    key={points}
+                    className={`points-btn ${selectedPoints === points ? 'selected' : ''}`}
+                    onClick={() => handlePointsSelect(points)}
+                  >
+                    {points} Points
+                  </button>
+                ))}
+              </div>
+            </div>
+              <div className="players-grid">
+                {assistPlayers.length === 0 ? (
+                  <p>No players available to substitute in</p>
+                ) : (
+                  assistPlayers.map((p) => (
+                    <div
+                      key={p.playerId}
+                      className="player-card"
+                      onClick={() => handleAssistUpdate(p.basicStatId)}
+                    >
+                      <div className="jersey-number">#{p.jerseyNum}</div>
+                      <div className="player-name">{p.fname} {p.lname}</div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+            <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "1rem" }}>
+              <button className="close-modal-btn single" onClick={() => setAsssistModal(false)}>Cancel</button>
             </div>
           </div>
         </div>
