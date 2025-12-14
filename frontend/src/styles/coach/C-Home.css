@@ -191,30 +191,48 @@
 /* Responsive styles */
 @media (max-width: 768px) {
   .team-selector {
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    gap: 0.8rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem; /* Adds space between label, dropdown, and button */
+    margin-bottom: 1rem;
   }
 
   .team-selector label {
     font-size: 1rem;
-    white-space: nowrap;
+    margin-bottom: 0.5rem; /* Adds some spacing below the label */
+    font-weight: 600;
+    color: var(--dark-blue);
   }
 
   .team-select {
-    flex: 1;
-    min-width: 180px;
-    width: auto;
+    padding: 0.8rem;
+    border: 1px solid rgba(123, 123, 243, 0.3);
+    border-radius: 8px;
+    font-size: 1rem;
+    width: 100%; /* Make the dropdown fill the width */
+    background-color: white;
+    color: var(--dark-blue);
+    cursor: pointer;
+    transition: all 0.3s ease;
   }
 
   .team-actions {
-    margin-bottom: 2rem;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.5rem;
   }
 
+
   .create-team-button {
-    width: 100%;
+    width: 100%; /* Make the button fill the available width */
     justify-content: center;
+    margin-top: 1rem; /* Adds space between the dropdown and the button */
+  }
+
+  .create-team-button:hover {
+    background: linear-gradient(to right, var(--bright-purple), var(--medium-purple));
+    box-shadow: 0 4px 8px rgba(65, 65, 252, 0.3);
+    transform: translateY(-2px);
   }
 
   .team-header-flex {
