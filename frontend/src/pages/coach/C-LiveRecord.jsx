@@ -705,13 +705,16 @@ const handleAssistUpdate = async (basicStatId) => {
     // Prepare the assist stat update based on selectedPoints
     let updatedAssistStat = { ...assistStat.data };
 
+    let pointVal = "three";
     if (selectedPoints === 3) {
+      pointVal = "three point shot";
       updatedAssistStat = {
         ...updatedAssistStat,
         threePtAttempts: updatedAssistStat.threePtAttempts + 1,
         threePtMade: updatedAssistStat.threePtMade + 1
       };
     } else if (selectedPoints === 2) {
+      pointVal = "two point shot";
       updatedAssistStat = {
         ...updatedAssistStat,
         twoPtAttempts: updatedAssistStat.twoPtAttempts + 1,
@@ -804,7 +807,10 @@ const handleAssistUpdate = async (basicStatId) => {
       timestamp: new Date().toISOString(),
     };
     await api.post('/play-by-play', payload);
-
+    const playByPlayRes = await api.get(`/play-by-play/game/${gameId}`);
+      if (playByPlayRes.status === 200) {
+        setPlayByPlays(playByPlayRes.data);
+      }
     // Refresh subbed-in list
     api.get(`/basic-stats/get/subbed-in/${gameId}`)
       .then((res) => {
@@ -1245,7 +1251,6 @@ const handleAssistUpdate = async (basicStatId) => {
                   {[
                     { points: 3, label: "3-Point Shot" },
                     { points: 2, label: "2-Point Shot" },
-                    { points: 1, label: "Free Throw" }
                   ].map(({ points, label }) => (
                     <button
                       key={points}

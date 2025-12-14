@@ -709,6 +709,10 @@ function CLivePracticeMatch() {
       timestamp: new Date().toISOString(),
     };
     await api.post('/play-by-play', payload);
+      const playByPlayRes = await api.get(`/play-by-play/game/${gameId}`);
+      if (playByPlayRes.status === 200) {
+        setPlayByPlays(playByPlayRes.data);
+      }
       // Refresh based on team
       let res;
       if (selectedRef.team === "A") {
@@ -1262,7 +1266,6 @@ const handleAssistUpdate = async (basicStatId) => {
                   {[
                     { points: 3, label: "3-Point Shot" },
                     { points: 2, label: "2-Point Shot" },
-                    { points: 1, label: "Free Throw" }
                   ].map(({ points, label }) => (
                     <button
                       key={points}
