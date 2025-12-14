@@ -15,6 +15,7 @@ function CGameDetails() {
   const params = new URLSearchParams(window.location.search);
   const teamId = params.get("teamId");
 
+  const [playByPlays, setPlayByPlays] = useState([]);
   const [isEditingComment, setIsEditingComment] = useState(false);
   const [showOrientationWarning, setShowOrientationWarning] = useState(false);
   const [players, setPlayers] = useState([]);
@@ -41,6 +42,11 @@ function CGameDetails() {
       }
 
       try {
+        const playByPlayRes = await api.get(`/play-by-play/game/${gameId}`);
+        if (playByPlayRes.status === 200) {
+          console.log('PlayByPlay response:', playByPlayRes);
+          setPlayByPlays(playByPlayRes.data);
+        }
         const gameRes = await api.get(`/games/get/${gameId}`);
         setGameDetails(gameRes.data);
         setComments(gameRes.data.comments);
@@ -309,6 +315,9 @@ function CGameDetails() {
         >
           Physical Based Metrics
         </button>
+        <button className={`tab-button ${activeTab === "logs" ? "active" : ""}`} onClick={() => setActiveTab("logs")}>
+          Logs
+        </button>
         <button
           className="create-team-button"
           onClick={() => {
@@ -466,6 +475,20 @@ function CGameDetails() {
               </table>
             </div>
           )}
+          {activeTab === "logs" && (
+  <div>
+    <h2>Play-by-Play for Game {gameId}</h2>
+    {playByPlays.length === 0 ? (
+      <p>No play-by-play data available for this game.</p>
+    ) : (
+      <ul>
+        {playByPlays.map((play, index) => (
+          <li key={index}>{play.message}</li>
+        ))}
+      </ul>
+    )}
+  </div>
+)}
         </div>
       </div>
       <Snackbar
@@ -531,7 +554,7 @@ function CGameDetails() {
           </div>
         )}
       </div>
-
+        
     </main>
 
   );
