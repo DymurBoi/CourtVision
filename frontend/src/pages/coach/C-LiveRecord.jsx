@@ -1041,6 +1041,7 @@ const handleAssistUpdate = async (basicStatId) => {
               className="stat-btn"
               variant="contained"
               color="primary"
+              sx={{marginBottom: 3}}
               onClick={() => setShowFirstFiveModal(true)}
             >
               Add First Five
