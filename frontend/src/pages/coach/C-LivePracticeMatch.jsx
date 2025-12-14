@@ -14,6 +14,12 @@ function CLivePracticeMatch() {
   const [gameDetails, setGameDetails] = useState();
   const [opponentStats, setOpponentStats] = useState();
 
+  const [playByPlays, setPlayByPlays] = useState([]);
+  const [selectedPoints, setSelectedPoints] = useState(1);
+  const [assistModal, setAsssistModal] = useState();
+  const [pointModal, setPointModal] = useState();
+  const [assistPlayers,setAssistPlayers]=useState([]);
+  const [selectedUpdatePlayer, setSelectUpdatePlayer ] = useState();
 
   const [showModal, setShowModal] = useState(false)
   const [isAddMode, setIsAddMode] = useState(true) // true = add, false = subtract
@@ -86,8 +92,6 @@ function CLivePracticeMatch() {
   }, [confirmedFirstFive]);
   // show/hide Add First Five buttons per team
 
-
-
   //Timer
   const [isPlaying, setIsPlaying] = useState(false);
   const [time, setTime] = useState(0);
@@ -102,15 +106,6 @@ function CLivePracticeMatch() {
       .padStart(2, '0')}.${Math.floor(millis / 100)}`;
   }
 
-
-
-
-
-  // Track the 5 on-court players as indices for each team
-  const [teamAOnCourt, setTeamAOnCourt] = useState([])
-  const [teamBOnCourt, setTeamBOnCourt] = useState([0])
-
-
   //UseEffect for getting basicStats by game
   useEffect(() => {
     if (!gameId) return;
@@ -119,7 +114,13 @@ function CLivePracticeMatch() {
       try {
         const teamARes = api.get(`/basic-stats/get/opp-false/${gameId}`),
           teamBRes = api.get(`/basic-stats/get/opp-true/${gameId}`);
-
+        const playByPlayRes = await api.get(`/play-by-play/game/${gameId}`);
+            if (playByPlayRes.status === 200) {
+            console.log('PlayByPlay response:', playByPlayRes);
+            setPlayByPlays(playByPlayRes.data);
+        } else {
+          throw new Error(`Failed to fetch play-by-play data: ${playByPlayRes.statusText}`);
+        }
         setTeamABasicStats(teamARes.data || []);
         setTeamBBasicStats(teamBRes.data || []);
       } catch (err) {
@@ -456,35 +457,6 @@ function CLivePracticeMatch() {
     fetchData();
   }, [gameId]);
 
-
-  // Format time to MM:SS
-  {/*const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60)
-    const secs = seconds % 60
-    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`
-  }
-*/  }
-
-  const handlePlayPause = async () => {
-    try {
-      if (!isPlaying) {
-        // Resume timers
-        await api.post(`/stopwatch/sub-in/${gameId}`);
-        console.log("Backend stopwatches resumed for all subbed-in players.");
-      } else {
-        // Pause timers (Timeout)
-        await api.post(`/stopwatch/timeout/${gameId}`);
-        console.log("Backend stopwatches paused (timeout).");
-      }
-
-      // Toggle frontend state
-      setIsPlaying(!isPlaying);
-
-    } catch (err) {
-      console.error("Failed to sync stopwatch state:", err);
-    }
-  };
-
   const handlePlayersClick = (playerId) => {
     const statA = teamABasicStats.find(s => s.playerId === playerId);
     const statB = teamBBasicStats.find(s => s.playerId === playerId);
@@ -527,11 +499,6 @@ function CLivePracticeMatch() {
     }
   }, [selectedBasicStat]);
 
-  const handleFormChange = (e) => {
-    const { name, value } = e.target;
-    setFormStats((prev) => ({ ...prev, [name]: value }));
-  };
-
   const handleUpdateBasicStats = async () => {
     console.log("Called");
     try {
@@ -568,6 +535,13 @@ function CLivePracticeMatch() {
       setTeamBBasicStats(updatedB.data);
 
       try {
+        const playByPlayRes = await api.get(`/play-by-play/game/${gameId}`);
+            if (playByPlayRes.status === 200) {
+            console.log('PlayByPlay response:', playByPlayRes);
+            setPlayByPlays(playByPlayRes.data);
+        } else {
+          throw new Error(`Failed to fetch play-by-play data: ${playByPlayRes.statusText}`);
+        }
         const A = await api.get(`/basic-stats/get/opp-false/${gameId}`);
         const B = await api.get(`/basic-stats/get/opp-true/${gameId}`);
         setAllTeamABasicStats(A.data);
@@ -596,39 +570,40 @@ function CLivePracticeMatch() {
   };
 
 
-  const handleStatUpdate = (statType, amount = 1) => {
-    if (!formStats) return;
+ const handleStatUpdate = (statType, amount = 1) => {
+  if (!formStats) return;
 
-    const delta = (isAddMode ? 1 : -1) * amount;
+  const delta = (isAddMode ? 1 : -1) * amount;
 
   // 🏀 TEAM A — BasicStats
-    if (formStats?.playerId) {
-      const updatedPlayer = { ...formStats };
+  if (formStats?.playerId) {
+    const updatedPlayer = { ...formStats };
 
-      // Handle linked stats (made + attempt)
-      if (statType === "threePtMade") {
-        updatedPlayer.threePtMade = Math.max(0, (updatedPlayer.threePtMade || 0) + delta);
-        if (isAddMode) updatedPlayer.threePtAttempts = (updatedPlayer.threePtAttempts || 0) + 1;
-      } else if (statType === "twoPtMade") {
-        updatedPlayer.twoPtMade = Math.max(0, (updatedPlayer.twoPtMade || 0) + delta);
-        if (isAddMode) updatedPlayer.twoPtAttempts = (updatedPlayer.twoPtAttempts || 0) + 1;
-      } else if (statType === "ftMade") {
-        updatedPlayer.ftMade = Math.max(0, (updatedPlayer.ftMade || 0) + delta);
-        if (isAddMode) updatedPlayer.ftAttempts = (updatedPlayer.ftAttempts || 0) + 1;
-      } else {
-        // other stats like rebounds, assists, etc.
-        updatedPlayer[statType] = Math.max(0, (updatedPlayer[statType] || 0) + delta);
-      }
+    // Handle linked stats (made + attempt)
+    if (statType === "threePtMade") {
+      updatedPlayer.threePtMade = Math.max(0, (updatedPlayer.threePtMade || 0) + delta);
+      if (isAddMode) updatedPlayer.threePtAttempts = (updatedPlayer.threePtAttempts || 0) + 1;
+    } else if (statType === "twoPtMade") {
+      updatedPlayer.twoPtMade = Math.max(0, (updatedPlayer.twoPtMade || 0) + delta);
+      if (isAddMode) updatedPlayer.twoPtAttempts = (updatedPlayer.twoPtAttempts || 0) + 1;
+    } else if (statType === "ftMade") {
+      updatedPlayer.ftMade = Math.max(0, (updatedPlayer.ftMade || 0) + delta);
+      if (isAddMode) updatedPlayer.ftAttempts = (updatedPlayer.ftAttempts || 0) + 1;
+    } else {
+      // other stats like rebounds, assists, etc.
+      updatedPlayer[statType] = Math.max(0, (updatedPlayer[statType] || 0) + delta);
+    }
 
-      // 🔁 Recalculate gamePoints
-      updatedPlayer.gamePoints =
-        (Number(updatedPlayer.twoPtMade) * 2) +
-        (Number(updatedPlayer.threePtMade) * 3) +
-        Number(updatedPlayer.ftMade);
+    // 🔁 Recalculate gamePoints for Team A
+    updatedPlayer.gamePoints =
+      (Number(updatedPlayer.twoPtMade) * 2) +
+      (Number(updatedPlayer.threePtMade) * 3) +
+      Number(updatedPlayer.ftMade);
 
-      setFormStats(updatedPlayer);
+    setFormStats(updatedPlayer);
 
-      // 💯 Update Team A live score
+    // 💯 Update Team A live score only
+    if (selectedRef.team === "A") {
       const newTotal = teamABasicStats.reduce((sum, stat) => {
         if (stat.playerId === updatedPlayer.playerId) {
           return sum + (Number(updatedPlayer.gamePoints) || 0);
@@ -637,24 +612,41 @@ function CLivePracticeMatch() {
       }, 0);
 
       setTeamAScoreLive(newTotal);
-      return;
     }
+  }
 
+  // 🏀 TEAM B — BasicStatsVariationDTO
+  if (formStats?.basicStatVarId) {
+    setFormStats((prev) => {
+      const updated = { ...prev };
+      if (statType === "bPoints") {
+        updated[statType] = Math.max(0, (updated[statType] || 0) + delta);
+      } else {
+        updated[statType] = Math.max(0, (updated[statType] || 0) + delta);
+      }
+      return updated;
+    });
 
-    // Team B (BasicStatsVariationDTO)
-    if (formStats?.basicStatVarId) {
-      setFormStats((prev) => {
-        const updated = { ...prev };
-        if (statType === "bPoints") {
-          updated[statType] = Math.max(0, (updated[statType] || 0) + delta);
-        } else {
-          updated[statType] = Math.max(0, (updated[statType] || 0) + delta);
+    // 🔁 Recalculate gamePoints for Team B
+    const updatedPlayerForB = { ...formStats };
+    updatedPlayerForB.gamePoints =
+      (Number(updatedPlayerForB.twoPtMade) * 2) +
+      (Number(updatedPlayerForB.threePtMade) * 3) +
+      Number(updatedPlayerForB.ftMade);
+
+    // 💯 Update Team B live score only
+    if (selectedRef.team === "B") {
+      const newTeamBTotal = teamBBasicStats.reduce((sum, stat) => {
+        if (stat.playerId === updatedPlayerForB.playerId) {
+          return sum + (Number(updatedPlayerForB.gamePoints) || 0);
         }
-        return updated;
-      });
-      return;
+        return sum + (Number(stat.gamePoints) || 0);
+      }, 0);
+
+      setTeamBScoreLive(newTeamBTotal);  // Update Team B's live score
     }
-  };
+  }
+};
 
   // Automatically refresh Team A total every 0.5 seconds
   useEffect(() => {
@@ -737,24 +729,6 @@ function CLivePracticeMatch() {
       ? teamA.players[selectedRef.index] || null
       : null;
 
-  // When a bench player is chosen, swap them with the current on-court player
-  const swapIntoLineup = (team, oldIndex, newIndex) => {
-    if (team === 'A') {
-      setTeamAOnCourt((prev) => {
-        const next = [...prev]
-        const slot = next.indexOf(oldIndex)
-        if (slot !== -1) next[slot] = newIndex
-        return next
-      })
-    } else {
-      setTeamBOnCourt((prev) => {
-        const next = [...prev]
-        const slot = next.indexOf(oldIndex)
-        if (slot !== -1) next[slot] = newIndex
-        return next
-      })
-    }
-  }
 
   const handleFirstFiveCheckbox = (playerId) => {
     const setter = teamActive === "A" ? setFirstPlayersA : setFirstPlayersB;
@@ -787,19 +761,6 @@ function CLivePracticeMatch() {
         return [...prev, player];
       }
     });
-  };
-
-
-
-  // GEt Points
-  const getPoints = (stats) => {
-    if (!stats) return 0;
-    // Always use calculated gamePoints for both teams
-    return (
-      (Number(stats.twoPtMade) * 2) +
-      (Number(stats.threePtMade) * 3) +
-      Number(stats.ftMade)
-    );
   };
 
   const getStat = (stats, key) => {
@@ -845,6 +806,117 @@ function CLivePracticeMatch() {
     setRunning(false);
   };
 
+    const handlePointsSelect = (points) => {
+      setSelectedPoints(points);
+    };
+
+const handleAssist = async (basicStatId) => {
+  try {
+    if (!gameId) return;
+
+    let res;
+    if (selectedRef.team === "A") {
+      res = await api.get(`/basic-stats/get/subbed-in/opp-false/${gameId}`);
+    } else if (selectedRef.team === "B") {
+      res = await api.get(`/basic-stats/get/subbed-in/opp-true/${gameId}`);
+    }
+    
+    const updatedAssistPlayers = res.data.filter(player => player.basicStatId !== basicStatId);
+    setAssistPlayers(updatedAssistPlayers);
+
+    // Set the player you want to update (this player is from Team A or Team B)
+    setSelectUpdatePlayer(basicStatId);
+
+    // Open the assist modal
+    setAsssistModal(true);
+  } catch (err) {
+    console.error("Failed to fetch subbed-out players:", err);
+  }
+};
+
+
+const handleAssistUpdate = async (basicStatId) => {
+  try {
+    const [currentStat, assistStat] = await Promise.all([
+      api.get(`/basic-stats/get/${selectedUpdatePlayer}`),
+      api.get(`/basic-stats/get/${basicStatId}`)
+    ]);
+
+    // Increment the assist count
+    const updatedCurrentStat = {
+      ...currentStat.data,
+      assists: currentStat.data.assists + 1,
+    };
+
+    // Prepare the assist stat update based on selectedPoints
+    let updatedAssistStat = { ...assistStat.data };
+    let pointVal = "three";
+    if (selectedPoints === 3) {
+      pointVal = "three point shot";
+      updatedAssistStat = {
+        ...updatedAssistStat,
+        threePtAttempts: updatedAssistStat.threePtAttempts + 1,
+        threePtMade: updatedAssistStat.threePtMade + 1
+      };
+    } else if (selectedPoints === 2) {
+      pointVal = "two point shot";
+      updatedAssistStat = {
+        ...updatedAssistStat,
+        twoPtAttempts: updatedAssistStat.twoPtAttempts + 1,
+        twoPtMade: updatedAssistStat.twoPtMade + 1
+      };
+    } else if (selectedPoints === 1) {
+      updatedAssistStat = {
+        ...updatedAssistStat,
+        ftAttempts: updatedAssistStat.ftAttempts + 1,
+        ftMade: updatedAssistStat.ftMade + 1
+      };
+    }
+
+    // Perform both updates in parallel
+    const updatedCurrentStatRes = await api.put(`/basic-stats/put/${selectedUpdatePlayer}`, updatedCurrentStat);
+    const updatedAssistStatRes = await api.put(`/basic-stats/put/${assistStat.data.basicStatId}`, updatedAssistStat);
+
+    // Create play-by-play entry
+    const payload = {
+      gameId: gameId,
+      playerId: selectedUpdatePlayer,
+      message: `${updatedCurrentStat.fname} ${updatedCurrentStat.lname}'s assist updated ${updatedAssistStat.fname} ${updatedAssistStat.lname}'s ${pointVal}`,
+      timestamp: new Date().toISOString(),
+    };
+    await api.post('/play-by-play', payload);
+
+    // Refresh stats only for the updated team
+    const updatedA = await api.get(`/basic-stats/get/subbed-in/opp-false/${gameId}`);
+      setTeamABasicStats(updatedA.data);
+
+      const updatedB = await api.get(`/basic-stats/get/subbed-in/opp-true/${gameId}`);
+      setTeamBBasicStats(updatedB.data);
+
+      try {
+        const playByPlayRes = await api.get(`/play-by-play/game/${gameId}`);
+            if (playByPlayRes.status === 200) {
+            console.log('PlayByPlay response:', playByPlayRes);
+            setPlayByPlays(playByPlayRes.data);
+        } else {
+          throw new Error(`Failed to fetch play-by-play data: ${playByPlayRes.statusText}`);
+        }
+        const A = await api.get(`/basic-stats/get/opp-false/${gameId}`);
+        const B = await api.get(`/basic-stats/get/opp-true/${gameId}`);
+        setAllTeamABasicStats(A.data);
+        setAllTeamBBasicStats(B.data);
+      } catch (e) {
+        console.warn("Could not refresh all basic stats after update:", e);
+      }
+
+    // Close the modal dialogs
+    setShowModal(false);
+    setAsssistModal(false);
+  } catch (err) {
+    console.error("Error updating stats:", err);
+    alert("An error occurred while updating the stats. Please try again.");
+  }
+};
 
   return (
     <div className="live-record-page">
@@ -1061,63 +1133,59 @@ function CLivePracticeMatch() {
                   {formStats?.fname || ""} {formStats?.lname || ""} - Current Stats
                 </h4>
                 <div className="stats-display three-col">
-                  <div className="stat-item">
-                    <span className="stat-label">PTS:</span>
-                    <span className="stat-value">{getPoints(formStats)}</span>
-                  </div>
-                  <div className="stat-item">
+                  <div className="stat-item" onClick={() => handleStatUpdate("threePtAttempts")}>
                     <span className="stat-label">3PA:</span>
                     <span className="stat-value">{getStat(formStats, "threePtAttempts")}</span>
                   </div>
-                  <div className="stat-item">
+                  <div className="stat-item" onClick={() => handleStatUpdate("threePtMade")}>
                     <span className="stat-label">3PM:</span>
                     <span className="stat-value">{getStat(formStats, "threePtMade")}</span>
                   </div>
-                  <div className="stat-item">
+                  <div className="stat-item" onClick={() => handleStatUpdate("twoPtAttempts")}>
                     <span className="stat-label">2PA:</span>
                     <span className="stat-value">{getStat(formStats, "twoPtAttempts")}</span>
                   </div>
-                  <div className="stat-item">
+                  <div className="stat-item" onClick={() => handleStatUpdate("twoPtMade")}>
                     <span className="stat-label">2PM:</span>
                     <span className="stat-value">{getStat(formStats, "twoPtMade")}</span>
                   </div>
-                  <div className="stat-item">
+                  <div className="stat-item" onClick={() => handleStatUpdate("ftAttempts")}>
                     <span className="stat-label">FTA:</span>
                     <span className="stat-value">{getStat(formStats, "ftAttempts")}</span>
                   </div>
-                  <div className="stat-item">
+                  <div className="stat-item" onClick={() => handleStatUpdate("ftMade")}>
                     <span className="stat-label">FTM:</span>
                     <span className="stat-value">{getStat(formStats, "ftMade")}</span>
                   </div>
-                  <div className="stat-item ast">
+                  <div className="stat-item ast" onClick={() => isAddMode ? handleAssist(formStats.basicStatId) : handleStatUpdate("assists")}>
                     <span className="stat-label">AST:</span>
                     <span className="stat-value">{getStat(formStats, "assists")}</span>
                   </div>
-                  <div className="stat-item">
+                  <div className="stat-item" onClick={() => handleStatUpdate("steals")}>
                     <span className="stat-label">STL:</span>
                     <span className="stat-value">{getStat(formStats, "steals")}</span>
                   </div>
-                  <div className="stat-item">
+                  <div className="stat-item" onClick={() => handleStatUpdate("blocks")}>
                     <span className="stat-label">BLK:</span>
                     <span className="stat-value">{getStat(formStats, "blocks")}</span>
                   </div>
-                  <div className="stat-item">
+                  <div className="stat-item" onClick={() => handleStatUpdate("turnovers")}>
                     <span className="stat-label">TO:</span>
                     <span className="stat-value">{getStat(formStats, "turnovers")}</span>
                   </div>
-                  <div className="stat-item">
+                  <div className="stat-item" onClick={() => handleStatUpdate("oFRebounds")}>
                     <span className="stat-label">ORB:</span>
                     <span className="stat-value">{getStat(formStats, "oFRebounds")}</span>
                   </div>
-                  <div className="stat-item">
+                  <div className="stat-item" onClick={() => handleStatUpdate("dFRebounds")}>
                     <span className="stat-label">DRB:</span>
                     <span className="stat-value">{getStat(formStats, "dFRebounds")}</span>
                   </div>
-                  <div className="stat-item">
+                  <div className="stat-item" onClick={() => handleStatUpdate("pFouls")}>
                     <span className="stat-label">PF:</span>
                     <span className="stat-value">{getStat(formStats, "pFouls")}</span>
                   </div>
-                  <div className="stat-item">
+                  <div className="stat-item" onClick={() => handleStatUpdate("dFouls")}>
                     <span className="stat-label">DF:</span>
                     <span className="stat-value">{getStat(formStats, "dFouls")}</span>
                   </div>
@@ -1134,54 +1202,8 @@ function CLivePracticeMatch() {
                   >
                     Mode: {isAddMode ? "Add" : "Subtract"}
                   </button>
-                </div>
-
-                <div className="stat-buttons four-col">
-
-                  {/*Attack*/}
-                  <button className="stat-btn" onClick={() => handleStatUpdate("threePtAttempts")}>
-                    {isAddMode ? "+" : "-"} 3PA
-                  </button>
-                  <button className="stat-btn" onClick={() => handleStatUpdate("threePtMade")}>
-                    {isAddMode ? "+" : "-"} 3PM
-                  </button>
-                  <button className="stat-btn" onClick={() => handleStatUpdate("twoPtAttempts")}>
-                    {isAddMode ? "+" : "-"} 2PA
-                  </button>
-                  <button className="stat-btn" onClick={() => handleStatUpdate("twoPtMade")}>
-                    {isAddMode ? "+" : "-"} 2PM
-                  </button>
-                  <button className="stat-btn" onClick={() => handleStatUpdate("ftAttempts")}>
-                    {isAddMode ? "+" : "-"} FTA
-                  </button>
-                  <button className="stat-btn" onClick={() => handleStatUpdate("ftMade")}>
-                    {isAddMode ? "+" : "-"} FTM
-                  </button>
-                  <button className="stat-btn" onClick={() => handleStatUpdate("assists")}>
-                    {isAddMode ? "+" : "-"} AST
-                  </button>
-                  <button className="stat-btn" onClick={() => handleStatUpdate("steals")}>
-                    {isAddMode ? "+" : "-"} STL
-                  </button>
-                  <button className="stat-btn" onClick={() => handleStatUpdate("blocks")}>
-                    {isAddMode ? "+" : "-"} BLK
-                  </button>
-                  <button className="stat-btn" onClick={() => handleStatUpdate("turnovers")}>
-                    {isAddMode ? "+" : "-"} TO
-                  </button>
-
-                  {/*Defensive*/}
-                  <button className="stat-btn" onClick={() => handleStatUpdate("oFRebounds")}>
-                    {isAddMode ? "+" : "-"} ORB
-                  </button>
-                  <button className="stat-btn" onClick={() => handleStatUpdate("dFRebounds")}>
-                    {isAddMode ? "+" : "-"} DRB
-                  </button>
-                  <button className="stat-btn" onClick={() => handleStatUpdate("pFouls")}>
-                    {isAddMode ? "+" : "-"} PF
-                  </button>
-                  <button className="stat-btn" onClick={() => handleStatUpdate("dFouls")}>
-                    {isAddMode ? "+" : "-"} DF
+                  <button className="substitute-btn" onClick={handleSubstitute}>
+                    Substitute Player
                   </button>
                 </div>
 
@@ -1205,11 +1227,52 @@ function CLivePracticeMatch() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      )}
 
-            <div className="modal-actions">
-              <button className="substitute-btn" onClick={handleSubstitute}>
-                Substitute Player
-              </button>
+      {/*Assist Modal */}
+       {showModal && assistModal && (
+        <div className="modal-overlay" onClick={() => setAsssistModal(false)}>
+          <div className="modal-container player-stats-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Choose Player Assisted</h2>
+              <button className="close-button" onClick={() => setAsssistModal(false)}>&times;</button>
+            </div>
+            <div className="modal-content">
+              <div className="points-selection">
+              <p>Select Points for Assist:</p>
+              <div>
+                {[1, 2, 3].map((points) => (
+                  <button
+                    key={points}
+                    className={`points-btn ${selectedPoints === points ? 'selected' : ''}`}
+                    onClick={() => handlePointsSelect(points)}
+                  >
+                    {points} Points
+                  </button>
+                ))}
+              </div>
+            </div>
+              <div className="players-grid">
+                {assistPlayers.length === 0 ? (
+                  <p>No players available to substitute in</p>
+                ) : (
+                  assistPlayers.map((p) => (
+                    <div
+                      key={p.playerId}
+                      className="player-card"
+                      onClick={() => handleAssistUpdate(p.basicStatId)}
+                    >
+                      <div className="jersey-number">#{p.jerseyNum}</div>
+                      <div className="player-name">{p.fname} {p.lname}</div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+            <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "1rem" }}>
+              <button className="close-modal-btn single" onClick={() => setAsssistModal(false)}>Cancel</button>
             </div>
           </div>
         </div>
@@ -1398,6 +1461,18 @@ function CLivePracticeMatch() {
           </div>
         </div>
       )}
+      <div>
+      <h2>Play-by-Play for Game {gameId}</h2>
+      {playByPlays.length === 0 ? (
+        <p>No play-by-play data available for this game.</p>
+      ) : (
+        <ul>
+          {playByPlays.map((play, index) => (
+            <li key={index}>{play.message}</li>
+          ))}
+        </ul>
+      )}
+    </div>
     </div>
   )
 }
