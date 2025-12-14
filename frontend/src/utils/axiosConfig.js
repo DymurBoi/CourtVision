@@ -58,7 +58,7 @@ export const setupAxiosInterceptors = (logout) => {
 
 // Create an axios instance with a base URL
 //export const API_BASE_URL = 'http://13.239.65.62:8080/api';
-export const API_BASE_URL = 'http://13.239.65.62:8080/api';
+export const API_BASE_URL = 'http://localhost:8080/api';
 
 // Create an axios instance with a base URL
 export const api = axios.create({
