@@ -1157,42 +1157,64 @@ const handleAssistUpdate = async (basicStatId) => {
         <div className="modal-overlay" onClick={() => setAsssistModal(false)}>
           <div className="modal-container player-stats-modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>Choose Player Assisted</h2>
+              <h2>Record Assist</h2>
               <button className="close-button" onClick={() => setAsssistModal(false)}>&times;</button>
             </div>
             <div className="modal-content">
-              <div className="points-selection">
-              <p>Select Points for Assist:</p>
-              <div>
-                {[1, 2, 3].map((points) => (
-                  <button
-                    key={points}
-                    className={`points-btn ${selectedPoints === points ? 'selected' : ''}`}
-                    onClick={() => handlePointsSelect(points)}
-                  >
-                    {points} Points
-                  </button>
-                ))}
-              </div>
-            </div>
-              <div className="players-grid">
-                {assistPlayers.length === 0 ? (
-                  <p>No players available to substitute in</p>
-                ) : (
-                  assistPlayers.map((p) => (
-                    <div
-                      key={p.playerId}
-                      className="player-card"
-                      onClick={() => handleAssistUpdate(p.basicStatId)}
+              {/* Step 1: Points Selection */}
+              <div className="assist-workflow-section">
+                <div className="workflow-step">
+                  <span className="step-number">1</span>
+                  <h4>Select Shot Type</h4>
+                </div>
+                <div className="points-selection-enhanced">
+                  {[
+                    { points: 3, label: "3-Point Shot" },
+                    { points: 2, label: "2-Point Shot" },
+                    { points: 1, label: "Free Throw" }
+                  ].map(({ points, label }) => (
+                    <button
+                      key={points}
+                      className={`points-btn-enhanced ${selectedPoints === points ? 'selected' : ''}`}
+                      onClick={() => handlePointsSelect(points)}
                     >
-                      <div className="jersey-number">#{p.jerseyNum}</div>
-                      <div className="player-name">{p.fname} {p.lname}</div>
-                    </div>
-                  ))
+                      <span className="point-value">{points}</span>
+                      <span className="point-label">{label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Step 2: Player Selection */}
+              <div className="assist-workflow-section">
+                <div className="workflow-step">
+                  <span className="step-number">2</span>
+                  <h4>Select Player Who Scored</h4>
+                </div>
+                {assistPlayers.length === 0 ? (
+                  <div className="no-players-message">
+                    <p>⚠️ No other players available on court</p>
+                  </div>
+                ) : (
+                  <div className="players-grid assist-players-grid">
+                    {assistPlayers.map((p) => (
+                      <div
+                        key={p.playerId}
+                        className="player-card assist-player-card"
+                        onClick={() => handleAssistUpdate(p.basicStatId)}
+                      >
+                        <div className="jersey-number">#{p.jerseyNum}</div>
+                        <div className="player-name">{p.fname} {p.lname}</div>
+                        <div className="assist-action-hint">
+                          +1 AST • +{selectedPoints} PTS
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </div>
             </div>
-            <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "1rem" }}>
+            <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "1rem", paddingBottom: "1rem" }}>
               <button className="close-modal-btn single" onClick={() => setAsssistModal(false)}>Cancel</button>
             </div>
           </div>

@@ -650,3 +650,178 @@
   height: 18px;
   cursor: pointer;
 }
+
+/* Enhanced Assist Modal Styles */
+.assist-workflow-section {
+  margin-bottom: 2rem;
+}
+
+.workflow-step {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--medium-purple);
+}
+
+.step-number {
+  background: linear-gradient(135deg, var(--bright-purple), var(--medium-purple));
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+  box-shadow: 0 2px 8px rgba(147, 51, 234, 0.3);
+}
+
+.workflow-step h4 {
+  margin: 0;
+  color: var(--dark-blue);
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.points-selection-enhanced {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.points-btn-enhanced {
+  background: white;
+  border: 3px solid var(--medium-purple);
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 140px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.points-btn-enhanced:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(147, 51, 234, 0.3);
+  border-color: var(--bright-purple);
+}
+
+.points-btn-enhanced.selected {
+  background: linear-gradient(135deg, var(--bright-purple), var(--medium-purple));
+  border-color: var(--bright-purple);
+  color: white;
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(147, 51, 234, 0.4);
+}
+
+.point-value {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--dark-blue);
+}
+
+.points-btn-enhanced.selected .point-value {
+  color: white;
+}
+
+.point-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--dark-blue);
+  text-align: center;
+}
+
+.points-btn-enhanced.selected .point-label {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.assist-players-grid {
+  margin-top: 1rem;
+  gap: 1.5rem;
+  row-gap: 2.5rem;
+}
+
+.assist-player-card {
+  position: relative;
+  transition: all 0.3s ease;
+  border: 2px solid var(--medium-purple);
+  margin-bottom: 2rem;
+  z-index: 1;
+}
+
+.assist-player-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(147, 51, 234, 0.3);
+  border-color: var(--bright-purple);
+  z-index: 50;
+}
+
+.assist-player-card:hover .assist-action-hint {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.assist-action-hint {
+  position: absolute;
+  bottom: -32px;
+  transform: translateY(-50%);
+  background: linear-gradient(135deg, var(--bright-purple), var(--medium-purple));
+  color: white;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(147, 51, 234, 0.4);
+  z-index: 10;
+}
+
+.no-players-message {
+  text-align: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.1), rgba(234, 179, 8, 0.05));
+  border: 2px dashed rgba(234, 179, 8, 0.3);
+  border-radius: 12px;
+  color: var(--dark-blue);
+}
+
+.no-players-message p {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+/* Responsive adjustments for assist modal */
+@media (max-width: 768px) {
+  .points-btn-enhanced {
+    min-width: 100px;
+    padding: 1rem;
+  }
+
+  .point-value {
+    font-size: 1.5rem;
+  }
+
+  .point-label {
+    font-size: 0.75rem;
+  }
+
+  .workflow-step h4 {
+    font-size: 1rem;
+  }
+
+  .assist-action-hint {
+    font-size: 0.65rem;
+    padding: 0.3rem 0.6rem;
+  }
+}
