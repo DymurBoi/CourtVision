@@ -89,7 +89,7 @@ public class PlayerService {
             if (updatedPlayer.getBirthDate() != null) {
                 existingPlayer.setBirthDate(updatedPlayer.getBirthDate());
             }
-            if (updatedPlayer.getJerseyNum() != 0) {
+            if (updatedPlayer.getJerseyNum() >= 0) {
                 existingPlayer.setJerseyNum(updatedPlayer.getJerseyNum());
             }
             if (updatedPlayer.getPosition() != null) {
