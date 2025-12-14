@@ -158,8 +158,6 @@ public class BasicStatsService {
             // Calculate the difference between the existing and updated stats for point values
             tempStat = differenceChecker(tempStat, updatedStats);
 
-            
-
             // If the player was subbed in, update the PlusMinus for subbed-in players
 
             updateSubbedInPlusMinus(existing, tempStat.getGamePoints());

@@ -568,7 +568,15 @@ function CLivePracticeMatch() {
       console.log("No team selected!");
     }
   };
-
+  
+  const handleCancelStat = async () =>{
+    const A = await api.get(`/basic-stats/get/opp-false/${gameId}`);
+    const B = await api.get(`/basic-stats/get/opp-true/${gameId}`);
+    setAllTeamABasicStats(A.data);
+    setAllTeamBBasicStats(B.data);
+    setShowModal(false);
+    setSelectedBasicStat(null);
+  }
 
  const handleStatUpdate = (statType, amount = 1) => {
   if (!formStats) return;
@@ -1234,8 +1242,7 @@ const handleAssistUpdate = async (basicStatId) => {
                   <button
                     className="close-modal-btn"
                     onClick={() => {
-                      setShowModal(false);
-                      setSelectedBasicStat(null);
+                      handleCancelStat();
                     }}
                   >
                     Close

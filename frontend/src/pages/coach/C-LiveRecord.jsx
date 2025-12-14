@@ -558,7 +558,12 @@ function CLiveRecord() {
       console.log("No team selected!");
     }
   };
-
+  const handleCancelStat = async()=>{
+    const all = await api.get(`/basic-stats/get/by-game/${gameId}`);
+    setAllTeamABasicStats(all.data);
+    setShowModal(false);
+    setSelectedBasicStat(null);
+  }
 
   const handleStatUpdate = (statType, amount = 1) => {
     if (!formStats) return;
@@ -1189,8 +1194,7 @@ const handleAssistUpdate = async (basicStatId) => {
                   <button
                     className="close-modal-btn"
                     onClick={() => {
-                      setShowModal(false);
-                      setSelectedBasicStat(null);
+                      handleCancelStat();
                     }}
                   >
                     Close
