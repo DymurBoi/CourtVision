@@ -95,7 +95,7 @@ public class PlayerAveragesService {
     // True Shooting Percentage (TS%)
     double tsDenominator = (2 * (totalFGA + 0.44 * totalFTA));
     double ts = tsDenominator != 0 ? totalPoints / tsDenominator : 0;
-    avg.setTrueShootingPercentage(ts * 100);
+    avg.setTrueShootingPercentage(ts);
 
     // Usage Percentage (estimated: FGA + TOV + 0.44 * FTA per minute)
     double usageNumerator = totalFGA + totalTurnovers + 0.44 * totalFTA;
