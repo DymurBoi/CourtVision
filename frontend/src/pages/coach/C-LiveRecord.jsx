@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 
 function CLiveRecord() {
   const navigate = useNavigate();
+  const [playByPlays, setPlayByPlays] = useState([]);
   const [selectedPoints, setSelectedPoints] = useState(1);
   const [gameDetails, setGameDetails] = useState();
   const [opponentStats, setOpponentStats] = useState();
@@ -306,6 +307,13 @@ function CLiveRecord() {
       try {
         // Fetch the game data
         const gameRes = await api.get(`/games/get/${gameId}`);
+        const playByPlayRes = await api.get(`/play-by-play/game/${gameId}`);
+        if (playByPlayRes.status === 200) {
+        console.log('PlayByPlay response:', playByPlayRes);
+        setPlayByPlays(playByPlayRes.data);
+    } else {
+      throw new Error(`Failed to fetch play-by-play data: ${playByPlayRes.statusText}`);
+    }
         console.log("Fetched Game:", gameRes.data);
 
         const gameName = gameRes.data.gameName || ""; // Get the game name from the response
@@ -1255,6 +1263,18 @@ const handleAssistUpdate = async (basicStatId) => {
           </div>
         </div>
       )}
+      <div>
+      <h2>Play-by-Play for Game {gameId}</h2>
+      {playByPlays.length === 0 ? (
+        <p>No play-by-play data available for this game.</p>
+      ) : (
+        <ul>
+          {playByPlays.map((play, index) => (
+            <li key={index}>{play.message}</li>
+          ))}
+        </ul>
+      )}
+    </div>
     </div>
   )
 }

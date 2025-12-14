@@ -9,6 +9,8 @@ function AdminNavbar() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLogout = () => {
+    localStorage.clear();
+    sessionStorage.clear();
     logout();
     navigate("/admin/login", { replace: true });
   };

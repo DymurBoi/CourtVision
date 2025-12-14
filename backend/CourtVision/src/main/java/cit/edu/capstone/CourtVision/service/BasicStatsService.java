@@ -8,6 +8,7 @@ import cit.edu.capstone.CourtVision.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class BasicStatsService {
 
+    @Autowired
+    private PlayByPlayRepository playByPlayRepository;
     @Autowired
     private BasicStatsRepository basicStatsRepository;
 
@@ -93,22 +96,51 @@ public class BasicStatsService {
             BasicStats tempStat = new BasicStats(existing);
 
             // Update the fields with the new values
+            logStatChange(existing, "Two-Pointer Attempts", existing.getTwoPtAttempts(), updatedStats.getTwoPtAttempts());
             existing.setTwoPtAttempts(updatedStats.getTwoPtAttempts());
+
+            logStatChange(existing, "Two-Pointer Made", existing.getTwoPtMade(), updatedStats.getTwoPtMade());
             existing.setTwoPtMade(updatedStats.getTwoPtMade());
+
+            logStatChange(existing, "Three-Pointer Attempts", existing.getThreePtAttempts(), updatedStats.getThreePtAttempts());
             existing.setThreePtAttempts(updatedStats.getThreePtAttempts());
+
+            logStatChange(existing, "Three-Pointer Made", existing.getThreePtMade(), updatedStats.getThreePtMade());
             existing.setThreePtMade(updatedStats.getThreePtMade());
+
+            logStatChange(existing, "Free Throw Attempts", existing.getFtAttempts(), updatedStats.getFtAttempts());
             existing.setFtAttempts(updatedStats.getFtAttempts());
+
+            logStatChange(existing, "Free Throws Made", existing.getFtMade(), updatedStats.getFtMade());
             existing.setFtMade(updatedStats.getFtMade());
+            //Assist update
             existing.setAssists(updatedStats.getAssists());
+        
+            logStatChange(existing, "Offensive Rebounds", existing.getoFRebounds(), updatedStats.getoFRebounds());
             existing.setoFRebounds(updatedStats.getoFRebounds());
+
+            logStatChange(existing, "Defensive Rebounds", existing.getdFRebounds(), updatedStats.getdFRebounds());
             existing.setdFRebounds(updatedStats.getdFRebounds());
+
+            logStatChange(existing, "Blocks", existing.getBlocks(), updatedStats.getBlocks());
             existing.setBlocks(updatedStats.getBlocks());
+
+            logStatChange(existing, "Steals", existing.getSteals(), updatedStats.getSteals());
             existing.setSteals(updatedStats.getSteals());
+
+            logStatChange(existing, "Turnovers", existing.getTurnovers(), updatedStats.getTurnovers());
             existing.setTurnovers(updatedStats.getTurnovers());
+
+            logStatChange(existing, "Personal Fouls", existing.getpFouls(), updatedStats.getpFouls());
             existing.setpFouls(updatedStats.getpFouls());
+
+            logStatChange(existing, "Defensive Fouls", existing.getdFouls(), updatedStats.getdFouls());
             existing.setdFouls(updatedStats.getdFouls());
+            //Plus Minus
             existing.setPlusMinus(updatedStats.getPlusMinus());
+            //Minutes
             existing.setMinutes(updatedStats.getMinutes());
+            //Game Points
             existing.setGamePoints(updatedStats.getGamePoints());
 
             int points = (existing.getTwoPtMade() * 2)
@@ -170,22 +202,51 @@ public BasicStats updatePractice(Long id, BasicStats updatedStats) {
             // Create a temporary copy of the existing stats to calculate the difference
             BasicStats tempStat = new BasicStats(existing);
             // Update the fields with the new values
+            logStatChange(existing, "Two-Pointer Attempts", existing.getTwoPtAttempts(), updatedStats.getTwoPtAttempts());
             existing.setTwoPtAttempts(updatedStats.getTwoPtAttempts());
+
+            logStatChange(existing, "Two-Pointer Made", existing.getTwoPtMade(), updatedStats.getTwoPtMade());
             existing.setTwoPtMade(updatedStats.getTwoPtMade());
+
+            logStatChange(existing, "Three-Pointer Attempts", existing.getThreePtAttempts(), updatedStats.getThreePtAttempts());
             existing.setThreePtAttempts(updatedStats.getThreePtAttempts());
+
+            logStatChange(existing, "Three-Pointer Made", existing.getThreePtMade(), updatedStats.getThreePtMade());
             existing.setThreePtMade(updatedStats.getThreePtMade());
+
+            logStatChange(existing, "Free Throw Attempts", existing.getFtAttempts(), updatedStats.getFtAttempts());
             existing.setFtAttempts(updatedStats.getFtAttempts());
+
+            logStatChange(existing, "Free Throws Made", existing.getFtMade(), updatedStats.getFtMade());
             existing.setFtMade(updatedStats.getFtMade());
+            //Assist update
             existing.setAssists(updatedStats.getAssists());
+        
+            logStatChange(existing, "Offensive Rebounds", existing.getoFRebounds(), updatedStats.getoFRebounds());
             existing.setoFRebounds(updatedStats.getoFRebounds());
+
+            logStatChange(existing, "Defensive Rebounds", existing.getdFRebounds(), updatedStats.getdFRebounds());
             existing.setdFRebounds(updatedStats.getdFRebounds());
+
+            logStatChange(existing, "Blocks", existing.getBlocks(), updatedStats.getBlocks());
             existing.setBlocks(updatedStats.getBlocks());
+
+            logStatChange(existing, "Steals", existing.getSteals(), updatedStats.getSteals());
             existing.setSteals(updatedStats.getSteals());
+
+            logStatChange(existing, "Turnovers", existing.getTurnovers(), updatedStats.getTurnovers());
             existing.setTurnovers(updatedStats.getTurnovers());
+
+            logStatChange(existing, "Personal Fouls", existing.getpFouls(), updatedStats.getpFouls());
             existing.setpFouls(updatedStats.getpFouls());
+
+            logStatChange(existing, "Defensive Fouls", existing.getdFouls(), updatedStats.getdFouls());
             existing.setdFouls(updatedStats.getdFouls());
+            //Plus Minus
             existing.setPlusMinus(updatedStats.getPlusMinus());
+            //Minutes
             existing.setMinutes(updatedStats.getMinutes());
+            //Game Points
             existing.setGamePoints(updatedStats.getGamePoints());
 
             int points = (existing.getTwoPtMade() * 2)
@@ -598,5 +659,58 @@ public BasicStats updatePractice(Long id, BasicStats updatedStats) {
             }
         }
         return updatedStatsList;
+    }
+    private void logStatChange(BasicStats basicStats, String statName, int oldValue, int newValue) {
+        // Only log if there's a change in the stat
+        if (oldValue != newValue) {
+            int difference = newValue - oldValue;
+            String action = difference > 0 ? "added" : "subtracted";  // Action based on the sign of the difference
+            int absDifference = Math.abs(difference); // Absolute difference to show in the message
+
+            String logMessage = generateLogMessage(basicStats, statName, action, absDifference);
+
+            // Save to PlayByPlay entity
+            PlayByPlay playByPlay = new PlayByPlay();
+            playByPlay.setMessage(logMessage);
+            playByPlay.setGameId(basicStats.getGame().getGameId());
+            playByPlay.setPlayerId(basicStats.getPlayer().getPlayerId());
+            playByPlay.setTimestamp(LocalDateTime.now());
+            playByPlayRepository.save(playByPlay);
+        }
+    }
+
+    private String generateLogMessage(BasicStats basicStats, String statName, String action, int difference) {
+        String playerName = basicStats.getPlayer().getFname() + " " + basicStats.getPlayer().getLname();
+
+        switch (statName) {
+            case "Two-Pointer Attempts":
+                return playerName + "'s attempts were " + action + " by " + difference;
+            case "Two-Pointer Made":
+                return playerName + " made " + (action.equals("added") ? "" : "fewer") + " two pointers";
+            case "Three-Pointer Attempts":
+                return playerName + "'s attempts were " + action + " by " + difference;
+            case "Three-Pointer Made":
+                return playerName + " made " + (action.equals("added") ? "" : "fewer") + " three pointers";
+            case "Free Throw Attempts":
+                return playerName + "'s free throw attempts were " + action + " by " + difference;
+            case "Free Throws Made":
+                return playerName + " made " + (action.equals("added") ? "" : "fewer") + " free throws";
+            case "Offensive Rebounds":
+                return playerName + "'s offensive rebounds were " + action + " by " + difference;
+            case "Defensive Rebounds":
+                return playerName + "'s defensive rebounds were " + action + " by " + difference;
+            case "Blocks":
+                return playerName + " " + (action.equals("added") ? "blocked" : "fewer blocks") + " shots";
+            case "Steals":
+                return playerName + " " + (action.equals("added") ? "got" : "fewer steals") + " steals";
+            case "Turnovers":
+                return playerName + " " + (action.equals("added") ? "turned over" : "fewer turnovers") + " the ball";
+            case "Personal Fouls":
+                return playerName + " had " + (action.equals("added") ? "more" : "fewer") + " personal fouls";
+            case "Defensive Fouls":
+                return playerName + " had " + (action.equals("added") ? "more" : "fewer") + " defensive fouls";
+            default:
+                return playerName + " made an unknown action";
+        }
     }
 }
