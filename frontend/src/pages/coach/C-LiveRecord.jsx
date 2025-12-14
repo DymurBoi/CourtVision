@@ -529,10 +529,17 @@ function CLiveRecord() {
       try {
         const all = await api.get(`/basic-stats/get/by-game/${gameId}`);
         setAllTeamABasicStats(all.data);
+        const playByPlayRes = await api.get(`/play-by-play/game/${gameId}`);
+        if (playByPlayRes.status === 200) {
+        console.log('PlayByPlay response:', playByPlayRes);
+        setPlayByPlays(playByPlayRes.data);
+    } else {
+      throw new Error(`Failed to fetch play-by-play data: ${playByPlayRes.statusText}`);
+    }
       } catch (e) {
         console.warn("Could not refresh all basic stats after update:", e);
       }
-
+      
       setShowModal(false);
     } catch (err) {
       console.error("Error updating stats:", err);
@@ -699,14 +706,16 @@ const handleAssistUpdate = async (basicStatId) => {
 
     // Prepare the assist stat update based on selectedPoints
     let updatedAssistStat = { ...assistStat.data };
-
+    let pointVal="three";
     if (selectedPoints === 3) {
+      pointVal="three point shot";
       updatedAssistStat = {
         ...updatedAssistStat,
         threePtAttempts: updatedAssistStat.threePtAttempts + 1,
         threePtMade: updatedAssistStat.threePtMade + 1
       };
     } else if (selectedPoints === 2) {
+      pointVal="two point shot";
       updatedAssistStat = {
         ...updatedAssistStat,
         twoPtAttempts: updatedAssistStat.twoPtAttempts + 1,
@@ -723,10 +732,20 @@ const handleAssistUpdate = async (basicStatId) => {
     // Perform both updates in parallel and wait for responses
     const updatedCurrentStatRes = await api.put(`/basic-stats/put/${selectedUpdatePlayer}`, updatedCurrentStat);
     const updatedAssistStatRes = await api.put(`/basic-stats/put/${assistStat.data.basicStatId}`, updatedAssistStat);
+    console.log("find",updatedCurrentStat);
+    console.log("marker",updatedAssistStat);
+
+    const payload = {
+      gameId: gameId,
+      playerId: selectedUpdatePlayer,
+      message: `${updatedCurrentStat.fname} ${updatedCurrentStat.lname}'s assisted ${updatedAssistStat.fname} ${updatedAssistStat.lname}'s ${pointVal}`,
+      timestamp: new Date().toISOString()  // Dynamically set the timestamp to the current time
+    };
+    const playByPlay = await api.post('/play-by-play', payload);
 
     console.log("Updated First BasicStat:", updatedCurrentStatRes.data);
     console.log("Updated Second BasicStat:", updatedAssistStatRes.data);
-
+    
     // Refresh the subbed-in stats after the update
     const updatedSubbedIn = await api.get(`/basic-stats/get/subbed-in/${gameId}`);
     setTeamABasicStats(updatedSubbedIn.data);
@@ -734,6 +753,10 @@ const handleAssistUpdate = async (basicStatId) => {
     // Refresh all stats for the game
     try {
       const allStats = await api.get(`/basic-stats/get/by-game/${gameId}`);
+      const playByPlayRes = await api.get(`/play-by-play/game/${gameId}`);
+        if (playByPlayRes.status === 200) {
+        console.log('PlayByPlay response:', playByPlayRes);
+        setPlayByPlays(playByPlayRes.data);}
       setAllTeamABasicStats(allStats.data);
     } catch (e) {
       console.warn("Could not refresh all basic stats after update:", e);
