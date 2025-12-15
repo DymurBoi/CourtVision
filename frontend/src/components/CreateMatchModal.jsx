@@ -53,15 +53,20 @@ function CreateMatchModal({ onClose, onSave, teamId }) {
     }
 
     try {
-      const seasonsRes = await api.get("/seasons/active");
-      const active = seasonsRes.data;
-      if (!active || active.length === 0) {
-        toast.error("No active season found.", { autoClose: 3000 });
+      // Fetch active seasons for this specific team only
+      const seasonsRes = await api.get(`/seasons/team/${teamId}`);
+      const allSeasons = seasonsRes.data;
+      
+      // Filter for active seasons belonging to this team
+      const activeSeasons = allSeasons.filter(season => season.active === true);
+      
+      if (!activeSeasons || activeSeasons.length === 0) {
+        toast.error("No active season found for this team. Please start a season first.", { autoClose: 3000 });
         setIsSubmitting(false);
         return;
       }
 
-      const seasonId = active[0].id;
+      const seasonId = activeSeasons[0].id;
 
       const gamePayload = {
         gameName: `${updatedFormData.homeTeam} vs ${updatedFormData.awayTeam}`,

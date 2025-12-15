@@ -130,8 +130,19 @@ public class SeasonService {
     }
 
     public List<Game> getGamesBySeason(Long seasonId) {
-        // Fetch all games for the given season (including all game types)
-        return gameRepository.findBySeason_Id(seasonId);
+        // Fetch season to get the team
+        Season season = seasonRepository.findById(seasonId)
+                .orElseThrow(() -> new RuntimeException("Season not found with id: " + seasonId));
+        
+        // Get the team associated with this season
+        Long teamId = season.getTeam() != null ? season.getTeam().getTeamId() : null;
+        
+        if (teamId == null) {
+            throw new RuntimeException("Season has no associated team");
+        }
+        
+        // Fetch games for this season AND team only
+        return gameRepository.findBySeason_IdAndTeam_TeamId(seasonId, teamId);
     }
 
 }
