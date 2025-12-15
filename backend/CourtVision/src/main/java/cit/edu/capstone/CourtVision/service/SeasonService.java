@@ -130,15 +130,8 @@ public class SeasonService {
     }
 
    public List<Game> getGamesBySeason(Long seasonId) {
-    // Fetch all games for the given season
-    List<Game> allGames = gameRepository.findBySeason_Id(seasonId);
-
-    // Filter out Scrimmage and Practice Match
-    return allGames.stream()
-            .filter(game -> game.getGameType() != null &&
-                    !game.getGameType().equalsIgnoreCase("Scrimmage") &&
-                    !game.getGameType().equalsIgnoreCase("Practice Match"))
-            .toList();
+    // Fetch all games for the given season (including all game types)
+    return gameRepository.findBySeason_Id(seasonId);
 }
 
 }
