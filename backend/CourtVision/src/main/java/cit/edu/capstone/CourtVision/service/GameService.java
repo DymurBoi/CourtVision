@@ -46,20 +46,30 @@ public class GameService {
 
     //Create a new game
     public Game save(Game game) {
-            // Assign a season to the game: prefer explicit season in request, otherwise pick an active season
+            // Get the team creating this game
+            Long gameTeamId = game.getTeam() != null ? game.getTeam().getTeamId() : null;
+            if (gameTeamId == null) {
+                throw new RuntimeException("Game must be associated with a team");
+            }
+            
+            // Assign a season to the game: prefer explicit season in request, otherwise pick an active season for this team
             if (game.getSeason() != null && game.getSeason().getId() != null) {
                 Long sid = game.getSeason().getId();
                 Season season = seasonRepository.findById(sid).orElseThrow(() -> new RuntimeException("Season not found"));
                 if (!season.isActive()) {
                     throw new RuntimeException("Cannot add game to an inactive season");
                 }
-                // Allow any team to create games inside an active season.
+                // Validate that the season belongs to the same team as the game
+                Long seasonTeamId = season.getTeam() != null ? season.getTeam().getTeamId() : null;
+                if (seasonTeamId == null || !seasonTeamId.equals(gameTeamId)) {
+                    throw new RuntimeException("Game team and season team must match");
+                }
                 game.setSeason(season);
             } else {
-                // If no season was provided, pick any globally active season.
-                var activeSeasons = seasonRepository.findByActiveTrue();
+                // If no season was provided, pick an active season for this team only
+                var activeSeasons = seasonRepository.findByActiveTrueAndTeam_TeamId(gameTeamId);
                 if (activeSeasons == null || activeSeasons.isEmpty()) {
-                    throw new RuntimeException("No active season found. Start a season before creating games.");
+                    throw new RuntimeException("No active season found for this team. Start a season before creating games.");
                 }
                 game.setSeason(activeSeasons.get(0));
             }
