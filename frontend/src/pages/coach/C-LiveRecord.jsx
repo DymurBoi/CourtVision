@@ -11,6 +11,10 @@ import { useNavigate } from "react-router-dom";
 
 function CLiveRecord() {
   const navigate = useNavigate();
+  const [enabled, setEnabled] = useState(() => {
+    const stored = localStorage.getItem("enabled");
+    return stored === "true";
+  });
   const [selectedPoints, setSelectedPoints] = useState(1);
   const [gameDetails, setGameDetails] = useState();
   const [opponentStats, setOpponentStats] = useState();
@@ -87,7 +91,9 @@ function CLiveRecord() {
   // Track the 5 on-court players as indices for each team
   const [teamAOnCourt, setTeamAOnCourt] = useState([])
   const [teamBOnCourt, setTeamBOnCourt] = useState([0])
-
+  useEffect(() => {
+    localStorage.setItem("enabled", enabled);
+  }, [enabled]);
 
   //UseEffect for getting basicStats by game
   useEffect(() => {
@@ -286,9 +292,11 @@ function CLiveRecord() {
       console.log(`Game ${gameId} ended. All players subbed out and analysis type set to Post Analysis.`);
 
       // Reset local states
+      setEnabled(false);
       setConfirmedFirstFive([]);
       setShowAddFirstFiveButton(true);
       localStorage.removeItem("confirmedFirstFive");
+      localStorage.removeItem("enabled");
       setIsPlaying(false); // stop the timer locally
       navigate(`/coach/game-details/${gameId}?teamId=${teamId}`);
     } catch (err) {
@@ -323,7 +331,9 @@ function CLiveRecord() {
         // Fetch the game data
         const gameRes = await api.get(`/games/get/${gameId}`);
         console.log("Fetched Game:", gameRes.data);
-
+        const res = await api.get(`/stopwatch/state/${gameId}`);
+        setRunning(res.data.running);
+        setIsPlaying(res.data.running);
         const gameName = gameRes.data.gameName || ""; // Get the game name from the response
 
         // Extract the part after " vs " in the gameName
@@ -469,6 +479,7 @@ function CLiveRecord() {
 
 
   const handlePlayersClick = (playerId) => {
+    if (!enabled) return;
     const stat = teamABasicStats.find(s => s.playerId === playerId);
     if (stat) {
       setSelectedRef({ team: "A", index: teamABasicStats.indexOf(stat) }); // <-- Add this line!
@@ -530,7 +541,10 @@ function CLiveRecord() {
 
       const res = await api.put(`/basic-stats/put/${formStats.basicStatId}`, payload);
       console.log("Updated BasicStats:", res.data);
-
+              const playByPlayRes = await api.get(`/play-by-play/game/${gameId}`);
+            if (playByPlayRes.status === 200) {
+            console.log('PlayByPlay response:', playByPlayRes);
+            setPlayByPlays(playByPlayRes.data)}
       // Refresh subbed-in list and the full basic-stats list so score sums are accurate
       const updated = await api.get(`/basic-stats/get/subbed-in/${gameId}`);
       setTeamABasicStats(updated.data);
@@ -923,11 +937,22 @@ const handleAssistUpdate = async (basicStatId) => {
   }, [running]);
 
   const handleStart = async () => {
+    if (teamABasicStats.length !== 5) {
+      alert("You must select exactly 5 players.");
+      return;
+    }
+    setIsPlaying(true);
     await api.post(`/stopwatch/sub-in/${gameId}`);
     setRunning(true);
+    setEnabled(true);
   };
 
   const handleStop = async () => {
+    if (teamABasicStats.length !== 5) {
+      alert("You must select exactly 5 players.");
+      return;
+    }
+    setIsPlaying(false);
     await api.post(`/stopwatch/timeout/${gameId}`);
     setRunning(false);
   };
@@ -965,17 +990,18 @@ const handleAssistUpdate = async (basicStatId) => {
                 onClick={running ? handleStop : handleStart}
               >
                 {isPlaying ? (
+                  // PAUSE
                   <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
+                    <rect x="6" y="4" width="4" height="16" />
+                    <rect x="14" y="4" width="4" height="16" />
                   </svg>
                 ) : (
+                  // PLAY
                   <svg viewBox="0 0 24 24" fill="currentColor">
                     <path d="M8 5v14l11-7z" />
                   </svg>
                 )}
               </button>
-              <div className="timer-display">{formatTime(elapsedTime)}</div>
-
 
             </div>
             {/* End Game Button */}
@@ -1011,12 +1037,10 @@ const handleAssistUpdate = async (basicStatId) => {
               ) : (
                 teamABasicStats.map((stat) => (
                   <div
-                    key={stat.playerId}
-                    className="player-card selected"
-                    onClick={() =>
-                      handlePlayersClick(stat.playerId)
-                    }
-                  >
+                      key={stat.playerId}
+                      className={`player-card selected ${!enabled ? "disabled" : ""}`}
+                      onClick={() => enabled && handlePlayersClick(stat.playerId)}
+                    >
                     <div className="jersey-number">#{stat.jerseyNum}</div>
                     <div className="player-name">{stat.fname} {stat.lname}</div>
                   </div>
@@ -1106,63 +1130,63 @@ const handleAssistUpdate = async (basicStatId) => {
                 </h4>
                 <div className="stats-display three-col">
                   <div className="stat-item">
-                    <span className="stat-label">PTS:</span>
+                    <span className="stat-label">Points:</span>
                     <span className="stat-value">{getPoints(formStats)}</span>
                   </div>
                   <div className="stat-item" onClick={() => handleStatUpdate("threePtAttempts")}>
-                    <span className="stat-label">3PA:</span>
+                    <span className="stat-label">3 Point Attempts:</span>
                     <span className="stat-value">{getStat(formStats, "threePtAttempts")}</span>
                   </div>
                   <div className="stat-item" onClick={() => handleStatUpdate("threePtMade")}>
-                    <span className="stat-label">3PM:</span>
+                    <span className="stat-label">3 Points Made:</span>
                     <span className="stat-value">{getStat(formStats, "threePtMade")}</span>
                   </div>
                   <div className="stat-item" onClick={() => handleStatUpdate("twoPtAttempts")}>
-                    <span className="stat-label">2PA:</span>
+                    <span className="stat-label">2 Point Attempts:</span>
                     <span className="stat-value">{getStat(formStats, "twoPtAttempts")}</span>
                   </div>
                   <div className="stat-item" onClick={() => handleStatUpdate("twoPtMade")}>
-                    <span className="stat-label">2PM:</span>
+                    <span className="stat-label">2 Points Made:</span>
                     <span className="stat-value">{getStat(formStats, "twoPtMade")}</span>
                   </div>
                   <div className="stat-item" onClick={() => handleStatUpdate("ftAttempts")}>
-                    <span className="stat-label">FTA:</span>
+                    <span className="stat-label">Free Throw Attempts:</span>
                     <span className="stat-value">{getStat(formStats, "ftAttempts")}</span>
                   </div>
                   <div className="stat-item" onClick={() => handleStatUpdate("ftMade")}>
-                    <span className="stat-label">FTM:</span>
+                    <span className="stat-label">Free Throws Made:</span>
                     <span className="stat-value">{getStat(formStats, "ftMade")}</span>
                   </div>
-                  <div className="stat-item ast" onClick={() => isAddMode ? handleAssist(formStats.basicStatId) : handleStatUpdate("assists")}>
-                    <span className="stat-label">AST:</span>
+                  <div className="stat-item ast" onClick={() => isAddMode && !selectedRef.team==='B' ? handleAssist(formStats.basicStatId) : handleStatUpdate("assists")}>
+                    <span className="stat-label">Assists:</span>
                     <span className="stat-value">{getStat(formStats, "assists")}</span>
                   </div>
                   <div className="stat-item" onClick={() => handleStatUpdate("steals")}>
-                    <span className="stat-label">STL:</span>
+                    <span className="stat-label">Steals:</span>
                     <span className="stat-value">{getStat(formStats, "steals")}</span>
                   </div>
                   <div className="stat-item" onClick={() => handleStatUpdate("blocks")}>
-                    <span className="stat-label">BLK:</span>
+                    <span className="stat-label">Blocks:</span>
                     <span className="stat-value">{getStat(formStats, "blocks")}</span>
                   </div>
                   <div className="stat-item" onClick={() => handleStatUpdate("turnovers")}>
-                    <span className="stat-label">TO:</span>
+                    <span className="stat-label">Turnovers:</span>
                     <span className="stat-value">{getStat(formStats, "turnovers")}</span>
                   </div>
                   <div className="stat-item" onClick={() => handleStatUpdate("oFRebounds")}>
-                    <span className="stat-label">ORB:</span>
+                    <span className="stat-label">Offensive Rebounds:</span>
                     <span className="stat-value">{getStat(formStats, "oFRebounds")}</span>
                   </div>
                   <div className="stat-item" onClick={() => handleStatUpdate("dFRebounds")}>
-                    <span className="stat-label">DRB:</span>
+                    <span className="stat-label">Defensive Rebounds:</span>
                     <span className="stat-value">{getStat(formStats, "dFRebounds")}</span>
                   </div>
                   <div className="stat-item" onClick={() => handleStatUpdate("pFouls")}>
-                    <span className="stat-label">PF:</span>
+                    <span className="stat-label">Personal Fouls:</span>
                     <span className="stat-value">{getStat(formStats, "pFouls")}</span>
                   </div>
                   <div className="stat-item" onClick={() => handleStatUpdate("dFouls")}>
-                    <span className="stat-label">DF:</span>
+                    <span className="stat-label">Defensive Rebounds:</span>
                     <span className="stat-value">{getStat(formStats, "dFouls")}</span>
                   </div>
                 </div>

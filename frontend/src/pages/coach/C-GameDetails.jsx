@@ -362,7 +362,6 @@ function CGameDetails() {
                       <Tooltip title="Defensive Rebound"><th>DREB</th></Tooltip>
                       <Tooltip title="Personal Fouls"><th>PF</th></Tooltip>
                       <Tooltip title="Defensive Fouls"><th>DF</th></Tooltip>
-                      <Tooltip title="Plus Minus"><th>+/-</th></Tooltip>
                       <th>Action</th>
                     </tr>
                   </thead>
@@ -383,7 +382,6 @@ function CGameDetails() {
                         <td>{playerStat.dFRebounds}</td>
                         <td>{playerStat.pFouls}</td>
                         <td>{playerStat.dFouls}</td>
-                        <td>{playerStat.plusMinus}</td>
                         <td>
                           <button
                             onClick={() => {
@@ -411,6 +409,7 @@ function CGameDetails() {
                 <thead>
                   <tr>
                     <th>Player Name</th>
+                    <Tooltip title="Plus Minus"><th>+/-</th></Tooltip>
                     <Tooltip title="Player Efficiency Rating"><th>PER</th></Tooltip>
                     <Tooltip title="Effective Field Goal Percentage"><th>EFG%</th></Tooltip>
                     <Tooltip title="True Shooting Percentage"><th>TS%</th></Tooltip>
@@ -423,12 +422,12 @@ function CGameDetails() {
                     <Tooltip title="Points Per Minute"><th>PPM</th></Tooltip>
                     <Tooltip title="Shooting Efficiency Percentage"><th>SE%</th></Tooltip>
                     <Tooltip title="Points Per Shot"><th>PPS</th></Tooltip>
-
                   </tr>
                 </thead>
                 <tbody>
                   {advancedStats.map((playerStat) => (
                     <tr key={playerStat.advancedStatId}>
+                      <td>{playerStat.basicStatsDTO.plusMinus}</td>
                       <td>{playerStat.basicStatsDTO.playerName}</td>
                       <td>{playerStat.uPER}</td>
                       <td>{playerStat.eFG}</td>

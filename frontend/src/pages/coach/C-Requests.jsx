@@ -9,7 +9,6 @@ function Requests() {
   const [selectedTeamId, setSelectedTeamId] = useState(null);
   const [joinRequests, setJoinRequests] = useState([]);
   const [physicalRequests, setPhysicalRequests] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [showPhysicalModal, setShowPhysicalModal] = useState(false);
@@ -26,8 +25,6 @@ function Requests() {
   // Fetch requests for the selected team
   const fetchRequestsForTeam = async (teamId) => {
     if (!teamId) return;
-
-    setLoading(true);
     try {
       // Fetch join requests
       const joinResponse = await api.get(`/join-requests/by-team/${teamId}`);
@@ -37,11 +34,9 @@ function Requests() {
       const physicalResponse = await api.get(`/physical-update-requests/team/${teamId}`);
       if (Array.isArray(physicalResponse.data)) setPhysicalRequests(physicalResponse.data);
 
-      setLoading(false);
     } catch (err) {
       console.error("Error fetching requests:", err);
       setError(`Failed to fetch requests: ${err.message}`);
-      setLoading(false);
     }
   };
 
@@ -228,10 +223,6 @@ function Requests() {
       alert("Failed to reject request: " + (error.response?.data?.message || error.message));
     }
   };
-
-  if (loading) {
-    return <div className="loading">Loading requests...</div>
-  }
 
   if (error) {
     return <div className="error">{error}</div>

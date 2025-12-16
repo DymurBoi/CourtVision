@@ -1,3 +1,9 @@
+.player-card.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
 .live-record-page {
   min-height: 100vh;
   background-color: var(--light-purple);
