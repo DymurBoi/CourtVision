@@ -14,11 +14,14 @@ function CSeasonGames() {
     const fetchGames = async () => {
       setLoading(true);
       try {
+        console.log('Fetching games for season:', seasonId);
         const res = await api.get(`/seasons/${seasonId}/games`);
+        console.log('Games response:', res.data);
         setGames(res.data || []);
         setError("");
       } catch (err) {
-        console.error(err);
+        console.error('Error fetching games:', err);
+        console.error('Error response:', err.response);
         setError("Failed to fetch games for this season.");
       }
       setLoading(false);

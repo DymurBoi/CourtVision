@@ -5,98 +5,94 @@ import "../../styles/coach/C-Requests.css"
 import { api } from "../../utils/axiosConfig"
 
 function Requests() {
-  const [joinRequests, setJoinRequests] = useState([])
-  const [physicalRequests, setPhysicalRequests] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [selectedRequest, setSelectedRequest] = useState(null)
-  const [showPhysicalModal, setShowPhysicalModal] = useState(false)
-  const [showTeamModal, setShowTeamModal] = useState(false)
-  const [activeTab, setActiveTab] = useState('join') // 'join' or 'physical'
+  const [teams, setTeams] = useState([]);
+  const [selectedTeamId, setSelectedTeamId] = useState(null);
+  const [joinRequests, setJoinRequests] = useState([]);
+  const [physicalRequests, setPhysicalRequests] = useState([]);
+  const [error, setError] = useState(null);
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [showPhysicalModal, setShowPhysicalModal] = useState(false);
+  const [showTeamModal, setShowTeamModal] = useState(false);
+  const [activeTab, setActiveTab] = useState('join'); // 'join' or 'physical'
   
   // Status mapping for better display
   const statusLabels = {
     0: "Pending",
     1: "Approved",
     2: "Rejected"
-  }
+  };
+
+  // Fetch requests for the selected team
+  const fetchRequestsForTeam = async (teamId) => {
+    if (!teamId) return;
+    try {
+      // Fetch join requests
+      const joinResponse = await api.get(`/join-requests/by-team/${teamId}`);
+      if (Array.isArray(joinResponse.data)) setJoinRequests(joinResponse.data);
+
+      // Fetch physical update requests
+      const physicalResponse = await api.get(`/physical-update-requests/team/${teamId}`);
+      if (Array.isArray(physicalResponse.data)) setPhysicalRequests(physicalResponse.data);
+
+    } catch (err) {
+      console.error("Error fetching requests:", err);
+      setError(`Failed to fetch requests: ${err.message}`);
+    }
+  };
 
   useEffect(() => {
-    fetchRequests()
-  }, [])
-  
-  const fetchRequests = async () => {
-    try {
-      const userId = localStorage.getItem('userId')
-      if (!userId) {
-        setError("User ID not found. Please login again.")
-        setLoading(false)
-        return
-      }
-      
-      // Extract the numeric part from "COACH_X" format
-      const coachId = userId.split('_')[1]
-      
-      if (!coachId || isNaN(coachId)) {
-        setError("Invalid coach ID format. Please login again.")
-        setLoading(false)
-        return
-      }
-      
-      console.log("Fetching requests for coach ID:", coachId)
-      
-      // Fetch join requests
+    const fetchTeams = async () => {
       try {
-        const joinResponse = await api.get(`/join-requests/by-coach/${coachId}`)
-        console.log("Fetched join requests:", joinResponse.data)
-        
-        if (Array.isArray(joinResponse.data)) {
-          setJoinRequests(joinResponse.data)
-        } else {
-          console.error("Expected array but got:", typeof joinResponse.data)
+        const userId = localStorage.getItem("userId");
+        if (!userId) return;
+
+        const coachId = userId.split("_")[1];
+        if (!coachId) return;
+
+        const response = await api.get(`/teams/get/by-coach/${coachId}`);
+        const teamsData = response.data || [];
+
+        setTeams(teamsData);
+        if (!selectedTeamId && teamsData.length > 0) {
+          setSelectedTeamId(teamsData[0].teamId);
+          localStorage.setItem("selectedTeamId", teamsData[0].teamId);
         }
-      } catch (err) {
-        console.error("Error fetching join requests:", err)
+      } catch (error) {
+        console.error("Error fetching teams:", error);
       }
-      
-      // Fetch physical update requests
-      try {
-        const physicalResponse = await api.get(`/physical-update-requests/coach/${coachId}`)
-        console.log("Fetched physical update requests:", physicalResponse.data)
-        
-        if (Array.isArray(physicalResponse.data)) {
-          setPhysicalRequests(physicalResponse.data)
-        } else {
-          console.error("Expected array but got:", typeof physicalResponse.data)
+    };
+
+    fetchTeams();
+  }, []);
+
+  useEffect(() => {
+    if (selectedTeamId) {
+      fetchRequestsForTeam(selectedTeamId);
+      const intervalId = setInterval(() => {
+        if (!showPhysicalModal && !showTeamModal) {
+          fetchRequestsForTeam(selectedTeamId);
         }
-      } catch (err) {
-        console.error("Error fetching physical update requests:", err)
-      }
-      
-      setLoading(false)
-    } catch (err) {
-      console.error("Error fetching requests:", err)
-      setError(`Failed to fetch requests: ${err.message}`)
-      setLoading(false)
+      }, 10000);
+      return () => clearInterval(intervalId);
     }
-  }
+  }, [selectedTeamId, showPhysicalModal, showTeamModal]);
 
   const handleViewRequest = (request, type) => {
-    console.log(`Viewing ${type} request:`, request)
-    setSelectedRequest(request)
+    console.log(`Viewing ${type} request:`, request);
+    setSelectedRequest(request);
     if (type === 'join') {
-      setShowTeamModal(true)
+      setShowTeamModal(true);
     } else {
-      setShowPhysicalModal(true)
+      setShowPhysicalModal(true);
     }
-  }
+  };
 
   const handleCloseModal = () => {
-    setShowPhysicalModal(false)
-    setShowTeamModal(false)
-    setSelectedRequest(null)
-  }
-  
+    setShowPhysicalModal(false);
+    setShowTeamModal(false);
+    setSelectedRequest(null);
+  };
+
   const handleApproveJoinRequest = async () => {
     if (!selectedRequest) return;
     
@@ -109,21 +105,15 @@ function Requests() {
         alert("Cannot approve request: Missing player or team data");
         return;
       }
-      
-      // Make sure numeric values are numbers and not strings
+
       const playerId = Number(selectedRequest.playerId);
       const teamId = Number(selectedRequest.teamId);
       const requestId = selectedRequest.requestId;
       
-      console.log("Processing approval for request ID:", requestId);
-      
       // Step 1: Update the request status to approved (1)
-      console.log("Step 1: Updating request status to approved");
       const approvalResponse = await api.put(`/join-requests/accept/${requestId}`, {
         ...selectedRequest
       });
-      
-      console.log("Step 1 response:", approvalResponse);
       
       // Update the request in the local state
       setJoinRequests(prevRequests => 
@@ -133,38 +123,30 @@ function Requests() {
             : req
         )
       );
-      
-      // Close the modal
+
+      // Close the modal and show success message
       handleCloseModal();
-      
-      // Show success message
       alert("Join request approved successfully. The player has been assigned to the team.");
-      
-      // Refresh the requests list to ensure we have the latest data
-      setTimeout(() => fetchRequests(), 1000);
+
+      // Refresh the requests list
+      setTimeout(() => fetchRequestsForTeam(selectedTeamId), 1000);
       
     } catch (error) {
       console.error("Error approving join request:", error);
       alert("Failed to approve request: " + (error.response?.data?.message || error.message));
     }
   };
-  
+
   const handleApprovePhysicalRequest = async () => {
     if (!selectedRequest) return;
     
     try {
-      console.log("Approving physical update request:", selectedRequest);
-      
       const approvalPayload = {
         ...selectedRequest,
         requestStatus: 1 // 1 for approved
       };
       
-      console.log("Sending physical update approval with payload:", approvalPayload);
-      
       const response = await api.put(`/physical-update-requests/${selectedRequest.requestId}`, approvalPayload);
-      
-      console.log("Physical update approval response:", response);
       
       // Update the request in the local state
       setPhysicalRequests(prevRequests => 
@@ -175,32 +157,27 @@ function Requests() {
         )
       );
       
-      // Close the modal
+      // Close the modal and show success message
       handleCloseModal();
-      
-      // Show success message
-      alert("Physical update request approved successfully. The player's physical records have been updated.");
-      
+      alert("Physical update request approved successfully.");
+
       // Refresh the requests list
-      setTimeout(() => fetchRequests(), 1000);
+      setTimeout(() => fetchRequestsForTeam(selectedTeamId), 1000);
       
     } catch (error) {
       console.error("Error approving physical update request:", error);
       alert("Failed to approve request: " + (error.response?.data?.message || error.message));
     }
   };
-  
+
   const handleRejectJoinRequest = async () => {
     if (!selectedRequest) return;
     
     try {
-      console.log("Rejecting join request:", selectedRequest.requestId);
       const response = await api.put(`/join-requests/${selectedRequest.requestId}`, {
         ...selectedRequest,
         requestStatus: 2 // 2 for rejected
       });
-      
-      console.log("Rejection response:", response.data);
       
       // Update the request in the local state
       setJoinRequests(prevRequests => 
@@ -211,28 +188,23 @@ function Requests() {
         )
       );
       
-      // Close the modal
+      // Close the modal and show success message
       handleCloseModal();
-      
-      // Show success message
       alert("Join request rejected successfully");
     } catch (error) {
       console.error("Error rejecting join request:", error);
       alert("Failed to reject request: " + (error.response?.data?.message || error.message));
     }
   };
-  
+
   const handleRejectPhysicalRequest = async () => {
     if (!selectedRequest) return;
     
     try {
-      console.log("Rejecting physical update request:", selectedRequest.requestId);
       const response = await api.put(`/physical-update-requests/${selectedRequest.requestId}`, {
         ...selectedRequest,
         requestStatus: 2 // 2 for rejected
       });
-      
-      console.log("Physical update rejection response:", response.data);
       
       // Update the request in the local state
       setPhysicalRequests(prevRequests => 
@@ -243,20 +215,14 @@ function Requests() {
         )
       );
       
-      // Close the modal
+      // Close the modal and show success message
       handleCloseModal();
-      
-      // Show success message
       alert("Physical update request rejected successfully");
     } catch (error) {
       console.error("Error rejecting physical update request:", error);
       alert("Failed to reject request: " + (error.response?.data?.message || error.message));
     }
   };
-
-  if (loading) {
-    return <div className="loading">Loading requests...</div>
-  }
 
   if (error) {
     return <div className="error">{error}</div>
@@ -268,7 +234,26 @@ function Requests() {
         <h1>Player Requests</h1>
         <p>Review and manage player requests</p>
       </div>
-
+      <div className="team-dropdown">
+      <label htmlFor="team-select">Select Team:</label>
+      <select
+        id="team-select"
+        value={selectedTeamId || ""}
+        onChange={(e) => {
+          const teamId = Number(e.target.value);
+          setSelectedTeamId(teamId);
+          localStorage.setItem("selectedTeamId", teamId);
+          fetchRequestsForTeam(teamId); // fetch requests for the selected team
+        }}
+        className="team-select"
+      >
+        {teams.map((team) => (
+          <option key={team.teamId} value={team.teamId}>
+            {team.teamName}
+          </option>
+        ))}
+      </select>
+    </div>
       <div className="requests-tabs">
         <button 
           className={`tab-button ${activeTab === 'join' ? 'active' : ''}`}

@@ -1,8 +1,10 @@
 package cit.edu.capstone.CourtVision.controller;
 
 import cit.edu.capstone.CourtVision.entity.BasicStats;
+import cit.edu.capstone.CourtVision.entity.Game;
 import cit.edu.capstone.CourtVision.entity.Stopwatch;
 import cit.edu.capstone.CourtVision.repository.BasicStatsRepository;
+import cit.edu.capstone.CourtVision.repository.GameRepository;
 import cit.edu.capstone.CourtVision.service.StopWatchService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,14 +20,18 @@ import java.util.Map;
 public class StopWatchController {
 
     @Autowired
+    private final GameRepository gamerepo;
+    @Autowired
     private final StopWatchService stopwatchService;
     @Autowired
     private final BasicStatsRepository basicStatsRepository;
     private final Stopwatch stopwatch;
 
-    public StopWatchController(StopWatchService stopwatchService,
+    public StopWatchController(GameRepository gamerepo,
+                                StopWatchService stopwatchService,
                                BasicStatsRepository basicStatsRepository,
                                Stopwatch stopwatch) { // 👈 ADD Stopwatch here
+        this.gamerepo=gamerepo;
         this.stopwatchService = stopwatchService;
         this.basicStatsRepository = basicStatsRepository;
         this.stopwatch = stopwatch; // 👈 Assign the injected bean
@@ -60,7 +66,7 @@ public class StopWatchController {
 
         return basicStatsRepository.save(stats);
     }
-
+    
     // Reset stopwatch for a player
     @PostMapping("/{basicStatId}/reset")
     public String reset(@PathVariable Long basicStatId) {
@@ -108,5 +114,42 @@ public class StopWatchController {
         state.put("running", stopwatch.isRunning());
         state.put("elapsedTimeMillis", stopwatch.getElapsedTime(gameId).toMillis());
         return state;
+    }
+    @PutMapping("/{gameId}/edit")
+    public ResponseEntity<String> editStopwatch(@PathVariable Long gameId, 
+                                                @RequestParam(required = false) Long setElapsedMillis,
+                                                @RequestParam(required = false) Boolean pause) {
+
+        // If `pause` is true, stop the stopwatch if it's running
+        if (pause != null && pause) {
+            stopwatch.stop(gameId);  // Stop the stopwatch
+            return ResponseEntity.ok("Stopwatch paused.");
+        }
+
+        // If `setElapsedMillis` is provided, manually set the stopwatch time
+        if (setElapsedMillis != null) {
+            Game game = gamerepo.findByGameId(gameId);
+            if (game != null) {
+                stopwatch.reset();  // Reset the stopwatch before setting the time
+                Duration newElapsed = Duration.ofMillis(setElapsedMillis);
+                game.setGameDuration(newElapsed.getSeconds());  // Update game duration with new time
+                gamerepo.save(game);
+                return ResponseEntity.ok("Stopwatch set to " + formatDuration(newElapsed));
+            } else {
+                return ResponseEntity.status(404).body("Game not found.");
+            }
+        }
+
+        // If neither `pause` nor `setElapsedMillis` is provided, resume the stopwatch
+        stopwatch.start(gameId);  // Resume the stopwatch
+        return ResponseEntity.ok("Stopwatch resumed.");
+    }
+
+    // Helper method to format duration in hh:mm:ss
+    private String formatDuration(Duration duration) {
+        long hours = duration.toHours();
+        long minutes = duration.toMinutesPart();
+        long seconds = duration.toSecondsPart();
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
     }
 }

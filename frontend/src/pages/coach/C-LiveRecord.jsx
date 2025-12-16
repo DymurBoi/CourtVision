@@ -7,15 +7,20 @@ import { api } from "../../utils/axiosConfig";
 import { useLocation } from "react-router-dom";
 import { Button } from "@mui/material"
 import { StopCircle } from "lucide-react"
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 function CLiveRecord() {
   const navigate = useNavigate();
+  const [enabled, setEnabled] = useState(() => {
+    const stored = localStorage.getItem("enabled");
+    return stored === "true";
+  });
+  const [selectedPoints, setSelectedPoints] = useState(1);
   const [gameDetails, setGameDetails] = useState();
   const [opponentStats, setOpponentStats] = useState();
-
-
+  const [playByPlays, setPlayByPlays] = useState([]);
+  const [assistModal, setAsssistModal] = useState();
+  const [pointModal, setPointModal] = useState();
   const [showModal, setShowModal] = useState(false)
   const [isAddMode, setIsAddMode] = useState(true) // true = add, false = subtract
   // Track which team and which player index is selected to always read fresh state
@@ -25,8 +30,8 @@ function CLiveRecord() {
   const [showFirstFiveModal, setShowFirstFiveModal] = useState(false);
   const [selectedPlayers, setSelectedPlayers] = useState([]);
   const [teamPlayers, setTeamPlayers] = useState([]);
-
-
+  const [assistPlayers,setAssistPlayers]=useState([]);
+  const [selectedUpdatePlayer, setSelectUpdatePlayer ] = useState();
   //BasicStats Update
   const [selectedBasicStat, setSelectedBasicStat] = useState(null);
   const [formStats, setFormStats] = useState(null);
@@ -83,14 +88,12 @@ function CLiveRecord() {
       .padStart(2, '0')}.${Math.floor(millis / 100)}`;
   }
 
-
-
-
-
   // Track the 5 on-court players as indices for each team
   const [teamAOnCourt, setTeamAOnCourt] = useState([])
   const [teamBOnCourt, setTeamBOnCourt] = useState([0])
-
+  useEffect(() => {
+    localStorage.setItem("enabled", enabled);
+  }, [enabled]);
 
   //UseEffect for getting basicStats by game
   useEffect(() => {
@@ -103,6 +106,18 @@ function CLiveRecord() {
         .catch((err) => {
           setAllTeamABasicStats([]);
           console.error("Failed to fetch all BasicStats:", err);
+        });
+      
+      // Fetch play-by-play data
+      api
+        .get(`/play-by-play/game/${gameId}`)
+        .then((res) => {
+          console.log('PlayByPlay response:', res);
+          setPlayByPlays(res.data);
+        })
+        .catch((err) => {
+          console.error("Failed to fetch play-by-play:", err);
+          setPlayByPlays([]);
         });
     }
   }, [gameId]);
@@ -194,7 +209,10 @@ function CLiveRecord() {
       await api.put(`/basic-stats-var/put/${formStats.basicStatVarId}`, payload);
       const updatedOpponent = await api.get(`/basic-stats-var/get/by-game/${gameId}`);
       setOpponentStats(updatedOpponent.data);
-
+      const playByPlayRes = await api.get(`/play-by-play/game/${gameId}`);
+            if (playByPlayRes.status === 200) {
+            console.log('PlayByPlay response:', playByPlayRes);
+            setPlayByPlays(playByPlayRes.data);}
       setShowModal(false);
     } catch (err) {
       console.error("Error updating enemy stats:", err);
@@ -274,9 +292,11 @@ function CLiveRecord() {
       console.log(`Game ${gameId} ended. All players subbed out and analysis type set to Post Analysis.`);
 
       // Reset local states
+      setEnabled(false);
       setConfirmedFirstFive([]);
       setShowAddFirstFiveButton(true);
       localStorage.removeItem("confirmedFirstFive");
+      localStorage.removeItem("enabled");
       setIsPlaying(false); // stop the timer locally
       navigate(`/coach/game-details/${gameId}?teamId=${teamId}`);
     } catch (err) {
@@ -311,7 +331,9 @@ function CLiveRecord() {
         // Fetch the game data
         const gameRes = await api.get(`/games/get/${gameId}`);
         console.log("Fetched Game:", gameRes.data);
-
+        const res = await api.get(`/stopwatch/state/${gameId}`);
+        setRunning(res.data.running);
+        setIsPlaying(res.data.running);
         const gameName = gameRes.data.gameName || ""; // Get the game name from the response
 
         // Extract the part after " vs " in the gameName
@@ -457,6 +479,7 @@ function CLiveRecord() {
 
 
   const handlePlayersClick = (playerId) => {
+    if (!enabled) return;
     const stat = teamABasicStats.find(s => s.playerId === playerId);
     if (stat) {
       setSelectedRef({ team: "A", index: teamABasicStats.indexOf(stat) }); // <-- Add this line!
@@ -518,7 +541,10 @@ function CLiveRecord() {
 
       const res = await api.put(`/basic-stats/put/${formStats.basicStatId}`, payload);
       console.log("Updated BasicStats:", res.data);
-
+              const playByPlayRes = await api.get(`/play-by-play/game/${gameId}`);
+            if (playByPlayRes.status === 200) {
+            console.log('PlayByPlay response:', playByPlayRes);
+            setPlayByPlays(playByPlayRes.data)}
       // Refresh subbed-in list and the full basic-stats list so score sums are accurate
       const updated = await api.get(`/basic-stats/get/subbed-in/${gameId}`);
       setTeamABasicStats(updated.data);
@@ -546,7 +572,12 @@ function CLiveRecord() {
       console.log("No team selected!");
     }
   };
-
+  const handleCancelStat = async()=>{
+    const all = await api.get(`/basic-stats/get/by-game/${gameId}`);
+    setAllTeamABasicStats(all.data);
+    setShowModal(false);
+    setSelectedBasicStat(null);
+  }
 
   const handleStatUpdate = (statType, amount = 1) => {
     if (!formStats) return;
@@ -559,18 +590,30 @@ function CLiveRecord() {
 
       // Handle linked stats (made + attempt)
       if (statType === "threePtMade") {
-        updatedPlayer.threePtMade = Math.max(0, (updatedPlayer.threePtMade || 0) + delta);
-        if (isAddMode) updatedPlayer.threePtAttempts = (updatedPlayer.threePtAttempts || 0) + 1;
-      } else if (statType === "twoPtMade") {
-        updatedPlayer.twoPtMade = Math.max(0, (updatedPlayer.twoPtMade || 0) + delta);
-        if (isAddMode) updatedPlayer.twoPtAttempts = (updatedPlayer.twoPtAttempts || 0) + 1;
-      } else if (statType === "ftMade") {
-        updatedPlayer.ftMade = Math.max(0, (updatedPlayer.ftMade || 0) + delta);
-        if (isAddMode) updatedPlayer.ftAttempts = (updatedPlayer.ftAttempts || 0) + 1;
-      } else {
-        // other stats like rebounds, assists, etc.
-        updatedPlayer[statType] = Math.max(0, (updatedPlayer[statType] || 0) + delta);
+      updatedPlayer.threePtMade = Math.max(0, (updatedPlayer.threePtMade || 0) + delta);
+      if (isAddMode) {
+        updatedPlayer.threePtAttempts = (updatedPlayer.threePtAttempts || 0) + 1;
+      } else if (!isAddMode && updatedPlayer.threePtMade < (updatedPlayer.threePtAttempts || 0)) {
+        updatedPlayer.threePtAttempts = Math.max(0, (updatedPlayer.threePtAttempts || 0) - 1);
       }
+    } else if (statType === "twoPtMade") {
+      updatedPlayer.twoPtMade = Math.max(0, (updatedPlayer.twoPtMade || 0) + delta);
+      if (isAddMode) {
+        updatedPlayer.twoPtAttempts = (updatedPlayer.twoPtAttempts || 0) + 1;
+      } else if (!isAddMode && updatedPlayer.twoPtMade < (updatedPlayer.twoPtAttempts || 0)) {
+        updatedPlayer.twoPtAttempts = Math.max(0, (updatedPlayer.twoPtAttempts || 0) - 1);
+      }
+    } else if (statType === "ftMade") {
+      updatedPlayer.ftMade = Math.max(0, (updatedPlayer.ftMade || 0) + delta);
+      if (isAddMode) {
+        updatedPlayer.ftAttempts = (updatedPlayer.ftAttempts || 0) + 1;
+      } else if (!isAddMode && updatedPlayer.ftMade < (updatedPlayer.ftAttempts || 0)) {
+        updatedPlayer.ftAttempts = Math.max(0, (updatedPlayer.ftAttempts || 0) - 1);
+      }
+    } else {
+      // other stats like rebounds, assists, etc.
+      updatedPlayer[statType] = Math.max(0, (updatedPlayer[statType] || 0) + delta);
+    }
 
       // 🔁 Recalculate gamePoints
       updatedPlayer.gamePoints =
@@ -599,17 +642,29 @@ function CLiveRecord() {
 
         // Handle linked stats (made + attempt)
         if (statType === "threePtMade") {
-          updated.threePtMade = Math.max(0, (updated.threePtMade || 0) + delta);
-          if (isAddMode) updated.threePtAttempts = (updated.threePtAttempts || 0) + 1;
-        } else if (statType === "twoPtMade") {
-          updated.twoPtMade = Math.max(0, (updated.twoPtMade || 0) + delta);
-          if (isAddMode) updated.twoPtAttempts = (updated.twoPtAttempts || 0) + 1;
-        } else if (statType === "ftMade") {
-          updated.ftMade = Math.max(0, (updated.ftMade || 0) + delta);
-          if (isAddMode) updated.ftAttempts = (updated.ftAttempts || 0) + 1;
-        } else {
-          updated[statType] = Math.max(0, (updated[statType] || 0) + delta);
+        updated.threePtMade = Math.max(0, (updated.threePtMade || 0) + delta);
+        if (isAddMode) {
+          updated.threePtAttempts = (updated.threePtAttempts || 0) + 1;
+        } else if (!isAddMode && updated.threePtMade < (updated.threePtAttempts || 0)) {
+          updated.threePtAttempts = Math.max(0, (updated.threePtAttempts || 0) - 1);
         }
+      } else if (statType === "twoPtMade") {
+        updated.twoPtMade = Math.max(0, (updated.twoPtMade || 0) + delta);
+        if (isAddMode) {
+          updated.twoPtAttempts = (updated.twoPtAttempts || 0) + 1;
+        } else if (!isAddMode && updated.twoPtMade < (updated.twoPtAttempts || 0)) {
+          updated.twoPtAttempts = Math.max(0, (updated.twoPtAttempts || 0) - 1);
+        }
+      } else if (statType === "ftMade") {
+        updated.ftMade = Math.max(0, (updated.ftMade || 0) + delta);
+        if (isAddMode) {
+          updated.ftAttempts = (updated.ftAttempts || 0) + 1;
+        } else if (!isAddMode && updated.ftMade < (updated.ftAttempts || 0)) {
+          updated.ftAttempts = Math.max(0, (updated.ftAttempts || 0) - 1);
+        }
+      } else {
+        updated[statType] = Math.max(0, (updated[statType] || 0) + delta);
+      }
 
 
         // 🔁 Recalculate gamePoints
@@ -633,7 +688,111 @@ function CLiveRecord() {
       return;
     }
   };
+  const handlePointsSelect = (points) => {
+    setSelectedPoints(points);
+  };
 
+  const handleAssist = async (basicStatId) => {
+    try {
+      if (gameId) {
+        const res = await api.get(`/basic-stats/get/subbed-in/${gameId}`);
+        const updatedAssistPlayers = res.data.filter(player => player.basicStatId !== basicStatId);
+        setAssistPlayers(updatedAssistPlayers);
+      }
+      setSelectUpdatePlayer(basicStatId);
+      console.log("find this",selectedUpdatePlayer);
+      setAsssistModal(true);
+    } catch (err) {
+      console.error("Failed to fetch subbed-out players:", err);
+    }
+  };
+
+const handleAssistUpdate = async (basicStatId) => {
+  try {
+    // Fetch the current player's stats and the assist stat in parallel
+    const [currentStat, assistStat] = await Promise.all([
+      api.get(`/basic-stats/get/${selectedUpdatePlayer}`),
+      api.get(`/basic-stats/get/${basicStatId}`)
+    ]);
+
+    console.log("Selected Player ID:", selectedUpdatePlayer);
+
+    // Increment the assist count
+    const updatedCurrentStat = {
+      ...currentStat.data,
+      assists: currentStat.data.assists+1, // Increment assists by 1
+    };
+    console.log("Updated Current Stat Payload:", updatedCurrentStat);
+
+    // Prepare the assist stat update based on selectedPoints
+    let updatedAssistStat = { ...assistStat.data };
+
+    let pointVal = "three";
+    if (selectedPoints === 3) {
+      pointVal = "three point shot";
+      updatedAssistStat = {
+        ...updatedAssistStat,
+        threePtAttempts: updatedAssistStat.threePtAttempts + 1,
+        threePtMade: updatedAssistStat.threePtMade + 1
+      };
+    } else if (selectedPoints === 2) {
+      pointVal = "two point shot";
+      updatedAssistStat = {
+        ...updatedAssistStat,
+        twoPtAttempts: updatedAssistStat.twoPtAttempts + 1,
+        twoPtMade: updatedAssistStat.twoPtMade + 1
+      };
+    } else if (selectedPoints === 1) {
+      updatedAssistStat = {
+        ...updatedAssistStat,
+        ftAttempts: updatedAssistStat.ftAttempts + 1,
+        ftMade: updatedAssistStat.ftMade + 1
+      };
+    }
+
+    // Perform both updates in parallel and wait for responses
+    const updatedCurrentStatRes = await api.put(`/basic-stats/put/${selectedUpdatePlayer}`, updatedCurrentStat);
+    const updatedAssistStatRes = await api.put(`/basic-stats/put/${assistStat.data.basicStatId}`, updatedAssistStat);
+
+      const payload = {
+      gameId: gameId,
+      playerId: selectedUpdatePlayer,
+      message: `${updatedCurrentStat.fname} ${updatedCurrentStat.lname}'s assisted ${updatedAssistStat.fname} ${updatedAssistStat.lname}'s ${pointVal}`,
+      timestamp: new Date().toISOString(),
+    };
+    await api.post('/play-by-play', payload);
+
+    console.log("Updated First BasicStat:", updatedCurrentStatRes.data);
+    console.log("Updated Second BasicStat:", updatedAssistStatRes.data);
+
+    // Refresh the subbed-in stats after the update
+    const updatedSubbedIn = await api.get(`/basic-stats/get/subbed-in/${gameId}`);
+    setTeamABasicStats(updatedSubbedIn.data);
+
+    // Refresh all stats for the game
+    try {
+      const allStats = await api.get(`/basic-stats/get/by-game/${gameId}`);
+      setAllTeamABasicStats(allStats.data);
+      
+      // Refresh play-by-play
+      const playByPlayRes = await api.get(`/play-by-play/game/${gameId}`);
+      if (playByPlayRes.status === 200) {
+        setPlayByPlays(playByPlayRes.data);
+      }
+    } catch (e) {
+      console.warn("Could not refresh all basic stats after update:", e);
+    }
+
+    // Close the modal dialogs
+    setShowModal(false);
+    setAsssistModal(false);
+
+  } catch (err) {
+    console.error("Error updating stats:", err);
+    // Handle any errors that might occur during API requests
+    alert("An error occurred while updating the stats. Please try again.");
+  }
+};
 
 
   const handleSubstitute = async () => {
@@ -658,6 +817,22 @@ function CLiveRecord() {
     // Sub in the bench player (must also use basicStatId)
     await api.post(`/stopwatch/${benchBasicStatId}/sub-in`);
 
+    const [subbedOut, subbedIn] = await Promise.all([
+        api.get(`/basic-stats/get/${selectedBasicStat.basicStatId}`),
+        api.get(`/basic-stats/get/${benchBasicStatId}`)
+      ]);
+
+      const payload = {
+      gameId: gameId,
+      playerId: selectedUpdatePlayer,
+      message: `${subbedOut.data.fname} ${subbedOut.data.lname} subbed in for ${subbedIn.data.fname} ${subbedIn.data.lname}`,
+      timestamp: new Date().toISOString(),
+    };
+    await api.post('/play-by-play', payload);
+    const playByPlayRes = await api.get(`/play-by-play/game/${gameId}`);
+      if (playByPlayRes.status === 200) {
+        setPlayByPlays(playByPlayRes.data);
+      }
     // Refresh subbed-in list
     api.get(`/basic-stats/get/subbed-in/${gameId}`)
       .then((res) => {
@@ -762,11 +937,22 @@ function CLiveRecord() {
   }, [running]);
 
   const handleStart = async () => {
+    if (teamABasicStats.length !== 5) {
+      alert("You must select exactly 5 players.");
+      return;
+    }
+    setIsPlaying(true);
     await api.post(`/stopwatch/sub-in/${gameId}`);
     setRunning(true);
+    setEnabled(true);
   };
 
   const handleStop = async () => {
+    if (teamABasicStats.length !== 5) {
+      alert("You must select exactly 5 players.");
+      return;
+    }
+    setIsPlaying(false);
     await api.post(`/stopwatch/timeout/${gameId}`);
     setRunning(false);
   };
@@ -804,17 +990,18 @@ function CLiveRecord() {
                 onClick={running ? handleStop : handleStart}
               >
                 {isPlaying ? (
+                  // PAUSE
                   <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
+                    <rect x="6" y="4" width="4" height="16" />
+                    <rect x="14" y="4" width="4" height="16" />
                   </svg>
                 ) : (
+                  // PLAY
                   <svg viewBox="0 0 24 24" fill="currentColor">
                     <path d="M8 5v14l11-7z" />
                   </svg>
                 )}
               </button>
-              <div className="timer-display">{formatTime(elapsedTime)}</div>
-
 
             </div>
             {/* End Game Button */}
@@ -850,12 +1037,10 @@ function CLiveRecord() {
               ) : (
                 teamABasicStats.map((stat) => (
                   <div
-                    key={stat.playerId}
-                    className="player-card selected"
-                    onClick={() =>
-                      handlePlayersClick(stat.playerId)
-                    }
-                  >
+                      key={stat.playerId}
+                      className={`player-card selected ${!enabled ? "disabled" : ""}`}
+                      onClick={() => enabled && handlePlayersClick(stat.playerId)}
+                    >
                     <div className="jersey-number">#{stat.jerseyNum}</div>
                     <div className="player-name">{stat.fname} {stat.lname}</div>
                   </div>
@@ -880,12 +1065,47 @@ function CLiveRecord() {
               className="stat-btn"
               variant="contained"
               color="primary"
+              sx={{marginBottom: 3}}
               onClick={() => setShowFirstFiveModal(true)}
             >
               Add First Five
             </Button>
           )}
 
+        </div>
+
+        {/* Play-by-Play Section */}
+        <div className="play-by-play-section">
+          <div className="play-by-play-header">
+            <h3>Game Activity Log</h3>
+            <span className="play-count">{playByPlays.length} {playByPlays.length === 1 ? 'event' : 'events'}</span>
+          </div>
+          
+          <div className="play-by-play-container">
+            {playByPlays.length === 0 ? (
+              <div className="no-plays-message">
+                <p>📋 No game activity recorded yet</p>
+                <span>Actions will appear here as the game progresses</span>
+              </div>
+            ) : (
+              <div className="play-by-play-feed">
+                {playByPlays.slice().reverse().map((play, index) => (
+                  <div key={index} className="play-item">
+                    <div className="play-timestamp">
+                      {play.timestamp ? new Date(play.timestamp).toLocaleTimeString('en-US', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                      }) : '--:--:--'}
+                    </div>
+                    <div className="play-content">
+                      <div className="play-message">{play.message}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -910,63 +1130,63 @@ function CLiveRecord() {
                 </h4>
                 <div className="stats-display three-col">
                   <div className="stat-item">
-                    <span className="stat-label">PTS:</span>
+                    <span className="stat-label">Points:</span>
                     <span className="stat-value">{getPoints(formStats)}</span>
                   </div>
-                  <div className="stat-item">
-                    <span className="stat-label">3PA:</span>
+                  <div className="stat-item" onClick={() => handleStatUpdate("threePtAttempts")}>
+                    <span className="stat-label">3 Point Attempts:</span>
                     <span className="stat-value">{getStat(formStats, "threePtAttempts")}</span>
                   </div>
-                  <div className="stat-item">
-                    <span className="stat-label">3PM:</span>
+                  <div className="stat-item" onClick={() => handleStatUpdate("threePtMade")}>
+                    <span className="stat-label">3 Points Made:</span>
                     <span className="stat-value">{getStat(formStats, "threePtMade")}</span>
                   </div>
-                  <div className="stat-item">
-                    <span className="stat-label">2PA:</span>
+                  <div className="stat-item" onClick={() => handleStatUpdate("twoPtAttempts")}>
+                    <span className="stat-label">2 Point Attempts:</span>
                     <span className="stat-value">{getStat(formStats, "twoPtAttempts")}</span>
                   </div>
-                  <div className="stat-item">
-                    <span className="stat-label">2PM:</span>
+                  <div className="stat-item" onClick={() => handleStatUpdate("twoPtMade")}>
+                    <span className="stat-label">2 Points Made:</span>
                     <span className="stat-value">{getStat(formStats, "twoPtMade")}</span>
                   </div>
-                  <div className="stat-item">
-                    <span className="stat-label">FTA:</span>
+                  <div className="stat-item" onClick={() => handleStatUpdate("ftAttempts")}>
+                    <span className="stat-label">Free Throw Attempts:</span>
                     <span className="stat-value">{getStat(formStats, "ftAttempts")}</span>
                   </div>
-                  <div className="stat-item">
-                    <span className="stat-label">FTM:</span>
+                  <div className="stat-item" onClick={() => handleStatUpdate("ftMade")}>
+                    <span className="stat-label">Free Throws Made:</span>
                     <span className="stat-value">{getStat(formStats, "ftMade")}</span>
                   </div>
-                  <div className="stat-item ast">
-                    <span className="stat-label">AST:</span>
+                  <div className="stat-item ast" onClick={() => isAddMode && !selectedRef.team==='B' ? handleAssist(formStats.basicStatId) : handleStatUpdate("assists")}>
+                    <span className="stat-label">Assists:</span>
                     <span className="stat-value">{getStat(formStats, "assists")}</span>
                   </div>
-                  <div className="stat-item">
-                    <span className="stat-label">STL:</span>
+                  <div className="stat-item" onClick={() => handleStatUpdate("steals")}>
+                    <span className="stat-label">Steals:</span>
                     <span className="stat-value">{getStat(formStats, "steals")}</span>
                   </div>
-                  <div className="stat-item">
-                    <span className="stat-label">BLK:</span>
+                  <div className="stat-item" onClick={() => handleStatUpdate("blocks")}>
+                    <span className="stat-label">Blocks:</span>
                     <span className="stat-value">{getStat(formStats, "blocks")}</span>
                   </div>
-                  <div className="stat-item">
-                    <span className="stat-label">TO:</span>
+                  <div className="stat-item" onClick={() => handleStatUpdate("turnovers")}>
+                    <span className="stat-label">Turnovers:</span>
                     <span className="stat-value">{getStat(formStats, "turnovers")}</span>
                   </div>
-                  <div className="stat-item">
-                    <span className="stat-label">ORB:</span>
+                  <div className="stat-item" onClick={() => handleStatUpdate("oFRebounds")}>
+                    <span className="stat-label">Offensive Rebounds:</span>
                     <span className="stat-value">{getStat(formStats, "oFRebounds")}</span>
                   </div>
-                  <div className="stat-item">
-                    <span className="stat-label">DRB:</span>
+                  <div className="stat-item" onClick={() => handleStatUpdate("dFRebounds")}>
+                    <span className="stat-label">Defensive Rebounds:</span>
                     <span className="stat-value">{getStat(formStats, "dFRebounds")}</span>
                   </div>
-                  <div className="stat-item">
-                    <span className="stat-label">PF:</span>
+                  <div className="stat-item" onClick={() => handleStatUpdate("pFouls")}>
+                    <span className="stat-label">Personal Fouls:</span>
                     <span className="stat-value">{getStat(formStats, "pFouls")}</span>
                   </div>
-                  <div className="stat-item">
-                    <span className="stat-label">DF:</span>
+                  <div className="stat-item" onClick={() => handleStatUpdate("dFouls")}>
+                    <span className="stat-label">Defensive Rebounds:</span>
                     <span className="stat-value">{getStat(formStats, "dFouls")}</span>
                   </div>
                 </div>
@@ -975,65 +1195,21 @@ function CLiveRecord() {
 
               <div className="stat-controls">
                 <h4>Record Stats</h4>
-                <div style={{ display: "flex", justifyContent: "center", marginBottom: "0.75rem" }}>
+                <div style={{ display: "flex", justifyContent: "center" }}>
                   <button
                     className="close-modal-btn"
                     onClick={() => setIsAddMode((m) => !m)}
                   >
                     Mode: {isAddMode ? "Add" : "Subtract"}
                   </button>
+                  <button className="substitute-btn" onClick={handleSubstitute}>
+                Substitute Player
+              </button>
                 </div>
 
-                <div className="stat-buttons four-col">
+                
 
-                  {/*Attack*/}
-                  <button className="stat-btn" onClick={() => handleStatUpdate("threePtAttempts")}>
-                    {isAddMode ? "+" : "-"} 3PA
-                  </button>
-                  <button className="stat-btn" onClick={() => handleStatUpdate("threePtMade")}>
-                    {isAddMode ? "+" : "-"} 3PM
-                  </button>
-                  <button className="stat-btn" onClick={() => handleStatUpdate("twoPtAttempts")}>
-                    {isAddMode ? "+" : "-"} 2PA
-                  </button>
-                  <button className="stat-btn" onClick={() => handleStatUpdate("twoPtMade")}>
-                    {isAddMode ? "+" : "-"} 2PM
-                  </button>
-                  <button className="stat-btn" onClick={() => handleStatUpdate("ftAttempts")}>
-                    {isAddMode ? "+" : "-"} FTA
-                  </button>
-                  <button className="stat-btn" onClick={() => handleStatUpdate("ftMade")}>
-                    {isAddMode ? "+" : "-"} FTM
-                  </button>
-                  <button className="stat-btn" onClick={() => handleStatUpdate("assists")}>
-                    {isAddMode ? "+" : "-"} AST
-                  </button>
-                  <button className="stat-btn" onClick={() => handleStatUpdate("steals")}>
-                    {isAddMode ? "+" : "-"} STL
-                  </button>
-                  <button className="stat-btn" onClick={() => handleStatUpdate("blocks")}>
-                    {isAddMode ? "+" : "-"} BLK
-                  </button>
-                  <button className="stat-btn" onClick={() => handleStatUpdate("turnovers")}>
-                    {isAddMode ? "+" : "-"} TO
-                  </button>
-
-                  {/*Defensive*/}
-                  <button className="stat-btn" onClick={() => handleStatUpdate("oFRebounds")}>
-                    {isAddMode ? "+" : "-"} ORB
-                  </button>
-                  <button className="stat-btn" onClick={() => handleStatUpdate("dFRebounds")}>
-                    {isAddMode ? "+" : "-"} DRB
-                  </button>
-                  <button className="stat-btn" onClick={() => handleStatUpdate("pFouls")}>
-                    {isAddMode ? "+" : "-"} PF
-                  </button>
-                  <button className="stat-btn" onClick={() => handleStatUpdate("dFouls")}>
-                    {isAddMode ? "+" : "-"} DF
-                  </button>
-                </div>
-
-                <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "1rem" }}>
+                <div style={{ display: "flex", justifyContent: "center", gap: "1rem"}}>
                   <button className="save-modal-btn" onClick={() => {
                     handleSaveStats();
                     setShowModal(false);
@@ -1043,20 +1219,13 @@ function CLiveRecord() {
                   <button
                     className="close-modal-btn"
                     onClick={() => {
-                      setShowModal(false);
-                      setSelectedBasicStat(null);
+                      handleCancelStat();
                     }}
                   >
                     Close
                   </button>
                 </div>
               </div>
-            </div>
-
-            <div className="modal-actions">
-              <button className="substitute-btn" onClick={handleSubstitute}>
-                Substitute Player
-              </button>
             </div>
           </div>
         </div>
@@ -1090,6 +1259,74 @@ function CLiveRecord() {
             </div>
             <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "1rem" }}>
               <button className="close-modal-btn single" onClick={() => setShowSubModal(false)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/*Assist Modal */}
+       {showModal && assistModal && (
+        <div className="modal-overlay" onClick={() => setAsssistModal(false)}>
+          <div className="modal-container player-stats-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Record Assist</h2>
+              <button className="close-button" onClick={() => setAsssistModal(false)}>&times;</button>
+            </div>
+            <div className="modal-content">
+              {/* Step 1: Points Selection */}
+              <div className="assist-workflow-section">
+                <div className="workflow-step">
+                  <span className="step-number">1</span>
+                  <h4>Select Shot Type</h4>
+                </div>
+                <div className="points-selection-enhanced">
+                  {[
+                    { points: 3, label: "3-Point Shot" },
+                    { points: 2, label: "2-Point Shot" },
+                  ].map(({ points, label }) => (
+                    <button
+                      key={points}
+                      className={`points-btn-enhanced ${selectedPoints === points ? 'selected' : ''}`}
+                      onClick={() => handlePointsSelect(points)}
+                    >
+                      <span className="point-value">{points}</span>
+                      <span className="point-label">{label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Step 2: Player Selection */}
+              <div className="assist-workflow-section">
+                <div className="workflow-step">
+                  <span className="step-number">2</span>
+                  <h4>Select Player Who Scored</h4>
+                </div>
+                {assistPlayers.length === 0 ? (
+                  <div className="no-players-message">
+                    <p>⚠️ No other players available on court</p>
+                  </div>
+                ) : (
+                  <div className="players-grid assist-players-grid">
+                    {assistPlayers.map((p) => (
+                      <div
+                        key={p.playerId}
+                        className="player-card assist-player-card"
+                        onClick={() => handleAssistUpdate(p.basicStatId)}
+                      >
+                        <div className="jersey-number">#{p.jerseyNum}</div>
+                        <div className="player-name">{p.fname} {p.lname}</div>
+                        <div className="assist-action-hint">
+                          +1 AST • +{selectedPoints} PTS
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+            <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "1rem", paddingBottom: "1rem" }}>
+              <button className="close-modal-btn single" onClick={() => setAsssistModal(false)}>Cancel</button>
             </div>
           </div>
         </div>

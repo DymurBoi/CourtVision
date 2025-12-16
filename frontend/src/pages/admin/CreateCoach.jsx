@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import "../../styles/admin/UserForm.css";
-import axios from "axios";
+import { api } from "../../utils/axiosConfig";
 
 const Alert = (props) => <MuiAlert elevation={6} variant="filled" {...props} />;
 
@@ -102,8 +102,8 @@ function CreateCoach() {
     }
 
     try {
-      const response = await axios.post(
-        "http://localhost:8080/api/coaches/post",
+      const response = await api.post(
+        "/coaches/post",
         formData
       );
 
@@ -142,7 +142,7 @@ function CreateCoach() {
 
               {/* First Name */}
               <div className="form-input-wrapper">
-                <FormControl fullWidth variant="outlined" required>
+                <FormControl fullWidth variant="filled" required>
                   <InputLabel htmlFor="fname">First Name</InputLabel>
                   <OutlinedInput
                     id="fname"
@@ -157,7 +157,7 @@ function CreateCoach() {
 
               {/* Last Name */}
               <div className="form-input-wrapper">
-                <FormControl fullWidth variant="outlined" required>
+                <FormControl fullWidth variant="filled" required>
                   <InputLabel htmlFor="lname">Last Name</InputLabel>
                   <OutlinedInput
                     id="lname"
@@ -172,7 +172,7 @@ function CreateCoach() {
 
               {/* Email */}
               <div className="form-input-wrapper">
-                <FormControl fullWidth variant="outlined" required>
+                <FormControl fullWidth variant="filled" required>
                   <InputLabel htmlFor="email">Email</InputLabel>
                   <OutlinedInput
                     id="email"
@@ -187,7 +187,7 @@ function CreateCoach() {
 
               {/* Password */}
               <div className="form-input-wrapper">
-                <FormControl fullWidth variant="outlined" required error={Boolean(passwordError)}>
+                <FormControl fullWidth variant="filled" required error={Boolean(passwordError)}>
                   <InputLabel htmlFor="password">Password</InputLabel>
                   <OutlinedInput
                     id="password"
@@ -202,7 +202,7 @@ function CreateCoach() {
                           onClick={handleClickShowPassword}
                           edge="end"
                         >
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                          {showPassword ? <Visibility /> : <VisibilityOff />}
                         </IconButton>
                       </InputAdornment>
                     }
@@ -217,7 +217,7 @@ function CreateCoach() {
               <div className="form-input-wrapper">
                 <FormControl
                   fullWidth
-                  variant="outlined"
+                  variant="filled"
                   required
                   error={Boolean(passwordError)}
                 >
@@ -238,9 +238,9 @@ function CreateCoach() {
                           edge="end"
                         >
                           {confirmShowPassword ? (
-                            <VisibilityOff />
-                          ) : (
                             <Visibility />
+                          ) : (
+                            <VisibilityOff />
                           )}
                         </IconButton>
                       </InputAdornment>
@@ -256,7 +256,7 @@ function CreateCoach() {
               <div className="form-input-wrapper">
                 <FormControl
                   fullWidth
-                  variant="outlined"
+                  variant="filled"
                   required
                   error={Boolean(birthDateError)}
                 >

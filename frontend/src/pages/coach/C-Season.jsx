@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "../../components/AuthContext";
 import { api } from "../../utils/axiosConfig";
 import "../../styles/coach/C-Season.css";
@@ -57,9 +58,13 @@ function CSeason() {
     e.preventDefault();
     if (!seasonName.trim() || !teamId) return;
     try {
-      await api.post(
+      const res = await api.post(
         `/seasons/start?name=${encodeURIComponent(seasonName)}&teamId=${teamId}`
       );
+      if(!res || !res.data){
+        alert("A season is already running for this team.");
+        return;
+      }
       setSeasonName("");
       fetchSeasons(teamId);
     } catch (err) {
@@ -141,20 +146,20 @@ function CSeason() {
                               <span role="img" aria-label="End">🔚</span> End
                             </button>
                           )}
-                          <a
-                            href={`/coach/season/${season.id}/games`}
+                          <Link
+                            to={`/coach/season/${season.id}/games`}
                             className="view-btn"
                             title="View games in this season"
                           >
                             <span role="img" aria-label="Games">🎮</span> Games
-                          </a>
-                          <a
-                            href={`/coach/season/${season.id}/ranking`}
+                          </Link>
+                          <Link
+                            to={`/coach/season/${season.id}/ranking`}
                             className="view-btn"
                             title="View player ranking for this season"
                           >
                             <span role="img" aria-label="Ranking">📊</span> Ranking
-                          </a>
+                          </Link>
                         </div>
                       </td>
                     </tr>

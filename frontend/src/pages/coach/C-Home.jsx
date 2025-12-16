@@ -152,7 +152,6 @@ function CHome() {
    const handleTeamChange = (e) => {
   const teamId = Number(e.target.value);
   setSelectedTeamId(teamId);
-  localStorage.setItem("selectedTeamId", teamId);
 };
 
 useEffect(() => {
@@ -385,8 +384,7 @@ useEffect(() => {
               </option>
             ))}
           </select>
-        </div>
-            <button className="create-team-button" onClick={() => setShowCreateModal(true)}>
+          <button className="create-team-button" onClick={() => setShowCreateModal(true)}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -404,6 +402,8 @@ useEffect(() => {
             </svg>
             Create New Team
           </button>
+        </div>
+            
         {/* Team Details */}
         {selectedTeam && (
           <div className="team-details-header">

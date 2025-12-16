@@ -36,14 +36,18 @@ public class SeasonService {
     }
 
     public Season startSeason(String name, Long teamId) {
+        List<Season> activeSeasons=seasonRepository.findByActiveTrueAndTeam_TeamId(teamId);
+        if (!activeSeasons.isEmpty()) {
+            return null;
+        }
+        // fetch team and set
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new RuntimeException("Team not found with id: " + teamId));
+
         Season season = new Season();
         season.setSeasonName(name);
         season.setStartDate(LocalDate.now());
         season.setActive(true);
-
-        // fetch team and set
-        Team team = teamRepository.findById(teamId)
-                .orElseThrow(() -> new RuntimeException("Team not found with id: " + teamId));
         season.setTeam(team);
 
         return seasonRepository.save(season);
@@ -64,31 +68,31 @@ public class SeasonService {
     }
 
     public PlayerSeasonAveragesDTO calculatePlayerSeasonAverages(Long playerId, Long seasonId) {
-    // Prefer Game -> Season lookup (some BasicStats records may not have season set directly)
-    List<BasicStats> statsList = basicStatsRepository.findByPlayer_PlayerIdAndGame_Season_Id(playerId, seasonId);
-    if (statsList == null || statsList.isEmpty()) {
-        statsList = basicStatsRepository.findByPlayer_PlayerIdAndSeason_Id(playerId, seasonId);
-    }
-        
-            // Prefer Game -> Season -> Team lookup to ensure stats are from this season's team
-            Season season = seasonRepository.findById(seasonId).orElseThrow(() -> new RuntimeException("Season not found"));
-            Long teamId = season.getTeam() != null ? season.getTeam().getTeamId() : null;
-            if (teamId != null) {
-                List<BasicStats> teamStatsList = basicStatsRepository.findByPlayer_PlayerIdAndGame_Season_IdAndGame_Team_TeamId(playerId, seasonId, teamId);
-                if (teamStatsList != null && !teamStatsList.isEmpty()) {
-                    statsList = teamStatsList;
-                }
+        // Prefer Game -> Season lookup (some BasicStats records may not have season set directly)
+        List<BasicStats> statsList = basicStatsRepository.findByPlayer_PlayerIdAndGame_Season_Id(playerId, seasonId);
+        if (statsList == null || statsList.isEmpty()) {
+            statsList = basicStatsRepository.findByPlayer_PlayerIdAndSeason_Id(playerId, seasonId);
+        }
+
+        // Prefer Game -> Season -> Team lookup to ensure stats are from this season's team
+        Season season = seasonRepository.findById(seasonId).orElseThrow(() -> new RuntimeException("Season not found"));
+        Long teamId = season.getTeam() != null ? season.getTeam().getTeamId() : null;
+        if (teamId != null) {
+            List<BasicStats> teamStatsList = basicStatsRepository.findByPlayer_PlayerIdAndGame_Season_IdAndGame_Team_TeamId(playerId, seasonId, teamId);
+            if (teamStatsList != null && !teamStatsList.isEmpty()) {
+                statsList = teamStatsList;
             }
-            if (statsList == null || statsList.isEmpty()) {
-                // Fallbacks
-                statsList = basicStatsRepository.findByPlayer_PlayerIdAndGame_Season_Id(playerId, seasonId);
-            }
-            if (statsList == null || statsList.isEmpty()) {
-                statsList = basicStatsRepository.findByPlayer_PlayerIdAndSeason_Id(playerId, seasonId);
-            }
+        }
+        if (statsList == null || statsList.isEmpty()) {
+            // Fallbacks
+            statsList = basicStatsRepository.findByPlayer_PlayerIdAndGame_Season_Id(playerId, seasonId);
+        }
+        if (statsList == null || statsList.isEmpty()) {
+            statsList = basicStatsRepository.findByPlayer_PlayerIdAndSeason_Id(playerId, seasonId);
+        }
 
         if (statsList.isEmpty()) {
-            return new PlayerSeasonAveragesDTO(playerId, seasonId, 0, 0, 0, 0, 0, 0);
+            return new PlayerSeasonAveragesDTO(playerId, seasonId, 0, 0, 0, 0, 0, 0,0);
         }
 
         double totalPoints = 0, totalRebounds = 0, totalAssists = 0, totalSteals = 0, totalBlocks = 0, totalTurnovers = 0;
@@ -112,7 +116,8 @@ public class SeasonService {
                 totalAssists / gamesPlayed,
                 totalSteals / gamesPlayed,
                 totalBlocks / gamesPlayed,
-                totalTurnovers / gamesPlayed
+                totalTurnovers / gamesPlayed,
+                gamesPlayed
         );
     }
 
@@ -124,17 +129,20 @@ public class SeasonService {
         return seasonRepository.findById(seasonId).orElseThrow(() -> new RuntimeException("Season not found"));
     }
 
-   public List<Game> getGamesBySeason(Long seasonId) {
-    // Fetch all games for the given season
-    List<Game> allGames = gameRepository.findBySeason_Id(seasonId);
+    public List<Game> getGamesBySeason(Long seasonId) {
+        // Fetch season to get the team
+        Season season = seasonRepository.findById(seasonId)
+                .orElseThrow(() -> new RuntimeException("Season not found with id: " + seasonId));
+        
+        // Get the team associated with this season
+        Long teamId = season.getTeam() != null ? season.getTeam().getTeamId() : null;
+        
+        if (teamId == null) {
+            throw new RuntimeException("Season has no associated team");
+        }
+        
+        // Fetch games for this season AND team only
+        return gameRepository.findBySeason_IdAndTeam_TeamId(seasonId, teamId);
+    }
 
-    // Filter out Scrimmage and Practice Match
-    return allGames.stream()
-            .filter(game -> game.getGameType() != null &&
-                    !game.getGameType().equalsIgnoreCase("Scrimmage") &&
-                    !game.getGameType().equalsIgnoreCase("Practice Match"))
-            .toList();
 }
-
-}
-

@@ -15,6 +15,7 @@ function CGameDetails() {
   const params = new URLSearchParams(window.location.search);
   const teamId = params.get("teamId");
 
+  const [playByPlays, setPlayByPlays] = useState([]);
   const [isEditingComment, setIsEditingComment] = useState(false);
   const [showOrientationWarning, setShowOrientationWarning] = useState(false);
   const [players, setPlayers] = useState([]);
@@ -41,6 +42,11 @@ function CGameDetails() {
       }
 
       try {
+        const playByPlayRes = await api.get(`/play-by-play/game/${gameId}`);
+        if (playByPlayRes.status === 200) {
+          console.log('PlayByPlay response:', playByPlayRes);
+          setPlayByPlays(playByPlayRes.data);
+        }
         const gameRes = await api.get(`/games/get/${gameId}`);
         setGameDetails(gameRes.data);
         setComments(gameRes.data.comments);
@@ -309,6 +315,9 @@ function CGameDetails() {
         >
           Physical Based Metrics
         </button>
+        <button className={`tab-button ${activeTab === "logs" ? "active" : ""}`} onClick={() => setActiveTab("logs")}>
+          Logs
+        </button>
         <button
           className="create-team-button"
           onClick={() => {
@@ -353,7 +362,6 @@ function CGameDetails() {
                       <Tooltip title="Defensive Rebound"><th>DREB</th></Tooltip>
                       <Tooltip title="Personal Fouls"><th>PF</th></Tooltip>
                       <Tooltip title="Defensive Fouls"><th>DF</th></Tooltip>
-                      <Tooltip title="Plus Minus"><th>+/-</th></Tooltip>
                       <th>Action</th>
                     </tr>
                   </thead>
@@ -374,7 +382,6 @@ function CGameDetails() {
                         <td>{playerStat.dFRebounds}</td>
                         <td>{playerStat.pFouls}</td>
                         <td>{playerStat.dFouls}</td>
-                        <td>{playerStat.plusMinus}</td>
                         <td>
                           <button
                             onClick={() => {
@@ -402,6 +409,7 @@ function CGameDetails() {
                 <thead>
                   <tr>
                     <th>Player Name</th>
+                    <Tooltip title="Plus Minus"><th>+/-</th></Tooltip>
                     <Tooltip title="Player Efficiency Rating"><th>PER</th></Tooltip>
                     <Tooltip title="Effective Field Goal Percentage"><th>EFG%</th></Tooltip>
                     <Tooltip title="True Shooting Percentage"><th>TS%</th></Tooltip>
@@ -414,12 +422,12 @@ function CGameDetails() {
                     <Tooltip title="Points Per Minute"><th>PPM</th></Tooltip>
                     <Tooltip title="Shooting Efficiency Percentage"><th>SE%</th></Tooltip>
                     <Tooltip title="Points Per Shot"><th>PPS</th></Tooltip>
-
                   </tr>
                 </thead>
                 <tbody>
                   {advancedStats.map((playerStat) => (
                     <tr key={playerStat.advancedStatId}>
+                      <td>{playerStat.basicStatsDTO.plusMinus}</td>
                       <td>{playerStat.basicStatsDTO.playerName}</td>
                       <td>{playerStat.uPER}</td>
                       <td>{playerStat.eFG}</td>
@@ -456,14 +464,53 @@ function CGameDetails() {
                   {physicalMetrics.map((playerStat) => (
                     <tr key={playerStat.physicalBasedMetricsStatsId}>
                       <td>{playerStat.basicStatsDTO.playerName}</td>
-                      <td>{playerStat.finishingEfficiency}</td>
-                      <td>{playerStat.reboundingEfficiency}</td>
-                      <td>{playerStat.defensiveActivityIndex}</td>
-                      <td>{playerStat.physicalEfficiencyRating}</td>
+                      <td>{Number(playerStat.finishingEfficiency).toFixed(2)}</td>
+                      <td>{Number(playerStat.reboundingEfficiency).toFixed(2)}</td>
+                      <td>{Number(playerStat.defensiveActivityIndex).toFixed(2)}</td>
+                      <td>{Number(playerStat.physicalEfficiencyRating).toFixed(2)}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
+            </div>
+          )}
+          {activeTab === "logs" && (
+            <div className="logs-table-wrapper">
+              <div className="logs-header">
+                <h3>Activity Log</h3>
+                <span className="logs-count">{playByPlays.length} entries</span>
+              </div>
+              
+              {playByPlays.length === 0 ? (
+                <div className="logs-empty">
+                  <p>No activity recorded for this game</p>
+                </div>
+              ) : (
+                <div className="logs-table-container">
+                  <table className="logs-table">
+                    <thead>
+                      <tr>
+                        <th>Time</th>
+                        <th>Event</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {playByPlays.slice().reverse().map((play, index) => (
+                        <tr key={index}>
+                          <td className="log-time">
+                            {play.timestamp ? new Date(play.timestamp).toLocaleTimeString('en-US', {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              second: '2-digit'
+                            }) : '--:--:--'}
+                          </td>
+                          <td className="log-message">{play.message}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -531,7 +578,7 @@ function CGameDetails() {
           </div>
         )}
       </div>
-
+        
     </main>
 
   );

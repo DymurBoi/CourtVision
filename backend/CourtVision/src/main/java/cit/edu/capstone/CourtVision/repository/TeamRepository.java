@@ -10,4 +10,5 @@ import java.util.List;
 public interface TeamRepository extends JpaRepository<Team, Long> {
     List<Team> findByAdmin_AdminId(int adminId);
     List<Team> findByCoaches_CoachId(Integer coachId);
+    Team findByTeamIdAndCoaches_CoachId(Long teamId, Integer coachId);
 }

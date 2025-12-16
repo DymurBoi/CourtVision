@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
-import axios from "axios"
+import { api } from "../utils/axiosConfig"
 import "../styles/Login.css"
 import basketballCourt from "../assets/BasketballCourt.jpg"
 import {
@@ -76,13 +76,6 @@ function PlayerRegistration() {
     e.preventDefault()
 
     // client-side validations
-    const pwdRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
-
-    if (!pwdRegex.test(formData.password)) {
-      setPasswordError("Password must be at least 8 chars and include uppercase, lowercase, number and special character")
-      return
-    }
-
     if (formData.password !== formData.confirmPassword) {
       setPasswordError("Passwords do not match")
       return
@@ -100,7 +93,7 @@ function PlayerRegistration() {
     const { confirmPassword, ...payload } = formData
 
     try {
-      const response = await axios.post("http://localhost:8080/api/players/post", payload)
+      const response = await api.post("/players/post", payload)
       console.log("Registration successful:", response.data)
       alert("Registration successful! Please log in.")
       navigate("/login")
@@ -127,10 +120,11 @@ function PlayerRegistration() {
 
           <form className="auth-form" onSubmit={handleSubmit}>
             <FormControl sx={{ m: 1, width: "100%", maxWidth: 400 }} variant="outlined" required>
-              <InputLabel shrink htmlFor="fname">First Name</InputLabel>
+              <InputLabel htmlFor="fname">First Name</InputLabel>
               <OutlinedInput
                 id="fname"
                 name="fname"
+                label="First Name"
                 value={formData.fname}
                 onChange={handleChange}
                 placeholder="Enter your first name"
@@ -139,10 +133,11 @@ function PlayerRegistration() {
             </FormControl>
 
             <FormControl sx={{ m: 1, width: "100%", maxWidth: 400 }} variant="outlined" required>
-              <InputLabel shrink htmlFor="lname">Last Name</InputLabel>
+              <InputLabel htmlFor="lname">Last Name</InputLabel>
               <OutlinedInput
                 id="lname"
                 name="lname"
+                label="Last Name"
                 value={formData.lname}
                 onChange={handleChange}
                 placeholder="Enter your last name"
@@ -151,11 +146,12 @@ function PlayerRegistration() {
             </FormControl>
 
             <FormControl sx={{ m: 1, width: "100%", maxWidth: 400 }} variant="outlined" required>
-              <InputLabel shrink htmlFor="email">Email</InputLabel>
+              <InputLabel htmlFor="email">Email</InputLabel>
               <OutlinedInput
                 id="email"
                 type="email"
                 name="email"
+                label="Email"
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="Enter your email"
@@ -163,12 +159,13 @@ function PlayerRegistration() {
               />
             </FormControl>
 
-            <FormControl sx={{ m: 1, width: "100%", maxWidth: 400 }} variant="outlined" required error={Boolean(passwordError)}>
+            <FormControl sx={{ m: 1, width: "100%", maxWidth: 400 }} variant="outlined" required>
               <InputLabel htmlFor="password">Password</InputLabel>
               <OutlinedInput
                 id="password"
                 type={showPassword ? "text" : "password"}
                 name="password"
+                label="Password"
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Create a password"
@@ -180,12 +177,11 @@ function PlayerRegistration() {
                       onMouseDown={handleMouseDownPassword}
                       edge="end"
                     >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                      {showPassword ? <Visibility /> : <VisibilityOff />}
                     </IconButton>
                   </InputAdornment>
                 }
               />
-              {passwordError && <FormHelperText>{passwordError}</FormHelperText>}
             </FormControl>
 
             {/* ✅ Confirm Password with inline error */}
@@ -200,6 +196,7 @@ function PlayerRegistration() {
                 id="confirmPassword"
                 type={confirmShowPassword ? "text" : "password"}
                 name="confirmPassword"
+                label="Confirm Password"
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 placeholder="Confirm your password"
@@ -211,7 +208,7 @@ function PlayerRegistration() {
                       onMouseDown={handleMouseDownPassword}
                       edge="end"
                     >
-                      {confirmShowPassword ? <VisibilityOff /> : <Visibility />}
+                      {confirmShowPassword ? <Visibility /> : <VisibilityOff />}
                     </IconButton>
                   </InputAdornment>
                 }
@@ -230,6 +227,7 @@ function PlayerRegistration() {
                 id="birthDate"
                 type="date"
                 name="birthDate"
+                label="Birth Date"
                 value={formData.birthDate}
                 onChange={handleChange}
                 sx={{ bgcolor: "#F5F5F5", width: "100%" }}

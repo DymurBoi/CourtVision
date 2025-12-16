@@ -9,12 +9,12 @@ public class PlayerSeasonAveragesDTO {
     private double avgSteals;
     private double avgBlocks;
     private double avgTurnovers;
-
+    private int gamesPlayed;
     // Constructors
     public PlayerSeasonAveragesDTO() {}
 
     public PlayerSeasonAveragesDTO(Long playerId, Long seasonId, double avgPoints, double avgRebounds,
-                                   double avgAssists, double avgSteals, double avgBlocks, double avgTurnovers) {
+                                   double avgAssists, double avgSteals, double avgBlocks, double avgTurnovers, int gamesPlayed) {
         this.playerId = playerId;
         this.seasonId = seasonId;
         this.avgPoints = avgPoints;
@@ -23,9 +23,17 @@ public class PlayerSeasonAveragesDTO {
         this.avgSteals = avgSteals;
         this.avgBlocks = avgBlocks;
         this.avgTurnovers = avgTurnovers;
+        this.gamesPlayed = gamesPlayed;
     }
 
     //Getters and Setters
+    public int getGamesPlayed() {
+        return gamesPlayed;
+    }
+
+    public void setGamesPlayed(int gamesPlayed) {
+        this.gamesPlayed = gamesPlayed;
+    }
 
     public double getAvgTurnovers() {
         return avgTurnovers;

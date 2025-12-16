@@ -184,19 +184,67 @@
   }
   
   @media (max-width: 768px) {
-    .records-container {
-      grid-template-columns: 1fr;
-      gap: 1rem;
-    }
-  
-    .modal-actions {
-      flex-direction: column;
-    }
-  
-    .confirm-button,
-    .reject-button {
-      width: 100%;
-    }
+  .modal-container {
+    width: 95%;
+    max-width: 95vw;
+    max-height: 85vh;
+    margin: 1rem auto;
+  }
+
+  .modal-header {
+    padding: 1rem;
+  }
+
+  .modal-header h2 {
+    font-size: 1.2rem;
+  }
+
+  .modal-content {
+    padding: 1rem;
+  }
+
+  .records-container {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+    padding: 1rem;
+    gap: 0.75rem;
+  }
+
+  .confirm-button,
+  .reject-button {
+    width: 100%;
+    min-height: 44px; /* Touch-friendly */
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-container {
+    width: 98%;
+    max-width: 98vw;
+    margin: 0.5rem auto;
+  }
+
+  .modal-header {
+    padding: 0.75rem;
+  }
+
+  .modal-header h2 {
+    font-size: 1.1rem;
+  }
+
+  .modal-content {
+    padding: 0.75rem;
+  }
+
+  .confirm-button,
+  .reject-button {
+    padding: 0.7rem 1.5rem;
+    font-size: 0.9rem;
   }
   
-  
+}

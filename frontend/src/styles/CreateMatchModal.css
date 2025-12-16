@@ -159,6 +159,15 @@
 
 /* Mobile screens: 1 column per row */
 @media (max-width: 600px) {
+  .match-modal form {
+    display: flex;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    gap: 1rem !important;
+    flex-wrap: wrap !important;
+  }
+
     .modal-actions {
     display: flex;
     justify-content: center;

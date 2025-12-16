@@ -238,12 +238,12 @@ form input {
     max-width: 95%;
   }
 
-  form {
+  form.filter-form {
     flex-direction: row;
     justify-content: center;
     align-items: center;
     gap: 0.5rem;
-    flex-wrap: nowrap; /* keeps them in one line */
+    flex-wrap: nowrap;
   }
 
   form input {

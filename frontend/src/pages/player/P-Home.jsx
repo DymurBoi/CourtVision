@@ -1,12 +1,12 @@
 "use client"
-
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import { Snackbar, Alert } from "@mui/material"
 import { useAuth } from "../../components/AuthContext"
 import { api } from "../../utils/axiosConfig"
 import "../../styles/player/P-Home.css"
 
 function PHome() {
+  const hasLoadedOnce = useRef(false)
   const { user } = useAuth()
   const [loading, setLoading] = useState(true)
   const [playerData, setPlayerData] = useState({
@@ -23,7 +23,7 @@ function PHome() {
   const [pendingRequests, setPendingRequests] = useState([])
   const [showApplyModal, setShowApplyModal] = useState(false)
   const [selectedTeam, setSelectedTeam] = useState(null)
-  const [refreshTrigger, setRefreshTrigger] = useState(0)
+
 
   // Snackbar state
   const [snackbar, setSnackbar] = useState({
@@ -47,7 +47,10 @@ function PHome() {
       return
     }
 
-    setLoading(true)
+    if (!hasLoadedOnce.current) {
+      setLoading(true)
+    }
+
     try {
       let playerId = user.id
       if (typeof playerId === "string" && playerId.startsWith("PLAYER_")) {
@@ -94,17 +97,31 @@ function PHome() {
       }
 
       setLoading(false)
+      hasLoadedOnce.current = true
     } catch (error) {
       console.error("Error fetching player data:", error)
       showSnackbar("Failed to fetch player data", "error")
+      setLoading(false)
+    } finally{
       setLoading(false)
     }
   }, [user])
 
   // Initial and refresh fetch
-  useEffect(() => {
+useEffect(() => {
+  if (!user || !user.id) return
+
+  fetchPlayerData()
+
+  // Poll every 10 seconds (adjust as needed)
+  const intervalId = setInterval(() => {
     fetchPlayerData()
-  }, [user, refreshTrigger, fetchPlayerData])
+  }, 10000)
+
+  // Cleanup on unmount
+  return () => clearInterval(intervalId)
+}, [user, fetchPlayerData])
+
 
   // Fetch available teams if player has none
   useEffect(() => {
@@ -155,10 +172,6 @@ function PHome() {
     }
   }, [playerData.team])
 
-  const handleManualRefresh = () => {
-    setRefreshTrigger(prev => prev + 1)
-  }
-
   const handleApplyClick = (team) => {
     setSelectedTeam(team)
     setShowApplyModal(true)
@@ -183,7 +196,6 @@ function PHome() {
         ])
         setShowApplyModal(false)
         showSnackbar("Your request has been sent to the coach for approval.", "success")
-        handleManualRefresh()
       }
     } catch (error) {
       console.error("Failed to send join request:", error)

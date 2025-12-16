@@ -10,6 +10,8 @@ function CoachNavbar() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLogout = () => {
+    localStorage.clear();
+    sessionStorage.clear();
     logout();
     navigate("/login", { replace: true });
   };
@@ -43,6 +45,9 @@ function CoachNavbar() {
 
         {/* Nav Links */}
         <div className={`nav-links ${menuOpen ? "active" : ""}`}>
+          <Link to="/coach/home" className="nav-item" onClick={closeMenu}>
+            Home
+          </Link>
           <Link to="/coach/ranking" className="nav-item" onClick={closeMenu}>
             Player Ranking
           </Link>
