@@ -563,9 +563,7 @@ useEffect(() => {
                     <p className="no-coaches-message">No available coaches found.</p>
                   )}
                 </div>
-              </div>
-
-              <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "1rem" }}>
+                <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "1rem" }}>
                 <button 
                   type="submit" 
                   className="confirm-button-home"
@@ -577,6 +575,9 @@ useEffect(() => {
                   Cancel
                 </button>
               </div>
+              </div>
+
+              
             </form>
           </div>
         </div>

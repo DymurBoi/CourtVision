@@ -208,7 +208,8 @@ function CLiveRecord() {
 
       await api.put(`/basic-stats-var/put/${formStats.basicStatVarId}`, payload);
       const updatedOpponent = await api.get(`/basic-stats-var/get/by-game/${gameId}`);
-      setOpponentStats(updatedOpponent.data);
+      setTeamBScoreLive(updatedOpponent.data.gamePoints);
+      setOpponentStats(updatedOpponent.data.gamePoints);
       const playByPlayRes = await api.get(`/play-by-play/game/${gameId}`);
             if (playByPlayRes.status === 200) {
             console.log('PlayByPlay response:', playByPlayRes);
@@ -666,7 +667,13 @@ function CLiveRecord() {
         updated[statType] = Math.max(0, (updated[statType] || 0) + delta);
       }
 
-
+      setTeamBScoreLive((prevScore) => {
+          const updatedScore =
+            (Number(formStats.twoPtMade) * 2) +
+            (Number(formStats.threePtMade) * 3) +
+            (Number(formStats.ftMade));
+          return updatedScore;
+      });
         // 🔁 Recalculate gamePoints
         updated.gamePoints =
           (Number(updated.twoPtMade) * 2) +
@@ -677,13 +684,7 @@ function CLiveRecord() {
       });
 
       // 💯 Update Team B live score
-      setTeamBScoreLive((prevScore) => {
-        const newScore =
-          (Number(formStats.twoPtMade) * 2) +
-          (Number(formStats.threePtMade) * 3) +
-          (Number(formStats.ftMade));
-        return newScore;
-      });
+
 
       return;
     }

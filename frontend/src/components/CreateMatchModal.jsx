@@ -147,6 +147,7 @@ function CreateMatchModal({ onClose, onSave, teamId }) {
                 <label>Game Type</label>
                 <select
                   name="gameType"
+                  className="team-select"
                   value={formData.gameType}
                   onChange={handleChange}
                 >
