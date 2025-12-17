@@ -694,7 +694,11 @@ function CLiveRecord() {
 
   const handleAssist = async (basicStatId) => {
     try {
-      if (gameId) {
+      if(selectedRef.team==='B'){
+        handleStatUpdate("assists");
+        return;
+      }
+      else if (gameId) {
         const res = await api.get(`/basic-stats/get/subbed-in/${gameId}`);
         const updatedAssistPlayers = res.data.filter(player => player.basicStatId !== basicStatId);
         setAssistPlayers(updatedAssistPlayers);
@@ -1157,7 +1161,7 @@ const handleAssistUpdate = async (basicStatId) => {
                     <span className="stat-label">Free Throws Made:</span>
                     <span className="stat-value">{getStat(formStats, "ftMade")}</span>
                   </div>
-                  <div className="stat-item ast" onClick={() => isAddMode && !selectedRef.team==='B' ? handleAssist(formStats.basicStatId) : handleStatUpdate("assists")}>
+                  <div className="stat-item ast" onClick={() => isAddMode ? handleAssist(formStats.basicStatId) : handleStatUpdate("assists")}>
                     <span className="stat-label">Assists:</span>
                     <span className="stat-value">{getStat(formStats, "assists")}</span>
                   </div>
